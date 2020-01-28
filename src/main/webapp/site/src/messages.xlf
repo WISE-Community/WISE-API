@@ -347,7 +347,7 @@
           <context context-type="linenumber">84</context>
         </context-group>
       </trans-unit><trans-unit id="6ce56d323684d1af10f44ca44809177cef1412eb" datatype="html">
-        <source>Integrated science learning and teaching with technology</source>
+        <source>Designing active learning curricula for learning communities</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/home/home.component.html</context>
           <context context-type="linenumber">20</context>
