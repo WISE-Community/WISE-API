@@ -109,14 +109,4 @@ export class RegisterTeacherFormComponent implements OnInit {
       return error;
     }
   }
-
-  agreeCheckboxValidator(createTeacherAccountFormGroup: FormGroup) {
-    const agree = createTeacherAccountFormGroup.get('agree').value;
-    if (!agree) {
-      const error = { 'agreeNotChecked': true };
-      createTeacherAccountFormGroup.setErrors(error);
-      return error;
-    }
-    return null;
-  }
 }
