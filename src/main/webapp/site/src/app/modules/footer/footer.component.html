@@ -4,16 +4,12 @@
       <div fxLayout="column" fxLayout.gt-xs="row wrap" fxLayoutAlign="center center">
         <div class="footer__section center">
           <a routerLink="/join" i18n>Create Account</a> |
-          <a routerLink="/features" i18n>Features</a> |
-          <a routerLink="/about" i18n>About Us</a> |
-          <a routerLink="/news" i18n>News</a>
+          <a routerLink="/features" i18n>Features</a>
         </div>
         <span fxHide fxShow.gt-xs>/</span>
         <div class="footer__section center">
           <a routerLink="/help" i18n>Help + FAQs</a> |
-          <a routerLink="/privacy" i18n>Privacy + Use</a> |
-          <a routerLink="/contact" i18n>Contact Us</a> |
-          <a href="/legacy" i18n>Legacy</a>
+          <a routerLink="/privacy" i18n>Privacy + Use</a>
         </div>
       </div>
       <span fxFlex fxHide fxShow.gt-sm></span>
@@ -32,12 +28,12 @@
                     i18n-aria-label
                     aria-label="WISE on Twitter"></mat-icon>
         </a>
-        <a href="https://github.com/WISE-Community"
+        <a href="https://github.com/encorelab/SCORE"
            target="_blank"
            mat-icon-button>
           <mat-icon svgIcon="github-ffffff"
                     i18n-aria-label
-                    aria-label="WISE on Github"></mat-icon>
+                    aria-label="SCORE on Github"></mat-icon>
         </a>
       </div>
     </div>
@@ -50,14 +46,17 @@
            fxFlex.gt-sm="1 1 0"
            ngClass="center"
            [ngClass.gt-sm]="{'center': false}">
-        <p i18n>Powered by the <a href="https://wise-research.berkeley.edu" target="_blank">TELS Research Community</a> and <a href="https://github.com/WISE-Community/WISE" target="_blank">WISE Open Source Technology</a>. Help us <a href="https://crowdin.com/project/wise" target="_blank">translate</a> WISE!</p>
-        <p i18n>This material is based upon work supported by the National Science Foundation. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
+        <p i18n>Powered by the <a href="https://encorelab.org" target="_blank">Encore Lab</a> in collaboration with the <a href="https://wise-research.berkeley.edu" target="_blank">TELS Research Community</a> and built on <a href="https://github.com/WISE-Community/WISE" target="_blank">WISE Open Source Technology</a>.</p>
+        <p i18n>This material is based upon work supported by the Social Sciences and Humanities Research Council (SSHRC) and the National Science Foundation (NSF). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the authour(s) and do not necessarily reflect the views of the SSHRC or NSF.</p>
       </div>
       <div fxFlex="0 0 auto">
         <div class="footer__section"
              fxLayout="row wrap"
              fxLayoutAlign="center center"
              fxLayoutAlign.gt-sm="end center">
+          <a href="https://www.encorelab.org/" target="_blank">
+            <img src="assets/img/footer/encore-footer-logo.png" i18n-alt alt="ENCORE Lab" />
+          </a>
           <a href="https://www.nsf.gov/" target="_blank">
             <img src="assets/img/footer/nsf-logo.png" i18n-alt alt="National Science Foundation" />
           </a>
@@ -69,10 +68,17 @@
           </a>
           <img src="assets/img/footer/sail-logo.png" i18n-alt alt="SAIL (Scalable Architecture for Interactive Learning)" />
         </div>
-        <div class="footer__section"
-             fxLayoutAlign="center center"
-             fxLayoutAlign.gt-sm="end center">
-          <span class="center" i18n>©1996-{{time | amDateFormat:'YYYY'}}, <a href="https://www.berkeley.edu" target="_blank">UC Berkeley</a> | Web-based Inquiry Science Environment</span>
+        <div class="footer__section">
+          <div
+            fxLayoutAlign="center center"
+            fxLayoutAlign.gt-sm="end center">
+            <span class="center" i18n>©2018-{{time | amDateFormat:'YYYY'}}, <a href="https://encorelab.org/" target="_blank">Encore Lab</a> | Scripting and Orchestration Environment</span>
+          </div>
+          <div
+            fxLayoutAlign="center center"
+            fxLayoutAlign.gt-sm="end center">
+            <span class="center" i18n>©1996-{{time | amDateFormat:'YYYY'}}, <a href="https://www.berkeley.edu" target="_blank">UC Berkeley</a> | Web-based Inquiry Science Environment</span>
+          </div>
         </div>
       </div>
     </div>
