@@ -33,6 +33,16 @@
   }
 }
 
+.standalone-sm__logo {
+  margin: 0 auto 16px;
+  max-width: 100px;
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
 .standalone__content {
   max-width: breakpoint('sm.min');
   margin: 0 auto 16px;
