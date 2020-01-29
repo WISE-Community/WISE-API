@@ -162,7 +162,7 @@ class ClassroomMonitorController {
         });
 
         // TODO: make dynamic, set somewhere like in config?
-        this.logoPath = this.ProjectService.getThemePath() + '/images/WISE-logo-ffffff.svg';
+        this.logoPath = this.ProjectService.getThemePath() + '/images/encore-website-logo.png';
 
         this.processUI();
 
