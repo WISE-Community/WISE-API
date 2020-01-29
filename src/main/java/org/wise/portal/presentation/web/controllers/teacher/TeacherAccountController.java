@@ -55,7 +55,7 @@ import java.util.Locale;
 import java.util.Properties;
 
 /**
- * Controller for creating and updating WISE teacher accounts
+ * Controller for creating and updating SCORE teacher accounts
  *
  * @author Hiroki Terashima
  */

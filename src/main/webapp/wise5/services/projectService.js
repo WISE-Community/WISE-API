@@ -81,7 +81,7 @@ class ProjectService {
 
   getProjectTitle() {
     const name = this.getProjectMetadata().title;
-    return name ? name : 'A WISE Project (No name)';
+    return name ? name : 'A SCORE Project (No name)';
   };
 
   setProjectTitle(projectTitle) {

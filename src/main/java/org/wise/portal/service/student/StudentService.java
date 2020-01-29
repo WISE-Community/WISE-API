@@ -36,7 +36,7 @@ import org.wise.portal.domain.run.StudentRunInfo;
 import org.wise.portal.domain.user.User;
 
 /**
- * Represents the set of operations on a WISE Student user.
+ * Represents the set of operations on a SCORE Student user.
  * @author Hiroki Terashima
  */
 public interface StudentService {
@@ -47,7 +47,7 @@ public interface StudentService {
    * student to the period that belongs to the <code>Run</code>,
    * as indicated by the periodname portion of the <code>Projectcode</code>.
    *
-   * @param studentUser a <code>User</code> object of a WISE student
+   * @param studentUser a <code>User</code> object of a SCORE student
    * @param projectcode a <code>Projectcode</code>
    * @throws ObjectNotFoundException when the runcode portion of <code>Projectcode</code>
    * could not be used to retrieve an existing <code>Run</code>

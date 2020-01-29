@@ -89,6 +89,6 @@ describe('StudentRunListComponent', () => {
 
   it('should show number of runs', () => {
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('#unitCount').textContent).toContain('My WISE units: 3 (2 active, 1 completed)');
+    expect(compiled.querySelector('#unitCount').textContent).toContain('My SCORE units: 3 (2 active, 1 completed)');
   })
 });

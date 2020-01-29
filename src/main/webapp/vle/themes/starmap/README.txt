@@ -1,6 +1,6 @@
 Introduction to the WISE Virtual Learning Environment (VLE) Project Theme Architecture
 
-Each WISE project theme is made up of a "vle_body.html" file, a "config.json" file, and
+Each SCORE project theme is made up of a "vle_body.html" file, a "config.json" file, and
 folders for custom CSS, images, Javascript, and navigation modes.
 
 -----------------------------------------------------------------------------------------
@@ -82,7 +82,7 @@ match your theme.
 
 With each WISE VLE theme, authors can include any number of accompanying navigation modes.
 Navigation modes define the visual appearance and behavior of the project navigation menu (i.e. the 
-activity and step DOM elements that make up each WISE project menu).
+activity and step DOM elements that make up each SCORE project menu).
 
 Available navigation modes for a theme are defined in the theme's "config.json" file, in the
 "nav_modes" configuration option (item 13 above). Each navigation mode entry must be a JSON object

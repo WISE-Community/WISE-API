@@ -68,7 +68,7 @@ import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.user.UserService;
 
 /**
- * Controller for creating and updating WISE student accounts
+ * Controller for creating and updating SCORE student accounts
  * @author Hiroki Terashima
  */
 @Controller

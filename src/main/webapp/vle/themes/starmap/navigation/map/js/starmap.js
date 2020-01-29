@@ -9,7 +9,7 @@ function starmap() {
 		stepTerm = '',
 		editable = false, // default for whether project nodes (positions, etc.) can be edited (authoring mode)
 		attributes = {}, // optional object of node IDs and any corresponding layout attributes (currently only 'x' and 'y' values are supported, which define set coordinate positions for a node)
-		view = {}, // object to hold WISE view object (provides access to WISE project and its nodes)
+		view = {}, // object to hold WISE view object (provides access to SCORE project and its nodes)
 		complete = function(){}; // optional callback function to execute once map has finished loading
 
 	// private variables

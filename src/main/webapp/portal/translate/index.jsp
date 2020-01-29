@@ -84,7 +84,7 @@
         <div id="loginDiv">
             <h2 style="margin-top:0px">WISE Translation Tool</h2>
             <br/>
-            <p> Thank you for helping us translate WISE!! You can use this page to translate the WISE student and teacher pages.<br/><br/>Choose the language that you want to translate to. If you don't see your language listed, or if you have any questions, please <a href="${contextPath}/contact/contactwise.html">contact us.</a></p>
+            <p> Thank you for helping us translate WISE!! You can use this page to translate the SCORE student and teacher pages.<br/><br/>Choose the language that you want to translate to. If you don't see your language listed, or if you have any questions, please <a href="${contextPath}/contact/contactwise.html">contact us.</a></p>
             <br/>
             <form>
                 <table>

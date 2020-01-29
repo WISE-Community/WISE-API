@@ -245,19 +245,19 @@
     },
     "stepTerm": {
         "value": "שלב",
-        "description": "Default term for a 'Step' in a WISE project (singular)"
+        "description": "Default term for a 'Step' in a SCORE project (singular)"
     },
     "stepTermPlural": {
         "value": "שלבים",
-        "description": "Plural form of the default term for a 'Step' in a WISE project"
+        "description": "Plural form of the default term for a 'Step' in a SCORE project"
     },
     "activityTerm": {
         "value": "פעילויות",
-        "description": "Default term for an 'Activity' in a WISE project (singular)"
+        "description": "Default term for an 'Activity' in a SCORE project (singular)"
     },
     "activityTermPlural": {
         "value": "הוספת תמונה",
-        "description": "Plural form of the default term for a 'Activity' in a WISE project"
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project"
     },
     "insertImage": {
         "value": "רעיון",

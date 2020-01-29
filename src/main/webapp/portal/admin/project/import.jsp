@@ -75,7 +75,7 @@
 		</c:if>
 		<br/>
 		<div id="importFromHubDiv" style="background:#FFF9EF; padding: 10px">
-			<h3>Select a WISE Project to Import</h3>
+			<h3>Select a SCORE Project to Import</h3>
 			<form action="importFromHub" method="POST">
 				<select id="importableWISEProjects" name="importableProjectId"></select>
 				<button type="submit">Import</button>
@@ -83,7 +83,7 @@
 		</div>
 		<br/>- OR -<br/><br/>
 		<div id="manualImport" style="background:#FFF9EF; padding: 10px">
-			<h3>Manually Import WISE Project</h3>
+			<h3>Manually Import SCORE Project</h3>
 
 			<br/>
 			<div>

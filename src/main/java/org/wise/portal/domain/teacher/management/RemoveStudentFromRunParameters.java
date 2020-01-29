@@ -29,7 +29,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 /**
- * A form-backing object for WISE teachers for removing students from a run.
+ * A form-backing object for SCORE teachers for removing students from a run.
  *
  * @author Hiroki Terashima
  */

@@ -19,7 +19,7 @@ export class TeacherHomeComponent implements OnInit {
   authoringToolLink: string = '';
   tabLinks: any[] = [
     { path: 'schedule', label: this.i18n('Class Schedule') },
-    { path: 'library', label: this.i18n('Browse WISE Units') }
+    { path: 'library', label: this.i18n('Browse Units') }
   ]
 
   constructor(private userService: UserService,
