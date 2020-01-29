@@ -1,0 +1,13 @@
+<mat-toolbar color="primary" class="mat-elevation-z6" fxLayout fxLayoutGap="16px">
+    <button mat-icon-button (click)="onToggleSideNav()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <!-- <a mat-icon-button [routerLink]="previousUrl" *ngIf="activePage?.isChild">
+        <mat-icon>arrow_back</mat-icon>
+    </a> -->
+    <div fxFlex="100%">{{activePage?.title}}</div>
+    <span>SCORE Teaching Assistant</span>
+    <!-- <button mat-icon-button (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+    </button> -->
+</mat-toolbar>
