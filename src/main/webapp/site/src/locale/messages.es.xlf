@@ -5989,12 +5989,12 @@
         <target state="needs-translation">Teacher home navigation</target>
       </trans-unit>
       <trans-unit id="2353459e710912ab1e887bf5c0adbeaaf7e6b2af" datatype="html">
-        <source>Hey there! Looks like you haven't run any WISE units in your classes yet.</source>
+        <source>Hey there! Looks like you haven't run any units in your classes yet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/teacher/teacher-run-list/teacher-run-list.component.html</context>
           <context context-type="linenumber">2</context>
         </context-group>
-        <target state="needs-translation">Hey there! Looks like you haven't run any WISE units in your classes yet.</target>
+        <target state="needs-translation">Hey there! Looks like you haven't run any units in your classes yet.</target>
       </trans-unit>
       <trans-unit id="0f1eeb1121b8585f39941f1c4de7c9ef98ff42bf" datatype="html">
         <source>Select "Browse Units" to find titles to use with your students.</source>
