@@ -36,7 +36,7 @@ export class RegisterTeacherFormComponent implements OnInit {
     schoolLevel: new FormControl('', [Validators.required]),
     howDidYouHearAboutUs: new FormControl(''),
     agree: new FormControl('')
-  }, { validator: this.agreeCheckboxValidator });
+  });
   isSubmitted = false;
   processing: boolean = false;
 
