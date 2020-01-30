@@ -34,7 +34,7 @@ function updateIndex(appType) {
     appDir = `/site/dist`;
   } else if (appType === 'ta') {
     indexFilePath = 'src/main/webapp/score/teachingassistant/dist/index.html';
-    appDir = `/teachingassistant/dist`;
+    appDir = `/score/teachingassistant/dist`;
   }
 
   fs.readFile(indexFilePath, 'utf8', function (err,data) {
