@@ -15,6 +15,11 @@ public class ScoreAPIController {
 
   @GetMapping(value = {"/teachingassistant", "/teachingassistant/**"})
   protected String showTeachingAssistant() {
-    return "forward:/score/teachingassistant/dist/index.html";
+    return "forward:/teachingassistant/dist/index.html";
+  }
+
+  @GetMapping(value = {"/test", "/test/**"})
+  protected String showTest() {
+    return "hello";
   }
 }

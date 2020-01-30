@@ -32,6 +32,9 @@ function updateIndex(appType) {
   } else if (appType === 'site') {
     indexFilePath = 'src/main/webapp/site/dist/index.html';
     appDir = `/site/dist`;
+  } else if (appType === 'ta') {
+    indexFilePath = 'src/main/webapp/score/teachingassistant/dist/index.html';
+    appDir = `/teachingassistant/dist`;
   }
 
   fs.readFile(indexFilePath, 'utf8', function (err,data) {
