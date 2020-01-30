@@ -45,7 +45,7 @@
                 }
               ],
               "outputPath": "src/main/webapp/score/teachingassistant/dist/",
-              "baseHref": "/teacher/ta"
+              "baseHref": "/"
             }
           }
         },
