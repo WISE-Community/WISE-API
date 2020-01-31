@@ -29,7 +29,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 /**
- * A form-backing obejct for WISE students when adding a new project
+ * A form-backing obejct for SCORE students when adding a new project
  *
  * @author Hiroki Terashima
  */

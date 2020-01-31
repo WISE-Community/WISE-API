@@ -30,7 +30,7 @@ import lombok.Setter;
 import org.wise.portal.domain.user.User;
 
 /**
- * A form-backing object for WISE students when changing their existing passwords
+ * A form-backing object for SCORE students when changing their existing passwords
  * @author Patrick Lawler
  * @author Sally Ahn
  */

@@ -41,7 +41,7 @@ import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 
 /**
- * Controller for WISE Project library pages (for anonymous users and teachers)
+ * Controller for SCORE Project library pages (for anonymous users and teachers)
  * @author Hiroki Terashima
  * @author Geoffrey Kwan
  * @author Jonathan Lim-Breitbart

@@ -248,19 +248,19 @@
         "value": "تم"
     },
     "stepTerm": {
-        "description": "Default term for a 'Step' in a WISE project (singular)",
+        "description": "Default term for a 'Step' in a SCORE project (singular)",
         "value": "خطوة"
     },
     "stepTermPlural": {
-        "description": "Plural form of the default term for a 'Step' in a WISE project",
+        "description": "Plural form of the default term for a 'Step' in a SCORE project",
         "value": "خطوات"
     },
     "activityTerm": {
-        "description": "Default term for an 'Activity' in a WISE project (singular)",
+        "description": "Default term for an 'Activity' in a SCORE project (singular)",
         "value": "النشاط"
     },
     "activityTermPlural": {
-        "description": "Plural form of the default term for a 'Activity' in a WISE project",
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project",
         "value": "أنشطة"
     },
     "promptTerm": {

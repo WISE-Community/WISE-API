@@ -248,19 +248,19 @@
         "value": "Ολοκληρώθηκε"
     },
     "stepTerm": {
-        "description": "Default term for a 'Step' in a WISE project (singular)",
+        "description": "Default term for a 'Step' in a SCORE project (singular)",
         "value": "Βήμα"
     },
     "stepTermPlural": {
-        "description": "Plural form of the default term for a 'Step' in a WISE project",
+        "description": "Plural form of the default term for a 'Step' in a SCORE project",
         "value": "Βήματα"
     },
     "activityTerm": {
-        "description": "Default term for an 'Activity' in a WISE project (singular)",
+        "description": "Default term for an 'Activity' in a SCORE project (singular)",
         "value": "Δραστηριότητα"
     },
     "activityTermPlural": {
-        "description": "Plural form of the default term for a 'Activity' in a WISE project",
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project",
         "value": "Δραστηριότητες"
     },
     "promptTerm": {

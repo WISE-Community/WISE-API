@@ -193,7 +193,7 @@
     },
     "stepTerm": {
         "value": "Paso",
-        "description": "Default term for a 'step' in a WISE project"
+        "description": "Default term for a 'step' in a SCORE project"
     },
     "insertImage": {
         "value": "Insertar imagen",
@@ -593,11 +593,11 @@
     },
     "activityTerm": {
         "value": "Actividad",
-        "description": "Default term for an 'activity' in a WISE project"
+        "description": "Default term for an 'activity' in a SCORE project"
     },
     "all_steps": {
         "value": "todos los pasos",
-        "description": "The text for 'all steps' in a WISE project"
+        "description": "The text for 'all steps' in a SCORE project"
     },
     "ideaBasket_clickToSort": {
         "value": "Clic para ordenar",
@@ -937,11 +937,11 @@
     },
     "stepTermPlural": {
         "value": "Pasos",
-        "description": "Plural form of the default term for a 'Step' in a WISE project"
+        "description": "Plural form of the default term for a 'Step' in a SCORE project"
     },
     "activityTermPlural": {
         "value": "Actividades",
-        "description": "Plural form of the default term for a 'Activity' in a WISE project"
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project"
     },
     "hints_viewAll": {
         "value": "Debés ver todas las {0} antes de cerrar.",

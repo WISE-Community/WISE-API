@@ -253,19 +253,19 @@
     },
     "stepTerm": {
         "value": "단계",
-        "description": "Default term for a 'Step' in a WISE project (singular)"
+        "description": "Default term for a 'Step' in a SCORE project (singular)"
     },
     "stepTermPlural": {
         "value": "단계들",
-        "description": "Plural form of the default term for a 'Step' in a WISE project"
+        "description": "Plural form of the default term for a 'Step' in a SCORE project"
     },
     "activityTerm": {
         "value": "활동",
-        "description": "Default term for an 'Activity' in a WISE project (singular)"
+        "description": "Default term for an 'Activity' in a SCORE project (singular)"
     },
     "activityTermPlural": {
         "value": "활동들",
-        "description": "Plural form of the default term for a 'Activity' in a WISE project"
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project"
     },
     "idea_basket_add_an_idea": {
         "value": "아이디어 추가 +",

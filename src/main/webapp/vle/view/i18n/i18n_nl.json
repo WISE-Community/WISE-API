@@ -445,7 +445,7 @@
     },
     "stepTerm": {
         "value": "Stap",
-        "description": "Default term for a 'step' in a WISE project"
+        "description": "Default term for a 'step' in a SCORE project"
     },
     "insertImage": {
         "value": "Afbeelding invoegen",
@@ -605,15 +605,15 @@
     },
     "stepTermPlural": {
         "value": "Stappen",
-        "description": "Plural form of the default term for a 'Step' in a WISE project"
+        "description": "Plural form of the default term for a 'Step' in a SCORE project"
     },
     "activityTerm": {
         "value": "Activiteit",
-        "description": "Default term for an 'Activity' in a WISE project (singular)"
+        "description": "Default term for an 'Activity' in a SCORE project (singular)"
     },
     "activityTermPlural": {
         "value": "Activiteiten",
-        "description": "Plural form of the default term for a 'Activity' in a WISE project"
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project"
     },
     "ideaBasket_clickToSort": {
         "value": "Klik hier om te rangschikken",

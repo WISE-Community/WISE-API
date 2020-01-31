@@ -163,8 +163,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -190,8 +190,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_leopard_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -217,8 +217,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_tiger_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -244,8 +244,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_os9_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -271,8 +271,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_vista_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -298,8 +298,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_xp_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -325,8 +325,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_2k_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -352,8 +352,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_98_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -379,8 +379,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_linux_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -406,8 +406,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 	
 	public void testOnSubmit_other_success() throws Exception {
 		String[] recipients = RECIPIENTS; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -436,8 +436,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-trouble-logging-in@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -466,8 +466,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-authoring-help@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -496,8 +496,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-feedback@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -526,8 +526,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-need-help-using@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -556,8 +556,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-other@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -586,8 +586,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-project-problems@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -616,8 +616,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		contactDetails.setIssuetype(issueType);
 		
 		String[] recipients = {"WISE3-student-management@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + EMAIL + "\n" + 
@@ -649,8 +649,8 @@ public class ContactWISEProjectControllerTest extends AbstractModelAndViewTests 
 		user.setUserDetails(new StudentUserDetails());
 		contactDetails.setIsStudent(user);
 		String[] recipients = {"WISE3-student-management@googlegroups.com"}; 
-		String subject = "[Contact WISE Project] " + issueType + ": " + SUMMARY;
-		String message = "Contact WISE Project Request\n" +
+		String subject = "[Contact SCORE Project] " + issueType + ": " + SUMMARY;
+		String message = "Contact SCORE Project Request\n" +
 		 "=================\n" + 
 		 "Name: " + NAME + "\n" + 
 		 "Email: " + "student@wise.com" + "\n" + 

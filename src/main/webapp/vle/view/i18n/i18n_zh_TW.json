@@ -249,19 +249,19 @@
     },
     "stepTerm": {
         "value": "步驟",
-        "description": "Default term for a 'Step' in a WISE project (singular)"
+        "description": "Default term for a 'Step' in a SCORE project (singular)"
     },
     "stepTermPlural": {
         "value": "步驟",
-        "description": "Plural form of the default term for a 'Step' in a WISE project"
+        "description": "Plural form of the default term for a 'Step' in a SCORE project"
     },
     "activityTerm": {
         "value": "活動",
-        "description": "Default term for an 'Activity' in a WISE project (singular)"
+        "description": "Default term for an 'Activity' in a SCORE project (singular)"
     },
     "activityTermPlural": {
         "value": "活動",
-        "description": "Plural form of the default term for a 'Activity' in a WISE project"
+        "description": "Plural form of the default term for a 'Activity' in a SCORE project"
     },
     "promptTerm": {
         "value": "提示",
