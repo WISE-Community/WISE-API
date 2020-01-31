@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/score-ta")
 public class ScoreAPIController {
 
-
   @GetMapping
   protected String showTeachingAssistant() {
     return "forward:/score/teachingassistant/dist/index.html";
