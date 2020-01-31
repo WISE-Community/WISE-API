@@ -2,7 +2,6 @@ package org.score.portal.domain;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.score.portal.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -31,7 +30,7 @@ public class TaskRespositoryTest {
     @Test
     public void testTaskCreation() {
 
-      Task task = Task.builder().name("activity 1").build();
+//      Task task = Task.builder().name("activity 1").build();
 
       // this.taskRespository.save(task);
 

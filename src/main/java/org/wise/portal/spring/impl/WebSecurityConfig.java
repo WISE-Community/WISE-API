@@ -89,6 +89,8 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/student/**").hasAnyRole("STUDENT")
         .antMatchers("/studentStatus").hasAnyRole("TEACHER,STUDENT")
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
+        .antMatchers("/score/**/**").permitAll()
+        .antMatchers("/teachingassistant/**/**").permitAll()
         .antMatchers("/api/**").permitAll()
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();

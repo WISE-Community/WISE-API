@@ -126,16 +126,18 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "build-dev-all": "node node_modules/concurrently/bin/concurrently.js \"npm run build-dev-site\" \"npm run build-dev-at\" \"npm run build-dev-cm\" \"npm run build-dev-vle\"",
+    "build-dev-all": "node node_modules/concurrently/bin/concurrently.js \"npm run build-dev-site\" \"npm run build-dev-at\" \"npm run build-dev-cm\" \"npm run build-dev-vle\" \"npm run build-dev-ta\"",
     "build-dev-at": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build at --watch\" \"node scripts/afterBuild.js at true\"",
     "build-dev-cm": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build cm --watch\" \"node scripts/afterBuild.js cm true\"",
     "build-dev-site": "node node_modules/concurrently/bin/concurrently.js \"ng build site --watch\" \"ng test --source-map=false --karma-config src/main/webapp/site/karma.conf.js --browsers ChromeHeadlessNoSandbox\"  \"node scripts/afterBuild.js site true\"",
     "build-dev-vle": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build vle --watch\" \"node scripts/afterBuild.js vle true\"",
+    "build-dev-ta": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build ta --watch\"",
     "build-prod-all": "npm run build-prod-at && npm run build-prod-cm && npm run build-prod-vle && npm run build-prod-site",
     "build-prod-at": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build at --configuration=production && node scripts/afterBuild.js at",
     "build-prod-cm": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build cm --configuration=production && node scripts/afterBuild.js cm",
     "build-prod-vle": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build vle --configuration=production && node scripts/afterBuild.js vle",
     "build-prod-site": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build site --configuration=production && node scripts/afterBuild.js site",
+    "build-prod-ta": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build ta --configuration=production && node scripts/afterBuild.js ta",
     "bundle-report": "node ./node_modules/webpack-bundle-analyzer/lib/bin/analyzer.js src/main/webapp/site/dist/stats.json",
     "watch-all-wise5": "node node_modules/concurrently/bin/concurrently.js \"node ./node_modules/gulp/bin/gulp.js\" \"npm run test-wise5-watch\"",
     "watch-sass": "npm rebuild node-sass && node ./node_modules/gulp/bin/gulp.js",
@@ -153,7 +155,7 @@
     "url": "git+https://github.com/WISE-Community/WISE.git"
   },
   "keywords": [
-    "WISE",
+    "SCORE",
     "education",
     "science",
     "inquiry"
@@ -161,7 +163,7 @@
   "author": "",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/WISE-Community/WISE/issues"
+    "url": "https://github.com/encorelab/SCORE/issues"
   },
-  "homepage": "https://github.com/WISE-Community/WISE#readme"
+  "homepage": "https://github.com/encorelab/SCORE#readme"
 }

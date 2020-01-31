@@ -1,0 +1,19 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav mode="side" [opened]="isOpen">
+        <mat-toolbar color="primary" style="width: 250px;"><span>Menu</span></mat-toolbar>
+        <!-- <div class="sidenav-logo-container">
+            <app-logo></app-logo>
+        </div> -->
+        <mat-nav-list>
+            <app-nav-menu-item *ngFor="let navigationItem of getNavigationItems()"
+                               [navigationItem]="navigationItem"></app-nav-menu-item>
+        </mat-nav-list>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <app-nav-toolbar [activePage]="getActivePage()"
+                         (toggleSideNav)="toggleSideNav()"
+                         (logout)="logout()"
+                         [previousUrl]="getPreviousUrl()"></app-nav-toolbar>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
