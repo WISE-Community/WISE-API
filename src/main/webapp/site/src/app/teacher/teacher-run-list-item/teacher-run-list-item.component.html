@@ -37,7 +37,7 @@
         <mat-card-title [class.secondary-text]="isRunCompleted(run)" class="mat-body-2">
           {{run.project.name}}
           <span *ngIf="run.project.wiseVersion === 4"
-                class="warn mat-caption more-info" 
+                class="warn mat-caption more-info"
                 tabindex="0"
                 i18n-matTooltip
                 matTooltip="This unit is from an old version of WISE that is no longer supported. Please find an alternate unit to use in the future or contact us for upgrade options."
@@ -80,6 +80,14 @@
          fxFlex="0 0 auto"
          fxFlex.xs="100">
         <mat-icon>assignment_turned_in</mat-icon>&nbsp;<ng-container i18n>Teacher Tools</ng-container>
+      </a>
+      <a *ngIf="(isRunActive(run) || isRunCompleted(run)) && run.isTAToolEnabled()"
+         mat-flat-button
+         href="{{taToolsLink}}"
+         color="primary"
+         fxFlex="0 0 auto"
+         fxFlex.xs="100">
+        <mat-icon>assignment_turned_in</mat-icon>&nbsp;<ng-container i18n>TA Tools</ng-container>
       </a>
     </div>
   </mat-card-actions>
