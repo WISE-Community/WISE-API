@@ -19,7 +19,6 @@ public class EchoAgentServiceImpl implements EchoAgentService, MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        // student work {"serverSaveTime":1575938522175,"periodId":2,"componentType":"OpenResponse","clientSaveTime":1575938520000,"workgroupId":2,"componentId":"6o1m75beee","studentData":{"attachments":[],"submitCounter":0,"response":"My name is Tony!!"},"id":5,"runId":3,"isSubmit":false,"nodeId":"node1","isAutoSave":false}
         try {
             JSONObject messageJSON = new JSONObject(new String(message.getBody()));
             if (messageJSON.get("type").equals("studentWorkToClassroom")
@@ -36,7 +35,7 @@ public class EchoAgentServiceImpl implements EchoAgentService, MessageListener {
                 String echoResponse = "Hello Little Friend RE:" + response;
                 studentWork.put("echoResponse", echoResponse);
                 WebSocketMessage echoWebSockeMessage = new WebSocketMessage(
-                        "echoAgent", studentWork.toString());
+                    "echoAgent", studentWork.toString());
                 simpMessagingTemplate.convertAndSend("/topic/workgroup/" + workgroupId,
                     echoWebSockeMessage);
             } else if (messageJSON.get("type").equals("eventToAgent")) {
@@ -47,9 +46,23 @@ public class EchoAgentServiceImpl implements EchoAgentService, MessageListener {
                 String echoResponse = "Hint Requested for:" + response;
                 event.put("echoResponse", echoResponse);
                 WebSocketMessage echoWebSockeMessage = new WebSocketMessage(
-                        "echoAgent", event.toString());
+                    "echoAgent", event.toString());
                 simpMessagingTemplate.convertAndSend("/topic/workgroup/" + workgroupId,
                     echoWebSockeMessage);
+              } else if (event.getString("event").equals("sendWorkgroupToNode")) {
+                String workgroupId = event.getJSONObject("data").getString("workgroupId");
+                WebSocketMessage webSockeMessage = new WebSocketMessage(
+                    "goToNode", event.toString());
+                 simpMessagingTemplate.convertAndSend("/topic/workgroup/" + workgroupId,
+                     webSockeMessage);
+              } else if (event.getString("event").equals("sendAllWorkgroupsToNode")) {
+                String runId = event.getJSONObject("data").getString("runId");
+                String periodId = event.getJSONObject("data").getString("periodId");
+                WebSocketMessage webSockeMessage = new WebSocketMessage(
+                    "goToNode", event.toString());
+                 simpMessagingTemplate.convertAndSend(
+                     String.format("/topic/classroom/%s/%s", runId, periodId),
+                     webSockeMessage);
               }
             }
         } catch (MessagingException e) {
@@ -59,10 +72,5 @@ public class EchoAgentServiceImpl implements EchoAgentService, MessageListener {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
     }
-
-
-
 }

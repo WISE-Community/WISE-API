@@ -31,7 +31,7 @@ class NodeProgressController {
         this.TeacherDataService.setCurrentWorkgroup(null);
 
         this.items = this.ProjectService.idToOrder;
-
+1
         this.maxScore = this.ProjectService.getMaxScore();
 
         this.nodeId = null;

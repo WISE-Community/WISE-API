@@ -6,11 +6,13 @@ class StudentWebSocketService {
       $rootScope,
       $stomp,
       AnnotationService,
-      ConfigService) {
+      ConfigService,
+      StudentDataService) {
     this.$rootScope = $rootScope;
     this.$stomp = $stomp;
     this.AnnotationService = AnnotationService;
     this.ConfigService = ConfigService;
+    this.StudentDataService = StudentDataService;
     this.$stomp.setDebug(function (args) {
       $log.debug(args)
     });
@@ -39,6 +41,8 @@ class StudentWebSocketService {
       } else if (message.type === 'studentWork') {
         const studentWork = JSON.parse(message.content);
         this.$rootScope.$broadcast('studentWorkReceived', studentWork);
+      } else if (message.type === 'goToNode') {
+        this.goToStep(message);
       }
     });
   }
@@ -56,8 +60,15 @@ class StudentWebSocketService {
         const echoResponse = JSON.parse(message.content);
         console.log(echoResponse.echoResponse);
         this.$rootScope.$broadcast('echoResponseReceived', echoResponse);
+      } else if (message.type === 'goToNode') {
+        this.goToStep(message);
       }
     });
+  }
+
+  goToStep(message) {
+    const content = JSON.parse(message.content);
+    this.StudentDataService.endCurrentNodeAndSetCurrentNodeByNodeId(content.data.nodeId);
   }
 }
 
@@ -66,7 +77,8 @@ StudentWebSocketService.$inject = [
   '$rootScope',
   '$stomp',
   'AnnotationService',
-  'ConfigService'
+  'ConfigService',
+  'StudentDataService'
 ];
 
 export default StudentWebSocketService;
