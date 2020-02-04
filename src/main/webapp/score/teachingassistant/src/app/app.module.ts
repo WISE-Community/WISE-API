@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {MissingTranslationStrategy, NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
@@ -37,7 +37,12 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import { FlexLayoutModule } from '@angular/flex-layout';
+import { AuthGuard } from './auth/auth.guard';
+import {ConfigService} from "../../../../site/src/app/services/config.service";
+import {RunService} from "./core/services/data/run.service";
+import {TeacherService} from "../../../../site/src/app/teacher/teacher.service";
+import {HttpErrorInterceptor} from "../../../../site/src/app/http-error.interceptor";
+import {I18n, MISSING_TRANSLATION_STRATEGY} from "@ngx-translate/i18n-polyfill";
 @NgModule({
     declarations: [
         AppComponent,
@@ -85,9 +90,21 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     providers: [
         {
             provide: HTTP_INTERCEPTORS,
-            useClass: HttpConfigInterceptor,
-            multi: true,
+            useClass: HttpErrorInterceptor,
+            multi: true
         },
+        { provide: MISSING_TRANSLATION_STRATEGY, useValue: MissingTranslationStrategy.Ignore },
+
+        I18n,
+        // {
+        //     provide: HTTP_INTERCEPTORS,
+        //     useClass: HttpConfigInterceptor,
+        //     multi: true,
+        // },
+        AuthGuard,
+        ConfigService,
+        TeacherService,
+        RunService
     ],
     bootstrap: [AppComponent],
     exports: [
