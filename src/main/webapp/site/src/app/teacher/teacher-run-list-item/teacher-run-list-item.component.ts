@@ -21,6 +21,7 @@ export class TeacherRunListItemComponent implements OnInit {
   editLink: string = '';
   gradeAndManageLink: string = '';
   manageStudentsLink: string = '';
+  taToolsLink: string = '';
   thumbStyle: SafeStyle;
   animateDuration: string = '0s';
   animateDelay: string = '0s';
@@ -44,6 +45,7 @@ export class TeacherRunListItemComponent implements OnInit {
     if (this.run != null) {
       this.gradeAndManageLink = `${this.configService.getContextPath()}/teacher/run/manage/${this.run.id}#!/run/${this.run.id}/project/`;
       this.manageStudentsLink = `${this.configService.getContextPath()}/teacher/run/manage/${this.run.id}#!/run/${this.run.id}/manageStudents`;
+      this.taToolsLink = `${this.configService.getContextPath()}/score-ta`;
       if (this.run.isHighlighted) {
         this.animateDuration = '2s';
         this.animateDelay = '1s';
