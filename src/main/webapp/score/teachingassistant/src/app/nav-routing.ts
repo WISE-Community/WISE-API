@@ -13,19 +13,22 @@ export const sideNavPath = 'nav';
 export const navRoutes: NavRoute[] = [
 
     {
-        data: {title: 'Home'}, icon: 'home', group: '', path: 'home', loadChildren: () =>
+        data: {title: 'Home'}, icon: 'home', group: '', path: '', pathMatch: 'full', loadChildren: () =>
             import('./pages/home-page/home-page.module').then(
                 m => m.HomePageModule,
             ),
-    }, {
+    },
+    {
         data: {title: 'Classes'}, icon: 'class', group: '', path: 'classes', loadChildren: () =>
             import('./pages/classes-page/classes-page.module').then(
                 m => m.ClassesPageModule,
             ),
-    },{data: {title: 'Instructor'},icon: 'grade',group: '',path: 'instructor',loadChildren: () =>
-                import('./pages/instructor-page/instructor-page.module').then(
-                    m => m.InstructorPageModule,
-                ),},];
+    }, {
+        data: {title: 'Instructor'}, icon: 'grade', group: '', path: 'instructor', loadChildren: () =>
+            import('./pages/instructor-page/instructor-page.module').then(
+                m => m.InstructorPageModule,
+            ),
+    },];
 
 @Injectable({
     providedIn: 'root',

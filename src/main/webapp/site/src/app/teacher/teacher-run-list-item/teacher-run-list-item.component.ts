@@ -21,6 +21,7 @@ export class TeacherRunListItemComponent implements OnInit {
   editLink: string = '';
   gradeAndManageLink: string = '';
   manageStudentsLink: string = '';
+  teacherAssistantLink: string = '';
   thumbStyle: SafeStyle;
   animateDuration: string = '0s';
   animateDelay: string = '0s';
@@ -39,11 +40,13 @@ export class TeacherRunListItemComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('RUN',this.run);
     this.run.project.thumbStyle = this.getThumbStyle();
     this.editLink = `${this.configService.getContextPath()}/author/authorproject.html?projectId=${this.run.project.id}`;
     if (this.run != null) {
       this.gradeAndManageLink = `${this.configService.getContextPath()}/teacher/run/manage/${this.run.id}#!/run/${this.run.id}/project/`;
       this.manageStudentsLink = `${this.configService.getContextPath()}/teacher/run/manage/${this.run.id}#!/run/${this.run.id}/manageStudents`;
+      this.teacherAssistantLink = `${this.configService.getContextPath()}/score-app/manage/ta/${this.run.id}`;
       if (this.run.isHighlighted) {
         this.animateDuration = '2s';
         this.animateDelay = '1s';
