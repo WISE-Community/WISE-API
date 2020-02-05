@@ -1,8 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest,} from '@angular/common/http';
-// import { AuthService } from '../../../auth/auth.service';
 import {Observable} from 'rxjs';
-import {AuthService} from "../../../auth/auth.service";
 
 @Injectable()
 export class HttpConfigInterceptor implements HttpInterceptor {
@@ -10,9 +8,10 @@ export class HttpConfigInterceptor implements HttpInterceptor {
         req: HttpRequest<any>,
         next: HttpHandler,
     ): Observable<HttpEvent<any>> {
-        throw new Error('Method not implemented.');
+        return null;
+        // throw new Error('Method not implemented.');
     }
-    constructor(private authService: AuthService) {}
+    constructor() {}
 
     // intercept(
     //     req: HttpRequest<any>,

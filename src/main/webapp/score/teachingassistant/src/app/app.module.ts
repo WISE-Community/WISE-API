@@ -43,6 +43,7 @@ import {RunService} from "./core/services/data/run.service";
 import {TeacherService} from "../../../../site/src/app/teacher/teacher.service";
 import {HttpErrorInterceptor} from "../../../../site/src/app/http-error.interceptor";
 import {I18n, MISSING_TRANSLATION_STRATEGY} from "@ngx-translate/i18n-polyfill";
+import {TaskService} from "./core/services/data/task.service";
 @NgModule({
     declarations: [
         AppComponent,
@@ -88,23 +89,16 @@ import {I18n, MISSING_TRANSLATION_STRATEGY} from "@ngx-translate/i18n-polyfill";
         MatMenuModule,
     ],
     providers: [
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: HttpErrorInterceptor,
-            multi: true
-        },
-        { provide: MISSING_TRANSLATION_STRATEGY, useValue: MissingTranslationStrategy.Ignore },
-
-        I18n,
         // {
         //     provide: HTTP_INTERCEPTORS,
         //     useClass: HttpConfigInterceptor,
-        //     multi: true,
+        //     multi: true
         // },
+
         AuthGuard,
-        ConfigService,
         TeacherService,
-        RunService
+        RunService,
+        TaskService
     ],
     bootstrap: [AppComponent],
     exports: [

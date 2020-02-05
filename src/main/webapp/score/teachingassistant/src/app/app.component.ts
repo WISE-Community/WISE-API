@@ -20,15 +20,15 @@ export class AppComponent {
     ) {
 
         // console.log('CONFIG',this.configService.getContextPath());
-        if(window.location.href) {
-            let split = window.location.href.split('/');
-            let runId = split[split.length-1];
-            console.log('runId: ', runId);
-            this.teacherService.getRun(Number(runId)).subscribe(runs => {
+        // if(window.location.href) {
+        //     let split = window.location.href.split('/');
+        //     let runId = split[split.length-1];
+        //     console.log('runId: ', runId);
+            this.teacherService.getRun(Number(7)).subscribe(runs => {
 
                 console.log('runs', runs);
             });
-        }
+        // }
     }
 
     ngOnInit() {
