@@ -1,4 +1,4 @@
-export class GroupStatusDetail {
+export class Task {
     constructor(
         public id?: string,
         public grougId?: string,

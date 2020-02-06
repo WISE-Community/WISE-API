@@ -18,12 +18,13 @@ const routes: Routes = [
             import('./pages/instructor-page/instructor-page.module').then(
                 m => m.InstructorPageModule,
             ),
-    }, {
-        path: 'classes', loadChildren: () =>
-            import('./pages/classes-page/classes-page.module').then(
-                m => m.ClassesPageModule,
-            ),
     },
+    // {
+    //     path: 'classes', loadChildren: () =>
+    //         import('./pages/classes-page/classes-page.module').then(
+    //             m => m.ClassesPageModule,
+    //         ),
+    // },
     {
         path: sideNavPath,
         component: NavComponent,

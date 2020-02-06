@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { RunService } from './run.service';
+import { TasksService } from './tasks.service';
 
-describe('RunService', () => {
+describe('TasksService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: RunService = TestBed.get(RunService);
+    const service: TasksService = TestBed.get(TasksService);
     expect(service).toBeTruthy();
   });
 });
