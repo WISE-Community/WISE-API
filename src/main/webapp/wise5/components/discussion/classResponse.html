@@ -33,7 +33,7 @@
           ng-click='classResponseCtrl.downvoteClicked()'>
         <md-icon>thumb_down</md-icon>
       </md-button>
-      {{ "Likes: " + (classResponseCtrl.votes + classResponseCtrl.currentVote)}}
+      {{ "Likes: " + classResponseCtrl.numVotes }}
     </div>
     <div align='right' ng-if='::(classResponseCtrl.mode === "grading" || classResponseCtrl.mode === "gradingRevision")'>
       <br />

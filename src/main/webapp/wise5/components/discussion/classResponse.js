@@ -9,8 +9,8 @@ class ClassResponseController {
     this.$translate = this.$filter('translate');
     this.urlMatcher = /((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?)/g;
     this.expanded = false;
-    this.currentVote = 0;
-    this.votes = 10;//TODO set and get from database
+    this.currentVote = 0;//TODO initialize to current vote
+    this.numVotes = 10;//TODO set and get from database
     this.isUpvoteClicked = false;
     this.isDownvoteClicked = false;
 
@@ -79,15 +79,18 @@ class ClassResponseController {
   }
 
   updateCurrentVote($event) {
+    var newVote;
     if (this.isUpvoteClicked) {
-      this.currentVote = 1;
+      newVote = 1;
     }
     else if (this.isDownvoteClicked) {
-      this.currentVote = -1;
+      newVote = -1;
     }
     else {
-      this.currentVote = 0;
+      newVote = 0;
     }
+    this.numVotes += (newVote - this.currentVote);
+    this.currentVote = newVote;
   }
 
   upvoteClicked() {
