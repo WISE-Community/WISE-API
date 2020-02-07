@@ -67,13 +67,22 @@
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Period</th>
                 <td *matCellDef="let task" mat-cell> {{task.periodId}} </td>
             </ng-container>
+            <ng-container matColumnDef="duration">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Duration</th>
+                <td *matCellDef="let task" mat-cell> {{task.duration}} </td>
+            </ng-container>
             <ng-container matColumnDef="startTime">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Start Time</th>
-                <td *matCellDef="let task" mat-cell> {{task.startTime}} </td>
+                <td *matCellDef="let task" mat-cell> {{convertTimestamp(task.startTime)}} </td>
             </ng-container>
             <ng-container matColumnDef="endTime">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">End Time</th>
-                <td *matCellDef="let task" mat-cell> {{task.endTime}} </td>
+                <td *matCellDef="let task" mat-cell> {{convertTimestamp(task.endTime)}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="timeLeft">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Time Left</th>
+                <td *matCellDef="let task" mat-cell> {{calculateTimeLeft(task)}} </td>
             </ng-container>
 
             <ng-container matColumnDef="complete">

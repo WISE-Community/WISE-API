@@ -12,6 +12,7 @@ export class Task {
         public endTime?: string,
         public periodId?: number,
         public complete?: boolean,
-        public taskRequests?: TaskRequest[]
+        public taskRequests?: TaskRequest[],
+        public duration?: number,
     ) {}
 }
