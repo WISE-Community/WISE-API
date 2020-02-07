@@ -49,33 +49,48 @@
             <!-- Position Column -->
             <ng-container matColumnDef="id">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Id</th>
-                <td *matCellDef="let run" mat-cell> {{run.id}} </td>
+                <td *matCellDef="let task" mat-cell> {{task.id}} </td>
             </ng-container>
-
             <ng-container matColumnDef="name">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Name</th>
-                <td *matCellDef="let run" mat-cell> {{run.name}} </td>
+                <td *matCellDef="let task" mat-cell> {{task.name}} </td>
             </ng-container>
-
+            <ng-container matColumnDef="workgroupId">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Workgroup Id</th>
+                <td *matCellDef="let task" mat-cell> {{task.workgroupId}} </td>
+            </ng-container>
+            <ng-container matColumnDef="workgroupName">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Workgroup Name</th>
+                <td *matCellDef="let task" mat-cell> {{task.workgroupName}} </td>
+            </ng-container>
+            <ng-container matColumnDef="periodId">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Period</th>
+                <td *matCellDef="let task" mat-cell> {{task.periodId}} </td>
+            </ng-container>
             <ng-container matColumnDef="startTime">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Start Time</th>
-                <td *matCellDef="let run" mat-cell> {{run.startTime}} </td>
+                <td *matCellDef="let task" mat-cell> {{task.startTime}} </td>
             </ng-container>
             <ng-container matColumnDef="endTime">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">End Time</th>
-                <td *matCellDef="let run" mat-cell> {{run.endTime}} </td>
+                <td *matCellDef="let task" mat-cell> {{task.endTime}} </td>
             </ng-container>
-            <ng-container matColumnDef="numStudents">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Num Students</th>
-                <td *matCellDef="let run" mat-cell> {{run.numStudents}} </td>
+
+            <ng-container matColumnDef="complete">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Complete</th>
+                <td *matCellDef="let task" mat-cell> {{task.name}} </td>
             </ng-container>
-            <ng-container matColumnDef="periods">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Periods</th>
-                <td *matCellDef="let run" mat-cell> {{run.periods}} </td>
-            </ng-container>
-            <ng-container matColumnDef="project">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Project Id:Project Name</th>
-                <td *matCellDef="let run" mat-cell> {{run.project.id}}:{{run.project.name}} </td>
+
+            <ng-container matColumnDef="requests">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Requests</th>
+                <td *matCellDef="let task" mat-cell>
+                    <div *ngIf="findTask(task.taskRequests) == 'need_approval';">
+                        <button mat-raised-button color="primary">Needs Approval</button>
+                     </div>
+                    <div *ngIf="findTask(task.taskRequests) == 'need_help';">
+                        <button mat-raised-button color="primary">Needs Help</button>.
+                    </div>
+                </td>
             </ng-container>
 
             <tr *matHeaderRowDef="tasksDisplayedColumns;" mat-header-row></tr>

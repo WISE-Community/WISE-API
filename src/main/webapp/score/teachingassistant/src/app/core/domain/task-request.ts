@@ -1,17 +1,14 @@
-import {TaskRequest} from "./task-request";
-
-export class Task {
+export class TaskRequest {
     constructor(
         public id?: string,
         public name?: string,
         public workgroupId?: number,
         public runId?: number,
-        public workgroupName?: string,
         public projectId?: number,
+        public periodId?: number,
         public startTime?: string,
         public endTime?: string,
-        public periodId?: number,
+        public status?: string,
         public complete?: boolean,
-        public taskRequests?: TaskRequest[]
     ) {}
 }

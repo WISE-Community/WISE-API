@@ -14,6 +14,11 @@ export class TasksService {
 
     getTasksByRunIdAndPeriodId(runId: number, periodId: number): Observable<Task[]> {
         const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
+        return this.http.get<Task[]>(`${this.tasksUrl}/${runId}/${periodId}`, { headers: headers });
+    }
+
+    getTasks(): Observable<Task[]> {
+        const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
         return this.http.get<Task[]>(this.tasksUrl, { headers: headers });
     }
 }

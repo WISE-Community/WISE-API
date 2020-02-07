@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {TeacherService} from "../../../../../../site/src/app/teacher/teacher.service";
-import {TaskService} from "../../core/services/data/task.service";
 
 @Component({
   selector: 'app-classes-page',
@@ -9,9 +7,8 @@ import {TaskService} from "../../core/services/data/task.service";
 })
 export class ClassesPageComponent implements OnInit {
 
-  constructor(private tasksService: TaskService) {
-      let allTasks = this.tasksService.getAllTasks();
-      console.log(allTasks);
+  constructor() {
+
   }
 
   ngOnInit() {

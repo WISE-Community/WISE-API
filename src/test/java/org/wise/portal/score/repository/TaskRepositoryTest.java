@@ -100,39 +100,39 @@ public class TaskRepositoryTest extends TestCase {
     Timestamp endTimestamp = new Timestamp(now.getTimeInMillis() + 1000);
     Task task = Task.builder().
       name("activity 1")
-      .startTime(startTimestamp)
-      .endTime(endTimestamp)
+//      .startTime(startTimestamp)
+//      .endTime(endTimestamp)
       .runId((long) 7)
       .periodId((long) 2)
       .projectId((long) 5)
       .workgroupId((long) 1)
-      .complete(false)
+//      .complete(false)
       .build();
 
     tasks.add(task);
 
     task = Task.builder().
       name("activity 1")
-      .startTime(startTimestamp)
-      .endTime(endTimestamp)
+//      .startTime(startTimestamp)
+//      .endTime(endTimestamp)
       .runId((long) 7)
       .periodId((long) 2)
       .projectId((long) 5)
       .workgroupId((long) 3)
-      .complete(false)
+//      .complete(false)
       .build();
 
     tasks.add(task);
 
     task = Task.builder().
       name("activity 2")
-      .startTime(startTimestamp)
-      .endTime(endTimestamp)
+//      .startTime(startTimestamp)
+//      .endTime(endTimestamp)
       .runId((long) 6)
       .periodId((long) 3)
       .projectId((long) 5)
       .workgroupId((long) 2)
-      .complete(true)
+//      .complete(true)
       .build();
 
     tasks.add(task);
