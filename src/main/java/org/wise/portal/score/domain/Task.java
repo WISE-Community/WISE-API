@@ -36,6 +36,7 @@ public class Task {
   private String workgroupName;
   private Long projectId;
   private Long periodId;
+  private Long duration;
   private Timestamp startTime;
   private Timestamp endTime;
   private Boolean complete;
@@ -57,6 +58,7 @@ public class Task {
       jsonObject.put("startTime", getStartTime());
       jsonObject.put("endTime", getEndTime());
       jsonObject.put("complete", getComplete());
+      jsonObject.put("duration", getDuration());
       jsonObject.put("taskRequests", getTaskRequests());
     } catch (JSONException e) {
       e.printStackTrace();
