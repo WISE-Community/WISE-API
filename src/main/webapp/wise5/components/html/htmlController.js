@@ -67,6 +67,10 @@ class HTMLController extends ComponentController {
     this.$rootScope.$broadcast('doneRenderingComponent', { nodeId: this.nodeId, componentId: this.componentId });
   }
 
+  performTeachingAssistantRequest(type) {
+    console.log('TYPE, NODID, WG_ID, RUNID, MODE, PERIOD ', type, this.$stateParams.nodeId, this.workgroupId, this.$stateParams.runId,this.mode, this.ConfigService.getPeriodId());
+  }
+
   /**
    * Get the image object representation of the student data
    * @returns an image object
