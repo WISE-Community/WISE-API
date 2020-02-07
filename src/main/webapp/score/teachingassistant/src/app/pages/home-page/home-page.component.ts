@@ -20,7 +20,7 @@ export class HomePageComponent implements OnInit {
     runDataSource = new MatTableDataSource<Run>();
     tasksDataSource = new MatTableDataSource<Task>();
     runDisplayedColumns = ['id','name', 'startTime', 'endTime', 'numStudents', 'periods'];
-    tasksDisplayedColumns = ['id','workgroupId', 'workgroupName', 'periodId','duration', 'startTime', 'endTime', 'timeLeft','complete','requests'];
+    tasksDisplayedColumns = ['id','name','workgroupId', 'workgroupName', 'periodId','duration', 'startTime', 'endTime', 'timeLeft','complete','requests'];
     periodTitle: string;
     periods: string[];
 
