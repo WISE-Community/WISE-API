@@ -47,6 +47,19 @@ public class Task {
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<TaskRequest> taskRequests = new ArrayList<>();
 
+  public void removeTaskRequest(TaskRequest taskRequest) {
+    this.taskRequests.removeIf(u -> u.getId().equals(taskRequest.getId()));
+  }
+
+  public void addTaskRequest(TaskRequest taskRequest) {
+    if (taskRequest != null) {
+      if (this.taskRequests == null) {
+        this.taskRequests = new ArrayList<>();
+      }
+      this.taskRequests.add(taskRequest);
+    }
+  }
+
   public JSONObject toJSONObject() {
     JSONObject jsonObject = null;
     try {

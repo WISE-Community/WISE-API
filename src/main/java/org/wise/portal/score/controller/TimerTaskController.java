@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.wise.portal.score.domain.Task;
+import org.wise.portal.score.domain.TaskRequest;
 import org.wise.portal.score.repository.TaskRepository;
 
 import javax.servlet.http.HttpServletRequest;
@@ -174,4 +175,25 @@ public class TimerTaskController {
 
     return null;
   }
+
+  @PostMapping("/task/taskrequest")
+  protected String createTaskRequest(
+    @RequestParam(value = "taskId") Long taskId,
+    @RequestParam(value = "workgroupId") Long workgroupId,
+    @RequestParam(value = "requestType") String requestType
+   ) throws Exception {
+
+    if(taskId != null && workgroupId != null & requestType != null) {
+      Optional<Task> byId = this.taskRepository.findById(taskId);
+      byId.ifPresent(task -> {
+        TaskRequest taskRequest = TaskRequest.builder().workgroupId(workgroupId).name(requestType).build();
+        task.addTaskRequest(taskRequest);
+        this.taskRepository.save(task);
+      });
+    }
+
+    return null;
+  }
+
+
 }
