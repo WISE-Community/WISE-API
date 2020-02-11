@@ -92,7 +92,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/score/**/**").permitAll()
         .antMatchers("/teachingassistant/**/**").permitAll()
-        .antMatchers("/api/**").permitAll()
+        .antMatchers("/api/**/**").permitAll()
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());

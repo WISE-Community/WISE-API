@@ -7,6 +7,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [HomePageComponent],
@@ -16,7 +17,8 @@ import {MatButtonModule} from "@angular/material/button";
         MatTableModule,
         MatButtonModule,
         MatFormFieldModule,
-        MatSelectModule
+        MatSelectModule,
+        MatPaginatorModule
     ]
 })
 export class HomePageModule { }

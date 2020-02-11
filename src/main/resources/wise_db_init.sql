@@ -777,10 +777,13 @@ CREATE TABLE tasks
     runId         bigint(20)   DEFAULT NULL,
     workgroupId   bigint(20)   DEFAULT NULL,
     projectId     bigint(20)   DEFAULT NULL,
+    periodName  varchar(255) DEFAULT NULL,
     startTime     datetime     DEFAULT NULL,
     endTime       datetime     DEFAULT NULL,
     complete      tinyint(1)   DEFAULT NULL,
     workgroupName varchar(255) DEFAULT NULL,
+    activityId varchar(255) DEFAULT NULL,
+    started tinyint(1) DEFAULT NULL,
     duration bigint(20) DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB

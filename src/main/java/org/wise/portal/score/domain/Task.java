@@ -33,13 +33,15 @@ public class Task {
   private String name;
   private Long runId;
   private Long workgroupId;
-  private String workgroupName;
+  private String activityId;
   private Long projectId;
   private Long periodId;
-  private Long duration;
+  private String periodName;
+  private Integer duration;
   private Timestamp startTime;
   private Timestamp endTime;
   private Boolean complete;
+  private Boolean started;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -52,12 +54,15 @@ public class Task {
       jsonObject.put("id", getId());
       jsonObject.put("runId", getRunId());
       jsonObject.put("periodId", getPeriodId());
+      jsonObject.put("periodName", getPeriodName());
       jsonObject.put("workgroupId", getWorkgroupId());
-      jsonObject.put("workgroupName", getWorkgroupName());
+      jsonObject.put("activityName", getName());
+      jsonObject.put("activityId", getActivityId());
       jsonObject.put("projectId", getProjectId());
       jsonObject.put("startTime", getStartTime());
       jsonObject.put("endTime", getEndTime());
       jsonObject.put("complete", getComplete());
+      jsonObject.put("started", getStartTime());
       jsonObject.put("duration", getDuration());
       jsonObject.put("taskRequests", getTaskRequests());
     } catch (JSONException e) {

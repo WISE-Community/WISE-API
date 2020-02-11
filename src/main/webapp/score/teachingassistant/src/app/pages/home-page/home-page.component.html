@@ -1,32 +1,32 @@
 <div class="tab-container" fxLayout="column" fxLayoutAlign="start stretch">
     <h2>Run Information</h2>
     <div class="mat-elevation-z1">
-        <table [dataSource]="runDataSource" mat-table matSort>
+        <table [dataSource]="runDataSource" mat-table>
             <!-- Position Column -->
             <ng-container matColumnDef="id">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Id</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Id</th>
                 <td *matCellDef="let run" mat-cell> {{run.id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="name">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Name</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Name</th>
                 <td *matCellDef="let run" mat-cell> {{run.name}} </td>
             </ng-container>
 
             <ng-container matColumnDef="startTime">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Start Time</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Start Time</th>
                 <td *matCellDef="let run" mat-cell> {{convertTimestamp(run.startTime)}} </td>
             </ng-container>
             <ng-container matColumnDef="endTime">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">End Time</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">End Time</th>
                 <td *matCellDef="let run" mat-cell> {{run.endTime}} </td>
             </ng-container>
             <ng-container matColumnDef="numStudents">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Num Students</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Num Students</th>
                 <td *matCellDef="let run" mat-cell> {{run.numStudents}} </td>
             </ng-container>
             <ng-container matColumnDef="periods">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Periods</th>
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Periods</th>
                 <td *matCellDef="let run" mat-cell> {{run.periods}} </td>
             </ng-container>
 
@@ -43,17 +43,17 @@
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <h2>Task Information {{periodTitle}}</h2>
+    <h2>Task Information {{selectionTitle}}</h2>
     <div class="mat-elevation-z1">
         <table [dataSource]="tasksDataSource" mat-table matSort>
             <!-- Position Column -->
-            <ng-container matColumnDef="id">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Id</th>
-                <td *matCellDef="let task" mat-cell> {{task.id}} </td>
-            </ng-container>
             <ng-container matColumnDef="name">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Name</th>
                 <td *matCellDef="let task" mat-cell> {{task.name}} </td>
+            </ng-container>
+            <ng-container matColumnDef="id">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Id</th>
+                <td *matCellDef="let task" mat-cell> {{task.id}} </td>
             </ng-container>
             <ng-container matColumnDef="workgroupId">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Workgroup Id</th>
@@ -65,7 +65,7 @@
             </ng-container>
             <ng-container matColumnDef="periodId">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Period</th>
-                <td *matCellDef="let task" mat-cell> {{task.periodId}} </td>
+                <td *matCellDef="let task" mat-cell> {{task.periodName}} </td>
             </ng-container>
             <ng-container matColumnDef="duration">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Duration</th>
@@ -99,11 +99,19 @@
                     <div *ngIf="findTask(task.taskRequests) == 'need_help';">
                         <button mat-raised-button color="primary">Needs Help</button>.
                     </div>
+                    <div *ngIf="findTask(task.taskRequests) == 'none';">
+                        none
+                    </div>
                 </td>
             </ng-container>
 
             <tr *matHeaderRowDef="tasksDisplayedColumns;" mat-header-row></tr>
             <tr *matRowDef="let row; columns: tasksDisplayedColumns;" mat-row></tr>
+
+            <mat-paginator
+                [pageSizeOptions]="[10,20,40]"
+                [pageSize]="10" showFirstLastButtons></mat-paginator>
+
         </table>
     </div>
 </div>

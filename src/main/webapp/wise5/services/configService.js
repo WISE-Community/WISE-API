@@ -172,6 +172,17 @@ class ConfigService {
   }
 
   /**
+   * Returns the period name of the logged-in user.
+   */
+  getPeriodName() {
+    const myUserInfo = this.getMyUserInfo();
+    if (myUserInfo != null) {
+      return myUserInfo.periodName;
+    }
+    return null;
+  }
+
+  /**
    * Get the periods
    * @returns an array of period objects
    */
