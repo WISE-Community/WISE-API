@@ -1,0 +1,107 @@
+$main-background: #f5f5f5;
+$padding: 15px;
+$flex-shrink: 10px;
+$flex-grow: 10px;
+$small-column: 10px;
+$medium-column: 20px;
+$large-column: 40px;
+
+.basic-container {
+    display: flex;
+    flex-direction: column;
+    /*max-height: 500px;*/
+    /*min-width: 300px;*/
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+.tab-container {
+    background: #f5f5f5;
+    //height: 91vh;
+    //margin: 10px 10px 20px 10px;
+    padding: 10px 10px 20px 10px;
+}
+
+table {
+    width: 100%;
+}
+
+.mat-form-field {
+    font-size: 14px;
+    width: 100%;
+}
+
+h3 {
+    padding: 0;
+    margin: 0;
+}
+
+.mat-header-cell {
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+.mat-cell {
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+
+.mat-column-id {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+.mat-column-name {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $large-column;
+    text-align: center;
+}
+.mat-column-startTime {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+.mat-column-endTime {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+.mat-column-numStudents {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+.mat-column-periods {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+.mat-column-project {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}

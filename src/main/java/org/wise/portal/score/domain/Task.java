@@ -42,6 +42,7 @@ public class Task {
   private Timestamp endTime;
   private Boolean complete;
   private Boolean started;
+  private Boolean active;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -75,6 +76,7 @@ public class Task {
       jsonObject.put("startTime", getStartTime());
       jsonObject.put("endTime", getEndTime());
       jsonObject.put("complete", getComplete());
+      jsonObject.put("active", getComplete());
       jsonObject.put("started", getStartTime());
       jsonObject.put("duration", getDuration());
       jsonObject.put("taskRequests", getTaskRequests());

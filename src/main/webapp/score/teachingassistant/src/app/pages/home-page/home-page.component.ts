@@ -18,96 +18,13 @@ import {MatPaginator} from "@angular/material/paginator";
 })
 export class HomePageComponent implements OnInit {
 
-    runDataSource = new MatTableDataSource<Run>();
-    tasksDataSource = new MatTableDataSource<Task>();
-    runDisplayedColumns = ['id','name', 'startTime', 'endTime', 'numStudents', 'periods'];
-    tasksDisplayedColumns = ['id','name','workgroupId', 'workgroupName', 'periodId','duration', 'startTime', 'endTime', 'timeLeft','complete','requests'];
-    periods: string[];
-
-    @ViewChild(MatSort, { static: true }) sortTasks: MatSort;
-    @ViewChild(MatSort, { static: true }) sortRuns: MatSort;
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-
-    private selectionTitle: string;
-    private periodName: string;
-    private runId: number;
-
-    constructor(private classesStore: ClassesStore,
-                private teacherService: TeacherService,
-                private tasksService: TasksService) {
+    constructor() {
     }
 
     ngOnInit() {
-        this.init();
     }
 
     init() {
-        this.tasksDataSource.paginator = this.paginator;
-        this.tasksDataSource.sort = this.sortTasks;
-        this.runDataSource.sort = this.sortRuns;
-        this.refreshRunInformation();
-        this.refreshTasks();
     }
 
-    resetAttributes() {
-        this.tasksDataSource.paginator = this.paginator;
-        this.runDataSource.sort = this.sortRuns;
-        this.tasksDataSource.sort = this.sortTasks;
-    }
-
-    refreshRunInformation() {
-        this.runId = this.classesStore.runId;
-        this.teacherService.getRun(this.runId)
-            .subscribe(
-                run => {
-                    this.runDataSource.data.push(run);
-                    this.periods = run.periods;
-                    this.resetAttributes();
-                },
-                err => console.log("Error retrieving run")
-            );
-
-    }
-    refreshTasks() {
-        if(this.periodName) {
-            this.tasksService.getTasksByRunIdAndPeriodName(this.runId, this.periodName).subscribe(tasks => {
-                this.tasksDataSource.data =[];
-                for (let i = 0; i < tasks.length; i++) {
-                    let task: Task = tasks[i];
-                    this.tasksDataSource.data.filter(function (element) {
-                        return element.id != task.id;
-                    });
-                    this.tasksDataSource.data.push(task);
-                }
-                this.resetAttributes();
-            });
-        }
-    }
-
-    convertTimestamp(timestamp: string) {
-        if(timestamp == undefined)
-            return ' ';
-        return  moment(timestamp).format('MM/DD/YYYY HH:mm')
-    }
-
-    periodSelectionChange($event: MatSelectChange) {
-        this.periodName = $event.value;
-        this.selectionTitle = `for Period ${this.periodName}`;
-        this.refreshTasks();
-
-    }
-
-    findTask(taskRequests: TaskRequest[]): string {
-        for (let i = 0; i < taskRequests.length; i++) {
-            let taskRequest: TaskRequest = taskRequests[i];
-            if (taskRequest.complete == false) {
-                return taskRequest.status;
-            }
-        }
-        return 'none';
-    }
-
-    calculateTimeLeft(task: Task) {
-
-    }
 }

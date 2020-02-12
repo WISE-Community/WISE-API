@@ -60,7 +60,7 @@ export function initialize(configService: ConfigService, userService: UserServic
     declarations: [
         AppComponent,
         DashboardComponent,
-        MainNavComponent
+        MainNavComponent,
     ],
     imports: [
         BrowserModule,

@@ -79,11 +79,13 @@ class NodeController {
         this.NodeService.evaluateTransitionLogic();
       }
       console.log('ENTERED NODE SEND MESSAGE TO AGENT TO START STUDENTS TIMER ---------->');
+
       // const runId = this.ConfigService.getRunId();
       // const periodId = this.ConfigService.getPeriodId();
       // const workgroupId = this.ConfigService.getWorkgroupId();
       // const activityId = this.nodeId;
       // this.taskService.startTaskTimer(this.workgroupId, this.nodeId, runId);
+      // set the previous task as inactive and the current activity active
 
 
       // set save message with last save/submission
