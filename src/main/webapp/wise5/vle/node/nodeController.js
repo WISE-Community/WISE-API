@@ -13,6 +13,7 @@ class NodeController {
       NotebookService,
       ProjectService,
       StudentDataService,
+      TaskService,
       UtilService) {
     this.$compile = $compile;
     this.$filter = $filter;
@@ -29,6 +30,7 @@ class NodeController {
     this.StudentDataService = StudentDataService;
     this.UtilService = UtilService;
     this.$translate = this.$filter('translate');
+    this.taskService = TaskService;
 
     // the auto save interval in milliseconds
     this.autoSaveInterval = 60000;
@@ -76,6 +78,13 @@ class NodeController {
       if (this.NodeService.currentNodeHasTransitionLogic() && this.NodeService.evaluateTransitionLogicOn('enterNode')) {
         this.NodeService.evaluateTransitionLogic();
       }
+      console.log('ENTERED NODE SEND MESSAGE TO AGENT TO START STUDENTS TIMER ---------->');
+      // const runId = this.ConfigService.getRunId();
+      // const periodId = this.ConfigService.getPeriodId();
+      // const workgroupId = this.ConfigService.getWorkgroupId();
+      // const activityId = this.nodeId;
+      // this.taskService.startTaskTimer(this.workgroupId, this.nodeId, runId);
+
 
       // set save message with last save/submission
       // for now, we'll use the latest component state (since we don't currently keep track of node-level saves)

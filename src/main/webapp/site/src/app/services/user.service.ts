@@ -11,7 +11,7 @@ import { Student } from "../domain/student";
 @Injectable()
 export class UserService {
 
-  private userUrl = 'api/user/info';
+  private userUrl = '/api/user/info';
   private user$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
   private checkGoogleUserExistsUrl = 'api/user/check-google-user-exists';
   private checkGoogleUserMatchesUrl = 'api/user/check-google-user-matches';

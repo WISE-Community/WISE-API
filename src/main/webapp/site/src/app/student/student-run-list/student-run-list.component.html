@@ -1,6 +1,6 @@
 <div class="student-run-list">
   <div class="notice" *ngIf="!runs.length && loaded">
-    <p i18n>Hey there! Looks like you don't have any WISE units yet.</p>
+    <p i18n>Hey there! Looks like you don't have any SCORE units yet.</p>
     <p i18n>Ask your teacher for an <b>Access Code</b> and then tap the <b>Add Unit</b> button to get started.</p>
   </div>
   <div class="content-block" *ngIf="runs.length">
@@ -17,7 +17,7 @@
     <div id="unitCount" *ngIf="loaded" class="notice">
       <p>
         <ng-container *ngIf="search" i18n>Units found: {{ filteredRuns.length }}</ng-container>
-        <ng-container *ngIf="!search" i18n>My WISE units: {{ filteredRuns.length }}</ng-container>
+        <ng-container *ngIf="!search" i18n>My SCORE units: {{ filteredRuns.length }}</ng-container>
         <span class="mat-caption" *ngIf="filteredRuns.length">
           (<ng-container *ngIf="scheduledTotal()"><span i18n>{{ scheduledTotal() }} scheduled</span>, </ng-container>
           <ng-container><span i18n>{{ activeTotal() }} active</span>, </ng-container>

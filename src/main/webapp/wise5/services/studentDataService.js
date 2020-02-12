@@ -2,16 +2,16 @@
 
 class StudentDataService {
   constructor(
-      $filter,
-      $http,
-      $injector,
-      $q,
-      $rootScope,
-      AnnotationService,
-      ConfigService,
-      PlanningService,
-      ProjectService,
-      UtilService) {
+    $filter,
+    $http,
+    $injector,
+    $q,
+    $rootScope,
+    AnnotationService,
+    ConfigService,
+    PlanningService,
+    ProjectService,
+    UtilService) {
     this.$filter = $filter;
     this.$http = $http;
     this.$injector = $injector;
@@ -219,7 +219,7 @@ class StudentDataService {
       const runId = this.ConfigService.getConfigParam('runId');
 
       const params = {
-        runId:runId
+        runId: runId
       };
 
       const httpParams = {};
@@ -283,7 +283,7 @@ class StudentDataService {
       }
 
       // sort by descending depth order (need to calculate completion for lowest level groups first)
-      groups.sort(function(a, b) {
+      groups.sort(function (a, b) {
         return b.depth - a.depth;
       });
 
@@ -402,7 +402,7 @@ class StudentDataService {
            * the node status just changed from false to true so we
            * will fire an event
            */
-          this.$rootScope.$broadcast('nodeCompleted', { nodeId: nodeId });
+          this.$rootScope.$broadcast('nodeCompleted', {nodeId: nodeId});
         }
       }
 
@@ -973,7 +973,7 @@ class StudentDataService {
     const tableService = this.$injector.get('TableService');
     const componentState = this.getLatestComponentStateByNodeIdAndComponentId(nodeId, componentId);
     return componentState != null &&
-        tableService.hasRequiredNumberOfFilledRows(componentState, requiredNumberOfFilledRows,
+      tableService.hasRequiredNumberOfFilledRows(componentState, requiredNumberOfFilledRows,
         tableHasHeaderRow, requireAllCellsInARowToBeFilled);
   }
 
@@ -1419,6 +1419,65 @@ class StudentDataService {
     }
   };
 
+  initializeStudentTasks() {
+    if (!this.ConfigService.isPreview() && this.ConfigService.isRunActive()) {
+      const studentStatusURL = this.ConfigService.getStudentStatusURL();
+      if (studentStatusURL != null) {
+        const runId = this.ConfigService.getRunId();
+        const periodId = this.ConfigService.getPeriodId();
+        const periodName = this.ConfigService.getPeriodName();
+        const projectId = this.ConfigService.getProjectId();
+        const workgroupId = this.ConfigService.getWorkgroupId();
+        let nodes = this.ProjectService.getNodes();
+
+        console.log("PERIOD ID PROJECT", periodId, periodName);
+
+        //cycle through all the nodes and check if they have tasks
+
+        const tasksObj = {};
+        tasksObj.nodes = [];
+
+
+        for (let node of nodes) {
+          if (!this.ProjectService.isGroupNode(node.id)) {
+            // console.log('NODE ----', node);
+            // if(node.hasTasks)
+            const nodeJSON = {};
+            nodeJSON.id = node.id;
+            nodeJSON.title = node.title;
+            nodeJSON.duration = 1200;
+            tasksObj.nodes.push(nodeJSON);
+            //}
+          }
+        }
+
+        const nodesJSON = angular.toJson(tasksObj);
+        const taskParams = {};
+        taskParams.runId = runId;
+        taskParams.periodId = periodId;
+        taskParams.periodName = periodName;
+        taskParams.projectId = projectId;
+        taskParams.workgroupId = workgroupId;
+
+        taskParams.tasks = nodesJSON;
+
+        const httpParams = {};
+        httpParams.method = 'POST';
+        httpParams.url = '/api/task';
+        httpParams.headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+        httpParams.data = $.param(taskParams);
+
+        this.$http(httpParams).then(
+          result => {
+            console.log('WORKED');
+          }, result => {
+            console.log('FAILED NEED TO SEND ERROR');
+          }
+        );
+      }
+    }
+  }
+
   /**
    * POSTs student status to server
    * Returns a promise of the POST request
@@ -1557,8 +1616,8 @@ class StudentDataService {
     for (let c = componentStates.length - 1; c >= 0; c--) {
       const componentState = componentStates[c];
       if (componentState.nodeId === nodeId &&
-          componentState.componentId === componentId &&
-          componentState.isSubmit) {
+        componentState.componentId === componentId &&
+        componentState.isSubmit) {
         return componentState;
       }
     }
@@ -1645,7 +1704,7 @@ class StudentDataService {
               const componentStateNodeId = componentState.nodeId;
               const componentStateComponentId = componentState.componentId;
               if (nodeId == componentStateNodeId &&
-                  componentId == componentStateComponentId) {
+                componentId == componentStateComponentId) {
                 componentStatesByNodeIdAndComponentId.push(componentState);
               }
             }
@@ -2007,12 +2066,12 @@ class StudentDataService {
     const previousCurrentNode = this.currentNode;
     if (previousCurrentNode !== node) {
       if (previousCurrentNode &&
-          !this.ProjectService.isGroupNode(previousCurrentNode.id)) {
+        !this.ProjectService.isGroupNode(previousCurrentNode.id)) {
         this.previousStep = previousCurrentNode;
       }
       this.currentNode = node;
       this.$rootScope.$broadcast('currentNodeChanged',
-          {previousNode: previousCurrentNode, currentNode: this.currentNode});
+        {previousNode: previousCurrentNode, currentNode: this.currentNode});
     }
   };
 
@@ -2053,7 +2112,7 @@ class StudentDataService {
    * can be overriden in the second argument.
    * Source: http://www.bennadel.com/blog/1504-ask-ben-parsing-csv-strings-with-javascript-exec-regular-expression-command.htm
    */
-  CSVToArray( strData, strDelimiter ) {
+  CSVToArray(strData, strDelimiter) {
     // Check to see if the delimiter is defined. If not,
     // then default to comma.
     strDelimiter = (strDelimiter || ",");
@@ -2084,10 +2143,10 @@ class StudentDataService {
 
     // Keep looping over the regular expression matches
     // until we can no longer find a match.
-    while (arrMatches = objPattern.exec( strData )) {
+    while (arrMatches = objPattern.exec(strData)) {
 
       // Get the delimiter that was found.
-      const strMatchedDelimiter = arrMatches[ 1 ];
+      const strMatchedDelimiter = arrMatches[1];
 
       // Check to see if the given delimiter has a length
       // (is not the start of string) and if it matches
@@ -2096,28 +2155,28 @@ class StudentDataService {
       if (
         strMatchedDelimiter.length &&
         (strMatchedDelimiter != strDelimiter)
-      ){
+      ) {
 
         // Since we have reached a new row of data,
         // add an empty row to our data array.
-        arrData.push( [] );
+        arrData.push([]);
       }
 
       // Now that we have our delimiter out of the way,
       // let's check to see which kind of value we
       // captured (quoted or unquoted).
-      if (arrMatches[ 2 ]){
+      if (arrMatches[2]) {
 
         // We found a quoted value. When we capture
         // this value, unescape any double quotes.
-        const strMatchedValue = arrMatches[ 2 ].replace(
-          new RegExp( "\"\"", "g" ),
+        const strMatchedValue = arrMatches[2].replace(
+          new RegExp("\"\"", "g"),
           "\""
         );
 
       } else {
         // We found a non-quoted value.
-        const strMatchedValue = arrMatches[ 3 ];
+        const strMatchedValue = arrMatches[3];
       }
 
       // Now that we have our value string, let's add
@@ -2127,10 +2186,10 @@ class StudentDataService {
       if (!isNaN(floatVal)) {
         finalValue = floatVal;
       }
-      arrData[ arrData.length - 1 ].push( finalValue );
+      arrData[arrData.length - 1].push(finalValue);
     }
     // Return the parsed data.
-    return( arrData );
+    return (arrData);
   };
 
   /**
@@ -2252,7 +2311,7 @@ class StudentDataService {
               if (component != null) {
                 const componentId = component.id;
                 let componentState =
-                    this.getLatestComponentStateByNodeIdAndComponentId(nodeId, componentId);
+                  this.getLatestComponentStateByNodeIdAndComponentId(nodeId, componentId);
                 if (componentState == null) {
                   /*
                    * there is no component state for the component so we will
@@ -2371,9 +2430,9 @@ class StudentDataService {
     if (componentStates != null) {
       for (let tempComponentState of componentStates) {
         if (tempComponentState != null &&
-            tempComponentState.serverSaveTime > timestamp &&
-            tempComponentState.nodeId === nodeId &&
-            tempComponentState.componentId === componentId) {
+          tempComponentState.serverSaveTime > timestamp &&
+          tempComponentState.nodeId === nodeId &&
+          tempComponentState.componentId === componentId) {
           return tempComponentState;
         }
       }
@@ -2392,10 +2451,10 @@ class StudentDataService {
     if (componentStates != null) {
       for (let tempComponentState of componentStates) {
         if (tempComponentState != null &&
-            tempComponentState.serverSaveTime > timestamp &&
-            tempComponentState.nodeId === nodeId &&
-            tempComponentState.componentId === componentId &&
-            tempComponentState.isSubmit) {
+          tempComponentState.serverSaveTime > timestamp &&
+          tempComponentState.nodeId === nodeId &&
+          tempComponentState.componentId === componentId &&
+          tempComponentState.isSubmit) {
           return tempComponentState;
         }
       }
@@ -2411,9 +2470,9 @@ class StudentDataService {
     if (events != null) {
       for (let tempEvent of events) {
         if (tempEvent != null &&
-            tempEvent.serverSaveTime > timestamp &&
-            tempEvent.nodeId === nodeId &&
-            tempEvent.event === 'nodeEntered') {
+          tempEvent.serverSaveTime > timestamp &&
+          tempEvent.nodeId === nodeId &&
+          tempEvent.event === 'nodeEntered') {
           return tempEvent;
         }
       }

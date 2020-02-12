@@ -24,7 +24,7 @@
 package org.wise.portal.domain.admin;
 
 /**
- * Query-able fields of a WISE Teacher User
+ * Query-able fields of a SCORE Teacher User
  * @author Patrick Lawler
  */
 public enum StudentFields {

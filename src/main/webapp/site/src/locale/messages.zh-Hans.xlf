@@ -422,7 +422,7 @@
         <target state="translated">联通想法</target>
       </trans-unit>
       <trans-unit id="6ce56d323684d1af10f44ca44809177cef1412eb" datatype="html">
-        <source>Integrated science learning and teaching with technology</source>
+        <source>Designing active learning curricula for learning communities</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/home/home.component.html</context>
           <context context-type="linenumber">20</context>
@@ -450,7 +450,7 @@
             </target>
       </trans-unit>
       <trans-unit id="ea65faeacfcd369b74fd184e411eeb5d36b59c12" datatype="html">
-        <source>WISE project on laptop</source>
+        <source>SCORE project on laptop</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/home/home.component.html</context>
           <context context-type="linenumber">46</context>
@@ -466,7 +466,7 @@
         <target state="translated">交互式科学模型以及实践活动、个性化指导和丰富的嵌入式评估</target>
       </trans-unit>
       <trans-unit id="82fc5ad6af1a149044ba97ac4d4e567312c6ce9f" datatype="html">
-        <source>WISE students and teacher</source>
+        <source>SCORE students and teacher</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/home/home.component.html</context>
           <context context-type="linenumber">53</context>
@@ -629,7 +629,7 @@
         <target state="translated">自1997年以来，WISE已经为超过20,000名教师、研究人员和课程设计师以及全球20多万名K-12学生提供服务。</target>
       </trans-unit>
       <trans-unit id="53d2c0a09cfd0d1836aa6306785412e894b571d5" datatype="html">
-        <source>WISE students</source>
+        <source>SCORE students</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">25</context>
@@ -637,7 +637,7 @@
         <target state="translated">WISE学生</target>
       </trans-unit>
       <trans-unit id="3c7d295a97553e2107807061d481f221cee12704" datatype="html">
-        <source>WISE students collaborate to:</source>
+        <source>SCORE students collaborate to:</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">39</context>
@@ -736,7 +736,7 @@
         <target state="translated">WISE提供越来越多的课程单元，解决学生在科学学习中遇到的关键性概念难题。课程单元经过精心设计，以补充教师的核心课程范围和顺序，并通过基于课堂的研究进行迭代完善。</target>
       </trans-unit>
       <trans-unit id="09ce791db454a957cfc6658b0c198962ea7cac6c" datatype="html">
-        <source>WISE units support the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>Next Generation Science Standards (NGSS)<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, encourage <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>3-dimensional learning<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, and can be adapted to address local standards.</source>
+        <source>SCORE units support the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>Next Generation Science Standards (NGSS)<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, encourage <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>3-dimensional learning<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>, and can be adapted to address local standards.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">85</context>
@@ -760,7 +760,7 @@
         <target state="translated">WISE太阳能烤箱单元</target>
       </trans-unit>
       <trans-unit id="13e72d05735ba2963b1725426c59ba2f513bd709" datatype="html">
-        <source>WISE students building solar oven</source>
+        <source>SCORE students building solar oven</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">93</context>
@@ -816,7 +816,7 @@
         <target state="translated">WISE提供简单的用户界面、认知提示、嵌入式评估和在线讨论，以及绘图、注释、概念映射、图表和图形等工具。</target>
       </trans-unit>
       <trans-unit id="e8c9262fe52f9282929800e851aee426dfd6ae48" datatype="html">
-        <source>Students conduct investigations using interactive simulations and models. A notebook tool helps students collect ideas and organize evidence into research and design reports. WISE units promote self-monitoring through collaborative reflection activities as well as automated, personalized guidance and adaptive instruction.</source>
+        <source>Students conduct investigations using interactive simulations and models. A notebook tool helps students collect ideas and organize evidence into research and design reports. SCORE units promote self-monitoring through collaborative reflection activities as well as automated, personalized guidance and adaptive instruction.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">116</context>
@@ -851,7 +851,7 @@
         <target state="translated">WISE平台帮助教师更高效地处理一些必要但耗时的任务，这样教师可以自由地专注于他们不可或缺的工作：为个别学生提供高质量的教学。</target>
       </trans-unit>
       <trans-unit id="794ce33c32874cf59374bff4939512bbc71585d2" datatype="html">
-        <source>WISE teacher progress</source>
+        <source>SCORE teacher progress</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">131</context>
@@ -859,7 +859,7 @@
         <target state="translated">WISE教师进展</target>
       </trans-unit>
       <trans-unit id="334e3ef2374254d76dfe1f56599cf1d0598372e8" datatype="html">
-        <source>WISE teacher grading</source>
+        <source>SCORE teacher grading</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/features/features.component.html</context>
           <context context-type="linenumber">132</context>
@@ -961,7 +961,7 @@
         </alt-trans>
       </trans-unit>
       <trans-unit id="70ff1cc8f851490c4cb6237ec6991ef6a644d4e4" datatype="html">
-        <source>WISE student and teacher</source>
+        <source>SCORE student and teacher</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/about/about.component.html</context>
           <context context-type="linenumber">38</context>
@@ -969,7 +969,7 @@
         <target state="translated">WISE学生和教师</target>
       </trans-unit>
       <trans-unit id="2b4a83d9816a80170d470f0cbe714553f33450ae" datatype="html">
-        <source>WISE teacher workshop design</source>
+        <source>SCORE teacher workshop design</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/about/about.component.html</context>
           <context context-type="linenumber">39</context>
@@ -1001,7 +1001,7 @@
         <target state="translated">我们通过与教师，管理人员，技术设计师和教育研究人员的合作，完善了一套指导所有WISE课程材料和工具设计的原则。</target>
       </trans-unit>
       <trans-unit id="93d7310ae0cdb74d49573a47634d9a7b1c771462" datatype="html">
-        <source>This means that when implementing WISE units, you can be assured that what you're using is grown from a solid foundation, advised by real teachers' experiences, and tested in classrooms with real students.</source>
+        <source>This means that when implementing SCORE units, you can be assured that what you're using is grown from a solid foundation, advised by real teachers' experiences, and tested in classrooms with real students.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/about/about.component.html</context>
           <context context-type="linenumber">47</context>
@@ -1057,7 +1057,7 @@
         <target state="translated">使科学有意义</target>
       </trans-unit>
       <trans-unit id="d1d5c7485a7278e9df8a76c3481541ef3d231792" datatype="html">
-        <source>WISE units introduce students to complex science concepts through personally and socially relevant topics. Each unit uses a classroom-tested pattern of instruction that values the ideas students bring with them, helps them connect new information to their personal experiences, and integrates their ideas into a coherent understanding of science.</source>
+        <source>SCORE units introduce students to complex science concepts through personally and socially relevant topics. Each unit uses a classroom-tested pattern of instruction that values the ideas students bring with them, helps them connect new information to their personal experiences, and integrates their ideas into a coherent understanding of science.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/about/about.component.html</context>
           <context context-type="linenumber">109</context>
@@ -1129,7 +1129,7 @@
         <target state="translated">WISE研究人员</target>
       </trans-unit>
       <trans-unit id="6cc03c819c2923d3c2dd2a236ee0040ddac13c4b" datatype="html">
-        <source>WISE teachers and researcher</source>
+        <source>SCORE teachers and researcher</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/about/about.component.html</context>
           <context context-type="linenumber">143</context>
@@ -1329,7 +1329,7 @@
         <target state="translated">您需要通过创建用户帐户进行注册，以使用WISE的某些功能。 是否创建帐户是可选的，但如果没有帐户，您将无法创建或发布课程项目，也不能使用WISE课程来捕获、存储、检阅或评估学生的学习情况。</target>
       </trans-unit>
       <trans-unit id="75c166e888318c9399a404e476a0637d5662cac3" datatype="html">
-        <source>When creating a WISE teacher account, we ask you to provide your first and last name, email address, password, city, state, country, school name, school level, and school subjects. To create a WISE student account, we ask you to provide your first and last name, birth day and month, gender, and password, and choose a security question and answer.</source>
+        <source>When creating a SCORE teacher account, we ask you to provide your first and last name, email address, password, city, state, country, school name, school level, and school subjects. To create a SCORE student account, we ask you to provide your first and last name, birth day and month, gender, and password, and choose a security question and answer.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">35</context>
@@ -1361,7 +1361,7 @@
         <target state="translated">用户生成内容</target>
       </trans-unit>
       <trans-unit id="b2e94a71827a2454907d5622756baf56aaa64759" datatype="html">
-        <source>When students submit work in a WISE project run (while logged into their accounts), we save their responses to questions and any content they create within the WISE platform. Teachers can review the responses and artifacts students create in the WISE runs they own. Teachers can also grade student work and provide feedback. Scores and comments generated by teachers through the WISE platform are stored by WISE and can be viewed by the students they are sent to.</source>
+        <source>When students submit work in a SCORE project run (while logged into their accounts), we save their responses to questions and any content they create within the WISE platform. Teachers can review the responses and artifacts students create in the WISE runs they own. Teachers can also grade student work and provide feedback. Scores and comments generated by teachers through the WISE platform are stored by WISE and can be viewed by the students they are sent to.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">40</context>
@@ -1369,7 +1369,7 @@
         <target state="translated">当学生在WISE项目中提交作业（登录他们的帐户时）时，我们会保存他们对问题的回答以及他们在WISE平台中创建的任何内容。 教师可以查看学生在WISE中创建的任何响应和人工制品。 教师还可以评估学生的作业并提供反馈。 教师通过WISE平台生成的分数和评论也由WISE存储，并且学生可以查看老师发送的评论。</target>
       </trans-unit>
       <trans-unit id="bb40c3cb308acd01903478a7b892cf7dbf5faeb4" datatype="html">
-        <source>Curriculum projects that teachers author using the WISE platform are also saved and stored on our servers and may be published to a public project library that is accessible to other WISE users or visitors (with the owner's permission). Please note: Every WISE project hosted by the WISE site (whether it is shared in a public project library or not) is viewable by anyone using the internet via the project's unique URL.</source>
+        <source>Curriculum projects that teachers author using the WISE platform are also saved and stored on our servers and may be published to a public project library that is accessible to other WISE users or visitors (with the owner's permission). Please note: Every SCORE project hosted by the WISE site (whether it is shared in a public project library or not) is viewable by anyone using the internet via the project's unique URL.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">41</context>
@@ -1377,7 +1377,7 @@
         <target state="translated">教师使用WISE平台创建的课程项目也会保存并存储在我们的服务器上，也可以发布到其他WISE用户或访问者可访问的公共项目库（在所有者的许可下）。 请注意：WISE网站托管的每个WISE项目（无论是否在公共项目库中共享）都可以通过项目的唯一URL使用互联网查看。</target>
       </trans-unit>
       <trans-unit id="542c08b88b52d143ac45330ea26b616f4877ea4c" datatype="html">
-        <source>Some sections or features of WISE may allow you to share information concerning your opinions, experiences, or preferences about WISE content or other topics. For example, you might be able to voluntarily review or rate WISE resources, answer user questions, designate favorite WISE projects, respond to surveys, share personal information or social media profile links to your public WISE profile, etc. Information you provide will be stored by WISE and may be shared with other WISE users either anonymously or not (as long as you provide permission). Unless otherwise expressly provided for in this policy, WISE shall have no liability to you or to any third party with respect to information submitted voluntarily by you via the WISE site.</source>
+        <source>Some sections or features of WISE may allow you to share information concerning your opinions, experiences, or preferences about WISE content or other topics. For example, you might be able to voluntarily review or rate WISE resources, answer user questions, designate favorite SCORE projects, respond to surveys, share personal information or social media profile links to your public WISE profile, etc. Information you provide will be stored by WISE and may be shared with other WISE users either anonymously or not (as long as you provide permission). Unless otherwise expressly provided for in this policy, WISE shall have no liability to you or to any third party with respect to information submitted voluntarily by you via the WISE site.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">42</context>
@@ -1401,7 +1401,7 @@
         <target state="translated">您在WISE网站上创建或共享的所有项目均应根据知识共享署名 - 相同方式共享4.0许可进行许可。 有关此许可条款的详细信息，请访问<x id =“START_LINK”ctype =“xa”equiv-text =“＆lt; a＆gt;”/> https://creativecommons.org/licenses/by-sa/4.0 / <x id =“CLOSE_LINK”ctype =“xa”equiv-text =“＆lt; / a＆gt;”/>。 WISE团队保留删除任何由WISE团队自行决定对社区有害或违反WISE使用条款的内容的权利。 有害使用包括垃圾邮件或通过项目，评论或讨论帖重复商业广告，以及不适当或令人反感的材料。</target>
       </trans-unit>
       <trans-unit id="d832788aab0ba91d394cc36c4c63bedb07a7e5ea" datatype="html">
-        <source>You may link to or include outside resources or materials in your WISE projects or in any public parts of the WISE site, but it is your responsibility to obtain any necessary permission from the original owners and include any required attribution for your use of such content. WISE will not be held responsible for the unauthorized use by a WISE account holder of any third-party content in WISE projects or on any other sections of the WISE site.</source>
+        <source>You may link to or include outside resources or materials in your SCORE projects or in any public parts of the WISE site, but it is your responsibility to obtain any necessary permission from the original owners and include any required attribution for your use of such content. WISE will not be held responsible for the unauthorized use by a SCORE account holder of any third-party content in SCORE projects or on any other sections of the WISE site.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">46</context>
@@ -1417,7 +1417,7 @@
         <target state="translated">自动生成的数据</target>
       </trans-unit>
       <trans-unit id="b1f5669bb23dc1a815043d912919ee226524739c" datatype="html">
-        <source>When students and teachers use WISE, we save event data such as mouse clicks, time spent viewing pages, and other site interactions. This data is used for research purposes and for automated analyses and tools within WISE project runs. (See ‘How We Use the Data' for more information.)</source>
+        <source>When students and teachers use WISE, we save event data such as mouse clicks, time spent viewing pages, and other site interactions. This data is used for research purposes and for automated analyses and tools within SCORE project runs. (See ‘How We Use the Data' for more information.)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">49</context>
@@ -1641,7 +1641,7 @@
         <target state="translated">使用条款和隐私策略的变更和更新</target>
       </trans-unit>
       <trans-unit id="c48aa34c21d6e247f54757d5fb617b1faa59f064" datatype="html">
-        <source>We may occasionally update or modify our Terms of Use and Privacy Policy. We will always display the date this document was last updated. If we make significant changes to these terms, we will display a prominent notice on the WISE home page and may notify users via registered email.  We encourage you to review this document periodically. By continuing to use WISE after any changes to this document, you acknowledge that you agree to the current version of these terms.</source>
+        <source>We may occasionally update or modify our Terms of Use and Privacy Policy. We will always display the date this document was last updated. If we make significant changes to these terms, we will display a prominent notice on the SCORE home page and may notify users via registered email.  We encourage you to review this document periodically. By continuing to use WISE after any changes to this document, you acknowledge that you agree to the current version of these terms.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/privacy/privacy.component.html</context>
           <context context-type="linenumber">97</context>
@@ -1713,7 +1713,7 @@
         <target state="translated">学习单元</target>
       </trans-unit>
       <trans-unit id="73da064756ecee7cf3d056dc8a0b99f0f39863b6" datatype="html">
-        <source>What is WISE Tested?</source>
+        <source>What is SCORE Tested?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/modules/library/official-library/official-library.component.html</context>
           <context context-type="linenumber">38</context>
@@ -1721,7 +1721,7 @@
         <target state="translated">什么是WISE测试？</target>
       </trans-unit>
       <trans-unit id="5080207bff284204adb9544ae12ef39917aa74ae" datatype="html">
-        <source>WISE Tested</source>
+        <source>SCORE Tested</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/modules/library/official-library/official-library-details.html</context>
           <context context-type="linenumber">1</context>
@@ -1729,7 +1729,7 @@
         <target state="translated">WISE测试</target>
       </trans-unit>
       <trans-unit id="babd041c8f47bf5bb8dcabfc02d9904a8e363c9c" datatype="html">
-        <source>The "WISE Tested" library contains curricula developed by the WISE team.</source>
+        <source>The "SCORE Tested" library contains curricula developed by the WISE team.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/modules/library/official-library/official-library-details.html</context>
           <context context-type="linenumber">4</context>
@@ -2109,7 +2109,7 @@
         <target state="translated">访问代码：<x id="INTERPOLATION" equiv-text="{{ run.runCode }}"/></target>
       </trans-unit>
       <trans-unit id="534ba8ba6d05fed93bd074e67fb6d03d2e466b46" datatype="html">
-        <source>Important: Every classroom unit has a unique Access Code. Students use this code to register for a unit. Give the code to your students when they first sign up for a WISE account. If they already have WISE accounts, have them log in and then select "Add Unit" from the student home page.</source>
+        <source>Important: Every classroom unit has a unique Access Code. Students use this code to register for a unit. Give the code to your students when they first sign up for a SCORE account. If they already have SCORE accounts, have them log in and then select "Add Unit" from the student home page.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/teacher/create-run-dialog/create-run-dialog.component.html</context>
           <context context-type="linenumber">78</context>
@@ -3494,18 +3494,18 @@
       </trans-unit>
       <trans-unit id="d38483514cb4d3dfdb109d7a3381dee14b11cfc1" datatype="html">
         <source>
-    All users must create their own account. Teachers must create a teacher account and students must create a student account. Users can create an account by going to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>WISE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> and clicking on the <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>Register<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> link at the upper right of the screen.
+    All users must create their own account. Teachers must create a teacher account and students must create a student account. Users can create an account by going to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>SCORE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> and clicking on the <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>Register<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> link at the upper right of the screen.
   </source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">7</context>
         </context-group>
         <target state="translated">
-    所有用户都必须创建自己的帐户。 教师必须创建教师帐户，学生必须创建学生帐户。 用户可以通过链接来创建帐户to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>WISE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> 链接位于屏幕的右上角。
+    所有用户都必须创建自己的帐户。 教师必须创建教师帐户，学生必须创建学生帐户。 用户可以通过链接来创建帐户to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>SCORE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> 链接位于屏幕的右上角。
   </target>
         <alt-trans>
           <target>
-    所有用户都必须创建自己的帐户。 教师必须创建教师帐户，学生必须创建学生帐户。 用户可以通过链接来创建帐户to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>WISE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ，点击此处回到屏幕顶部 <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>注册<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+    所有用户都必须创建自己的帐户。 教师必须创建教师帐户，学生必须创建学生帐户。 用户可以通过链接来创建帐户to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>SCORE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> ，点击此处回到屏幕顶部 <x id="START_LINK_1" ctype="x-a" equiv-text="&lt;a&gt;"/>注册<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
   </target>
         </alt-trans>
       </trans-unit>
@@ -3518,7 +3518,7 @@
         <target state="translated">以下是关于如何创建教师帐户的说明。</target>
       </trans-unit>
       <trans-unit id="2964f6a797ee681e920953a80029f041f0edc7bf" datatype="html">
-        <source>Go to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>WISE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
+        <source>Go to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>SCORE Home Page<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">12</context>
@@ -3590,7 +3590,7 @@
         <target state="translated">如果您使用电子邮件创建了帐户，系统会为您提供一个您需要记住的用户名。 您的用户名将是您的名字和姓氏，中间没有空格。 如果某人与您的姓名相同，则可能会在您的用户名末尾添加一个号码。</target>
       </trans-unit>
       <trans-unit id="905ffa00030446fe94ad48b0690cf4c703ddf061" datatype="html">
-        <source>Using a WISE Unit</source>
+        <source>Using a SCORE Unit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">20</context>
@@ -3598,7 +3598,7 @@
         <target state="translated">使用WISE单元</target>
       </trans-unit>
       <trans-unit id="90ec3aae8236091afd31bd0b64d9ddc6f8cdd59a" datatype="html">
-        <source>To use a WISE unit with your class, you must first choose a unit to use and then set up a "Run" of that unit.</source>
+        <source>To use a SCORE unit with your class, you must first choose a unit to use and then set up a "Run" of that unit.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">21</context>
@@ -3614,7 +3614,7 @@
         <target state="translated">以下是关于如何设置运行的说明。</target>
       </trans-unit>
       <trans-unit id="e9a22cb12f2c9f5db14a01d04ae6d9e829cd5b48" datatype="html">
-        <source>Sign in to WISE with your teacher account.</source>
+        <source>Sign in to SCORE with your teacher account.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">24</context>
@@ -3626,7 +3626,7 @@
         <target state="translated">使用您的教师帐户登录WISE。</target>
       </trans-unit>
       <trans-unit id="9d2a72632d6e73065adbe8ea78a680e16c07619c" datatype="html">
-        <source>Click the "Browse WISE Units" tab.</source>
+        <source>Click the "Browse Units" tab.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/getting-started/getting-started.component.html</context>
           <context context-type="linenumber">25</context>
@@ -3950,7 +3950,7 @@
         <target state="translated">我如何在班级中使用课程单元？</target>
       </trans-unit>
       <trans-unit id="3576f8940d17f62b1c8f4fbed932067ac0fdb673" datatype="html">
-        <source>Should I register my students for WISE or have them do it themselves?</source>
+        <source>Should I register my students for SCORE or have them do it themselves?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">39</context>
@@ -3958,7 +3958,7 @@
         <target state="translated">我需要为WISE注册学生账户还是让学生自己注册？</target>
       </trans-unit>
       <trans-unit id="2c8b400fdc35436d28c9cccdaeb20ce10a03c8d7" datatype="html">
-        <source>WISE makes student registration simple and intuitive -- direct your students to the register page by having them go to the WISE home page and clicking the "Register" link at the upper right. They should be able to register in 10 minutes or less. However, you can also opt to pre-register all of your students and provide them with a copy of their username/password on their first day in the project run.</source>
+        <source>SCORE makes student registration simple and intuitive -- direct your students to the register page by having them go to the SCORE home page and clicking the "Register" link at the upper right. They should be able to register in 10 minutes or less. However, you can also opt to pre-register all of your students and provide them with a copy of their username/password on their first day in the project run.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">40</context>
@@ -3966,7 +3966,7 @@
         <target state="translated">WISE使学生注册变得简单直观 - 让学生进入WISE主页并点击右上角的“注册”链接可直接进入注册页面。 他们应该能够在10分钟或更短的时间内注册。 但是，您也可以选择预先注册所有学生，并在项目运行的第一天向他们提供用户名/密码的副本。</target>
       </trans-unit>
       <trans-unit id="90a07f702eb512ee62bff7940263f760a401a538" datatype="html">
-        <source>Once a student has created a WISE account they should never need to create another one.</source>
+        <source>Once a student has created a SCORE account they should never need to create another one.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">42</context>
@@ -3998,7 +3998,7 @@
         <target state="translated">首先，我们建议学生在首次注册时将其用户名/密码记录下来。</target>
       </trans-unit>
       <trans-unit id="427421b70d77408e21b0462e665b63cb5765f06a" datatype="html">
-        <source>Second, encourage the students to solve the problem themselves. Tell them to go to the WISE home page, click the Lost username/password link, and click the Student button. If the student can answer their security question (created at registration) they can change their password.</source>
+        <source>Second, encourage the students to solve the problem themselves. Tell them to go to the SCORE home page, click the Lost username/password link, and click the Student button. If the student can answer their security question (created at registration) they can change their password.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">48</context>
@@ -4022,7 +4022,7 @@
         <target state="translated">教师如何更改学生的密码？</target>
       </trans-unit>
       <trans-unit id="cb4e82ff9c49f15fee75a56ccd4bb3feccbcb850" datatype="html">
-        <source>Sign into WISE with your teacher account.</source>
+        <source>Sign into SCORE with your teacher account.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">53</context>
@@ -4349,7 +4349,7 @@
         <target state="translated">我们不建议缩短项目。 每个项目都经过精心设计，引导学生完成一个探究过程，缩短学习时间会导致学生对学习体验不太满意。 但是，如果您具有时间限制并且对项目主题有所了解，则可以自定义项目并将其缩短以满足您的特定需求。</target>
       </trans-unit>
       <trans-unit id="3024ecf162acff3ec72fe6d47aee6bf2ea097db3" datatype="html">
-        <source>Where do I find out about lesson plans and standards for WISE projects?</source>
+        <source>Where do I find out about lesson plans and standards for SCORE projects?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">107</context>
@@ -4389,7 +4389,7 @@
         <target state="translated">注意：有些项目可能没有太多的信息，因为它依赖于作者提供的课程计划和标准。</target>
       </trans-unit>
       <trans-unit id="0caa9631c30a1085708f8f7ac6f6b207af99c1b9" datatype="html">
-        <source>How do I fit a WISE project into my curriculum?</source>
+        <source>How do I fit a SCORE project into my curriculum?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">116</context>
@@ -4397,7 +4397,7 @@
         <target state="translated">如何将WISE项目引入到我的课程中？</target>
       </trans-unit>
       <trans-unit id="8067ba3441dfe3495b289859b58d59b28fed36f0" datatype="html">
-        <source>In general students will benefit from some pre-teaching of the topic covered in the project. It is really up to the teacher to decide where it best fits to support student learning. Many teachers use a WISE project as a capstone activity while others integrate it into their curriculum at a midpoint. Some teachers elect to use WISE projects an introductory activity for a unit, or as a summation activity for a unit.</source>
+        <source>In general students will benefit from some pre-teaching of the topic covered in the project. It is really up to the teacher to decide where it best fits to support student learning. Many teachers use a SCORE project as a capstone activity while others integrate it into their curriculum at a midpoint. Some teachers elect to use SCORE projects an introductory activity for a unit, or as a summation activity for a unit.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">118</context>
@@ -4485,7 +4485,7 @@
         <target state="translated">如果我的计算机实验室时间不足，但一些学生还没有完成项目怎么办？</target>
       </trans-unit>
       <trans-unit id="e42c6ee16c0475e7cd0a418736dd8da66fdde98f" datatype="html">
-        <source>WISE is a web-based learning environments, so students can sign in from a computer at school or at home. This means that students can complete the project from any home or community based computer, per the teacher's discretion.</source>
+        <source>SCORE is a web-based learning environment, so students can sign in from a computer at school or at home. This means that students can complete the project from any home or community based computer, per the teacher's discretion.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">140</context>
@@ -4533,7 +4533,7 @@
         <target state="translated">学生如何看查看我的作品评论和分数？</target>
       </trans-unit>
       <trans-unit id="6f1b5176d1ac687e91e947309867726178ea6075" datatype="html">
-        <source>The student must sign into WISE with their student account.</source>
+        <source>The student must sign into SCORE with their student account.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">155</context>
@@ -4669,7 +4669,7 @@
         <target state="translated">你可以！ 如果您需要引起他们的注意，以便进行课堂讨论或发布公告，这将非常有用。</target>
       </trans-unit>
       <trans-unit id="c7a7fe783c37fe2f45e8cdee103e70f13c5c7a7e" datatype="html">
-        <source>The WISE web site won't load on my web browser. What do I do?</source>
+        <source>The SCORE web site won't load on my web browser. What do I do?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">189</context>
@@ -4681,7 +4681,7 @@
         <target state="translated">WISE网站难以在我的网络浏览器上加载。 我该怎么办？</target>
       </trans-unit>
       <trans-unit id="af71879ff4b2c7e9d79167d67a8558c4fd64ee09" datatype="html">
-        <source>You can try <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>clearing your browser cache<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> and then reloading the WISE web site.</source>
+        <source>You can try <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>clearing your browser cache<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> and then reloading the SCORE web site.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">191</context>
@@ -4708,7 +4708,7 @@
         </alt-trans>
       </trans-unit>
       <trans-unit id="47fdad3268de5bb44d62ef7bf2e4b8e39c432588" datatype="html">
-        <source>How many computers do I need to run WISE?</source>
+        <source>How many computers do I need to run SCORE?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">194</context>
@@ -4748,7 +4748,7 @@
         <target state="translated">如果您忘记了用户名或密码，请单击“忘记用户名”或“忘记密码”的链接，然后按照说明操作。 </target>
       </trans-unit>
       <trans-unit id="df6ec49a683a1c798d509516f3b73dd1befb6a62" datatype="html">
-        <source>Can I use WISE in another language?</source>
+        <source>Can I use SCORE in another language?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">203</context>
@@ -4859,7 +4859,7 @@
         <target state="translated">当我遇到难以解决的问题时，我该联系谁？</target>
       </trans-unit>
       <trans-unit id="f0bf08ca7362c92db6be004201f0d9e142a61532" datatype="html">
-        <source>The <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>Contact WISE form<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> will send an email to the WISE technology group. You can find a link to the form at the bottom of the home page. Be sure to include as much information as you can about the problem. We will respond as quickly as we can.</source>
+        <source>The <x id="START_LINK" ctype="x-a" equiv-text="&lt;a&gt;"/>Contact SCORE form<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> will send an email to the SCORE technology group. You can find a link to the form at the bottom of the home page. Be sure to include as much information as you can about the problem. We will respond as quickly as we can.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/teacher-faq/teacher-faq.component.html</context>
           <context context-type="linenumber">216</context>
@@ -4951,7 +4951,7 @@
         <target state="translated">如果要开始参与项目学习，您必须从老师那里获取访问代码。 获得访问代码后，请按照以下说明操作。</target>
       </trans-unit>
       <trans-unit id="6ad63a4282b7f50738ef1f9293cc8d44bb81a3b0" datatype="html">
-        <source>Log into WISE with your student account.</source>
+        <source>Log into SCORE with your student account.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/student-faq/student-faq.component.html</context>
           <context context-type="linenumber">30</context>
@@ -5023,7 +5023,7 @@
         <target state="translated">只有你的老师可以改变你的课程时间。 请向他们寻求帮助。</target>
       </trans-unit>
       <trans-unit id="2c78c51700ea174231b7fb84a2d51a96f5b5ed78" datatype="html">
-        <source>Sign into WISE with your student account.</source>
+        <source>Sign into SCORE with your student account.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/help/student-faq/student-faq.component.html</context>
           <context context-type="linenumber">56</context>
@@ -5299,7 +5299,7 @@
         <target state="translated">您必须同意我们的隐私政策和使用条款</target>
       </trans-unit>
       <trans-unit id="89a4722a9d6828f6aa9e3600033561ffad582c36" datatype="html">
-        <source>Your WISE account has been created!</source>
+        <source>Your SCORE account has been created!</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/register/register-teacher-complete/register-teacher-complete.component.html</context>
           <context context-type="linenumber">3</context>
@@ -5455,7 +5455,7 @@
         <target state="translated">您好！此Google帐户已有WISE用户。</target>
       </trans-unit>
       <trans-unit id="263e1717422fe3b5810e9a2e55b87e477b35d1ed" datatype="html">
-        <source>Sign in to WISE</source>
+        <source>Sign in to SCORE</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/login/login-home/login-home.component.html</context>
           <context context-type="linenumber">4</context>
@@ -5713,7 +5713,7 @@
         <target state="translated">添加单元</target>
       </trans-unit>
       <trans-unit id="2278f83021a218f6d93e2cea52ba171c864b7b9d" datatype="html">
-        <source>Hey there! Looks like you don't have any WISE units yet.</source>
+        <source>Hey there! Looks like you don't have any SCORE units yet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/student/student-run-list/student-run-list.component.html</context>
           <context context-type="linenumber">3</context>
@@ -5741,7 +5741,7 @@
         <target state="translated">查找到的单元： <x id="INTERPOLATION" equiv-text="{{ filteredRuns.length }}"/></target>
       </trans-unit>
       <trans-unit id="cba86a51e8ee210e24b4d9b47ceffed1e70b61d1" datatype="html">
-        <source>My WISE units: <x id="INTERPOLATION" equiv-text="{{ filteredRuns.length }}"/></source>
+        <source>My SCORE units: <x id="INTERPOLATION" equiv-text="{{ filteredRuns.length }}"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/student/student-run-list/student-run-list.component.html</context>
           <context context-type="linenumber">20</context>
@@ -5985,7 +5985,7 @@
         <target state="needs-translation">Teacher home navigation</target>
       </trans-unit>
       <trans-unit id="2353459e710912ab1e887bf5c0adbeaaf7e6b2af" datatype="html">
-        <source>Hey there! Looks like you haven't run any WISE units in your classes yet.</source>
+        <source>Hey there! Looks like you haven't run any units in your classes yet.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">app/teacher/teacher-run-list/teacher-run-list.component.html</context>
           <context context-type="linenumber">2</context>
@@ -6304,7 +6304,7 @@
         <target state="translated">在使用WISE需要帮助</target>
       </trans-unit>
       <trans-unit id="6a6f97816b45d44504a072d73938c951bbd01810" datatype="html">
-        <source>Problems with a WISE Unit</source>
+        <source>Problems with a SCORE Unit</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/main/webapp/site/src/app/contact/contact-form/contact-form.component.ts</context>
           <context context-type="linenumber">1</context>
@@ -6663,7 +6663,7 @@
         <target state="translated">服务器发生错误，无法向您发送电子邮件。 请再试一次。 如果错误继续发生，请与我们联系。</target>
       </trans-unit>
       <trans-unit id="4b2d0bc81118fc043b3b4474eb9924070cc22777" datatype="html">
-        <source>We did not find a WISE account associated with that email. Please make sure you have typed your email address correctly.</source>
+        <source>We did not find a SCORE account associated with that email. Please make sure you have typed your email address correctly.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/main/webapp/site/src/app/forgot/teacher/forgot-teacher-username/forgot-teacher-username.component.ts</context>
           <context context-type="linenumber">1</context>
@@ -6935,7 +6935,7 @@
         <target state="translated">没有找到此Google ID的WISE用户。</target>
       </trans-unit>
       <trans-unit id="c18040a22a5dee82cf46a72d15dfec734dc172bb" datatype="html">
-        <source>Hi class! Please complete the "<x id="INTERPOLATION" equiv-text="{{unitTitle}}"/>" WISE unit. (Access Code: <x id="INTERPOLATION_1" equiv-text="{{accessCode}}"/>)</source>
+        <source>Hi class! Please complete the "<x id="INTERPOLATION" equiv-text="{{unitTitle}}"/>" SCORE unit. (Access Code: <x id="INTERPOLATION_1" equiv-text="{{accessCode}}"/>)</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/main/webapp/site/src/app/teacher/list-classroom-courses-dialog/list-classroom-courses-dialog.component.ts</context>
           <context context-type="linenumber">1</context>
@@ -7103,7 +7103,7 @@
         <target state="translated">班级课程表</target>
       </trans-unit>
       <trans-unit id="7aa747f76006993d92c4f88be5fa8a8968fa5dc2" datatype="html">
-        <source>Browse WISE Units</source>
+        <source>Browse Units</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/main/webapp/site/src/app/teacher/teacher-home/teacher-home.component.ts</context>
           <context context-type="linenumber">1</context>

@@ -36,7 +36,7 @@ export class RegisterTeacherFormComponent implements OnInit {
     schoolLevel: new FormControl('', [Validators.required]),
     howDidYouHearAboutUs: new FormControl(''),
     agree: new FormControl('')
-  }, { validator: this.agreeCheckboxValidator });
+  });
   isSubmitted = false;
   processing: boolean = false;
 
@@ -108,15 +108,5 @@ export class RegisterTeacherFormComponent implements OnInit {
       passwordsFormGroup.controls['confirmPassword'].setErrors(error);
       return error;
     }
-  }
-
-  agreeCheckboxValidator(createTeacherAccountFormGroup: FormGroup) {
-    const agree = createTeacherAccountFormGroup.get('agree').value;
-    if (!agree) {
-      const error = { 'agreeNotChecked': true };
-      createTeacherAccountFormGroup.setErrors(error);
-      return error;
-    }
-    return null;
   }
 }

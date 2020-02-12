@@ -38,7 +38,7 @@ describe('WISE Classroom Monitor', () => {
         $('#signInButton').click();
 
         expect(browser.getCurrentUrl()).toEqual('http://localhost:8080/wise/teacher');
-        expect(browser.getTitle()).toEqual('WISE Teacher Dashboard');
+        expect(browser.getTitle()).toEqual('SCORE Teacher Dashboard');
         // Find and click on the classroom monitor link
         let classroomMonitorLink = element.all(by.css(".classroomMonitor")).get(0);
         expect(classroomMonitorLink.isPresent()).toBeTruthy();
@@ -111,7 +111,7 @@ describe('WISE Classroom Monitor', () => {
         });
 
         isAngularSite(false);
-        expect(browser.getTitle()).toEqual('WISE Teacher Dashboard');
+        expect(browser.getTitle()).toEqual('SCORE Teacher Dashboard');
         let signOutButton = $("#signOut");
         expect(signOutButton.isPresent()).toBeTruthy();
         signOutButton.click();

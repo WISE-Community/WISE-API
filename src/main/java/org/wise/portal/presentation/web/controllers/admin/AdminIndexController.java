@@ -158,7 +158,7 @@ public class AdminIndexController {
   }
 
   /**
-   * Gets the recent commits to WISE project from GitHub and prints the result in the response.
+   * Gets the recent commits to SCORE project from GitHub and prints the result in the response.
    * If there was an error during the GET, print a "error"
    * @param response
    * @throws IOException

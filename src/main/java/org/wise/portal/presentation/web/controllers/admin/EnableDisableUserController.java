@@ -37,7 +37,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.service.user.UserService;
 
 /**
- * Controller for retrieving disabled WISE accounts and for enabling and disabling WISE user accounts.
+ * Controller for retrieving disabled SCORE accounts and for enabling and disabling WISE user accounts.
  * Only accessed by a WISE admin user.
  * @author Hiroki Terashima
  */

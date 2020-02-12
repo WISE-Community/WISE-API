@@ -23,7 +23,7 @@ describe('WISE Setting Up a Run', () => {
         $('#password').sendKeys('wise');
         $('#signInButton').click();
         expect(browser.getCurrentUrl()).toEqual('http://localhost:8080/wise/teacher');
-        expect(browser.getTitle()).toEqual('WISE Teacher Dashboard');
+        expect(browser.getTitle()).toEqual('SCORE Teacher Dashboard');
 
         // click on the project library link
         let projectLibraryLink = $('#projectLibraryLink');

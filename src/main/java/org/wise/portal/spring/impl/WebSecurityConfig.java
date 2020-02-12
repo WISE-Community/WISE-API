@@ -84,6 +84,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .authorizeRequests()
 //        .antMatchers("/agent/**").hasAnyRole("ADMINISTRATOR,RESEARCHER,TEACHER")
         .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR,RESEARCHER")
+        .antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
         .antMatchers("/student/account/info").hasAnyRole("TEACHER")
         .antMatchers("/student/**").hasAnyRole("STUDENT")
@@ -91,7 +92,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/score/**/**").permitAll()
         .antMatchers("/teachingassistant/**/**").permitAll()
-        .antMatchers("/api/**").permitAll()
+        .antMatchers("/api/**/**").permitAll()
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());

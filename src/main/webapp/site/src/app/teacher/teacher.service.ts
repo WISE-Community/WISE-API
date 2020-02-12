@@ -17,7 +17,7 @@ export class TeacherService {
   private transferRunOwnershipUrl = '/api/teacher/run/permission/transfer';
   private usernamesUrl = 'api/teacher/usernames';
   private createRunUrl = 'api/teacher/run/create';
-  private runUrl = 'api/teacher/run';
+  private runUrl = '/api/teacher/run';
   private lastRunUrl = 'api/teacher/projectlastrun';
   private addPeriodToRunUrl = 'api/teacher/run/add/period';
   private deletePeriodFromRunUrl = 'api/teacher/run/delete/period';

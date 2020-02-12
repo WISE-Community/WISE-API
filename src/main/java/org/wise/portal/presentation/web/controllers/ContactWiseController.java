@@ -269,7 +269,7 @@ public class ContactWiseController {
   /**
    * Set the issue types into the model
    * @return an array of IssueType objects that will be used to populate the
-   * issue types drop down in the contact WISE form
+   * issue types drop down in the Contact SCORE form
    */
   @ModelAttribute("issuetypes")
   public IssueType[] populateIssueTypes() {
@@ -319,7 +319,7 @@ public class ContactWiseController {
   /**
    * Set the teachers if the user is a student
    * @return a vector of teacher user objects that will be used to populate
-   * the teacher drop down in the contact WISE form
+   * the teacher drop down in the Contact SCORE form
    */
   @ModelAttribute("teachers")
   public Vector<User> populateTeachers() {

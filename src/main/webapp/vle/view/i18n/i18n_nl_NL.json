@@ -445,7 +445,7 @@
     },
     "stepTerm": {
         "value": "Stap",
-        "description": "Default term for a 'step' in a WISE project"
+        "description": "Default term for a 'step' in a SCORE project"
     },
     "insertImage": {
         "value": "Afbeelding invoegen",

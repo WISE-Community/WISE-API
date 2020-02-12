@@ -20,7 +20,7 @@ Create a project in the Authoring tool<br>
 Create an Activity & then add a "WebApp" step<br>
 Edit in the Advanced view<br>
 Make the "url" property equal "geogebra.html" or "helloWorld.html"<br>
-Place the files inside the resources/sampleApps/* directory into the curriculum/xyz/assets/  for your new WISE project.<br>
+Place the files inside the resources/sampleApps/* directory into the curriculum/xyz/assets/  for your new SCORE project.<br>
 Preview to test.<br>
 
 III. Preview Sample Project<br>

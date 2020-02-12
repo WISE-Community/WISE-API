@@ -23,7 +23,7 @@ module.exports = {
       title: 'WISE',
       template: require('html-webpack-template'),
       headHtmlSnippet:
-          '<meta name="description" content="WISE Student Virtual Learning Environment (VLE)">' +
+          '<meta name="description" content="SCORE Student Virtual Learning Environment (VLE)">' +
           '<meta name="viewport" content="width=device-width, initial-scale=1">' +
           '<link rel="apple-touch-icon" href="apple-touch-icon.png">',
       bodyHtmlSnippet: '<script>if (global === undefined) { var global = window; }</script><app></app><div ng-view><div ui-view></div></div>'

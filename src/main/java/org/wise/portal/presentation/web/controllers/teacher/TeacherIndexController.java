@@ -38,7 +38,7 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 
 import java.util.*;
 /**
- * Controller for WISE Teacher index page
+ * Controller for SCORE Teacher index page
  *
  * @author Hiroki Terashima
  */

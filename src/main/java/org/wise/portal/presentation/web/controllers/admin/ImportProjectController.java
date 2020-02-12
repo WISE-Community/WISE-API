@@ -61,7 +61,7 @@ import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.project.ProjectService;
 
 /**
- * Admin tool for uploading a zipped WISE project.
+ * Admin tool for uploading a zipped SCORE project.
  * Unzips to curriculum_base_dir and registers the project (ie creates project in DB).
  *
  * @author Hiroki Terashima

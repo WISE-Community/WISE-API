@@ -1,3 +1,15 @@
 <div ng-controller='HTMLController as htmlController'>
-  <div ng-if='::htmlController.mode !== "authoring"'><compile data='::htmlController.componentContent.html'></compile></div>
+  <div ng-if='::htmlController.mode !== "authoring"'>
+    <compile data='::htmlController.componentContent.html'></compile>
+    <md-button class='topButton md-raised md-primary' ng-click="htmlController.performTeachingAssistantRequest('help')">
+      <md-icon>message</md-icon>
+      <span>Request Help</span>
+      <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Help from the TA</md-tooltip>
+    </md-button>
+    <md-button class='topButton md-raised md-primary' ng-click="htmlController.performTeachingAssistantRequest('approval')">
+      <md-icon>message</md-icon>
+      <span>Request Approval</span>
+      <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Approval from the TA<</md-tooltip>
+    </md-button>
+  </div>
 </div>

@@ -88,6 +88,10 @@ export class Run {
     return false;
   }
 
+  isTAToolEnabled() {
+    return JSON.parse(this.project.metadata.tools).isTAToolEnabled;
+  }
+
   hasEndTime() {
     return this.endTime != null;
   }

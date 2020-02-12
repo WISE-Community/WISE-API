@@ -95,7 +95,7 @@ public class ContactWISEForm implements Serializable {
       message.append("One of your students has submitted a WISE trouble ticket.\n\n");
     }
 
-    message.append("Contact WISE Project Request\n");
+    message.append("Contact SCORE Project Request\n");
     message.append("=================\n");
     message.append("Name: " + name + "\n");
 
