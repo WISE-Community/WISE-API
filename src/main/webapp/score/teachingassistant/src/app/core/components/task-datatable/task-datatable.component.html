@@ -17,7 +17,7 @@
                 <td *matCellDef="let task" mat-cell> {{task.id}} </td>
             </ng-container>
             <ng-container matColumnDef="name">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Current Step</th>
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Step</th>
                 <td *matCellDef="let task" mat-cell> {{task.name}} </td>
             </ng-container>
             <ng-container matColumnDef="active">
@@ -34,8 +34,8 @@
                 <td *matCellDef="let task" mat-cell> {{task.periodName}} </td>
             </ng-container>
             <ng-container matColumnDef="duration">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Duration</th>
-                <td *matCellDef="let task" mat-cell> {{task.duration}} </td>
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Duration (min)</th>
+                <td *matCellDef="let task" mat-cell> {{task.duration/60.0}} </td>
             </ng-container>
             <ng-container matColumnDef="startTime">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Start Time</th>

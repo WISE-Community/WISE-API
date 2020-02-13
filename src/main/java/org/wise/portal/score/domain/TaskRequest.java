@@ -29,10 +29,10 @@ public class TaskRequest extends PersistableDomain implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-  private String name;
   private Long runId;
   private Long workgroupId ;
   private Long periodId;
+  private Long projectId;
   private String status;
   private Boolean complete;
   private Timestamp startTime;
@@ -54,9 +54,9 @@ public class TaskRequest extends PersistableDomain implements Serializable {
     try {
       jsonObject = new JSONObject();
       jsonObject.put("id", getId());
-      jsonObject.put("name", getName());
       jsonObject.put("runId", getRunId());
       jsonObject.put("periodId", getPeriodId());
+      jsonObject.put("projectId", getProjectId());
       jsonObject.put("workgroupId", getWorkgroupId());
       jsonObject.put("startTime", getStartTime());
       jsonObject.put("endTime", getEndTime());

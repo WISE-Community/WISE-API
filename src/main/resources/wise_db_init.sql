@@ -785,6 +785,7 @@ CREATE TABLE tasks
     activityId varchar(255) DEFAULT NULL,
     started tinyint(1) DEFAULT NULL,
     duration bigint(20) DEFAULT NULL,
+    active tinyint(1) DEFAULT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB
   AUTO_INCREMENT = 11
@@ -802,6 +803,7 @@ CREATE TABLE task_requests
     endTime     datetime     DEFAULT NULL,
     complete    tinyint(1)   DEFAULT NULL,
     tasks_id    bigint(20)   DEFAULT NULL,
+    complete tinyint(1) DEFAULT NULL,
     name        varchar(255) DEFAULT NULL,
     PRIMARY KEY (id),
     KEY taskFK (tasks_id)

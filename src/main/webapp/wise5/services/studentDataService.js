@@ -1419,6 +1419,75 @@ class StudentDataService {
     }
   };
 
+  editTaskTimer(eventType) {
+    if (!this.ConfigService.isPreview() && this.ConfigService.isRunActive()) {
+      console.log('event --- ', eventType);
+
+      const runId = this.ConfigService.getRunId();
+      const periodId = this.ConfigService.getPeriodId();
+      const workgroupId = this.ConfigService.getWorkgroupId();
+      const projectId = this.ConfigService.getProjectId();
+      const activityId = this.getCurrentNodeId();
+
+      const taskParams = {};
+      taskParams.runId = runId;
+      taskParams.periodId = periodId;
+      taskParams.workgroupId = workgroupId;
+      taskParams.activityId = activityId;
+      taskParams.projectId = projectId;
+      taskParams.eventType = eventType;
+
+      const httpParams = {};
+      httpParams.method = 'POST';
+      httpParams.url = '/api/tasks/timer';
+      httpParams.headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+      httpParams.data = $.param(taskParams);
+
+      this.$http(httpParams).then(
+        result => {
+          // console.log('WORKED');
+        }, result => {
+          // console.log('FAILED NEED TO SEND ERROR');
+        }
+      );
+    }
+
+  }
+
+  performTaskRequest(type) {
+    if (!this.ConfigService.isPreview() && this.ConfigService.isRunActive()) {
+      //construct request
+      //send rest controller
+      const runId = this.ConfigService.getRunId();
+      const periodId = this.ConfigService.getPeriodId();
+      const workgroupId = this.ConfigService.getWorkgroupId();
+      const projectId = this.ConfigService.getProjectId();
+      const activityId = this.getCurrentNodeId();
+
+      const taskParams = {};
+      taskParams.runId = runId;
+      taskParams.periodId = periodId;
+      taskParams.workgroupId = workgroupId;
+      taskParams.activityId = activityId;
+      taskParams.projectId = projectId;
+      taskParams.requestType = type;
+
+      const httpParams = {};
+      httpParams.method = 'POST';
+      httpParams.url = '/api/tasks/taskrequest';
+      httpParams.headers = {'Content-Type': 'application/x-www-form-urlencoded'};
+      httpParams.data = $.param(taskParams);
+
+      this.$http(httpParams).then(
+        result => {
+          // console.log('WORKED');
+        }, result => {
+          // console.log('FAILED NEED TO SEND ERROR');
+        }
+      );
+    }
+  }
+
   initializeStudentTasks() {
     if (!this.ConfigService.isPreview() && this.ConfigService.isRunActive()) {
       const studentStatusURL = this.ConfigService.getStudentStatusURL();
@@ -1430,7 +1499,7 @@ class StudentDataService {
         const workgroupId = this.ConfigService.getWorkgroupId();
         let nodes = this.ProjectService.getNodes();
 
-        console.log("PERIOD ID PROJECT", periodId, periodName);
+        // console.log("PERIOD ID PROJECT", periodId, periodName);
 
         //cycle through all the nodes and check if they have tasks
 
@@ -1441,13 +1510,13 @@ class StudentDataService {
         for (let node of nodes) {
           if (!this.ProjectService.isGroupNode(node.id)) {
             // console.log('NODE ----', node);
-            // if(node.hasTasks)
-            const nodeJSON = {};
-            nodeJSON.id = node.id;
-            nodeJSON.title = node.title;
-            nodeJSON.duration = 1200;
-            tasksObj.nodes.push(nodeJSON);
-            //}
+            if (node.task) {
+              const nodeJSON = {};
+              nodeJSON.id = node.id;
+              nodeJSON.title = node.title;
+              nodeJSON.duration = node.task.duration;
+              tasksObj.nodes.push(nodeJSON);
+            }
           }
         }
 
@@ -1469,9 +1538,9 @@ class StudentDataService {
 
         this.$http(httpParams).then(
           result => {
-            console.log('WORKED');
+            // console.log('WORKED');
           }, result => {
-            console.log('FAILED NEED TO SEND ERROR');
+            // console.log('FAILED NEED TO SEND ERROR');
           }
         );
       }

@@ -12,6 +12,7 @@ import org.wise.portal.score.repository.TaskRequestRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,62 +142,77 @@ public class TimerTaskController {
   }
 
   /**
-   *  starts the timer for a task
-   *
-   * @param workgroupId the group associated with the task
-   * @param activityId node
-   * @param runId    ID of the run
-   *
+   * starts stops the timer for a task
    */
-  @GetMapping(value = {"/tasks/start/{runId}/{workgroupId}/{activityId}"})
-  protected List<Task> startTaskTimer(
-    @PathVariable String runId,
-    @PathVariable String workgroupId,
-    @PathVariable String activityId
-  ) {
-    System.out.println("RunId: " + runId);
-    System.out.println("workgroupId: " + workgroupId);
-    System.out.println("activityId: " + activityId);
+  @PostMapping(value = {"/tasks/timer"})
+  protected String timer(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    String runIdString = request.getParameter("runId");
+    String periodIdString = request.getParameter("periodId");
+    String projectIdString = request.getParameter("projectId");
+    String workgroupIdString = request.getParameter("workgroupId");
+    String activityId = request.getParameter("activityId");
+    String eventType = request.getParameter("eventType");
+
+    if (runIdString != null && periodIdString != null && workgroupIdString != null && activityId != null && eventType != null && projectIdString != null) {
+      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(Long.parseLong(runIdString), Long.parseLong(periodIdString), Long.parseLong(workgroupIdString), activityId);
+      if(eventType.equalsIgnoreCase("start_timer")) {
+        byId.ifPresent(task -> {
+          long startTime = System.currentTimeMillis();
+          task.setActive(true);
+          task.setStartTime(new Timestamp(startTime));
+          task.setEndTime(new Timestamp(startTime + (task.getDuration() * 1000)));
+          this.taskRepository.save(task);
+        });
+      } else {
+        byId.ifPresent(task -> {
+          task.setActive(false);
+          this.taskRepository.save(task);
+        });
+      }
+    }
 
     return null;
   }
 
-  /**
-   *  stops the timer for a task
-   *
-   * @param workgroupId the group associated with the task
-   * @param activityId node
-   * @param runId    ID of the run
-   *
-   */
-  @GetMapping(value = {"/tasks/stop/{runId}/{workgroupId}/{activityId}"})
-  protected List<Task> stopTaskTimer(
-    @PathVariable String runId,
-    @PathVariable String workgroupId,
-    @PathVariable String activityId
-  ) {
-    System.out.println("RunId: " + runId);
-    System.out.println("workgroupId: " + workgroupId);
-    System.out.println("activityId: " + activityId);
+  @PostMapping("/tasks/taskrequest")
+  protected String createTaskRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    String runIdString = request.getParameter("runId");
+    String periodIdString = request.getParameter("periodId");
+    String projectIdString = request.getParameter("projectId");
+    String workgroupIdString = request.getParameter("workgroupId");
+    String activityId = request.getParameter("activityId");
+    String requestType = request.getParameter("requestType");
 
-    return null;
-  }
-
-  @PostMapping("/task/taskrequest")
-  protected String createTaskRequest(
-    @RequestParam(value = "taskId") Long taskId,
-    @RequestParam(value = "workgroupId") Long workgroupId,
-    @RequestParam(value = "requestType") String requestType
-   ) throws Exception {
-
-    if(taskId != null && workgroupId != null & requestType != null) {
-      Optional<Task> byId = this.taskRepository.findById(taskId);
+    if (runIdString != null && periodIdString != null && workgroupIdString != null && activityId != null && requestType != null && projectIdString != null) {
+      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(Long.parseLong(runIdString), Long.parseLong(periodIdString), Long.parseLong(workgroupIdString), activityId);
       byId.ifPresent(task -> {
-        TaskRequest taskRequest = TaskRequest.builder().workgroupId(workgroupId).name(requestType).build();
+        TaskRequest taskRequest = TaskRequest.builder()
+          .periodId(Long.parseLong(periodIdString))
+          .projectId(Long.parseLong(projectIdString))
+          .runId(Long.parseLong(runIdString))
+          .complete(false)
+          .workgroupId(Long.parseLong(workgroupIdString))
+          .status(requestType)
+          .task(task)
+          .build();
         task.addTaskRequest(taskRequest);
         this.taskRepository.save(task);
       });
     }
+//    if(runId != null && workgroupId != null & requestType != null && activityId != null && periodId != null) {
+//      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(runId, periodId, workgroupId, activityId);
+//      byId.ifPresent(task -> {
+//        TaskRequest taskRequest = TaskRequest.builder()
+//          .periodId(periodId)
+//          .runId(runId)
+//          .complete(false)
+//          .workgroupId(workgroupId)
+//          .status(requestType)
+//          .build();
+//        task.addTaskRequest(taskRequest);
+//        this.taskRepository.save(task);
+//      });
+//    }
 
     return null;
   }
@@ -208,15 +224,16 @@ public class TimerTaskController {
    */
   @GetMapping(value = {"/tasks/taskrequest/{taskRequestId}"})
   protected Boolean markCompleteTaskRequest(
-    @PathVariable Long taskRequestId
+    @PathVariable Long taskRequestId,
+    @PathVariable String status
   ) {
     System.out.println("taskRequestId: " + taskRequestId);
 
-    if(taskRequestId != null) {
+    if (taskRequestId != null && status != null) {
       Optional<TaskRequest> tr = this.taskRequestRepository.findById(taskRequestId);
       tr.ifPresent(taskRequest -> {
         taskRequest.setComplete(true);
-        taskRequest.setName("none");
+        taskRequest.setStatus(status);
         this.taskRequestRepository.save(taskRequest);
       });
     }

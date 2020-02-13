@@ -13,7 +13,6 @@ class NodeController {
       NotebookService,
       ProjectService,
       StudentDataService,
-      TaskService,
       UtilService) {
     this.$compile = $compile;
     this.$filter = $filter;
@@ -30,7 +29,6 @@ class NodeController {
     this.StudentDataService = StudentDataService;
     this.UtilService = UtilService;
     this.$translate = this.$filter('translate');
-    this.taskService = TaskService;
 
     // the auto save interval in milliseconds
     this.autoSaveInterval = 60000;
@@ -79,7 +77,7 @@ class NodeController {
         this.NodeService.evaluateTransitionLogic();
       }
       console.log('ENTERED NODE SEND MESSAGE TO AGENT TO START STUDENTS TIMER ---------->');
-
+      this.editTaskTimer('start_timer');
       // const runId = this.ConfigService.getRunId();
       // const periodId = this.ConfigService.getPeriodId();
       // const workgroupId = this.ConfigService.getWorkgroupId();
@@ -475,6 +473,22 @@ class NodeController {
       const componentId = component.id;
       this.componentToScope[componentId] = childScope;
     }
+  }
+
+  editTaskTimer(eventType) {
+    this.StudentDataService.editTaskTimer(eventType);
+  }
+
+  hasTasks() {
+    return this.nodeContent.task != null;
+  }
+
+  taskDuration() {
+    return this.nodeContent.task.duration ? this.nodeContent.task.duration/60.0: 0;
+  }
+
+  performTaskRequest(type) {
+      this.StudentDataService.performTaskRequest(type);
   }
 
   isShowNodeRubric() {
