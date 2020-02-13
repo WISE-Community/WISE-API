@@ -42,6 +42,7 @@ h3 {
     text-align: center;
     align-items: center;
 }
+
 .mat-cell {
     justify-content: center;
     text-align: center;
@@ -57,6 +58,7 @@ h3 {
     width: $small-column;
     text-align: center;
 }
+
 .mat-column-name {
     padding: $padding;
     flex-shrink: $flex-shrink;
@@ -65,6 +67,7 @@ h3 {
     width: $large-column;
     text-align: center;
 }
+
 .mat-column-startTime {
     padding: $padding;
     flex-shrink: $flex-shrink;
@@ -73,6 +76,7 @@ h3 {
     width: $small-column;
     text-align: center;
 }
+
 .mat-column-endTime {
     padding: $padding;
     flex-shrink: $flex-shrink;
@@ -81,7 +85,8 @@ h3 {
     width: $small-column;
     text-align: center;
 }
-.mat-column-numStudents {
+
+.mat-column-workgroupId {
     padding: $padding;
     flex-shrink: $flex-shrink;
     flex-grow: $flex-grow;
@@ -89,7 +94,8 @@ h3 {
     width: $small-column;
     text-align: center;
 }
-.mat-column-periods {
+
+.mat-column-active {
     padding: $padding;
     flex-shrink: $flex-shrink;
     flex-grow: $flex-grow;
@@ -97,7 +103,44 @@ h3 {
     width: $small-column;
     text-align: center;
 }
-.mat-column-project {
+
+.mat-column-periodId {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+
+.mat-column-duration {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+
+.mat-column-timeLeft {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+
+.mat-column-complete {
+    padding: $padding;
+    flex-shrink: $flex-shrink;
+    flex-grow: $flex-grow;
+    flex-basis: $flex-shrink;
+    width: $small-column;
+    text-align: center;
+}
+
+.mat-column-requests {
     padding: $padding;
     flex-shrink: $flex-shrink;
     flex-grow: $flex-grow;

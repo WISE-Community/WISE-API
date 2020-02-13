@@ -12,21 +12,22 @@
     <div class="mat-elevation-z1">
         <table [dataSource]="tasksDataSource" mat-table matSort>
             <!-- Position Column -->
-            <ng-container matColumnDef="name">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Name</th>
-                <td *matCellDef="let task" mat-cell> {{task.name}} </td>
-            </ng-container>
             <ng-container matColumnDef="id">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Id</th>
                 <td *matCellDef="let task" mat-cell> {{task.id}} </td>
             </ng-container>
+            <ng-container matColumnDef="name">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Current Step</th>
+                <td *matCellDef="let task" mat-cell> {{task.name}} </td>
+            </ng-container>
+            <ng-container matColumnDef="active">
+                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Active Step</th>
+                <td *matCellDef="let task" mat-cell> {{task.active}}</td>
+            </ng-container>
+
             <ng-container matColumnDef="workgroupId">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Workgroup Id</th>
                 <td *matCellDef="let task" mat-cell> {{task.workgroupId}} </td>
-            </ng-container>
-            <ng-container matColumnDef="workgroupName">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Workgroup Name</th>
-                <td *matCellDef="let task" mat-cell> {{task.workgroupName}} </td>
             </ng-container>
             <ng-container matColumnDef="periodId">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Period</th>
@@ -50,10 +51,7 @@
                 <td *matCellDef="let task" mat-cell> {{calculateTimeLeft(task)}} </td>
             </ng-container>
 
-            <ng-container matColumnDef="active">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Current Step</th>
-                <td *matCellDef="let task" mat-cell> {{task.active}}</td>
-            </ng-container>
+
             <ng-container matColumnDef="complete">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Complete</th>
                 <td *matCellDef="let task" mat-cell> {{task.complete}} </td>
@@ -62,14 +60,22 @@
             <ng-container matColumnDef="requests">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header style="text-align: center">Requests</th>
                 <td *matCellDef="let task" mat-cell>
-                    <div *ngIf="findTask(task.taskRequests) == 'need_approval';">
-                        <button mat-raised-button color="primary" (click)="taskRequestCompleteAction(task)">Needs Approval</button>
-                    </div>
-                    <div *ngIf="findTask(task.taskRequests) == 'need_help';">
-                        <button mat-raised-button color="primary">Needs Help</button>.
-                    </div>
-                    <div *ngIf="findTask(task.taskRequests) == 'none';">
-                        none
+                    <div *ngFor="let taskRequest of task.taskRequests">
+                        <div *ngIf="taskRequest.complete == false; else other">
+                            <ng-container *ngIf="taskRequest.status == 'need_approval'">
+                                <button mat-raised-button color="primary"
+                                        (click)="taskRequestCompleteAction(taskRequest)">Approval
+                                </button>
+                                <button mat-raised-button color="primary"
+                                        (click)="taskRequestCompleteAction(taskRequest)">Disapprove
+                                </button>
+                            </ng-container>
+                            <ng-container *ngIf="taskRequest.status == 'need_help'">
+                                <button mat-raised-button color="primary"
+                                        (click)="taskRequestCompleteAction(taskRequest)">Needs Help
+                                </button>
+                            </ng-container>
+                        </div>
                     </div>
                 </td>
             </ng-container>

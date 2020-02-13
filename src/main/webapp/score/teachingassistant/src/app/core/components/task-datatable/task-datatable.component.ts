@@ -19,7 +19,7 @@ import {TaskRequest} from "../../domain/task-request";
 export class TaskDatatableComponent implements OnInit {
 
     tasksDataSource = new MatTableDataSource<Task>();
-    tasksDisplayedColumns = ['id', 'name', 'workgroupId', 'workgroupName', 'periodId', 'duration', 'startTime', 'endTime', 'timeLeft', 'active', 'complete', 'requests'];
+    tasksDisplayedColumns = ['id', 'name', 'workgroupId', 'periodId', 'duration', 'startTime', 'endTime', 'timeLeft', 'active', 'complete', 'requests'];
     periods: string[];
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -109,7 +109,11 @@ export class TaskDatatableComponent implements OnInit {
 
     }
 
-    taskRequestCompleteAction(task: Task) {
-        console.log('Task', task);
+    taskRequestCompleteAction(taskRequest: TaskRequest) {
+        this.tasksService.completeTaskRequest(taskRequest.id).subscribe(tr => {
+            this.refreshTasks();
+            console.log('Task Request', taskRequest);
+        });
+
     }
 }

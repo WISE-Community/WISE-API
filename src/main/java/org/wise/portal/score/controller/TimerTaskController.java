@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.wise.portal.score.domain.Task;
 import org.wise.portal.score.domain.TaskRequest;
 import org.wise.portal.score.repository.TaskRepository;
+import org.wise.portal.score.repository.TaskRequestRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,10 +19,15 @@ import java.util.Optional;
 @RequestMapping(value = "/api", produces = "application/json;charset=UTF-8")
 public class TimerTaskController {
 
-  @Autowired
-  private TaskRepository taskRepository;
 
-  public TimerTaskController() {
+  private TaskRepository taskRepository;
+  private TaskRequestRepository taskRequestRepository;
+
+  @Autowired
+  public TimerTaskController(TaskRepository taskRepository,
+                             TaskRequestRepository taskRequestRepository) {
+    this.taskRepository = taskRepository;
+    this.taskRequestRepository = taskRequestRepository;
   }
 
   @GetMapping("/tasks")
@@ -195,5 +201,27 @@ public class TimerTaskController {
     return null;
   }
 
+  /**
+   * mark a task request complete
+   *
+   * @param taskRequestId the group associated with the task
+   */
+  @GetMapping(value = {"/tasks/taskrequest/{taskRequestId}"})
+  protected Boolean markCompleteTaskRequest(
+    @PathVariable Long taskRequestId
+  ) {
+    System.out.println("taskRequestId: " + taskRequestId);
 
+    if(taskRequestId != null) {
+      Optional<TaskRequest> tr = this.taskRequestRepository.findById(taskRequestId);
+      tr.ifPresent(taskRequest -> {
+        taskRequest.setComplete(true);
+        taskRequest.setName("none");
+        this.taskRequestRepository.save(taskRequest);
+      });
+    }
+
+
+    return null;
+  }
 }
