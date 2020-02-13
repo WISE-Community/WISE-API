@@ -16,6 +16,7 @@
                     flex>
                   <class-response ng-repeat='componentState in discussionController.topLevelResponses.all'
                       response='componentState'
+                      componentannotations='discussionController.componentAnnotations'
                       submitbuttonclicked='submitbuttonclicked(r)'
                       mode='::discussionController.mode'
                       deletebuttonclicked='discussionController.deletebuttonclicked(componentState)'
@@ -125,6 +126,7 @@
               <class-response ng-repeat='componentState in discussionController.topLevelResponses.all'
                   ng-if='!mdScreen'
                   response='::componentState'
+                  componentannotations='discussionController.componentAnnotations'
                   submitbuttonclicked='submitbuttonclicked(r)'
                   mode='{{::discussionController.mode}}'
                   deletebuttonclicked='discussionController.deletebuttonclicked(componentState)'
@@ -139,6 +141,7 @@
               <class-response ng-repeat='componentState in discussionController.topLevelResponses.col2'
                   ng-if='mdScreen'
                   response='::componentState'
+                  componentannotations='discussionController.componentAnnotations'
                   submitbuttonclicked='submitbuttonclicked(r)'
                   mode='{{::discussionController.mode}}'
                   deletebuttonclicked='discussionController.deletebuttonclicked(componentState)'
@@ -154,6 +157,7 @@
             <div class='discussion-posts' ng-if='mdScreen' flex>
               <class-response ng-repeat='componentState in discussionController.topLevelResponses.col1'
                   response='::componentState'
+                  componentannotations='discussionController.componentAnnotations'
                   submitbuttonclicked='submitbuttonclicked(r)'
                   mode='{{::discussionController.mode}}'
                   deletebuttonclicked='discussionController.deletebuttonclicked(componentState)'

@@ -1,6 +1,7 @@
 'use strict';
 
 import ComponentController from '../componentController';
+import { filter } from 'angular-ui-router';
 
 class DiscussionController extends ComponentController {
   constructor($filter,
@@ -90,6 +91,7 @@ class DiscussionController extends ComponentController {
     this.initializeScopeGetComponentState();
     this.initializeScopeStudentDataChanged();
     this.registerStudentWorkReceivedListener();
+    this.registerAnnotationReceivedListener();
     this.initializeWatchMdMedia();
     this.broadcastDoneRenderingComponent();
   }
@@ -259,6 +261,18 @@ class DiscussionController extends ComponentController {
     });
   }
 
+  registerAnnotationReceivedListener() {
+    this.destroyAnnotationReceivedListener =
+    this.$rootScope.$on('annotationReceived', (event, annotation) => {
+      if (this.isForThisComponent(annotation)) {
+        // todo calculating a new annotation is buggy
+        //const annotations = this.componentAnnotations.concat(annotation);
+        //this.componentAnnotations =
+            //this.filterLatestAnnotationsByWorkgroup(annotations);
+      }
+    });
+  }
+
   isWorkFromClassmate(componentState) {
     return componentState.workgroupId !== this.ConfigService.getWorkgroupId();
   }
@@ -288,9 +302,30 @@ class DiscussionController extends ComponentController {
   getClassmateResponses(components = [{nodeId: this.nodeId, componentId: this.componentId}]) {
     const runId = this.ConfigService.getRunId();
     const periodId = this.ConfigService.getPeriodId();
-    this.DiscussionService.getClassmateResponses(runId, periodId, components).then((result) => {
-      this.setClassResponses(result.studentWorkList, result.annotations);
+    this.DiscussionService.getClassmateResponses(runId, periodId, components)
+        .then(({studentWorkList, annotations}) => {
+      this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
+      this.setClassResponses(studentWorkList, annotations);
     });
+  }
+
+  filterLatestAnnotationsByWorkgroup(annotations) {
+    const filteredAnnotations = [];
+    for (let i = annotations.length - 1; i >= 0; i--) {
+      const annotation = annotations[i];
+      let isFound = false;
+      for (const filteredAnnotation of filteredAnnotations) {
+        if (filteredAnnotation.fromWorkgroupId === annotation.fromWorkgroupId &&
+          filteredAnnotation.studentWorkId === annotation.studentWorkId) {
+            isFound = true;
+            break;
+          }
+      }
+      if (!isFound) {
+        filteredAnnotations.push(annotation);
+      }
+    }
+    return filteredAnnotations;
   }
 
   submitButtonClicked() {
@@ -455,7 +490,7 @@ class DiscussionController extends ComponentController {
     }
     this.topLevelResponses = this.getLevel1Responses();
   }
-  
+
   threadHasPostFromThisComponentAndWorkgroupId(componentState) {
     const thisComponentId = this.componentId;
     const thisWorkgroupId = this.workgroupId;
@@ -557,9 +592,9 @@ class DiscussionController extends ComponentController {
   }
 
       /**
-   * Students upvoted this post. This function will create a vote 
-   * annotation with the value set to -1, 0, or 1 depending on the 
-   * voting response. 
+   * Students upvoted this post. This function will create a vote
+   * annotation with the value set to -1, 0, or 1 depending on the
+   * voting response.
    * @param componentState the student component that the vote is being
    * applied to.
    */
@@ -578,15 +613,15 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    this.AnnotationService.saveAnnotation(annotation).then(() => {
-      //TODO
-    });
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.getClassmateResponses();
+    });;
   }
 
     /**
-   * Students downvoted this post. This function will create a vote 
-   * annotation with the value set to -1, 0, or 1 depending on the 
-   * voting response. 
+   * Students downvoted this post. This function will create a vote
+   * annotation with the value set to -1, 0, or 1 depending on the
+   * voting response.
    * @param componentState the student component that the vote is being
    * applied to.
    */
@@ -605,15 +640,15 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    this.AnnotationService.saveAnnotation(annotation).then(() => {
-      //TODO
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.getClassmateResponses();
     });
   }
 
     /**
-   * Students un-voted this post. This function will create a vote 
-   * annotation with the value set to -1, 0, or 1 depending on the 
-   * voting response. 
+   * Students un-voted this post. This function will create a vote
+   * annotation with the value set to -1, 0, or 1 depending on the
+   * voting response.
    * @param componentState the student component that the vote is being
    * applied to.
    */
@@ -632,11 +667,11 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    this.AnnotationService.saveAnnotation(annotation).then(() => {
-      //TODO
-    });
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.getClassmateResponses();
+    });;
   }
-  
+
   /**
    * The teacher has clicked the 'Undo Delete' button to undo a previous
    * deletion of a post. This function will create an inappropriate flag
@@ -687,11 +722,10 @@ class DiscussionController extends ComponentController {
     return annotations;
   }
 
-  
-
   cleanupBeforeExiting() {
     this.destroyStudentWorkSavedToServerListener();
     this.destroyStudentWorkReceivedListener();
+    this.destroyAnnotationReceivedListener();
   }
 }
 

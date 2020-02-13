@@ -39,6 +39,9 @@ class StudentWebSocketService {
       } else if (message.type === 'studentWork') {
         const studentWork = JSON.parse(message.content);
         this.$rootScope.$broadcast('studentWorkReceived', studentWork);
+      } else if (message.type === 'annotation') {
+        const annotation = JSON.parse(message.content);
+        this.$rootScope.$broadcast('annotationReceived', annotation);
       }
     });
   }

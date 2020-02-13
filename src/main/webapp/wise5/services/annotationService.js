@@ -180,8 +180,10 @@ class AnnotationService {
         };
 
         var url;
-        if (this.ConfigService.getMode() == "studentRun") {
-          url = "studentDataURL"
+        if (this.ConfigService.getMode() === "studentRun") {
+          url = "studentDataURL",
+          params.studentWorkList = JSON.stringify([]),
+          params.events = JSON.stringify([])
         }
         else {
           url = "teacherDataURL"

@@ -9,9 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.wise.vle.domain.WebSocketMessage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class RedisMessageSubscriber implements MessageListener {
 
@@ -28,7 +25,8 @@ public class RedisMessageSubscriber implements MessageListener {
           messageJSON.get("type").equals("studentWorkToTeacher")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("studentWork", messageJSON.getString("studentWork"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
-      } else if (messageJSON.get("type").equals("annotationToTeacher")) {
+      } else if (messageJSON.get("type").equals("annotationToTeacher") ||
+          messageJSON.get("type").equals("annotationToClassroom")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("annotation", messageJSON.getString("annotation"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       } else if (messageJSON.get("type").equals("studentStatusToTeacher")) {
