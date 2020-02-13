@@ -556,6 +556,87 @@ class DiscussionController extends ComponentController {
     });
   }
 
+      /**
+   * Students upvoted this post. This function will create a vote 
+   * annotation with the value set to -1, 0, or 1 depending on the 
+   * voting response. 
+   * @param componentState the student component that the vote is being
+   * applied to.
+   */
+  createupvoteannotation(componentState) {
+    const toWorkgroupId = componentState.workgroupId;
+    const userInfo = this.ConfigService.getUserInfoByWorkgroupId(toWorkgroupId);
+    const periodId = userInfo.periodId;
+    const studentUserInfo = this.ConfigService.getMyUserInfo();
+    const fromWorkgroupId = studentUserInfo.workgroupId;
+    const runId = this.ConfigService.getRunId();
+    const nodeId = this.nodeId;
+    const componentId = this.componentId;
+    const studentWorkId = componentState.id;
+    const data = {
+      value: 1
+    };
+    const annotation = this.AnnotationService.createVoteAnnotation(
+        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+    this.AnnotationService.saveAnnotation(annotation).then(() => {
+      //TODO
+    });
+  }
+
+    /**
+   * Students downvoted this post. This function will create a vote 
+   * annotation with the value set to -1, 0, or 1 depending on the 
+   * voting response. 
+   * @param componentState the student component that the vote is being
+   * applied to.
+   */
+  createdownvoteannotation(componentState) {
+    const toWorkgroupId = componentState.workgroupId;
+    const userInfo = this.ConfigService.getUserInfoByWorkgroupId(toWorkgroupId);
+    const periodId = userInfo.periodId;
+    const studentUserInfo = this.ConfigService.getMyUserInfo();
+    const fromWorkgroupId = studentUserInfo.workgroupId;
+    const runId = this.ConfigService.getRunId();
+    const nodeId = this.nodeId;
+    const componentId = this.componentId;
+    const studentWorkId = componentState.id;
+    const data = {
+      value: -1
+    };
+    const annotation = this.AnnotationService.createVoteAnnotation(
+        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+    this.AnnotationService.saveAnnotation(annotation).then(() => {
+      //TODO
+    });
+  }
+
+    /**
+   * Students un-voted this post. This function will create a vote 
+   * annotation with the value set to -1, 0, or 1 depending on the 
+   * voting response. 
+   * @param componentState the student component that the vote is being
+   * applied to.
+   */
+  createunvoteannotation(componentState) {
+    const toWorkgroupId = componentState.workgroupId;
+    const userInfo = this.ConfigService.getUserInfoByWorkgroupId(toWorkgroupId);
+    const periodId = userInfo.periodId;
+    const studentUserInfo = this.ConfigService.getMyUserInfo();
+    const fromWorkgroupId = studentUserInfo.workgroupId;
+    const runId = this.ConfigService.getRunId();
+    const nodeId = this.nodeId;
+    const componentId = this.componentId;
+    const studentWorkId = componentState.id;
+    const data = {
+      value: 0
+    };
+    const annotation = this.AnnotationService.createVoteAnnotation(
+        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+    this.AnnotationService.saveAnnotation(annotation).then(() => {
+      //TODO
+    });
+  }
+  
   /**
    * The teacher has clicked the 'Undo Delete' button to undo a previous
    * deletion of a post. This function will create an inappropriate flag
@@ -605,6 +686,8 @@ class DiscussionController extends ComponentController {
     }
     return annotations;
   }
+
+  
 
   cleanupBeforeExiting() {
     this.destroyStudentWorkSavedToServerListener();

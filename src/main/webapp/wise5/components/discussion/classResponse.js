@@ -1,16 +1,17 @@
 'use strict';
 
 class ClassResponseController {
-  constructor($scope, $filter, StudentStatusService, ConfigService) {
+  constructor($scope, $filter, AnnotationService, StudentStatusService, ConfigService) {
     this.$scope = $scope;
     this.$filter = $filter;
+    this.AnnotationService = AnnotationService;
     this.StudentStatusService = StudentStatusService;
     this.ConfigService = ConfigService;
     this.$translate = this.$filter('translate');
     this.urlMatcher = /((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?)/g;
     this.expanded = false;
-    this.currentVote = 0;//TODO initialize to current vote
-    this.numVotes = 10;//TODO set and get from database
+    this.currentVote = 0;
+    this.numVotes = 0;
     this.isUpvoteClicked = false;
     this.isDownvoteClicked = false;
 
@@ -26,6 +27,28 @@ class ClassResponseController {
 
   $onInit() {
     this.injectLinksIntoResponse();
+    
+    //TODO: Sum the votes
+    /*const annotations = this.AnnotationService.getAnnotationsByStudentWorkId(this.response.id)
+    let currentVote;
+
+    for (let annotation of annotations) {
+      if (annotation.type == "vote"){
+        this.numVotes += annotation.data.value; 
+      }
+    }*/
+    
+    //TODO: Get the current vote for the current workgroup 
+    /*currentVote = this.AnnotationService.getLatestVoteAnnotationByStudentWorkIdAndFromWorkgroupId(this.response.id, userInfo.workgroupId);
+    if (currentVote != null) {
+      this.currentVote = currentVote;
+    }
+    else {
+      this.currentVote = 0;
+    }
+    
+    */
+    
   }
 
   injectLinksIntoResponse() {
@@ -78,39 +101,72 @@ class ClassResponseController {
     return this.ConfigService.convertToClientTimestamp(time);
   }
 
-  updateCurrentVote($event) {
-    var newVote;
-    if (this.isUpvoteClicked) {
-      newVote = 1;
-    }
-    else if (this.isDownvoteClicked) {
-      newVote = -1;
-    }
-    else {
-      newVote = 0;
-    }
+  updateNumVotes(newVote) {
     this.numVotes += (newVote - this.currentVote);
     this.currentVote = newVote;
   }
 
-  upvoteClicked() {
-    this.isUpvoteClicked = !this.isUpvoteClicked;
-    if (this.isUpvoteClicked) {
+  upvoteClicked(componentState) {
+    var isUpvoteClicked = !this.isUpvoteClicked;
+    var newVote;
+    
+    if (isUpvoteClicked) {
+      newVote = 1;
+      this.createupvoteannotation({componentState: componentState});
+      this.isUpvoteClicked = true;
       this.isDownvoteClicked = false;
+      this.updateNumVotes(newVote);
     }
-    this.updateCurrentVote();
+    else {
+      newVote = 0;
+      this.createunvoteannotation({componentState: componentState});
+      this.isUpvoteClicked = false;
+      this.isDownvoteClicked = false;
+      this.updateNumVotes(newVote);
+    }
   }
 
-  downvoteClicked() {
-    this.isDownvoteClicked = !this.isDownvoteClicked;
-    if (this.isDownvoteClicked) {
+  downvoteClicked(componentState) {
+    var isDownvoteClicked = !this.isDownvoteClicked;
+    var newVote;
+    
+    if (isDownvoteClicked) {
+      newVote = -1;
+      this.createdownvoteannotation({componentState: componentState});
       this.isUpvoteClicked = false;
+      this.isDownvoteClicked = true;
+      this.updateNumVotes(newVote);
     }
-    this.updateCurrentVote();
+    else {
+      newVote = 0;
+      this.createUnvoteAnnotation({componentState: componentState});
+      this.isUpvoteClicked = false;
+      this.isUpvoteClicked = false; 
+      this.updateNumVotes(newVote);
+    }
+  }
+
+    /**
+   * Get the vote annotations for these component states
+   * @param componentStates an array of component states
+   * @return an array of vote annotations that are associated
+   * with the component states
+   */
+  getVoteAnnotationsByComponentStates(componentStates = []) {
+    const annotations = [];
+    for (const componentState of componentStates) {
+      const latestInappropriateFlagAnnotation =
+          this.AnnotationService.getLatestAnnotationByStudentWorkIdAndType(
+          componentState.id, 'vote');
+      if (latestInappropriateFlagAnnotation != null) {
+        annotations.push(latestInappropriateFlagAnnotation);
+      }
+    }
+    return annotations;
   }
 }
 
-ClassResponseController.$inject = ['$scope','$filter','StudentStatusService','ConfigService'];
+ClassResponseController.$inject = ['$scope','$filter','AnnotationService','StudentStatusService','ConfigService'];
 
 const ClassResponseComponentOptions = {
   bindings: {
@@ -118,6 +174,9 @@ const ClassResponseComponentOptions = {
     mode: '@',
     deletebuttonclicked: '&',
     undodeletebuttonclicked: '&',
+    createupvoteannotation: '&',
+    createdownvoteannotation: '&',
+    createunvoteannotation: '&',
     submitbuttonclicked: '&',
     studentdatachanged: '&',
     isdisabled: '<'
