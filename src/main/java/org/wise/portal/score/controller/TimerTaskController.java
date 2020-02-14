@@ -98,6 +98,8 @@ public class TimerTaskController {
         .periodName(periodName)
         .periodId(periodId)
         .duration(duration)
+        .complete(false)
+        .active(false)
         .name(activityName)
         .activityId(activityId).build();
       this.taskRepository.save(task);
