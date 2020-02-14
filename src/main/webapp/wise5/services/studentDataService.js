@@ -2137,7 +2137,9 @@ class StudentDataService {
       if (previousCurrentNode &&
         !this.ProjectService.isGroupNode(previousCurrentNode.id)) {
         this.previousStep = previousCurrentNode;
-        this.editTaskTimer('end_timer');
+        if (this.previousStep.task != null) {
+          this.editTaskTimer('end_timer');
+        }
         console.log('EXITING THE CURRENT NODE');
       }
       this.currentNode = node;

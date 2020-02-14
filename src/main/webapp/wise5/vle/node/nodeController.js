@@ -82,7 +82,9 @@ class NodeController {
         this.NodeService.evaluateTransitionLogic();
       }
       console.log('ENTERED NODE SEND MESSAGE TO AGENT TO START STUDENTS TIMER ---------->');
-      this.editTaskTimer('start_timer');
+      if (this.nodeContent.task != null) {
+        this.editTaskTimer('start_timer');
+      }
       // const runId = this.ConfigService.getRunId();
       // const periodId = this.ConfigService.getPeriodId();
       // const workgroupId = this.ConfigService.getWorkgroupId();
