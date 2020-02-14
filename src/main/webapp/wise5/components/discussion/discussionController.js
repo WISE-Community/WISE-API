@@ -612,9 +612,7 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation).then(() => {
-      this.getClassmateResponses();
-    });;
+    return this.AnnotationService.saveAnnotation(annotation);
   }
 
     /**
@@ -639,9 +637,7 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation).then(() => {
-      this.getClassmateResponses();
-    });
+    return this.AnnotationService.saveAnnotation(annotation);
   }
 
     /**
@@ -666,9 +662,7 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation).then(() => {
-      this.getClassmateResponses();
-    });;
+    return this.AnnotationService.saveAnnotation(annotation);
   }
 
   /**
