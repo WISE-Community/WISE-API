@@ -265,10 +265,9 @@ class DiscussionController extends ComponentController {
     this.destroyAnnotationReceivedListener =
     this.$rootScope.$on('annotationReceived', (event, annotation) => {
       if (this.isForThisComponent(annotation)) {
-        // todo calculating a new annotation is buggy
-        //const annotations = this.componentAnnotations.concat(annotation);
-        //this.componentAnnotations =
-            //this.filterLatestAnnotationsByWorkgroup(annotations);
+        const annotations = this.componentAnnotations.concat(annotation);
+        this.componentAnnotations =
+            this.filterLatestAnnotationsByWorkgroup(annotations);
       }
     });
   }
