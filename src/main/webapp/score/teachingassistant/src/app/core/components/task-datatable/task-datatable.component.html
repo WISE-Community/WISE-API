@@ -63,18 +63,25 @@
                     <div *ngFor="let taskRequest of task.taskRequests">
                         <div *ngIf="taskRequest.complete == false; else other">
                             <ng-container *ngIf="taskRequest.status == 'need_approval'">
-                                <button mat-raised-button color="primary"
-                                        (click)="taskRequestCompleteAction(taskRequest)">Approval
+                                <button mat-flat-button color="primary" class="buttons"
+                                        (click)="taskRequestCompleteAction(taskRequest,'approved')">
+                                    <mat-icon>thumb_up</mat-icon>
                                 </button>
-                                <button mat-raised-button color="primary"
-                                        (click)="taskRequestCompleteAction(taskRequest)">Disapprove
+                                <div style="height: 5px"></div>
+                                <button mat-flat-button color="accent" class="buttons"
+                                        (click)="taskRequestCompleteAction(taskRequest, 'needs_work')">
+                                    <mat-icon>thumb_down</mat-icon>
                                 </button>
                             </ng-container>
+                            <div style="height: 5px"></div>
                             <ng-container *ngIf="taskRequest.status == 'need_help'">
-                                <button mat-raised-button color="primary"
-                                        (click)="taskRequestCompleteAction(taskRequest)">Needs Help
+                                <button mat-flat-button color="primary" class="buttons"
+                                        (click)="taskRequestCompleteAction(taskRequest, 'helped')">
+                                    <mat-icon>ring_volume</mat-icon>
                                 </button>
                             </ng-container>
+                            <div style="height: 5px"></div>
+
                         </div>
                     </div>
                 </td>

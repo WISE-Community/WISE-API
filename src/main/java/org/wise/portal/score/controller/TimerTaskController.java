@@ -20,7 +20,6 @@ import java.util.Optional;
 @RequestMapping(value = "/api", produces = "application/json;charset=UTF-8")
 public class TimerTaskController {
 
-
   private TaskRepository taskRepository;
   private TaskRequestRepository taskRequestRepository;
 
@@ -199,21 +198,6 @@ public class TimerTaskController {
         this.taskRepository.save(task);
       });
     }
-//    if(runId != null && workgroupId != null & requestType != null && activityId != null && periodId != null) {
-//      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(runId, periodId, workgroupId, activityId);
-//      byId.ifPresent(task -> {
-//        TaskRequest taskRequest = TaskRequest.builder()
-//          .periodId(periodId)
-//          .runId(runId)
-//          .complete(false)
-//          .workgroupId(workgroupId)
-//          .status(requestType)
-//          .build();
-//        task.addTaskRequest(taskRequest);
-//        this.taskRepository.save(task);
-//      });
-//    }
-
     return null;
   }
 
@@ -222,7 +206,7 @@ public class TimerTaskController {
    *
    * @param taskRequestId the group associated with the task
    */
-  @GetMapping(value = {"/tasks/taskrequest/{taskRequestId}"})
+  @GetMapping(value = {"/tasks/taskrequest/{taskRequestId}/{status}"})
   protected Boolean markCompleteTaskRequest(
     @PathVariable Long taskRequestId,
     @PathVariable String status
@@ -232,8 +216,17 @@ public class TimerTaskController {
     if (taskRequestId != null && status != null) {
       Optional<TaskRequest> tr = this.taskRequestRepository.findById(taskRequestId);
       tr.ifPresent(taskRequest -> {
-        taskRequest.setComplete(true);
-        taskRequest.setStatus(status);
+        if(status.equals("approved")) {
+          taskRequest.setComplete(true);
+          taskRequest.setStatus(status);
+        } else if(status.equals("needs_work")) {
+          taskRequest.setComplete(false);
+          taskRequest.setStatus(status);
+        } else if(status.equals("helped")) {
+          taskRequest.setComplete(true);
+          taskRequest.setStatus(status);
+        }
+
         this.taskRequestRepository.save(taskRequest);
       });
     }

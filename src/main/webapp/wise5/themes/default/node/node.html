@@ -12,7 +12,7 @@
                   <span>Request Approval</span>
                   <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Approval from the TA</md-tooltip>
                 </md-button>
-            <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}} min</span></b></div>
+            <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}} min</span><br><span>Time Remaining: {{nodeController.timeTitle}}</span></b></div>
         </div>
         <div ng-if="::nodeController.isShowNodeRubric()" class="node-content__rubric" layout="row" layout-align="center center">
             <help-icon id="nodeRubric_{{nodeController.nodeId}}"

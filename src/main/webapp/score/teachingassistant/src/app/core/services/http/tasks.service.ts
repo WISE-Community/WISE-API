@@ -24,9 +24,9 @@ export class TasksService {
         this.http.get<any>(`${this.tasksUrl}/stop/${runId}/${workgroupId}/${activityId}`, {headers: headers});
     }
 
-    completeTaskRequest(taskRequestId: string): Observable<any> {
+    completeTaskRequest(taskRequestId: string, status: string): Observable<any> {
         const headers = new HttpHeaders({'Cache-Control': 'no-cache'});
-        return this.http.get<any>(`${this.tasksUrl}/taskrequest/${taskRequestId}`, {headers: headers});
+        return this.http.get<any>(`${this.tasksUrl}/taskrequest/${taskRequestId}/${status}`, {headers: headers});
     }
 
     getTasksByRunIdAndPeriodId(runId: number, periodId: number): Observable<Task[]> {

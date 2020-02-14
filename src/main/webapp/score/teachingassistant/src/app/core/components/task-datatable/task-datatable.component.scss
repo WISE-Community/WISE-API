@@ -6,6 +6,10 @@ $small-column: 10px;
 $medium-column: 20px;
 $large-column: 40px;
 
+.buttons {
+  width: 100px;
+}
+
 .basic-container {
     display: flex;
     flex-direction: column;

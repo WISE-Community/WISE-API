@@ -98,6 +98,7 @@ export class TaskDatatableComponent implements OnInit {
     findTask(taskRequests: TaskRequest[]): string {
         for (let i = 0; i < taskRequests.length; i++) {
             let taskRequest: TaskRequest = taskRequests[i];
+            console.log('taskRequest ', taskRequest);
             if (taskRequest.complete == false) {
                 return taskRequest.status;
             }
@@ -106,11 +107,18 @@ export class TaskDatatableComponent implements OnInit {
     }
 
     calculateTimeLeft(task: Task) {
+        if(task.endTime) {
+            let now = moment();
+            let end = moment(task.endTime);
+
+            var duration = end.diff(now);
+            // console.log('DIFFF', duration);
+        }
 
     }
 
-    taskRequestCompleteAction(taskRequest: TaskRequest) {
-        this.tasksService.completeTaskRequest(taskRequest.id).subscribe(tr => {
+    taskRequestCompleteAction(taskRequest: TaskRequest, status: string) {
+        this.tasksService.completeTaskRequest(taskRequest.id, status).subscribe(tr => {
             this.refreshTasks();
             console.log('Task Request', taskRequest);
         });

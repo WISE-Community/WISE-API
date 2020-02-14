@@ -34,7 +34,7 @@ public class TaskRequest extends PersistableDomain implements Serializable {
   private Long periodId;
   private Long projectId;
   private String status;
-  private Boolean complete;
+  private Boolean complete = false;
   private Timestamp startTime;
   private Timestamp endTime;
 

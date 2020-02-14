@@ -40,9 +40,9 @@ public class Task {
   private Integer duration;
   private Timestamp startTime;
   private Timestamp endTime;
-  private Boolean complete;
-  private Boolean started;
-  private Boolean active;
+  private Boolean complete = false;
+  private Boolean started = false;
+  private Boolean active = false;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
