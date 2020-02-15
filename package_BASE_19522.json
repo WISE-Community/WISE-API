@@ -54,7 +54,6 @@
     "hopscotch": "^0.3.1",
     "html2canvas": "^0.5.0-beta4",
     "iframe-resizer": "^3.5.3",
-    "immutable": "^4.0.0-rc.12",
     "jquery": "^3.4.1",
     "jsdom": "^15.2.0",
     "moment": "^2.24.0",
@@ -116,7 +115,6 @@
     "karma-webpack": "2.0.4",
     "ng-bullet": "^1.0.3",
     "node-sass": "^4.13.0",
-    "prettier": "1.19.1",
     "protractor": "^5.4.2",
     "ts-loader": "^6.2.1",
     "ts-node": "~8.2.0",
@@ -128,20 +126,16 @@
     "webpack-node-externals": "^1.7.2"
   },
   "scripts": {
-    "build-dev-all": "node node_modules/concurrently/bin/concurrently.js \"npm run build-dev-site\" \"npm run build-dev-at\" \"npm run build-dev-cm\" \"npm run build-dev-vle\" \"npm run build-dev-ta\"",
+    "build-dev-all": "node node_modules/concurrently/bin/concurrently.js \"npm run build-dev-site\" \"npm run build-dev-at\" \"npm run build-dev-cm\" \"npm run build-dev-vle\"",
     "build-dev-at": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build at --watch\" \"node scripts/afterBuild.js at true\"",
     "build-dev-cm": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build cm --watch\" \"node scripts/afterBuild.js cm true\"",
     "build-dev-site": "node node_modules/concurrently/bin/concurrently.js \"ng build site --watch\" \"ng test --source-map=false --karma-config src/main/webapp/site/karma.conf.js --browsers ChromeHeadlessNoSandbox\"  \"node scripts/afterBuild.js site true\"",
     "build-dev-vle": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build vle --watch\" \"node scripts/afterBuild.js vle true\"",
-    "build-dev-ta": "node node_modules/concurrently/bin/concurrently.js \"node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build ta --watch\"",
     "build-prod-all": "npm run build-prod-at && npm run build-prod-cm && npm run build-prod-vle && npm run build-prod-site",
-    "build-prod-all-hans": "npm run build-prod-at && npm run build-prod-cm && npm run build-prod-vle && npm run build-prod-site-hans",
     "build-prod-at": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build at --configuration=production && node scripts/afterBuild.js at",
     "build-prod-cm": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build cm --configuration=production && node scripts/afterBuild.js cm",
     "build-prod-vle": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build vle --configuration=production && node scripts/afterBuild.js vle",
     "build-prod-site": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build site --configuration=production && node scripts/afterBuild.js site",
-    "build-prod-ta": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build ta --configuration=production && node scripts/afterBuild.js ta",
-    "build-prod-site-hans": "node --max_old_space_size=4096 ./node_modules/@angular/cli/bin/ng build site --configuration=production-zh-Hans && node scripts/afterBuild.js site",
     "bundle-report": "node ./node_modules/webpack-bundle-analyzer/lib/bin/analyzer.js src/main/webapp/site/dist/stats.json",
     "watch-all-wise5": "node node_modules/concurrently/bin/concurrently.js \"node ./node_modules/gulp/bin/gulp.js\" \"npm run test-wise5-watch\"",
     "watch-sass": "npm rebuild node-sass && node ./node_modules/gulp/bin/gulp.js",
@@ -149,7 +143,7 @@
     "compile-sass": "node ./node_modules/gulp/bin/gulp.js compile-sass",
     "test": "node ./node_modules/karma/bin/karma start src/main/webapp/wise5/karma.conf.js --single-run --browsers ChromeHeadlessNoSandbox",
     "test-site": "ng test site --karma-config src/main/webapp/site/karma.conf.js --browsers ChromeHeadlessNoSandbox --watch=false",
-    "test-watch": "node ./node_modules/karma/bin/karma start src/main/webapp/wise5/karma.conf.js --color --browsers ChromeHeadlessNoSandbox",
+    "test-wise5-watch": "node ./node_modules/karma/bin/karma start src/main/webapp/wise5/karma.conf.js --color --browsers ChromeHeadlessNoSandbox",
     "test-e2e-comment": "test-e2e assumes wise is already running.",
     "test-e2e": "node ./node_modules/protractor/bin/protractor src/main/webapp/wise5/test-e2e/conf.js",
     "ngx-extractor": "./node_modules/.bin/ngx-extractor -i \"src/main/webapp/site/**/*.ts\" -o src/main/webapp/site/src/messages.xlf"
@@ -159,7 +153,7 @@
     "url": "git+https://github.com/WISE-Community/WISE.git"
   },
   "keywords": [
-    "SCORE",
+    "WISE",
     "education",
     "science",
     "inquiry"
@@ -167,7 +161,7 @@
   "author": "",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/encorelab/SCORE/issues"
+    "url": "https://github.com/WISE-Community/WISE/issues"
   },
-  "homepage": "https://github.com/encorelab/SCORE#readme"
+  "homepage": "https://github.com/WISE-Community/WISE#readme"
 }
