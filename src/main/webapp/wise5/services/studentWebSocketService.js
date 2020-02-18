@@ -47,7 +47,7 @@ class StudentWebSocketService {
           const studentWork = JSON.parse(message.content);
           this.$rootScope.$broadcast("studentWorkReceived", studentWork);
         } else if (message.type === "goToNode") {
-          this.goToStep(message);
+          this.goToStep(message.content);
         }
       }
     );
@@ -66,22 +66,13 @@ class StudentWebSocketService {
           this.$rootScope.$broadcast("newAnnotationReceived", {
             annotation: annotationData
           });
-        } else if (message.type === "echoAgent") {
-          const echoResponse = JSON.parse(message.content);
-          console.log(echoResponse.echoResponse);
-          this.$rootScope.$broadcast("echoResponseReceived", echoResponse);
-        } else if (message.type === "goToNode") {
-          this.goToStep(message);
         }
       }
     );
   }
 
-  goToStep(message) {
-    const content = JSON.parse(message.content);
-    this.StudentDataService.endCurrentNodeAndSetCurrentNodeByNodeId(
-      content.data.nodeId
-    );
+  goToStep(nodeId) {
+    this.StudentDataService.endCurrentNodeAndSetCurrentNodeByNodeId(nodeId);
   }
 }
 

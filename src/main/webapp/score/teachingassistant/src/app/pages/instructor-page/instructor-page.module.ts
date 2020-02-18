@@ -3,12 +3,16 @@ import {CommonModule} from '@angular/common';
 
 import {InstructorPageRoutingModule} from './instructor-page-routing.module';
 import {InstructorPageComponent} from './instructor-page.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material';
 
 @NgModule({
   declarations: [InstructorPageComponent],
   imports: [
     CommonModule,
-    InstructorPageRoutingModule
+    InstructorPageRoutingModule,
+    MatTableModule,
+    MatButtonModule
   ]
 })
 export class InstructorPageModule { }

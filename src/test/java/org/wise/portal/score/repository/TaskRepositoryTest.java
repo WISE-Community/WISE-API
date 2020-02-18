@@ -1,4 +1,4 @@
-package repository;
+package org.wise.portal.score.repository;
 
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -24,10 +24,9 @@ import java.util.Optional;
  * @author Anthony Perritano
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {Application.class})
+@ContextConfiguration(classes = { Application.class })
 @SpringBootTest
 public class TaskRepositoryTest extends TestCase {
-
 
   @Autowired
   TaskRepository taskRepository;
@@ -50,47 +49,52 @@ public class TaskRepositoryTest extends TestCase {
   public void testFindAllTasksByRunId() {
     Long runId = Long.valueOf(7);
     List<Task> allByRunId = this.taskRepository.findAllByRunId(runId);
-    if(allByRunId.isEmpty()) {
-      assert(false);
+    if (allByRunId.isEmpty()) {
+      assert (false);
     }
-    for (Task task: allByRunId) {
-      if(!task.getRunId().equals(runId)) {
-        assert(false);
+    for (Task task : allByRunId) {
+      if (!task.getRunId().equals(runId)) {
+        assert (false);
       }
     }
-    assert(true);
+    assert (true);
   }
 
   @Test
   public void testFindAllTasksByRunIdAndPeriodId() {
     Long runId = Long.valueOf(7);
     Long periodId = Long.valueOf(2);
-    List<Task> allByRunId = this.taskRepository.findAllByRunIdAndPeriodId(runId,periodId);
-    if(allByRunId.isEmpty()) {
-      assert(false);
+    List<Task> allByRunId = this.taskRepository.findAllByRunIdAndPeriodId(runId,
+        periodId);
+    if (allByRunId.isEmpty()) {
+      assert (false);
     }
-    for (Task task: allByRunId) {
-      if(!(task.getRunId().equals(runId) && task.getPeriodId().equals(periodId))) {
-        assert(false);
+    for (Task task : allByRunId) {
+      if (!(task.getRunId().equals(runId)
+          && task.getPeriodId().equals(periodId))) {
+        assert (false);
       }
     }
-   assert(true);
+    assert (true);
   }
+
   @Test
   public void testFindAllTasksByRunIdAndPeriodIdAndWorkgroupId() {
     Long runId = Long.valueOf(7);
     Long periodId = Long.valueOf(2);
     Long workgroupId = Long.valueOf(3);
-    List<Task> allByRunId = this.taskRepository.findAllByRunIdAndPeriodIdAndWorkgroupId(runId,periodId, workgroupId);
-    if(allByRunId.isEmpty()) {
-      assert(false);
+    List<Task> allByRunId = this.taskRepository
+        .findAllByRunIdAndPeriodIdAndWorkgroupId(runId, periodId, workgroupId);
+    if (allByRunId.isEmpty()) {
+      assert (false);
     }
-    for (Task task: allByRunId) {
-      if(!(task.getRunId().equals(runId) && task.getPeriodId().equals(periodId) && task.getWorkgroupId().equals(workgroupId))) {
-        assert(false);
+    for (Task task : allByRunId) {
+      if (!(task.getRunId().equals(runId) && task.getPeriodId().equals(periodId)
+          && task.getWorkgroupId().equals(workgroupId))) {
+        assert (false);
       }
     }
-    assert(true);
+    assert (true);
   }
 
   private List<Task> createTasks() {
@@ -98,42 +102,33 @@ public class TaskRepositoryTest extends TestCase {
     Calendar now = Calendar.getInstance();
     Timestamp startTimestamp = new Timestamp(now.getTimeInMillis());
     Timestamp endTimestamp = new Timestamp(now.getTimeInMillis() + 1000);
-    Task task = Task.builder().
-      name("activity 1")
-//      .startTime(startTimestamp)
-//      .endTime(endTimestamp)
-      .runId((long) 7)
-      .periodId((long) 2)
-      .projectId((long) 5)
-      .workgroupId((long) 1)
-//      .complete(false)
-      .build();
+    Task task = Task.builder().name("activity 1")
+        // .startTime(startTimestamp)
+        // .endTime(endTimestamp)
+        .runId((long) 7).periodId((long) 2).projectId((long) 5)
+        .workgroupId((long) 1)
+        // .complete(false)
+        .build();
 
     tasks.add(task);
 
-    task = Task.builder().
-      name("activity 1")
-//      .startTime(startTimestamp)
-//      .endTime(endTimestamp)
-      .runId((long) 7)
-      .periodId((long) 2)
-      .projectId((long) 5)
-      .workgroupId((long) 3)
-//      .complete(false)
-      .build();
+    task = Task.builder().name("activity 1")
+        // .startTime(startTimestamp)
+        // .endTime(endTimestamp)
+        .runId((long) 7).periodId((long) 2).projectId((long) 5)
+        .workgroupId((long) 3)
+        // .complete(false)
+        .build();
 
     tasks.add(task);
 
-    task = Task.builder().
-      name("activity 2")
-//      .startTime(startTimestamp)
-//      .endTime(endTimestamp)
-      .runId((long) 6)
-      .periodId((long) 3)
-      .projectId((long) 5)
-      .workgroupId((long) 2)
-//      .complete(true)
-      .build();
+    task = Task.builder().name("activity 2")
+        // .startTime(startTimestamp)
+        // .endTime(endTimestamp)
+        .runId((long) 6).periodId((long) 3).projectId((long) 5)
+        .workgroupId((long) 2)
+        // .complete(true)
+        .build();
 
     tasks.add(task);
 
