@@ -10,6 +10,7 @@ import {TasksService} from "../../services/http/tasks.service";
 import * as moment from "moment";
 import {MatSelectChange} from "@angular/material/select";
 import {TaskRequest} from "../../domain/task-request";
+import { Period } from '../../../../../../../site/src/app/domain/period';
 
 @Component({
   selector: 'app-task-datatable',
@@ -20,7 +21,7 @@ export class TaskDatatableComponent implements OnInit {
 
     tasksDataSource = new MatTableDataSource<Task>();
     tasksDisplayedColumns = ['id', 'name', 'workgroupId', 'periodId', 'duration', 'startTime', 'endTime', 'timeLeft', 'active', 'complete', 'requests'];
-    periods: string[];
+    periods: Period[];
 
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;

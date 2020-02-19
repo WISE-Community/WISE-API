@@ -1,0 +1,14 @@
+<h2 *ngIf="workgroup != null">Choose which step to send Workgroup {{workgroup.name}} to</h2>
+<h2 *ngIf="period != null">Choose which step to send Period {{period.name}} to</h2>
+<table mat-table [dataSource]="stepNodes">
+    <ng-container matColumnDef="stepName">
+        <th mat-header-cell *matHeaderCellDef> Step Name </th>
+        <td mat-cell *matCellDef="let node"> {{node.title}} </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let node"> <button mat-button color="accent" (click)="sendToNode(node)" i18n>Choose</button> </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

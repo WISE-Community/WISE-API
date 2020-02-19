@@ -147,6 +147,8 @@
     "score": "Score",
     "selectATeam": "Select a team",
     "selectedComponentsLabel": "Showing {{selected}}/{{total}} items",
+    "sendAllWorkgroupsToStep": "Send all workgroups to step",
+    "sendWorkgroupToStep": "Send workgroup to step",
     "showSteps": "Show Steps",
     "serverUpdate": "WISE Server Update",
     "serverUpdateRequestLogoutMessage": "WISE will be undergoing server maintenance soon. Please save your work and log out in the next few minutes.",

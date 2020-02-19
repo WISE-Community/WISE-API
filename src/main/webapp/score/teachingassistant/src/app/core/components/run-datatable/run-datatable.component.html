@@ -27,7 +27,7 @@
             </ng-container>
             <ng-container matColumnDef="periods">
                 <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Periods</th>
-                <td *matCellDef="let run" mat-cell> {{run.periods}} </td>
+                <td *matCellDef="let run" mat-cell><span *ngFor="let period of run.periods">{{period.name}},</span> </td>
             </ng-container>
 
             <tr *matHeaderRowDef="runDisplayedColumns;" mat-header-row></tr>

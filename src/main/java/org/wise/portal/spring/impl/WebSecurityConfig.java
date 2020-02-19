@@ -62,7 +62,8 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity(debug = false)
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig<S extends Session>
+    extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private FindByIndexNameSessionRepository<S> sessionRepository;
@@ -75,14 +76,17 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http
-        .csrf().disable()
-        .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
-        .addFilterAfter(oAuth2ClientContextFilter(), OpenSessionInViewFilter.class)
-        .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
-        .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
+    http.csrf().disable()
+        .addFilterAfter(openSessionInViewFilter(),
+            SecurityContextHolderAwareRequestFilter.class)
+        .addFilterAfter(oAuth2ClientContextFilter(),
+            OpenSessionInViewFilter.class)
+        .addFilterAfter(googleOpenIdConnectFilter(),
+            OAuth2ClientContextFilter.class)
+        .addFilterAfter(authenticationProcessingFilter(),
+            GoogleOpenIdConnectFilter.class)
         .authorizeRequests()
-//        .antMatchers("/agent/**").hasAnyRole("ADMINISTRATOR,RESEARCHER,TEACHER")
+        // .antMatchers("/agent/**").hasAnyRole("ADMINISTRATOR,RESEARCHER,TEACHER")
         .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR,RESEARCHER")
         .antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
@@ -92,10 +96,10 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/score/**/**").permitAll()
         .antMatchers("/teachingassistant/**/**").permitAll()
-        .antMatchers("/api/**/**").permitAll()
-        .antMatchers("/").permitAll();
+        .antMatchers("/api/**/**").permitAll().antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
-    http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
+    http.sessionManagement().maximumSessions(2)
+        .sessionRegistry(sessionRegistry());
     http.logout().addLogoutHandler(wiseLogoutHandler());
     http.headers().frameOptions().sameOrigin();
   }
@@ -110,15 +114,14 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     return filter;
   }
 
-
   @Bean
   public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
-    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/google-login");
+    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter(
+        "/google-login");
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
     return filter;
   }
-
 
   @Bean
   public OpenSessionInViewFilter openSessionInViewFilter() {
@@ -152,7 +155,8 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Bean
   public LogoutFilter logoutFilter() {
-    LogoutHandler[] handlers = new LogoutHandler[]{ new SecurityContextLogoutHandler() };
+    LogoutHandler[] handlers = new LogoutHandler[] {
+        new SecurityContextLogoutHandler() };
     return new LogoutFilter("/", handlers);
   }
 
@@ -163,7 +167,8 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Bean
   public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
-    return new ServletListenerRegistrationBean<HttpSessionListener>(new WISESessionListener());
+    return new ServletListenerRegistrationBean<HttpSessionListener>(
+        new WISESessionListener());
   }
 
   @Bean

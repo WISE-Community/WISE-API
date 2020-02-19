@@ -10,6 +10,7 @@ import {TasksService} from "../../core/services/http/tasks.service";
 import { Task } from 'src/app/core/domain/task';
 import {TaskRequest} from "../../core/domain/task-request";
 import {MatPaginator} from "@angular/material/paginator";
+import { Period } from '../../../../../../site/src/app/domain/period';
 
 @Component({
     selector: 'app-home-page',

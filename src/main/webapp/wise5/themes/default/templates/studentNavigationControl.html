@@ -1,0 +1,26 @@
+<md-dialog aria-label="List dialog">
+    <md-toolbar md-theme="light">
+        <div class="md-toolbar-tools">
+            <h2>{{ ::'studentNavigationControl' | translate }}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="close()">
+                <md-icon aria-label="Close dialog"> close </md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content class="md-dialog-content">
+        <div ng-if="workgroupId != null">Workgroup: {{workgroupId}}</div>
+        <div ng-if="workgroupId == null">All workgroups</div>
+        <md-button ng-repeat='item in idToOrder | toArray | orderBy : "order"'
+            style="display:block"
+            class='md-accent md-primary'
+            ng-if='isApplicationNode(item.$key)'
+            ng-click='changeNavigation($event, item.$key)'>
+            <md-icon>timeline</md-icon>
+            {{ getNodePositionAndTitleByNodeId(item.$key) }}
+        </md-button>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <md-button ng-click="close()" class="md-primary">{{ ::'CLOSE' | translate }}</md-button>
+    </md-dialog-actions>
+</md-dialog>

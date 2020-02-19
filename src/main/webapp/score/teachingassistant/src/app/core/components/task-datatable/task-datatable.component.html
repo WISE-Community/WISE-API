@@ -4,8 +4,8 @@
     <mat-form-field>
         <mat-label>Select Period:</mat-label>
         <mat-select (selectionChange)="periodSelectionChange($event)">
-            <mat-option *ngFor="let period of periods" [value]="period">
-                {{period}}
+            <mat-option *ngFor="let period of periods" [value]="period.name">
+                {{period.name}}
             </mat-option>
         </mat-select>
     </mat-form-field>

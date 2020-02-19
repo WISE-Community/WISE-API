@@ -5484,6 +5484,13 @@ class ProjectService {
       return result.data;
     });
   }
+
+  isShowStudentNavigationControls() {
+    if (this.project.layout.showStudentNavigationControls != null) {
+      return this.project.layout.showStudentNavigationControls;
+    }
+    return true;
+  }
 }
 
 ProjectService.$inject = [
