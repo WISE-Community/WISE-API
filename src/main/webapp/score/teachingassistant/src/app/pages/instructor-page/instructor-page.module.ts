@@ -7,7 +7,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material';
 
 @NgModule({
-  declarations: [InstructorPageComponent],
+  declarations: [InstructorPageComponent ],
   imports: [
     CommonModule,
     InstructorPageRoutingModule,

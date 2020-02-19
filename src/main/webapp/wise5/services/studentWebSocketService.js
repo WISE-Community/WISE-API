@@ -66,6 +66,8 @@ class StudentWebSocketService {
           this.$rootScope.$broadcast("newAnnotationReceived", {
             annotation: annotationData
           });
+        } else if (message.type === "goToNode") {
+          this.goToStep(message.content);
         }
       }
     );

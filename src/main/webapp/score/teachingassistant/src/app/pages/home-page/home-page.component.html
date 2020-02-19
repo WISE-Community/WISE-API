@@ -71,7 +71,7 @@
                 >
                     Periods
                 </th>
-                <td *matCellDef="let run" mat-cell>{{ run.periods }}</td>
+                <td *matCellDef="let run" mat-cell><span *ngFor="let period of periods">{{ period.name }},</span></td>
             </ng-container>
 
             <tr *matHeaderRowDef="runDisplayedColumns" mat-header-row></tr>
@@ -82,8 +82,8 @@
     <mat-form-field>
         <mat-label>Select Period:</mat-label>
         <mat-select (selectionChange)="periodSelectionChange($event)">
-            <mat-option *ngFor="let period of periods" [value]="period">
-                {{ period }}
+            <mat-option *ngFor="let period of periods" [value]="period.name">
+                {{ period.name }}
             </mat-option>
         </mat-select>
     </mat-form-field>

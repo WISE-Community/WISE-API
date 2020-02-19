@@ -14,7 +14,7 @@
              ng-class="::{'notebook-enabled': vleController.notebookEnabled}">
             <ng-include src="::vleController.themePath + '/templates/topbar.html'"></ng-include>
             <step-tools show-position="themeCtrl.numberProject"
-                        ng-if="themeCtrl.layoutState === 'node'"></step-tools>
+                        ng-if="::themeCtrl.isShowStepTools()"></step-tools>
             <md-content id="content" flex role="main" ui-scrollpoint-target
                         ng-class="{'l-nav': themeCtrl.layoutState === 'nav', 'l-node': themeCtrl.layoutState === 'node'}" layout="column">
                 <div id="nav" ng-include="::vleController.themePath + '/navigation/navigation.html'" ng-show="themeCtrl.layoutState === 'nav'"></div>

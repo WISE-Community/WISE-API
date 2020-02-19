@@ -10,6 +10,7 @@ import {TasksService} from "../../core/services/http/tasks.service";
 import { Task } from 'src/app/core/domain/task';
 import {TaskRequest} from "../../core/domain/task-request";
 import {MatPaginator} from "@angular/material/paginator";
+import { Period } from '../../../../../../site/src/app/domain/period';
 
 @Component({
     selector: 'app-home-page',
@@ -22,7 +23,7 @@ export class HomePageComponent implements OnInit {
     tasksDataSource = new MatTableDataSource<Task>();
     runDisplayedColumns = ['id','name', 'startTime', 'endTime', 'numStudents', 'periods'];
     tasksDisplayedColumns = ['id','name','workgroupId', 'workgroupName', 'periodId','duration', 'startTime', 'endTime', 'timeLeft','complete','requests'];
-    periods: string[];
+    periods: Period[];
 
     @ViewChild(MatSort, { static: true }) sortTasks: MatSort;
     @ViewChild(MatSort, { static: true }) sortRuns: MatSort;

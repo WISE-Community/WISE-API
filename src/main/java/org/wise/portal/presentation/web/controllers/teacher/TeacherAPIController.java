@@ -106,7 +106,10 @@ public class TeacherAPIController extends UserAPIController {
       workgroup.put("id", workgroupInRun.getId());
       workgroup.put("name", workgroupInRun.generateWorkgroupName());
       if (workgroupInRun.isStudentWorkgroup()) {
-        workgroup.put("periodId", workgroupInRun.getPeriod().getId());
+        HashMap<String, Object> period = new HashMap<String, Object>();
+        period.put("id", workgroupInRun.getPeriod().getId());
+        period.put("name", workgroupInRun.getPeriod().getName());
+        workgroup.put("period", period);
       }
       workgroup.put("isStudentWorkgroup", workgroupInRun.isStudentWorkgroup());
       workgroups.add(workgroup);
@@ -118,9 +121,13 @@ public class TeacherAPIController extends UserAPIController {
   protected HashMap<String, Object> getRunMap(User user, Run run) {
     HashMap<String, Object> map = super.getRunMap(user, run);
     map.put("sharedOwners", getRunSharedOwnersList(run));
-    List<String> periods = new ArrayList<String>();
-    for (Group period : run.getPeriods()) {
-      periods.add(period.getName());
+    List<HashMap<String, Object>> periods = new ArrayList<HashMap<String, Object>>();
+    for (Group runPeriod : run.getPeriods()) {
+      HashMap<String, Object> period = new HashMap<String, Object>();
+      period.put("id", runPeriod.getId());
+      period.put("name", runPeriod.getName());
+      period.put("workgroups", new ArrayList<Object>());
+      periods.add(period);
     }
     map.put("periods", periods);
     return map;

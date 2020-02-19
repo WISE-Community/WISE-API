@@ -46,6 +46,7 @@ import { UserService } from '../../../../site/src/app/services/user.service';
 import { ClassesStore } from './core/services/storage/classes-store';
 import { TasksService } from './core/services/http/tasks.service';
 import { WebSocketService } from './core/services/websocket/websocket.service';
+import { GoToNodeSelectComponent } from './core/components/go-to-node-select/go-to-node-select.component';
 
 export function initialize(
     configService: ConfigService,
@@ -61,7 +62,7 @@ export function initialize(
 }
 
 @NgModule({
-    declarations: [AppComponent, DashboardComponent, MainNavComponent],
+    declarations: [AppComponent, DashboardComponent, MainNavComponent, GoToNodeSelectComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
@@ -114,6 +115,9 @@ export function initialize(
             multi: true,
         },
         AuthGuard,
+    ],
+    entryComponents: [
+      GoToNodeSelectComponent
     ],
     bootstrap: [AppComponent],
     exports: [],

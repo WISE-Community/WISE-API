@@ -18,6 +18,7 @@ export class Project {
   wiseVersion: number;
   uri: String;
   license: String;
+  content: any;
 
   static readonly VIEW_PERMISSION: number = 1;
   static readonly EDIT_PERMISSION: number = 2;
