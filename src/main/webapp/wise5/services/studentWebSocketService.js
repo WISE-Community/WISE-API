@@ -7,12 +7,14 @@ class StudentWebSocketService {
     $stomp,
     AnnotationService,
     ConfigService,
+    NodeService,
     StudentDataService
   ) {
     this.$rootScope = $rootScope;
     this.$stomp = $stomp;
     this.AnnotationService = AnnotationService;
     this.ConfigService = ConfigService;
+    this.NodeService = NodeService;
     this.StudentDataService = StudentDataService;
     this.$stomp.setDebug(function(args) {
       $log.debug(args);
@@ -68,6 +70,8 @@ class StudentWebSocketService {
           });
         } else if (message.type === "goToNode") {
           this.goToStep(message.content);
+        } else if (message.type === "goToNextNode") {
+          this.goToNextStep();
         }
       }
     );
@@ -75,6 +79,14 @@ class StudentWebSocketService {
 
   goToStep(nodeId) {
     this.StudentDataService.endCurrentNodeAndSetCurrentNodeByNodeId(nodeId);
+  }
+
+  goToNextStep() {
+    this.NodeService.getNextNodeId().then(nextNodeId => {
+      this.StudentDataService.endCurrentNodeAndSetCurrentNodeByNodeId(
+        nextNodeId
+      );
+    });
   }
 }
 
@@ -84,6 +96,7 @@ StudentWebSocketService.$inject = [
   "$stomp",
   "AnnotationService",
   "ConfigService",
+  "NodeService",
   "StudentDataService"
 ];
 
