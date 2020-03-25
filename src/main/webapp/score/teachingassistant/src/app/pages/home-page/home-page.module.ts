@@ -7,16 +7,18 @@ import {MatTableModule} from "@angular/material/table";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatButtonModule} from "@angular/material/button";
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {RunDatatableComponent} from "../../core/components/run-datatable/run-datatable.component";
+import {RunDatatableComponentModule} from "../../core/components/run-datatable/run-datatable.module";
+import {TaskDatatableComponentModule} from "../../core/components/task-datatable/task-datatable.module";
 
 @NgModule({
   declarations: [HomePageComponent],
     imports: [
         CommonModule,
         HomePageRoutingModule,
-        MatTableModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatSelectModule
+        RunDatatableComponentModule,
+        TaskDatatableComponentModule
     ]
 })
 export class HomePageModule { }

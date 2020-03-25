@@ -1,0 +1,37 @@
+<div class="tab-container" fxLayout="column" fxLayoutAlign="start stretch">
+    <h2>Run Information</h2>
+    <div class="mat-elevation-z1">
+        <table [dataSource]="runDataSource" mat-table>
+            <!-- Position Column -->
+            <ng-container matColumnDef="id">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Id</th>
+                <td *matCellDef="let run" mat-cell> {{run.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="name">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Name</th>
+                <td *matCellDef="let run" mat-cell> {{run.name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="startTime">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Start Time</th>
+                <td *matCellDef="let run" mat-cell> {{convertTimestamp(run.startTime)}} </td>
+            </ng-container>
+            <ng-container matColumnDef="endTime">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">End Time</th>
+                <td *matCellDef="let run" mat-cell> {{convertTimestamp(run.endTime)}} </td>
+            </ng-container>
+            <ng-container matColumnDef="numStudents">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Num Students</th>
+                <td *matCellDef="let run" mat-cell> {{run.numStudents}} </td>
+            </ng-container>
+            <ng-container matColumnDef="periods">
+                <th *matHeaderCellDef mat-header-cell mat-header style="text-align: center">Periods</th>
+                <td *matCellDef="let run" mat-cell><span *ngFor="let period of run.periods">{{period.name}},</span> </td>
+            </ng-container>
+
+            <tr *matHeaderRowDef="runDisplayedColumns;" mat-header-row></tr>
+            <tr *matRowDef="let row; columns: runDisplayedColumns;" mat-row></tr>
+        </table>
+    </div>
+</div>

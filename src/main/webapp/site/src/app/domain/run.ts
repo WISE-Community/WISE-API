@@ -1,6 +1,7 @@
 import { Project } from "./project";
 import { User } from "./user";
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Period } from "./period";
 
 export class Run {
   id: number;
@@ -12,7 +13,7 @@ export class Run {
   projectThumb: string;
   numStudents: number;
   maxStudentsPerTeam: number;
-  periods: string[];
+  periods: Period[];
   owner: User;
   sharedOwners: User[] = [];
   project: Project;

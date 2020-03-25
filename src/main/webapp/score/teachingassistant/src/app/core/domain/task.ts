@@ -10,8 +10,11 @@ export class Task {
         public projectId?: number,
         public startTime?: string,
         public endTime?: string,
+        public periodName?:string,
         public periodId?: number,
+        public started?: boolean,
         public complete?: boolean,
+        public active?: boolean,
         public taskRequests?: TaskRequest[],
         public duration?: number,
     ) {}

@@ -3,10 +3,16 @@
         <md-list class="user-list student-select md-whiteframe-1dp">
             <md-list-item class="list-item list-item--actions" layout-wrap>
                 <div flex-sm="100" flex-xs="100">
+
                     <workgroup-select by-student="true"
                                       custom-class="'autocomplete--flat autocomplete--minwidth'"
                                       use-autocomplete="true"></workgroup-select>
                 </div>
+                <md-button class='md-accent md-primary'
+                                    ng-click='studentProgressController.changeWorkgroupNavigation($event)'>
+                                <md-icon>timeline</md-icon>
+                                {{ 'sendAllWorkgroupsToStep' | translate }}
+                                </md-button>
             </md-list-item>
             <div class="table-wrap-sticky">
                 <table class="table--list md-whiteframe-1dp" layout-fill>
@@ -119,6 +125,11 @@
                             </td>
                             <td class="md-body-1 center td--wrap td--max-width">
                                 {{ team.location }}
+                                <md-button class='md-accent md-primary'
+                                    ng-click='studentProgressController.changeWorkgroupNavigation($event, team.workgroupId)'>
+                                <md-icon>timeline</md-icon>
+                                {{ 'sendWorkgroupToStep' | translate }}
+                                </md-button>
                             </td>
                             <td class="md-body-1 center">{{ team.timeSpent }}</td>
                             <td layout="row" layout-align="center center">

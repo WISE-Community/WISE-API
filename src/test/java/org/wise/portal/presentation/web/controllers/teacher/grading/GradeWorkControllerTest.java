@@ -93,7 +93,7 @@ public class GradeWorkControllerTest {
     replay(runService);
     ModelAndView modelAndView =
         controller.launchClassroomMonitorWISE5(runId, teacherAuthentication);
-    assertEquals("forward:/wise5/classroomMonitor/dist/index.html#!/run/" + runId + "/project/",
+    assertEquals("forward:/wise5/classroomMonitor/dist/index.html",
         modelAndView.getViewName());
     verify(runService);
   }

@@ -203,7 +203,10 @@ export default angular.module('vle', [
               ($translate, ConfigService, config) => {
             let locale = ConfigService.getLocale();  // defaults to "en"
             $translate.use(locale);
-          }]
+          }],
+          tasks: ['StudentDataService', 'config', 'project', (StudentDataService, config, project) => {
+            return StudentDataService.initializeStudentTasks();
+          }],
         },
         views: {
           'nodeView': {

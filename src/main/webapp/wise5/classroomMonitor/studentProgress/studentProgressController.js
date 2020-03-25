@@ -2,7 +2,8 @@
 
 class StudentProgressController {
 
-    constructor($rootScope,
+    constructor($mdDialog,
+                $rootScope,
                 $scope,
                 $state,
                 ConfigService,
@@ -10,6 +11,7 @@ class StudentProgressController {
                 StudentStatusService,
                 TeacherDataService,
                 TeacherWebSocketService) {
+        this.$mdDialog = $mdDialog;
         this.$rootScope = $rootScope;
         this.$scope = $scope;
         this.$state = $state;
@@ -76,6 +78,50 @@ class StudentProgressController {
         // listen for the currentWorkgroupChanged event
         this.$scope.$on('currentWorkgroupChanged', (event, args) => {
             this.currentWorkgroup = args.currentWorkgroup;
+        });
+
+        this.$scope.$on('changeStudentNavigation', (event, {$event, workgroupId}) => {
+          this.$mdDialog.show({
+            parent: angular.element(document.body),
+            targetEvent: $event,
+            templateUrl: `${this.ProjectService.getThemePath()}/templates/studentNavigationControl.html`,
+            locals: {
+              workgroupId: workgroupId
+            },
+            controller: StudentNavigationController
+          });
+          function StudentNavigationController($scope, $mdDialog, ConfigService, ProjectService, TeacherDataService, workgroupId = null) {
+            $scope.workgroupId = workgroupId;
+            $scope.ConfigService = ConfigService;
+            $scope.ProjectService = ProjectService;
+            $scope.TeacherDataService = TeacherDataService;
+            $scope.idToOrder = ProjectService.idToOrder;
+            $scope.close = () => {
+              $mdDialog.hide();
+            };
+            $scope.isApplicationNode = (nodeId) => {
+              return $scope.ProjectService.isApplicationNode(nodeId);
+            };
+            $scope.getNodePositionAndTitleByNodeId = (nodeId) => {
+              return $scope.ProjectService.getNodePositionAndTitleByNodeId(nodeId);
+            };
+            $scope.changeNavigation = ($event, toNodeId) => {
+              const data = {nodeId: toNodeId};
+              let event = 'sendAllWorkgroupsToNode'
+              if ($scope.workgroupId != null) {
+                data.workgroupId = workgroupId;
+                event = 'sendWorkgroupToNode'
+              } else {
+                data.runId = $scope.ConfigService.getRunId();
+                data.periodId = $scope.TeacherDataService.getCurrentPeriod().periodId;
+              }
+              const context = 'ClassroomMonitor', nodeId = null, componentId = null, componentType = null,
+              category = 'Agent';
+              $scope.TeacherDataService.saveEvent(context, nodeId, componentId, componentType, category, event, data);
+              $scope.close();
+            }
+          }
+          StudentNavigationController.$inject = ['$scope', '$mdDialog', 'ConfigService', 'ProjectService', 'TeacherDataService', 'workgroupId'];
         });
 
         // how often to update the time spent values in the view
@@ -396,9 +442,15 @@ class StudentProgressController {
 
         return orderBy;
     }
+
+    changeWorkgroupNavigation($event, workgroupId = null) {
+      this.$rootScope.$broadcast('changeStudentNavigation', {workgroupId: workgroupId, $event: $event});
+      $event.stopPropagation();
+    }
 }
 
 StudentProgressController.$inject = [
+    '$mdDialog',
     '$rootScope',
     '$scope',
     '$state',
