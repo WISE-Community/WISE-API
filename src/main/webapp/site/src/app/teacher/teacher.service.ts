@@ -72,9 +72,11 @@ export class TeacherService {
   }
 
   getProjectContent(project: Project) {
-    this.http.get<any>(`/curriculum/${project.id}/project.json`).subscribe( content => {
-      project.content = content;
-    })
+    this.http
+      .get<any>(`/curriculum/${project.id}/project.json`)
+      .subscribe(content => {
+        project.setContent(content);
+      });
   }
 
   registerTeacherAccount(teacherUser: Teacher, callback: any) {

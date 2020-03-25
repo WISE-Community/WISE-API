@@ -25,17 +25,16 @@ export class InstructorPageComponent implements OnInit {
         private classesStore: ClassesStore,
         private teacherService: TeacherService,
         private websocketService: WebSocketService,
-    ) {
-    }
+    ) {}
 
     ngOnInit() {
         this.initIoConnection();
         this.run = this.classesStore.run;
         this.teacherService.getRun(this.classesStore.runId).subscribe(
             run => {
-                this.run = run;
-                this.getWorkgroups(run);
-                this.getProjectContent(run);
+                this.run = new Run(run);
+                this.getWorkgroups(this.run);
+                this.getProjectContent(this.run);
             },
             err => console.log('Error retrieving run'),
         );
@@ -47,9 +46,11 @@ export class InstructorPageComponent implements OnInit {
 
     getWorkgroups(run: Run) {
         this.teacherService.getWorkgroups(run).subscribe(allWorkgroupsInRun => {
-            this.allWorkgroupsInRun = allWorkgroupsInRun.filter(workgroupInRun => {
-                return workgroupInRun.isStudentWorkgroup;
-            });
+            this.allWorkgroupsInRun = allWorkgroupsInRun.filter(
+                workgroupInRun => {
+                    return workgroupInRun.isStudentWorkgroup;
+                },
+            );
             this.putWorkgroupsInPeriod();
         });
     }
@@ -75,28 +76,32 @@ export class InstructorPageComponent implements OnInit {
     chooseNodeToSendWorkgroup(workgroup: Workgroup) {
         this.dialog.open(GoToNodeSelectComponent, {
             minWidth: '600px',
+            maxHeight: '800px',
             data: { workgroup: workgroup, run: this.run },
-            panelClass: 'mat-dialog--md'
-          });
+            panelClass: 'mat-dialog--md',
+        });
     }
 
     chooseNodeToSendPeriod(period: Period) {
         this.dialog.open(GoToNodeSelectComponent, {
             minWidth: '600px',
+            maxHeight: '800px',
             data: { period: period, run: this.run },
-            panelClass: 'mat-dialog--md'
+            panelClass: 'mat-dialog--md',
         });
     }
 
     pauseAllScreens(period: Period) {
         this.websocketService._send(
-            `/app/pause/${this.run.id}/${period.id}`, ''
+            `/app/pause/${this.run.id}/${period.id}`,
+            '',
         );
     }
 
     unpauseAllScreens(period: Period) {
         this.websocketService._send(
-            `/app/unpause/${this.run.id}/${period.id}`, ''
+            `/app/unpause/${this.run.id}/${period.id}`,
+            '',
         );
     }
 
