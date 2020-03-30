@@ -508,7 +508,7 @@ class NodeController {
   }
   taskDuration() {
     // $interval(this.startTaskDuration(), 5000);
-    return this.nodeContent.task.duration ? this.nodeContent.task.duration / 60.0 : 0;
+    return this.nodeContent.task.duration ? (this.nodeContent.task.duration / 60.0).toFixed(2) : 0;
   }
 
   startTaskDuration() {

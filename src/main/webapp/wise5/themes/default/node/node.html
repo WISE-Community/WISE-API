@@ -24,10 +24,11 @@
                         </md-tooltip>
                     </md-button>
                 </div>
-                <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}}
-                    min</span><br><span>Time Remaining: {{nodeController.timeTitle}}</span></b></div>
-            </div>
 
+            </div>
+            <div style="width: 10px; height: 10px"></div>
+            <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}}
+                min</span><br><span>Time Remaining: {{nodeController.timeTitle}}</span></b></div>
         </div>
         <div ng-if="::nodeController.isShowNodeRubric()" class="node-content__rubric" layout="row"
              layout-align="center center">
