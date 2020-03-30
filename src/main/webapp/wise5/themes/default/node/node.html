@@ -1,20 +1,36 @@
 <div class="l-constrained">
-    <md-content class="node-content md-whiteframe-1dp" style="border-color: {{nodeController.nodeStatus.icon.color}}; position: relative;" layout="row" layout-wrap>
+    <md-content class="node-content md-whiteframe-1dp"
+                style="border-color: {{nodeController.nodeStatus.icon.color}}; position: relative;" layout="row"
+                layout-wrap>
 
         <div ng-if="::nodeController.hasTasks()" layout="row" layout-align="center center">
-                <md-button class='topButton md-raised md-primary' ng-click="nodeController.performTaskRequest('need_help')">
-                  <md-icon>message</md-icon>
-                  <span>Request Help</span>
-                  <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Help from the TA</md-tooltip>
-                </md-button>
-                <md-button class='topButton md-raised md-primary' ng-click="nodeController.performTaskRequest('need_approval')">
-                  <md-icon>message</md-icon>
-                  <span>Request Approval</span>
-                  <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Approval from the TA</md-tooltip>
-                </md-button>
-            <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}} min</span><br><span>Time Remaining: {{nodeController.timeTitle}}</span></b></div>
+            <div ng-if="::nodeController.hasButtons()" layout="row" layout-align="center center">
+                <div ng-if="::nodeController.hasHelpRequest()">
+                    <md-button class='topButton md-raised md-primary'
+                               ng-click="nodeController.performTaskRequest('need_help')">
+                        <md-icon>message</md-icon>
+                        <span>Request Help</span>
+                        <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Help from the TA
+                        </md-tooltip>
+                    </md-button>
+                </div>
+                <div ng-if="::nodeController.hasApprovalRequest()">
+
+                    <md-button class='topButton md-raised md-primary'
+                               ng-click="nodeController.performTaskRequest('need_approval')">
+                        <md-icon>message</md-icon>
+                        <span>Request Approval</span>
+                        <md-tooltip md-direction='top' class='projectButtonTooltip'>Request Approval from the TA
+                        </md-tooltip>
+                    </md-button>
+                </div>
+                <div class='topButton md-raised md-primary'><b><span>Duration: {{nodeController.taskDuration()}}
+                    min</span><br><span>Time Remaining: {{nodeController.timeTitle}}</span></b></div>
+            </div>
+
         </div>
-        <div ng-if="::nodeController.isShowNodeRubric()" class="node-content__rubric" layout="row" layout-align="center center">
+        <div ng-if="::nodeController.isShowNodeRubric()" class="node-content__rubric" layout="row"
+             layout-align="center center">
             <help-icon id="nodeRubric_{{nodeController.nodeId}}"
                        pulse="!nodeController.rubricTour.steps[0].viewed"
                        label="{{ 'STEP_INFO' | translate}}"
@@ -42,20 +58,22 @@
         </div>
         <div class="node-content__actions" layout="row" layout-align="start center" flex="100">
             <md-button class="md-raised md-primary"
-                   ng-click='nodeController.saveButtonClicked()'
-                   ng-disabled='nodeController.isDisabled || !nodeController.dirtyComponentIds.length'
-                   ng-if='::nodeController.showSaveButton()'
-                   aria-label="{{ ::'save' | translate }}"
-                   translate="save"></md-button>
-             <md-button class="md-raised md-primary"
-                  ng-click='nodeController.submitButtonClicked()'
-                  ng-disabled='nodeController.isDisabled || !nodeController.dirtySubmitComponentIds.length'
-                  ng-if='::nodeController.showSubmitButton()'
-                  aria-label="{{ ::'submit' | translate }}"
-                  translate="submit"></md-button>
+                       ng-click='nodeController.saveButtonClicked()'
+                       ng-disabled='nodeController.isDisabled || !nodeController.dirtyComponentIds.length'
+                       ng-if='::nodeController.showSaveButton()'
+                       aria-label="{{ ::'save' | translate }}"
+                       translate="save"></md-button>
+            <md-button class="md-raised md-primary"
+                       ng-click='nodeController.submitButtonClicked()'
+                       ng-disabled='nodeController.isDisabled || !nodeController.dirtySubmitComponentIds.length'
+                       ng-if='::nodeController.showSubmitButton()'
+                       aria-label="{{ ::'submit' | translate }}"
+                       translate="submit"></md-button>
             <span ng-if="nodeController.saveMessage.text && (nodeController.showSaveButton() || nodeController.showSubmitButton())"
                   class="node-content__actions__info md-caption">
-                  {{nodeController.saveMessage.text}} <span class="node-content__actions__more"><md-tooltip md-direction="top">{{ nodeController.saveMessage.time | amDateFormat:'ddd, MMM D YYYY, h:mm a' }}</md-tooltip><span am-time-ago="nodeController.saveMessage.time"></span></span>
+                  {{nodeController.saveMessage.text}} <span class="node-content__actions__more"><md-tooltip
+                    md-direction="top">{{ nodeController.saveMessage.time | amDateFormat:'ddd, MMM D YYYY, h:mm a' }}</md-tooltip><span
+                    am-time-ago="nodeController.saveMessage.time"></span></span>
             </span>
         </div>
     </md-content>

@@ -495,6 +495,17 @@ class NodeController {
     return this.nodeContent.task != null;
   }
 
+  hasButtons() {
+    return this.nodeContent.task.buttons != null;
+  }
+
+  hasHelpRequest() {
+    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('help') != -1: false);
+  }
+
+  hasApprovalRequest() {
+    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('approval') != -1: false);
+  }
   taskDuration() {
     // $interval(this.startTaskDuration(), 5000);
     return this.nodeContent.task.duration ? this.nodeContent.task.duration / 60.0 : 0;
