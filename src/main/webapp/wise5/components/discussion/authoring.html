@@ -208,6 +208,13 @@
           {{ ::'discussion.allowUploadedImagesInPosts' | translate }}
         </md-checkbox>
       </md-input-container>
+      <br/>
+      <md-input-container style='margin-top: 0; margin-bottom: 0;'>
+        <md-checkbox ng-model='discussionController.authoringComponentContent.gateClassmateResponses'
+                     ng-change='discussionController.authoringViewComponentChanged()'>
+          {{ ::'discussion.gateClassmateResponses' | translate }}
+        </md-checkbox>
+      </md-input-container>
     </div>
   </div>
   <div ng-style='discussionController.mode === "authoring" && {"border": "5px solid black", "padding": "20px"}'>
