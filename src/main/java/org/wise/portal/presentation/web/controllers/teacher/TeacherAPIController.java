@@ -32,6 +32,7 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.response.SimpleResponse;
@@ -96,13 +97,37 @@ public class TeacherAPIController extends UserAPIController {
     return getRunMap(user, run);
   }
 
+  @GetMapping("/workgroup/{runId}")
+  List<HashMap<String, Object>> getWorkgroups(Authentication auth, @PathVariable Long runId)
+      throws ObjectNotFoundException {
+    List<HashMap<String, Object>> workgroups = new ArrayList<HashMap<String, Object>> ();
+    for (Workgroup workgroupInRun : runService.getWorkgroups(runId)) {
+      HashMap<String, Object> workgroup = new HashMap<String, Object>();
+      workgroup.put("id", workgroupInRun.getId());
+      workgroup.put("name", workgroupInRun.generateWorkgroupName());
+      if (workgroupInRun.isStudentWorkgroup()) {
+        HashMap<String, Object> period = new HashMap<String, Object>();
+        period.put("id", workgroupInRun.getPeriod().getId());
+        period.put("name", workgroupInRun.getPeriod().getName());
+        workgroup.put("period", period);
+      }
+      workgroup.put("isStudentWorkgroup", workgroupInRun.isStudentWorkgroup());
+      workgroups.add(workgroup);
+    }
+    return workgroups;
+  }
+
   @Override
   protected HashMap<String, Object> getRunMap(User user, Run run) {
     HashMap<String, Object> map = super.getRunMap(user, run);
     map.put("sharedOwners", getRunSharedOwnersList(run));
-    List<String> periods = new ArrayList<String>();
-    for (Group period : run.getPeriods()) {
-      periods.add(period.getName());
+    List<HashMap<String, Object>> periods = new ArrayList<HashMap<String, Object>>();
+    for (Group runPeriod : run.getPeriods()) {
+      HashMap<String, Object> period = new HashMap<String, Object>();
+      period.put("id", runPeriod.getId());
+      period.put("name", runPeriod.getName());
+      period.put("workgroups", new ArrayList<Object>());
+      periods.add(period);
     }
     map.put("periods", periods);
     return map;

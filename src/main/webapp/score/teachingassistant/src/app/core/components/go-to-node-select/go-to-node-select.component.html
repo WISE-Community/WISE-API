@@ -1,0 +1,11 @@
+<table mat-table [dataSource]="stepNodes">
+    <ng-container matColumnDef="stepName">
+        <th mat-header-cell *matHeaderCellDef>
+            <h2 *ngIf="workgroup != null">Choose which step to send Workgroup {{workgroup.name}} to</h2>
+            <h2 *ngIf="period != null">Choose which step to send Period {{period.name}} to</h2>
+        </th>
+        <td mat-cell *matCellDef="let nodeInOrder"><button mat-button (click)="sendToNode(nodeInOrder.node)">{{nodeInOrder.stepNumber}} {{nodeInOrder.node.title}}</button></td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

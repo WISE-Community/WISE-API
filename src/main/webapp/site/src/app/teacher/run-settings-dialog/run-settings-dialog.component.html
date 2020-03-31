@@ -6,8 +6,8 @@
   <h3 i18n>Class Periods</h3>
   <div fxLayoutGap="8px" fxLayout="row wrap">
     <div *ngFor="let period of run.periods" class="info-block" fxLayoutAlign="center center">
-      <span class="mat-body-2 ">{{ period }}</span>
-      <button mat-icon-button color="accent" (click)="deletePeriod(period)"
+      <span class="mat-body-2 ">{{ period.name }}</span>
+      <button mat-icon-button color="accent" (click)="deletePeriod(period.name)"
               i18n-aria-label aria-label="Delete period">
         <mat-icon>close</mat-icon>
       </button>

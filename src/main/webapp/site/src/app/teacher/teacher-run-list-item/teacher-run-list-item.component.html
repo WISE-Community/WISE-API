@@ -81,13 +81,13 @@
          fxFlex.xs="100">
         <mat-icon>assignment_turned_in</mat-icon>&nbsp;<ng-container i18n>Teacher Tools</ng-container>
       </a>
-      <a *ngIf="(isRunActive(run) || isRunCompleted(run)) && run.isTAToolEnabled()"
+      <a *ngIf="isRunActive(run) || isRunCompleted(run)"
          mat-flat-button
-         href="{{taToolsLink}}"
+         href="{{teacherAssistantLink}}"
          color="primary"
          fxFlex="0 0 auto"
          fxFlex.xs="100">
-        <mat-icon>assignment_turned_in</mat-icon>&nbsp;<ng-container i18n>TA Tools</ng-container>
+        <mat-icon>star</mat-icon>&nbsp;<ng-container i18n>Teaching Assistant Tool</ng-container>
       </a>
     </div>
   </mat-card-actions>
