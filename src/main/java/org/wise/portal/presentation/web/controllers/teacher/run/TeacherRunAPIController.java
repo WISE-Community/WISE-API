@@ -57,6 +57,19 @@ public class TeacherRunAPIController {
     }
   }
 
+  @MessageMapping("/api/teacher/run/{runId}/workgroup-to-next-node/{workgroupId}")
+  public void sendWorkgroupToNextNode(Authentication auth,
+      @DestinationVariable Long runId, @DestinationVariable String workgroupId)
+      throws ObjectNotFoundException, JSONException {
+    Run run = runService.retrieveById(runId);
+    if (runService.hasReadPermission(auth, run)) {
+      JSONObject msg = new JSONObject();
+      msg.put("type", "goToNextNode");
+      msg.put("topic", String.format("/topic/workgroup/%s", workgroupId));
+      redisPublisher.publish(msg.toString());
+    }
+  }
+
   @MessageMapping("/api/teacher/run/{runId}/period-to-node/{periodId}")
   public void sendPeriodToNode(Authentication auth,
       @DestinationVariable Long runId, @DestinationVariable Long periodId,
@@ -66,7 +79,8 @@ public class TeacherRunAPIController {
       JSONObject msg = new JSONObject();
       msg.put("type", "goToNode");
       msg.put("nodeId", nodeId);
-      msg.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+      msg.put("topic",
+          String.format("/topic/classroom/%s/%s", runId, periodId));
       redisPublisher.publish(msg.toString());
     }
   }

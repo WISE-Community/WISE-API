@@ -49,7 +49,6 @@ export class WebSocketService {
      * @param {*} message
      */
     _send(endPoint: string, message: string) {
-        console.log('calling logout api via web socket');
         this.stompClient.send(`${endPoint}`, {}, message);
     }
 
