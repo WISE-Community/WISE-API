@@ -23,6 +23,13 @@
  */
 package org.wise.vle.web.wise5;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,16 +48,10 @@ import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
-import org.wise.vle.domain.WebSocketMessage;
 import org.wise.vle.domain.achievement.Achievement;
 import org.wise.vle.domain.annotation.wise5.Annotation;
-import org.wise.vle.domain.work.StudentWork;
 import org.wise.vle.domain.work.Event;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
+import org.wise.vle.domain.work.StudentWork;
 
 /**
  * Controller for handling GET and POST requests of WISE5 student data
@@ -285,6 +286,15 @@ public class StudentDataController {
     redisPublisher.publish(message.toString());
   }
 
+  public void broadcastAnnotationToClassroom(Annotation annotation) throws JSONException {
+    JSONObject message = new JSONObject();
+    message.put("type", "annotationToClassroom");
+    message.put("topic", String.format("/topic/classroom/%s/%s",
+        annotation.getRunId(), annotation.getPeriodId()));
+    message.put("annotation", annotation.toJSON());
+    redisPublisher.publish(message.toString());
+  }
+
   public void broadcastStudentWorkToClassroom(StudentWork componentState) throws JSONException {
     JSONObject message = new JSONObject();
     message.put("type", "studentWorkToClassroom");
@@ -438,10 +448,6 @@ public class StudentDataController {
                   annotationJSONObject.isNull("type") ? null : annotationJSONObject.getString("type"),
                   annotationJSONObject.isNull("data") ? null : annotationJSONObject.getString("data"),
                   annotationJSONObject.isNull("clientSaveTime") ? null : annotationJSONObject.getString("clientSaveTime"));
-
-                // send this annotation immediately to the teacher so the Classroom Monitor can be updated
-                annotation.convertToClientAnnotation();
-                broadcastAnnotationToTeacher(annotation);
               } else {
                 annotation = vleService.saveAnnotation(
                   annotationJSONObject.isNull("id") ? null : annotationJSONObject.getInt("id"),
@@ -458,6 +464,9 @@ public class StudentDataController {
                   annotationJSONObject.isNull("data") ? null : annotationJSONObject.getString("data"),
                   annotationJSONObject.isNull("clientSaveTime") ? null : annotationJSONObject.getString("clientSaveTime"));
               }
+              annotation.convertToClientAnnotation();
+              broadcastAnnotationToTeacher(annotation);
+              broadcastAnnotationToClassroom(annotation);
 
               // before returning saved Annotation, strip all fields except id, responseToken, and serverSaveTime to minimize response size
               JSONObject savedAnnotationJSONObject = new JSONObject();

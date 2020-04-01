@@ -1,14 +1,19 @@
 'use strict';
 
 class ClassResponseController {
-  constructor($scope, $filter, StudentStatusService, ConfigService) {
+  constructor($scope, $filter, AnnotationService, StudentStatusService, ConfigService) {
     this.$scope = $scope;
     this.$filter = $filter;
+    this.AnnotationService = AnnotationService;
     this.StudentStatusService = StudentStatusService;
     this.ConfigService = ConfigService;
     this.$translate = this.$filter('translate');
     this.urlMatcher = /((http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?)/g;
     this.expanded = false;
+    this.currentVote = 0;
+    this.numVotes = 0;
+    this.isUpvoteClicked = false;
+    this.isDownvoteClicked = false;
 
     this.$scope.$watch(
       () => { return this.response.replies.length; },
@@ -18,10 +23,18 @@ class ClassResponseController {
         }
       }
     );
+
+    this.$scope.$watch(
+      () => { return this.componentannotations; },
+      (numNew, numOld) => {
+        this.updateVoteDisplays();
+      }
+    );
   }
 
   $onInit() {
     this.injectLinksIntoResponse();
+    this.updateVoteDisplays();
   }
 
   injectLinksIntoResponse() {
@@ -43,12 +56,45 @@ class ClassResponseController {
     });
   }
 
+  updateVoteDisplays() {
+    this.sumVotes();
+    this.getLatestVoteForCurrentWorkgroup();
+  }
+
+  sumVotes() {
+    this.numVotes = 0;
+    for (const annotation of this.componentannotations) {
+      if (annotation.type === "vote" && annotation.studentWorkId === this.response.id) {
+        this.numVotes += annotation.data.value;
+      }
+    }
+  }
+
+  getLatestVoteForCurrentWorkgroup() {
+    for (let i = this.componentannotations.length - 1; i >= 0; i--) {
+      const componentannotation = this.componentannotations[i];
+      if (componentannotation.studentWorkId === this.response.id && componentannotation.fromWorkgroupId === this.ConfigService.getWorkgroupId()) {
+        if (componentannotation.data.value === -1) {
+          this.isDownvoteClicked = true;
+          this.isUpvoteClicked = false;
+        } else if (componentannotation.data.value === 1) {
+          this.isDownvoteClicked = false;
+          this.isUpvoteClicked = true;
+        } else {
+          this.isDownvoteClicked = false;
+          this.isUpvoteClicked = false;
+        }
+        break;
+      }
+    }
+  }
+
   getAvatarColorForWorkgroupId(workgroupId) {
     return this.ConfigService.getAvatarColorForWorkgroupId(workgroupId);
   }
 
   replyEntered($event) {
-    if($event.keyCode == 13 && !$event.shiftKey && this.response.replyText) {        
+    if($event.keyCode == 13 && !$event.shiftKey && this.response.replyText) {
       $event.preventDefault();
       this.submitbuttonclicked({r: this.response});
     }
@@ -73,16 +119,55 @@ class ClassResponseController {
   adjustClientSaveTime(time) {
     return this.ConfigService.convertToClientTimestamp(time);
   }
+
+  upvoteClicked(componentState) {
+    if (!this.isUpvoteClicked) {
+      this.createupvoteannotation({componentState: componentState});
+    } else {
+      this.createunvoteannotation({componentState: componentState});
+    }
+  }
+
+  downvoteClicked(componentState) {
+    if (!this.isDownvoteClicked) {
+      this.createdownvoteannotation({componentState: componentState});
+    } else {
+      this.createunvoteannotation({componentState: componentState});
+    }
+  }
+
+  /**
+   * Get the vote annotations for these component states
+   * @param componentStates an array of component states
+   * @return an array of vote annotations that are associated
+   * with the component states
+   */
+  getVoteAnnotationsByComponentStates(componentStates = []) {
+    const annotations = [];
+    for (const componentState of componentStates) {
+      const latestInappropriateFlagAnnotation =
+          this.AnnotationService.getLatestAnnotationByStudentWorkIdAndType(
+          componentState.id, 'vote');
+      if (latestInappropriateFlagAnnotation != null) {
+        annotations.push(latestInappropriateFlagAnnotation);
+      }
+    }
+    return annotations;
+  }
 }
 
-ClassResponseController.$inject = ['$scope','$filter','StudentStatusService','ConfigService'];
+ClassResponseController.$inject = ['$scope','$filter','AnnotationService','StudentStatusService','ConfigService'];
 
 const ClassResponseComponentOptions = {
   bindings: {
     response: '<',
+    componentannotations: '<',
     mode: '@',
     deletebuttonclicked: '&',
     undodeletebuttonclicked: '&',
+    createupvoteannotation: '&',
+    createdownvoteannotation: '&',
+    createunvoteannotation: '&',
     submitbuttonclicked: '&',
     studentdatachanged: '&',
     isdisabled: '<'
