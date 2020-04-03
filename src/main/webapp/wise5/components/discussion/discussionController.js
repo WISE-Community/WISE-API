@@ -36,6 +36,8 @@ class DiscussionController extends ComponentController {
     this.topLevelResponses = [];
     this.responsesMap = {};
     this.retrievedClassmateResponses = false;
+    this.sortOptions = ["newest", "oldest", "mostPopular", "leastPopular"];
+    this.sortPostsBy = "newest";
     if (this.isStudentMode()) {
       if (this.ConfigService.isPreview()) {
         let componentStates = [];
@@ -416,7 +418,7 @@ class DiscussionController extends ComponentController {
 
   setClassResponses(componentStates, annotations = []) {
     this.classResponses = [];
-    componentStates = componentStates.sort(this.sortByServerSaveTime);
+    componentStates = componentStates.sort((response1, response2) => {return this.sortPostsFunction(response1, response2)});
     for (const componentState of componentStates) {
       if (componentState.studentData.isSubmit) {
         const latestInappropriateFlagAnnotation =
@@ -448,13 +450,58 @@ class DiscussionController extends ComponentController {
     this.retrievedClassmateResponses = true;
   }
 
-  sortByServerSaveTime(componentState1, componentState2) {
+  sortPostsFunction(response1, response2) {
+    if (this.sortPostsBy === "oldest") {
+      return this.sortByOldest(response1, response2);
+    } else if (this.sortPostsBy === "mostPopular") {
+      return this.sortByMostPopular(response1, response2);
+    } else if (this.sortPostsBy === "leastPopular") {
+      return this.sortByLeastPopular(response1, response2);
+    }
+    return this.sortByNewest(response1, response2);
+  }
+
+  sortPosts() {
+    this.getClassmateResponses();
+  }
+
+  sortByNewest(componentState1, componentState2) {
     if (componentState1.serverSaveTime < componentState2.serverSaveTime) {
       return -1;
-    } else if (componentState1.serverSaveTime > componentState2.serverSaveTime) {
+    } else if (
+      componentState1.serverSaveTime > componentState2.serverSaveTime
+    ) {
       return 1;
     }
     return 0;
+  }
+
+  sortByOldest(componentState1, componentState2) {
+    return this.sortByNewest(componentState2, componentState1);
+  }
+
+  sortByMostPopular(componentState1, componentState2) {
+    const cs1Votes = this.sumVotesForComponentState(componentState1);
+    const cs2Votes = this.sumVotesForComponentState(componentState2);
+    if (cs1Votes >= cs2Votes) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+
+  sortByLeastPopular(componentState1, componentState2) {
+    return this.sortByMostPopular(componentState2, componentState1);
+  }
+
+  sumVotesForComponentState(componentState) {
+    let numVotes = 0;
+    for (const annotation of this.componentAnnotations) {
+      if (annotation.type === "vote" && annotation.studentWorkId === componentState.id) {
+        numVotes += annotation.data.value;
+      }
+    }
+    return numVotes;
   }
 
   getUserIdsDisplay(workgroupId) {
@@ -590,7 +637,7 @@ class DiscussionController extends ComponentController {
     });
   }
 
-      /**
+  /**
    * Students upvoted this post. This function will create a vote
    * annotation with the value set to -1, 0, or 1 depending on the
    * voting response.
@@ -615,7 +662,7 @@ class DiscussionController extends ComponentController {
     return this.AnnotationService.saveAnnotation(annotation);
   }
 
-    /**
+  /**
    * Students downvoted this post. This function will create a vote
    * annotation with the value set to -1, 0, or 1 depending on the
    * voting response.
@@ -640,7 +687,7 @@ class DiscussionController extends ComponentController {
     return this.AnnotationService.saveAnnotation(annotation);
   }
 
-    /**
+  /**
    * Students un-voted this post. This function will create a vote
    * annotation with the value set to -1, 0, or 1 depending on the
    * voting response.

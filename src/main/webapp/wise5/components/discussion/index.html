@@ -63,6 +63,21 @@
           </possible-score>
         </div>
         <div class='md-padding discussion-content'>
+          <div style="display: flex; justify-content: flex-end">
+            <md-input-container style='margin-right: 20; width: 300;'>
+              <label>{{ ::'discussion.sortPosts' | translate }}</label>
+              <md-select md-theme="default"
+                      style="width:200px"
+                      ng-model="discussionController.sortPostsBy"
+                      ng-change="discussionController.sortPosts()"
+                      aria-label="{{ ::'discussion.sortPosts' | translate }}">
+                <md-option ng-repeat="sortOption in discussionController.sortOptions"
+                         ng-value="sortOption">
+                  {{ "discussion.sortOption." + sortOption | translate }}
+                </md-option>
+              </md-select>
+            </md-input-container>
+          </div>
           <component-annotations ng-if='::discussionController.mode === "student"'
               class='annotations--inside'
               annotations='discussionController.latestAnnotations'

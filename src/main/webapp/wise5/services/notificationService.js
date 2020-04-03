@@ -1,12 +1,11 @@
 class NotificationService {
   constructor($http, $q, $rootScope, ConfigService, ProjectService,
-      StudentWebSocketService, UtilService) {
+      UtilService) {
     this.$http = $http;
     this.$q = $q;
     this.$rootScope = $rootScope;
     this.ConfigService = ConfigService;
     this.ProjectService = ProjectService;
-    this.StudentWebSocketService = StudentWebSocketService;
     this.UtilService = UtilService;
     this.notifications = [];
 
@@ -294,7 +293,6 @@ NotificationService.$inject = [
   '$rootScope',
   'ConfigService',
   'ProjectService',
-  'StudentWebSocketService',
   'UtilService'
 ];
 
