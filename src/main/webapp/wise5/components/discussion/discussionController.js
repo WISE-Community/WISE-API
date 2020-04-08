@@ -270,6 +270,7 @@ class DiscussionController extends ComponentController {
         const annotations = this.componentAnnotations.concat(annotation);
         this.componentAnnotations =
             this.filterLatestAnnotationsByWorkgroup(annotations);
+        this.topLevelResponses = this.getLevel1Responses();
       }
     });
   }
@@ -418,7 +419,6 @@ class DiscussionController extends ComponentController {
 
   setClassResponses(componentStates, annotations = []) {
     this.classResponses = [];
-    componentStates = componentStates.sort((response1, response2) => {return this.sortPostsFunction(response1, response2)});
     for (const componentState of componentStates) {
       if (componentState.studentData.isSubmit) {
         const latestInappropriateFlagAnnotation =
@@ -585,7 +585,8 @@ class DiscussionController extends ComponentController {
     const allResponses = [];
     const oddResponses = [];
     const evenResponses = [];
-    for (const [index, classResponse] of this.classResponses.entries()) {
+    this.classResponses = this.classResponses.sort((response1, response2) => {return this.sortPostsFunction(response1, response2)});
+    for (const [index, classResponse] of Object.entries(this.classResponses)) {
       if (classResponse.studentData.componentStateIdReplyingTo == null) {
         if ((this.isGradingMode() || this.isGradingRevisionMode()) &&
             !this.threadHasPostFromThisComponentAndWorkgroupId(classResponse)) {
