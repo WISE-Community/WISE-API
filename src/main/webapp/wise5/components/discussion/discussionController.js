@@ -36,7 +36,10 @@ class DiscussionController extends ComponentController {
     this.topLevelResponses = [];
     this.responsesMap = {};
     this.retrievedClassmateResponses = false;
-    this.sortOptions = ["newest", "oldest", "mostPopular", "leastPopular"];
+    this.sortOptions = ["newest", "oldest"];
+    if (this.isVotingAllowed()) {
+      this.sortOptions = this.sortOptions.concat(["mostPopular", "leastPopular"]);
+    }
     this.sortPostsBy = "newest";
     if (this.isStudentMode()) {
       if (this.ConfigService.isPreview()) {
@@ -415,6 +418,10 @@ class DiscussionController extends ComponentController {
 
   isClassmateResponsesGated() {
     return this.componentContent.gateClassmateResponses;
+  }
+
+  isVotingAllowed() {
+    return this.componentContent.isVotingAllowed;
   }
 
   setClassResponses(componentStates, annotations = []) {

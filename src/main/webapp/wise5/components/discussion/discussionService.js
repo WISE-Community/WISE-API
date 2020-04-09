@@ -34,6 +34,7 @@ class DiscussionService extends ComponentService {
     component.prompt = this.$translate('ENTER_PROMPT_HERE');
     component.isStudentAttachmentEnabled = true;
     component.gateClassmateResponses = true;
+    component.isVotingAllowed = false;
     return component;
   }
 
