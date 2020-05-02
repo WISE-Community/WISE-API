@@ -21,6 +21,12 @@
              formControlName="customPeriods" />
       <mat-hint i18n>For "Period 9", just enter the number 9. Separate periods with commas (e.g. "Section 1, Section 2"). Manually named periods should be no more than 16 characters long.</mat-hint>
     </mat-form-field>
+    <p></p>
+    <p>
+    <mat-checkbox formControlName="isRandomPeriodAssignment" i18n>
+       Randomly assign students to periods
+    </mat-checkbox>
+    </p>
     <mat-divider></mat-divider>
     <h3 i18n>2. Choose Students Per Team</h3>
     <mat-radio-group #rGroup
@@ -82,5 +88,5 @@
   <mat-dialog-actions fxLayoutAlign="end">
     <button mat-button color="primary" (click)="checkClassroomAuthorization()" *ngIf="isGoogleUser() && isGoogleClassroomEnabled()" i18n>Add to Google Classroom</button>
     <button mat-button (click)="closeAll()" i18n>Done</button>
-  </mat-dialog-actions> 
+  </mat-dialog-actions>
 </ng-container>

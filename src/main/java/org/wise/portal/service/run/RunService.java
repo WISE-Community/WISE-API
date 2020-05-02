@@ -56,8 +56,8 @@ public interface RunService {
    */
   Run createRun(RunParameters runParameters) throws ObjectNotFoundException;
 
-  Run createRun(Long projectId, User user, Set<String> periodNames, Integer maxStudentsPerTeam,
-      Long startDate, Long endDate, Locale locale) throws Exception;
+  Run createRun(Long projectId, User user, Set<String> periodNames, boolean isRandomPeriodAssignment,
+      Integer maxStudentsPerTeam, Long startDate, Long endDate, Locale locale) throws Exception;
 
   /**
    * Ends this run. The side effect is that the run's endtime gets set.
@@ -451,4 +451,6 @@ public interface RunService {
 
   JSONObject transferRunOwnership(Long runId, String teacherUsername)
       throws ObjectNotFoundException;
+
+  void setRandomPeriodAssignment(Run run, boolean isRandomPeriodAssignment);
 }

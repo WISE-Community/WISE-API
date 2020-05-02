@@ -1,6 +1,6 @@
 <h2 i18n>Add Unit</h2>
 <form [formGroup]="addProjectForm">
-  <mat-dialog-content fxLayout="column">
+  <mat-dialog-content fxLayout="column" style="padding: 16px">
     <p>
       <mat-form-field appearance="fill">
         <mat-label i18n>Access Code</mat-label>
@@ -16,6 +16,7 @@
         <mat-select formControlName="period" [(value)]="selectedPeriod">
           <mat-option *ngFor="let period of registerRunPeriods" value="{{ period }}">{{ period }}</mat-option>
         </mat-select>
+        <mat-hint *ngIf="isRandomlyAssignedPeriod" i18n>You have been randomly assigned to a period.</mat-hint>
       </mat-form-field>
     </p>
   </mat-dialog-content>

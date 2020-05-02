@@ -501,6 +501,7 @@ create table runs
     id               bigint       not null auto_increment,
     owner_fk         bigint       not null,
     project_fk       bigint       not null,
+    isRandomPeriodAssignment bit not null,
     constraint runsOwnerFK foreign key (owner_fk) references users (id),
     constraint runsProjectFK foreign key (project_fk) references projects (id),
     constraint runsRunCodeUnique unique (run_code),

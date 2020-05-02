@@ -1,4 +1,5 @@
 export class RunInfo {
+  isRandomPeriodAssignment: boolean = false;
   periods: string[];
   runCode: string;
   runId: number;
