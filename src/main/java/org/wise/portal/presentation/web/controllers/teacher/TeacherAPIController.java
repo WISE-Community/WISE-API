@@ -130,6 +130,7 @@ public class TeacherAPIController extends UserAPIController {
       periods.add(period);
     }
     map.put("periods", periods);
+    map.put("isRandomPeriodAssignment", run.isRandomPeriodAssignment());
     return map;
   }
 
@@ -248,14 +249,15 @@ public class TeacherAPIController extends UserAPIController {
       HttpServletRequest request,
       @RequestParam("projectId") Long projectId,
       @RequestParam("periods") String periods,
+      @RequestParam("isRandomPeriodAssignment") boolean isRandomPeriodAssignment,
       @RequestParam("maxStudentsPerTeam") Integer maxStudentsPerTeam,
       @RequestParam("startDate") Long startDate,
       @RequestParam(value = "endDate", required = false) Long endDate) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     Locale locale = request.getLocale();
     Set<String> periodNames = createPeriodNamesSet(periods);
-    Run run = runService.createRun(projectId, user, periodNames, maxStudentsPerTeam,
-        startDate, endDate, locale);
+    Run run = runService.createRun(projectId, user, periodNames, isRandomPeriodAssignment,
+        maxStudentsPerTeam, startDate, endDate, locale);
     return getRunMap(user, run);
   }
 
@@ -410,6 +412,25 @@ public class TeacherAPIController extends UserAPIController {
     } else {
       response.put("status", "error");
       response.put("messageCode", "noPermissionToChangeDate");
+    }
+    return response;
+  }
+
+  @PostMapping("/run/update/random-period-assignment")
+  HashMap<String, Object> updateRandomPeriodAssignment(Authentication authentication,
+      @RequestParam("runId") Long runId,
+      @RequestParam("isRandomPeriodAssignment") boolean isRandomPeriodAssignment)
+      throws ObjectNotFoundException {
+    User user = userService.retrieveUserByUsername(authentication.getName());
+    Run run = runService.retrieveById(runId);
+    HashMap<String, Object> response = new HashMap<String, Object>();
+    if (run.isTeacherAssociatedToThisRun(user)) {
+      runService.setRandomPeriodAssignment(run, isRandomPeriodAssignment);
+      response.put("status", "success");
+      response.put("run", getRunMap(user, run));
+    } else {
+      response.put("status", "error");
+      response.put("messageCode", "noPermissionToChangeRandomPeriodAssignment");
     }
     return response;
   }

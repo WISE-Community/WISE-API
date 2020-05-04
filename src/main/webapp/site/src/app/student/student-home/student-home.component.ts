@@ -28,6 +28,8 @@ export class StudentHomeComponent implements OnInit {
   }
 
   showAddRun() {
-    this.dialog.open(AddProjectDialogComponent);
+    this.dialog.open(AddProjectDialogComponent, {
+      maxHeight: '500vh'
+    });
   }
 }

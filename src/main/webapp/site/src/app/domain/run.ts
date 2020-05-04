@@ -9,6 +9,7 @@ export class Run {
   runCode: string;
   startTime: number;
   endTime: number;
+  isRandomPeriodAssignment: boolean;
   lastRun: string;
   projectThumb: string;
   numStudents: number;

@@ -136,6 +136,7 @@ public class StudentAPIController extends UserAPIController {
     info.put("startTime", run.getStartTimeMilliseconds());
     info.put("endTime", run.getEndTimeMilliseconds());
     info.put("periods", getPeriodNames(run));
+    info.put("isRandomPeriodAssignment", run.isRandomPeriodAssignment());
     User owner = run.getOwner();
     info.put("teacherFirstName", owner.getUserDetails().getFirstname());
     info.put("teacherLastName", owner.getUserDetails().getLastname());

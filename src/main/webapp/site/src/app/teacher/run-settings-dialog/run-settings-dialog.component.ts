@@ -23,6 +23,7 @@ export class RunSettingsDialogComponent implements OnInit {
   previousEndDate: Date;
   deletePeriodMessage: string = '';
   addPeriodMessage: string = '';
+  isRandomPeriodAssignment: boolean;
   maxStudentsPerTeamMessage: string = '';
   startDateMessage: string = '';
   endDateMessage: string = '';
@@ -48,6 +49,7 @@ export class RunSettingsDialogComponent implements OnInit {
               private i18n: I18n) {
     this.run = data.run;
     this.maxStudentsPerTeam = this.run.maxStudentsPerTeam + '';
+    this.isRandomPeriodAssignment = this.run.isRandomPeriodAssignment;
     this.startDate = new Date(this.run.startTime);
     this.endDate = this.run.endTime ? new Date(this.run.endTime) : null;
     this.rememberPreviousStartDate();
@@ -185,6 +187,21 @@ export class RunSettingsDialogComponent implements OnInit {
     }
   }
 
+  updateRandomPeriodAssignment(isRandomPeriodAssignment: boolean) {
+    this.clearErrorMessages();
+    this.teacherService.updateRandomPeriodAssignment(this.run.id, isRandomPeriodAssignment)
+      .subscribe((response: any) => {
+        if (response.status === 'success') {
+          this.run = response.run;
+          this.updateDataRun(this.run);
+          this.clearErrorMessages();
+          this.showConfirmMessage();
+        } else {
+          this.rollbackRandomPeriodAssignment();
+        }
+      });
+  }
+
   setDateRange() {
     this.minEndDate = this.startDate;
     this.maxStartDate = this.endDate;
@@ -196,6 +213,10 @@ export class RunSettingsDialogComponent implements OnInit {
 
   rollbackMaxStudentsPerTeam() {
     this.maxStudentsPerTeam = this.run.maxStudentsPerTeam + '';
+  }
+
+  rollbackRandomPeriodAssignment() {
+    this.isRandomPeriodAssignment = this.run.isRandomPeriodAssignment;
   }
 
   rollbackStartDate() {
@@ -254,6 +275,7 @@ export class RunSettingsDialogComponent implements OnInit {
   updateDataRun(run) {
     this.data.run.periods = run.periods;
     this.data.run.maxStudentsPerTeam = run.maxStudentsPerTeam;
+    this.data.run.isRandomPeriodAssignment = run.isRandomPeriodAssignment;
     this.data.run.startTime = run.startTime;
     this.data.run.endTime = run.endTime;
     this.data.run.lastRun = run.lastRun;

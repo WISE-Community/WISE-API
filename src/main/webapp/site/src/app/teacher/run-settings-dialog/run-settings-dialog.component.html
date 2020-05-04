@@ -25,6 +25,12 @@
       <mat-hint *ngIf="addPeriodMessage" class="warn">{{ addPeriodMessage }}</mat-hint>
     </mat-form-field>
   </div>
+  <p></p>
+  <p>
+  <mat-checkbox [checked]="isRandomPeriodAssignment" (change)="updateRandomPeriodAssignment($event.checked)" i18n>
+      Randomly assign students to periods
+  </mat-checkbox>
+  </p>
   <mat-divider></mat-divider>
   <h3 i18n>Students Per Team</h3>
   <mat-radio-group [(ngModel)]="maxStudentsPerTeam" #rGroup fxLayoutGap="16px">
