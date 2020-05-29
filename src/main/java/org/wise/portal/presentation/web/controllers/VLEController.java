@@ -26,12 +26,10 @@ package org.wise.portal.presentation.web.controllers;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
@@ -63,21 +61,11 @@ public class VLEController {
     modelAndView.addObject("run", run);
     modelAndView.addObject("vleurl", contextPath + "/vle/vle.html");
     modelAndView.addObject("vleConfigUrl",
-      contextPath + "/vleconfig?runId=" + run.getId() + "&mode=run");
+        contextPath + "/vleconfig?runId=" + run.getId() + "&mode=run");
     String curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
     String rawProjectUrl = run.getProject().getModulePath();
     String contentUrl = curriculumBaseWWW + rawProjectUrl;
     modelAndView.addObject("contentUrl", contentUrl);
     return modelAndView;
-  }
-
-  @GetMapping("/student/run/{runId}")
-  protected String launchVLEWISE5Run(@PathVariable Long runId) {
-    return "forward:/wise5/vle/dist/index.html";
-  }
-
-  @GetMapping("/project/{projectId}")
-  protected String launchVLEWISE5Preview(@PathVariable String projectId) {
-    return "forward:/wise5/vle/dist/index.html";
   }
 }
