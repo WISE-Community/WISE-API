@@ -105,6 +105,12 @@ class ClassroomMonitorController {
         type: 'primary',
         active: true
       },
+      'root.cm.taskDatatable': {
+        name: this.$translate('tasks'),
+        icon: 'fact_check',
+        type: 'primary',
+        active: true
+      },
       'root.cm.notebooks': {
         name: this.$translate('studentNotebooks'),
         icon: 'chrome_reader_mode',

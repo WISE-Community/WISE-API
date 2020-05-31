@@ -1,23 +1,36 @@
 
 import {Component, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 import teacher from '../../../../wise5/teacher/teacher';
 import {UpgradeModule} from '@angular/upgrade/static';
 import {setUpLocationSync} from '@angular/router/upgrade';
+import { MatIconModule, MatTableModule, MatFormFieldModule, MatPaginatorModule, MatSelectModule } from '@angular/material';
+import { TaskDatatableComponent } from '../../../../score/teachingassistant/src/app/core/components/task-datatable/task-datatable.component';
 
 @Component({template: ``})
 export class EmptyComponent {}
 
 @NgModule({
   declarations: [
-    EmptyComponent
+    EmptyComponent,
+    TaskDatatableComponent
   ],
   imports: [
+    CommonModule,
+    MatIconModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatPaginatorModule,
+    MatSelectModule,
     UpgradeModule,
     RouterModule.forChild([
       {path: '**', component: EmptyComponent}
     ])
+  ],
+  entryComponents: [
+    TaskDatatableComponent
   ]
 })
 export class TeacherAngularJSModule {

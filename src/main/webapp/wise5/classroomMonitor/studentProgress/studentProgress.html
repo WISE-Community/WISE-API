@@ -7,10 +7,12 @@
                             custom-class="'autocomplete--flat autocomplete--minwidth'"
                             use-autocomplete="true"></workgroup-select>
         </div>
-        <md-button class='md-accent md-primary'
-                   ng-click='studentProgressController.changeWorkgroupNavigation($event)'>
+        <md-button ng-if='!studentProgressController.isShowingAllPeriods()'
+                   class='md-accent'
+                   style="position: absolute; right: 0px"
+                   ng-click='studentProgressController.chooseNodeToSend($event)'>
+          <md-tooltip>{{ 'sendAllWorkgroupsToStep' | translate }}</md-tooltip>
           <md-icon>timeline</md-icon>
-          {{ 'sendAllWorkgroupsToStep' | translate }}
         </md-button>
       </md-list-item>
       <div class="table-wrap-sticky">
@@ -125,10 +127,10 @@
               </td>
               <td class="md-body-1 center td--wrap td--max-width">
                 {{ team.location }}
-                <md-button class='md-accent md-primary'
-                           ng-click='studentProgressController.changeWorkgroupNavigation($event, team.workgroupId)'>
+                <md-button class='md-accent'
+                           ng-click='studentProgressController.chooseNodeToSend($event, team)'>
+                  <md-tooltip>{{ 'sendWorkgroupToStep' | translate }}</md-tooltip>
                   <md-icon>timeline</md-icon>
-                  {{ 'sendWorkgroupToStep' | translate }}
                 </md-button>
               </td>
               <td class="md-body-1 center">{{ team.timeSpent }}</td>

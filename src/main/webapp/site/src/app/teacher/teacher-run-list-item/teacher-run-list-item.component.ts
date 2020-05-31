@@ -53,7 +53,6 @@ export class TeacherRunListItemComponent implements OnInit {
       this.gradeAndManageLink = `${contextPath}/teacher/manage/unit/${this.run.id}`;
     }
     this.manageStudentsLink = `${contextPath}/teacher/manage/unit/${this.run.id}/manageStudents`;
-    this.teacherAssistantLink = `${this.configService.getContextPath()}/score-app/manage/ta/${this.run.id}`;
     if (this.run.isHighlighted) {
       this.animateDuration = '2s';
       this.animateDelay = '1s';

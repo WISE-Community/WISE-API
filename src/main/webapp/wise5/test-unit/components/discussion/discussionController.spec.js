@@ -126,7 +126,7 @@ function shouldSortComponentStatesByServerSaveTime() {
       serverSaveTime: 3
     };
     const componentStates = [componentState1, componentState3, componentState2];
-    const sortedComponentStates = componentStates.sort(discussionController.sortByServerSaveTime);
+    const sortedComponentStates = componentStates.sort(discussionController.sortByNewest);
     expect(sortedComponentStates[0]).toEqual(componentState1);
     expect(sortedComponentStates[1]).toEqual(componentState2);
     expect(sortedComponentStates[2]).toEqual(componentState3);

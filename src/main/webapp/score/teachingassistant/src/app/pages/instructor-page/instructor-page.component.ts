@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { TeacherService } from '../../../../../../site/src/app/teacher/teacher.service';
-import { WebSocketService } from 'src/app/core/services/websocket/websocket.service';
-import { ClassesStore } from 'src/app/core/services/storage/classes-store';
+import { WebSocketService } from '../../core/services/websocket/websocket.service';
+import { ClassesStore } from '../../core/services/storage/classes-store';
 import { Run } from '../../../../../../site/src/app/domain/run';
 import { Workgroup } from '../../../../../../site/src/app/domain/workgroup';
 import { MatDialog, MatTableDataSource } from '@angular/material';
-import { GoToNodeSelectComponent } from 'src/app/core/components/go-to-node-select/go-to-node-select.component';
+import { GoToNodeSelectComponent } from '../../core/components/go-to-node-select/go-to-node-select.component';
 import { Period } from '../../../../../../site/src/app/domain/period';
 
 @Component({
@@ -30,7 +30,7 @@ export class InstructorPageComponent implements OnInit {
     ngOnInit() {
         this.initIoConnection();
         this.run = this.classesStore.run;
-        this.teacherService.getRun(this.classesStore.runId).subscribe(
+        this.teacherService.getRun(303).subscribe(
             run => {
                 this.run = new Run(run);
                 this.getWorkgroups(this.run);

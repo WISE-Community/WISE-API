@@ -191,7 +191,7 @@ describe('CreateRunDialogComponent', () => {
     spyOn(teacherService, 'createRun').and.returnValue(of({}));
     component.create();
     expect(teacherService.createRun).toHaveBeenCalledWith(
-        1, '1,', '3', jasmine.any(Number), jasmine.any(Number), false);
+        1, '1,', false, '3', jasmine.any(Number), jasmine.any(Number), false);
   });
 
   it('should create run with locked after end date true', async() => {
@@ -205,7 +205,7 @@ describe('CreateRunDialogComponent', () => {
     spyOn(teacherService, 'createRun').and.returnValue(of({}));
     component.create();
     expect(teacherService.createRun).toHaveBeenCalledWith(
-        1, '1,', '3', jasmine.any(Number), jasmine.any(Number), true);
+        1, '1,', false, '3', jasmine.any(Number), jasmine.any(Number), true);
   });
 
   it('should enable locked after end date checkbox', async() => {

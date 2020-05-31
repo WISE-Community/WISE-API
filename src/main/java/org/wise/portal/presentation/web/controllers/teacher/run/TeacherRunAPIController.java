@@ -79,10 +79,10 @@ public class TeacherRunAPIController {
     redisPublisher.publish(message.toString());
   }
 
-  @MessageMapping("/api/teacher/run/{runId}/workgroup-to-node/{workgroupId}")
+  @MessageMapping("/api/teacher/run/{runId}/workgroup-to-node/{workgroupId}/{nodeId}")
   public void sendWorkgroupToNode(Authentication auth,
       @DestinationVariable Long runId, @DestinationVariable String workgroupId,
-      String nodeId) throws ObjectNotFoundException, JSONException {
+      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();
@@ -106,10 +106,10 @@ public class TeacherRunAPIController {
     }
   }
 
-  @MessageMapping("/api/teacher/run/{runId}/period-to-node/{periodId}")
+  @MessageMapping("/api/teacher/run/{runId}/period-to-node/{periodId}/{nodeId}")
   public void sendPeriodToNode(Authentication auth,
       @DestinationVariable Long runId, @DestinationVariable Long periodId,
-      String nodeId) throws ObjectNotFoundException, JSONException {
+      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();

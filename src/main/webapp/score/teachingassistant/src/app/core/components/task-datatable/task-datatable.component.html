@@ -1,14 +1,12 @@
-<div class="tab-container" fxLayout="column" fxLayoutAlign="start stretch">
+<div class="tab-container l-constrained" fxLayout="column" fxLayoutAlign="start stretch">
     <h2>Task Information {{selectionTitle}}</h2>
     <br>
-    <mat-form-field>
-        <mat-label>Select Period:</mat-label>
-        <mat-select (selectionChange)="periodSelectionChange($event)">
-            <mat-option *ngFor="let period of periods" [value]="period.name">
-                {{period.name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+    <div *ngIf="periodName === 'All Periods'">
+        <div style="display: inline-flex; vertical-align: middle; align-items: center;">
+            <i class="material-icons">error_outline</i>
+            <span> Showing tasks for all periods is currently not supported. Please choose a specific period.</span>
+        </div>
+    </div>
     <div class="mat-elevation-z1">
         <table [dataSource]="tasksDataSource" mat-table matSort>
             <!-- Position Column -->

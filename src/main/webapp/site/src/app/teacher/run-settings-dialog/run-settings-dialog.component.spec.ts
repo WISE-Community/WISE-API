@@ -135,7 +135,7 @@ describe('RunSettingsDialogComponent', () => {
   });
 
   it('should add a period', () => {
-    component.run.periods.push("4");
+    component.run.periods.push({name:'4',id:4,workgroups:[]});
     fixture.detectChanges();
     const periodContainers = fixture.debugElement.nativeElement.querySelectorAll('.info-block');
     expect(periodContainers.length).toBe(4);

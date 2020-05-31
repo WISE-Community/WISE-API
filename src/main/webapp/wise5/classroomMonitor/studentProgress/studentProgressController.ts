@@ -34,6 +34,7 @@ class StudentProgressController {
   updateTimeSpentIntervalId: any;
 
   static $inject = [
+    '$mdDialog',
     '$rootScope',
     '$scope',
     '$state',
@@ -44,6 +45,7 @@ class StudentProgressController {
   ];
 
   constructor(
+    private $mdDialog: any,
     private $rootScope: any,
     private $scope: any,
     private $state: any,
@@ -104,6 +106,10 @@ class StudentProgressController {
       event,
       data
     );
+  }
+
+  isShowingAllPeriods() {
+    return this.TeacherDataService.getCurrentPeriod().periodId === -1;
   }
 
   getCurrentNodeForWorkgroupId(workgroupId) {
@@ -288,6 +294,60 @@ class StudentProgressController {
   getOrderBy() {
     return this.sortOrder[this.sort];
   }
+
+  chooseNodeToSend($event: any, workgroup: any) {
+    $event.stopPropagation();
+    this.$mdDialog.show({
+      templateUrl: 'wise5/classroomMonitor/studentProgress/goToNodeSelect.html',
+      controller: [
+        '$scope',
+        '$mdDialog',
+        'ProjectService',
+        'TeacherDataService',
+        'TeacherWebSocketService',
+        function GoToNodeSelectController($scope, $mdDialog, ProjectService,
+            TeacherDataService, TeacherWebSocketService) {
+          $scope.idToOrder = ProjectService.idToOrder;
+          $scope.workgroup = workgroup;
+          $scope.period = TeacherDataService.getCurrentPeriod();
+          $scope.isApplicationNode = (id) => {
+            return ProjectService.isApplicationNode(id);
+          }
+          $scope.getNodePositionAndTitleByNodeId = (id) => {
+            return ProjectService.getNodePositionAndTitleByNodeId(id);
+          }
+          $scope.sendToNode = (nodeId) => {
+            if ($scope.workgroup != null) {
+              TeacherWebSocketService.sendWorkgroupToNode($scope.workgroup.workgroupId, nodeId);
+            } else {
+              TeacherWebSocketService.sendPeriodToNode($scope.period.periodId, nodeId);
+            }
+          }
+          $scope.close = () => {
+            $mdDialog.hide();
+          };
+      }],
+      targetEvent: $event,
+      clickOutsideToClose: true,
+      escapeToClose: true
+    });
+
+    // this.dialog.open(GoToNodeSelectComponent, {
+    //     minWidth: '600px',
+    //     maxHeight: '800px',
+    //     data: { workgroup: workgroup, run: this.run },
+    //     panelClass: 'mat-dialog--md',
+    // });
+  }
+
+  // chooseNodeToSendPeriod(period: Period) {
+  //     this.dialog.open(GoToNodeSelectComponent, {
+  //         minWidth: '600px',
+  //         maxHeight: '800px',
+  //         data: { period: period, run: this.run },
+  //         panelClass: 'mat-dialog--md',
+  //     });
+  // }
 }
 
 export default StudentProgressController;
