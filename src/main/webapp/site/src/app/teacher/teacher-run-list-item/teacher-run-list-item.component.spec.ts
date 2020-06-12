@@ -10,6 +10,7 @@ import { translationsFactory } from "../../app.module";
 import { MomentModule } from "ngx-moment";
 import { configureTestSuite } from 'ng-bullet';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterTestingModule } from '@angular/router/testing';
 
 export class MockTeacherService {
 
@@ -22,6 +23,9 @@ export class MockConfigService {
   getCurrentServerTime(): number {
     return new Date('2018-08-24T00:00:00.0').getTime();
   }
+  getWISE4Hostname(): string {
+    return 'http://localhost:8080/legacy';
+  }
 }
 
 describe('TeacherRunListItemComponent', () => {
@@ -31,7 +35,7 @@ describe('TeacherRunListItemComponent', () => {
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [ TeacherRunListItemComponent ],
-      imports: [ MomentModule, BrowserAnimationsModule ],
+      imports: [ MomentModule, BrowserAnimationsModule, RouterTestingModule ],
       providers: [
         { provide: TeacherService, useClass: MockTeacherService },
         { provide: ConfigService, useClass: MockConfigService },
@@ -56,7 +60,7 @@ describe('TeacherRunListItemComponent', () => {
     run.startTime = new Date('2018-10-17T00:00:00.0').getTime();
     run.endTime = new Date('2018-10-18T23:59:59.0').getTime();
     run.numStudents = 30;
-    run.periods = ['1', '2'];
+    run.periods = [{name:'1',id:1,workgroups:[]},{name:'2',id:2,workgroups:[]}];
     const project = new Project();
     project.id = 1;
     project.name = "Photosynthesis";

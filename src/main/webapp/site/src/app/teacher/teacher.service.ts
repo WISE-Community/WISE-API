@@ -10,39 +10,37 @@ import { Period } from "../domain/period";
 
 @Injectable()
 export class TeacherService {
-  private runsUrl = "api/teacher/runs";
-  private sharedRunsUrl = "api/teacher/sharedruns";
-  private registerUrl = "api/teacher/register";
-  private runPermissionUrl = "api/teacher/run/permission";
-  private projectPermissionUrl = "api/teacher/project/permission";
-  private transferRunOwnershipUrl = "/api/teacher/run/permission/transfer";
-  private usernamesUrl = "api/teacher/usernames";
-  private createRunUrl = "api/teacher/run/create";
-  private runUrl = "/api/teacher/run";
-  private lastRunUrl = "api/teacher/projectlastrun";
-  private addPeriodToRunUrl = "api/teacher/run/add/period";
-  private deletePeriodFromRunUrl = "api/teacher/run/delete/period";
+
+  private runsUrl = '/api/teacher/runs';
+  private sharedRunsUrl = '/api/teacher/sharedruns';
+  private registerUrl = '/api/teacher/register';
+  private runPermissionUrl = '/api/teacher/run/permission';
+  private projectPermissionUrl = '/api/teacher/project/permission';
+  private transferRunOwnershipUrl = '/api/teacher/run/permission/transfer';
+  private usernamesUrl = '/api/teacher/usernames';
+  private createRunUrl = '/api/teacher/run/create';
+  private runUrl = '/api/teacher/run';
+  private lastRunUrl = '/api/teacher/projectlastrun';
+  private addPeriodToRunUrl = '/api/teacher/run/add/period';
+  private deletePeriodFromRunUrl = '/api/teacher/run/delete/period';
   private updateRandomPeriodAssignmentUrl = "api/teacher/run/update/random-period-assignment";
-  private updateRunStudentsPerTeamUrl =
-    "api/teacher/run/update/studentsperteam";
-  private updateRunStartTimeUrl = "api/teacher/run/update/starttime";
-  private updateRunEndTimeUrl = "api/teacher/run/update/endtime";
-  private forgotUsernameUrl = "api/teacher/forgot/username";
-  private forgotPasswordUrl = "api/teacher/forgot/password";
-  private getVerificationCodeUrl =
-    "api/teacher/forgot/password/verification-code";
-  private checkVerificationCodeUrl =
-    "api/teacher/forgot/password/verification-code";
-  private changePasswordUrl = "api/teacher/forgot/password/change";
-  private classroomAuthorizationUrl =
-    "api/google-classroom/get-authorization-url";
-  private listCoursesUrl = "api/google-classroom/list-courses";
-  private addAssignmentUrl = "api/google-classroom/create-assignment";
+  private updateRunStudentsPerTeamUrl = '/api/teacher/run/update/studentsperteam';
+  private updateRunStartTimeUrl = '/api/teacher/run/update/starttime';
+  private updateRunEndTimeUrl = '/api/teacher/run/update/endtime';
+  private updateRunIsLockedAfterEndDateUrl = '/api/teacher/run/update/islockedafterenddate';
+  private forgotUsernameUrl = '/api/teacher/forgot/username';
+  private forgotPasswordUrl = '/api/teacher/forgot/password';
+  private getVerificationCodeUrl = '/api/teacher/forgot/password/verification-code';
+  private checkVerificationCodeUrl = '/api/teacher/forgot/password/verification-code';
+  private changePasswordUrl = '/api/teacher/forgot/password/change';
+  private classroomAuthorizationUrl = '/api/google-classroom/get-authorization-url';
+  private listCoursesUrl = '/api/google-classroom/list-courses';
+  private addAssignmentUrl = '/api/google-classroom/create-assignment';
   private newProjectSource = new Subject<Project>();
   public newProjectSource$ = this.newProjectSource.asObservable();
   private newRunSource = new Subject<Run>();
   public newRunSource$ = this.newRunSource.asObservable();
-  private updateProfileUrl = "api/teacher/profile/update";
+  private updateProfileUrl = '/api/teacher/profile/update';
 
   constructor(private http: HttpClient) {}
 
@@ -95,18 +93,10 @@ export class TeacherService {
       });
   }
 
-  createRun(
-    projectId: number,
-    periods: string,
-    isRandomPeriodAssignment: boolean,
-    maxStudentsPerTeam: number,
-    startDate: number,
-    endDate: number
-  ): Observable<Run> {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+  createRun(projectId: number, periods: string, isRandomPeriodAssignment: boolean,
+      maxStudentsPerTeam: number, startDate: number, endDate: number,
+      isLockedAfterEndDate: boolean): Observable<Run> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
     body = body.set("projectId", projectId + "");
     body = body.set("periods", periods);
@@ -114,7 +104,8 @@ export class TeacherService {
     body = body.set("maxStudentsPerTeam", maxStudentsPerTeam + "");
     body = body.set("startDate", startDate + "");
     if (endDate) {
-      body = body.set("endDate", endDate + "");
+      body = body.set('endDate', endDate + "");
+      body = body.set('isLockedAfterEndDate', isLockedAfterEndDate + "");
     }
     return this.http.post<Run>(this.createRunUrl, body, { headers: headers });
   }
@@ -135,11 +126,8 @@ export class TeacherService {
 
   transferRunOwnership(runId: number, teacherUsername: string) {
     const url = `${this.transferRunOwnershipUrl}/${runId}/${teacherUsername}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
-    return this.http.put(url, null, { headers: headers });
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    return this.http.put<Object>(url, null, { headers: headers });
   }
 
   removeSharedOwner(runId: number, username: string) {
@@ -320,9 +308,20 @@ export class TeacherService {
       "application/x-www-form-urlencoded"
     );
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("endTime", endTime + "");
-    return this.http.post<Object>(url, body, { headers: headers });
+    body = body.set('runId', runId + '');
+    if (endTime != null) {
+      body = body.set('endTime', endTime + '');
+    }
+    return this.http.post<Object>(url, body, {headers: headers});
+  }
+
+  updateIsLockedAfterEndDate(runId: number, isLockedAfterEndDate: boolean) {
+    const url = `${this.updateRunIsLockedAfterEndDateUrl}`;
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    const body = new HttpParams()
+        .set('runId', runId + '')
+        .set('isLockedAfterEndDate', isLockedAfterEndDate + '');
+    return this.http.post<Object>(url, body, {headers: headers});
   }
 
   sendForgotUsernameEmail(email) {

@@ -28,7 +28,7 @@ export class MockTeacherService {
     run1.id = 1;
     run1.name = 'Photosynthesis';
     run1.numStudents = 30;
-    run1.periods = ['1','2'];
+    run1.periods = [{name:'1',id:1,workgroups:[]},{name:'2',id:2,workgroups:[]}];
     run1.startTime = new Date('2018-01-01T00:00:00.0').getTime();
     const project1 = new Project();
     project1.id = 1;
@@ -39,7 +39,7 @@ export class MockTeacherService {
     run2.id = 2;
     run2.name = 'Plate Tectonics';
     run2.numStudents = 15;
-    run2.periods = ['3','4'];
+    run2.periods = [{name:'3',id:3,workgroups:[]},{name:'4',id:4,workgroups:[]}];
     run2.startTime = new Date('2018-03-03T00:00:00.0').getTime();
     const project2 = new Project();
     project2.id = 1;
@@ -65,7 +65,7 @@ export class MockTeacherService {
     {
       id: 3,
       name: 'Global Climate Change',
-      periods: ['1', '2']
+      periods: [{name:'1',id:1,workgroups:[]}, {name:'2',id:2,workgroups:[]}]
     }
   );
 }
@@ -120,7 +120,7 @@ describe('TeacherRunListComponent', () => {
     run3.id = 3;
     run3.name = 'Planet Earth';
     run3.numStudents = 10;
-    run3.periods = ['6', '7'];
+    run3.periods = [{name:'6',id:6,workgroups:[]},{name:'7',id:7,workgroups:[]}];
     run3.startTime = new Date('2018-02-02T00:00:00.0').getTime();
     const project3 = new Project();
     project3.id = 1;

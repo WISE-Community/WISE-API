@@ -35,6 +35,8 @@ import { AnnouncementComponent } from './announcement/announcement.component';
 import { AnnouncementDialogComponent } from './announcement/announcement.component';
 import { AboutModule } from "./about/about.module";
 import { TrackScrollDirective } from './track-scroll.directive';
+import { PreviewModule } from './preview/preview.module';
+import { GoToNodeSelectComponent } from '../../../score/teachingassistant/src/app/core/components/go-to-node-select/go-to-node-select.component';
 
 export function initialize(configService: ConfigService, userService: UserService): () => Promise<any> {
   return (): Promise<any> => {
@@ -64,7 +66,7 @@ export function getAuthServiceConfigs(configService: ConfigService) {
 
 declare const require;
 export function translationsFactory(locale: string) {
-  return require(`raw-loader!../locale/messages.xlf`);
+  return require(`raw-loader!../locale/messages.xlf`).default;
 }
 
 @NgModule({
@@ -72,7 +74,8 @@ export function translationsFactory(locale: string) {
     AppComponent,
     AnnouncementComponent,
     AnnouncementDialogComponent,
-    TrackScrollDirective
+    TrackScrollDirective,
+    GoToNodeSelectComponent
   ],
   imports: [
     BrowserModule,
@@ -87,6 +90,7 @@ export function translationsFactory(locale: string) {
     LoginModule,
     MobileMenuModule,
     RegisterModule,
+    PreviewModule,
     StudentModule,
     TeacherModule,
     SocialLoginModule,
@@ -100,7 +104,7 @@ export function translationsFactory(locale: string) {
       anchorScrolling: 'enabled',
     })
   ],
-  entryComponents: [ AnnouncementDialogComponent ],
+  entryComponents: [ AnnouncementDialogComponent, GoToNodeSelectComponent ],
   providers: [
     ConfigService,
     StudentService,

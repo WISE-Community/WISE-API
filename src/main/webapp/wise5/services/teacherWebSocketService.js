@@ -79,6 +79,14 @@ class TeacherWebSocketService {
   unPauseScreens(periodId) {
     this.$stomp.send(`/app/unpause/${this.runId}/${periodId}`, {}, {});
   }
+
+  sendWorkgroupToNode(workgroupId, nodeId) {
+    this.$stomp.send(`/app/api/teacher/run/${this.runId}/workgroup-to-node/${workgroupId}/${nodeId}`, {}, {});
+  }
+
+  sendPeriodToNode(periodId, nodeId) {
+    this.$stomp.send(`/app/api/teacher/run/${this.runId}/period-to-node/${periodId}/${nodeId}`, {}, {});
+  }
 }
 
 TeacherWebSocketService.$inject = [

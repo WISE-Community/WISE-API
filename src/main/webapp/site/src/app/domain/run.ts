@@ -10,6 +10,7 @@ export class Run {
   startTime: number;
   endTime: number;
   isRandomPeriodAssignment: boolean;
+  isLockedAfterEndDate: boolean;
   lastRun: string;
   projectThumb: string;
   numStudents: number;

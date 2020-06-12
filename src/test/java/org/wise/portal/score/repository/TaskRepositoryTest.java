@@ -1,16 +1,6 @@
 package org.wise.portal.score.repository;
 
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.wise.Application;
-import org.wise.portal.score.domain.Task;
-import org.wise.portal.score.repository.TaskRepository;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -18,15 +8,23 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.wise.portal.junit.AbstractTransactionalDbTests;
+import org.wise.portal.score.domain.Task;
+
 /**
  * Tests for tasks and requests
  *
  * @author Anthony Perritano
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = { Application.class })
 @SpringBootTest
-public class TaskRepositoryTest extends TestCase {
+public class TaskRepositoryTest extends AbstractTransactionalDbTests {
 
   @Autowired
   TaskRepository taskRepository;
