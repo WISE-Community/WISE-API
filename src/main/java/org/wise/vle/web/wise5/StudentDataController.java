@@ -30,12 +30,16 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -319,15 +323,15 @@ public class StudentDataController {
    * @param events JSON string containing events
    * @param annotations JSON string containing annotations
    */
-  @RequestMapping(method = RequestMethod.POST, value = "/student/data")
+  @PostMapping("/student/data")
   public void postWISE5StudentData(
       HttpServletResponse response,
-      @RequestParam(value = "runId", required = true) Integer runId,
-      @RequestParam(value = "studentWorkList", required = true) String studentWorkList,
-      @RequestParam(value = "events", required = true) String events,
-      @RequestParam(value = "annotations", required = true) String annotations
-      ) throws JSONException {
+      @RequestBody ObjectNode postedParams) throws JSONException {
     User signedInUser = ControllerUtil.getSignedInUser();
+    Integer runId = postedParams.get("runId").asInt();
+    String studentWorkList = postedParams.get("studentWorkList").asText();
+    String events = postedParams.get("events").asText();
+    String annotations = postedParams.get("annotations").asText();
     JSONObject result = new JSONObject();
     try {
       Run run = runService.retrieveById(new Long(runId));

@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { WebSocketService } from '../../services/websocket/websocket.service';
 import { Run } from '../../../../../../../site/src/app/domain/run';
 import { Workgroup } from '../../../../../../../site/src/app/domain/workgroup';

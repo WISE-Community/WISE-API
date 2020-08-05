@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Run } from '../../../../../../../site/src/app/domain/run';
 import { Task } from '../../domain/task';
@@ -38,7 +38,7 @@ export class TaskDatatableComponent implements OnInit {
     @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-    private selectionTitle: string;
+    selectionTitle: string;
     private periodName: string;
     runId: number = 0;
 
