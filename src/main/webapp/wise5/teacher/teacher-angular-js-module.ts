@@ -361,6 +361,14 @@ export function createTeacherAngularJSModule() {
           controller: 'StudentProgressController',
           controllerAs: 'studentProgressController'
         })
+        .state('root.cm.instructorPage', {
+          url: '/instructor',
+          component: 'instructorPage'
+        })
+        .state('root.cm.taskDatatable', {
+          url: '/tasks',
+          component: 'taskDatatable'
+        })
         .state('root.cm.team', {
           url: '/team/:workgroupId',
           templateUrl: '/wise5/classroomMonitor/studentGrading/studentGrading.html',

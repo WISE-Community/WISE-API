@@ -71,6 +71,9 @@ export class EmptyComponent {}
     TagService,
     VLEProjectService
   ],
+  exports: [
+    CommonModule
+  ],
   entryComponents: [
   ]
 })

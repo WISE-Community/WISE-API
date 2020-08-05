@@ -39,7 +39,7 @@ export class TaskDatatableComponent implements OnInit {
     @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     selectionTitle: string;
-    private periodName: string;
+    periodName: string;
     runId: number = 0;
 
     constructor(

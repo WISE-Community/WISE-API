@@ -932,7 +932,7 @@ export class StudentDataService {
         projectId: projectId,
         eventType: eventType
       };
-      this.http.post('/api/tasks/timer', taskParams);
+      this.http.post('/api/tasks/timer', taskParams).toPromise();
     }
   }
 
@@ -952,7 +952,7 @@ export class StudentDataService {
         projectId: projectId,
         requestType: type
       };
-      this.http.post('/api/tasks/taskrequest', taskParams);
+      this.http.post('/api/tasks/taskrequest', taskParams).toPromise();
     }
   }
 
@@ -998,7 +998,7 @@ export class StudentDataService {
           workgroupId: workgroupId,
           tasks: nodesJSON
         };
-        this.http.post('/api/task', taskParams);
+        this.http.post('/api/task', taskParams).toPromise();
       }
     }
   }
