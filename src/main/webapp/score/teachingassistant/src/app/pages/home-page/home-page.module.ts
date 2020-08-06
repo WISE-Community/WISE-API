@@ -16,6 +16,7 @@ import {TaskDatatableComponentModule} from "../../core/components/task-datatable
   declarations: [HomePageComponent],
     imports: [
         CommonModule,
+        MatTableModule,
         HomePageRoutingModule,
         RunDatatableComponentModule,
         TaskDatatableComponentModule

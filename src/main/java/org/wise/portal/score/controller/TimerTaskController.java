@@ -10,8 +10,10 @@ import org.wise.portal.score.domain.TaskRequest;
 import org.wise.portal.score.repository.TaskRepository;
 import org.wise.portal.score.repository.TaskRequestRepository;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
@@ -39,14 +41,14 @@ public class TimerTaskController {
    * Creates tasks for a project in batch
    */
   @PostMapping(value = { "/task" })
-  protected List<Task> createTasksBatch(HttpServletRequest request,
+  protected List<Task> createTasksBatch(@RequestBody ObjectNode objectNode,
       HttpServletResponse response) throws JSONException {
-    String runIdString = request.getParameter("runId");
-    String periodIdString = request.getParameter("periodId");
-    String periodName = request.getParameter("periodName");
-    String projectIdString = request.getParameter("projectId");
-    String workgroupIdString = request.getParameter("workgroupId");
-    String tasksString = request.getParameter("tasks");
+    String runIdString = objectNode.get("runId").asText();
+    String periodIdString = objectNode.get("periodId").asText();
+    String periodName = objectNode.get("periodName").asText();
+    String projectIdString = objectNode.get("projectId").asText();
+    String workgroupIdString = objectNode.get("workgroupId").asText();
+    String tasksString = objectNode.get("tasks").asText();
 
     if (tasksString != null && runIdString != null && periodIdString != null
         && workgroupIdString != null && projectIdString != null) {
@@ -136,14 +138,14 @@ public class TimerTaskController {
    * starts stops the timer for a task
    */
   @PostMapping(value = { "/tasks/timer" })
-  protected String timer(HttpServletRequest request,
+  protected String timer(@RequestBody ObjectNode objectNode,
       HttpServletResponse response) throws Exception {
-    String runIdString = request.getParameter("runId");
-    String periodIdString = request.getParameter("periodId");
-    String projectIdString = request.getParameter("projectId");
-    String workgroupIdString = request.getParameter("workgroupId");
-    String activityId = request.getParameter("activityId");
-    String eventType = request.getParameter("eventType");
+    String runIdString = objectNode.get("runId").asText();
+    String periodIdString = objectNode.get("periodId").asText();
+    String projectIdString = objectNode.get("projectId").asText();
+    String workgroupIdString = objectNode.get("workgroupId").asText();
+    String activityId = objectNode.get("activityId").asText();
+    String eventType = objectNode.get("eventType").asText();
 
     if (runIdString != null && periodIdString != null
         && workgroupIdString != null && activityId != null && eventType != null
@@ -173,14 +175,14 @@ public class TimerTaskController {
   }
 
   @PostMapping("/tasks/taskrequest")
-  protected String createTaskRequest(HttpServletRequest request,
+  protected String createTaskRequest(@RequestBody ObjectNode objectNode,
       HttpServletResponse response) throws Exception {
-    String runIdString = request.getParameter("runId");
-    String periodIdString = request.getParameter("periodId");
-    String projectIdString = request.getParameter("projectId");
-    String workgroupIdString = request.getParameter("workgroupId");
-    String activityId = request.getParameter("activityId");
-    String requestType = request.getParameter("requestType");
+    String runIdString = objectNode.get("runId").asText();
+    String periodIdString = objectNode.get("periodId").asText();
+    String projectIdString = objectNode.get("projectId").asText();
+    String workgroupIdString = objectNode.get("workgroupId").asText();
+    String activityId = objectNode.get("activityId").asText();
+    String requestType = objectNode.get("requestType").asText();
 
     if (runIdString != null && periodIdString != null
         && workgroupIdString != null && activityId != null

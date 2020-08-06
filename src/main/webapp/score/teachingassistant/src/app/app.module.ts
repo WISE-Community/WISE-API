@@ -13,7 +13,8 @@ import { AppComponent } from './app.component';
 import { NavModule } from './core/components/nav/nav.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { MatIconModule, MatTableModule } from '@angular/material';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { MainNavComponent } from './main-nav/main-nav.component';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -74,8 +75,6 @@ export function initialize(
         AppRoutingModule,
         NavModule,
         HttpClientModule,
-        MatIconModule,
-        MatTableModule,
         MatToolbarModule,
         MatButtonModule,
         MatSidenavModule,
@@ -83,7 +82,6 @@ export function initialize(
         MatListModule,
         MatTableModule,
         MatSortModule,
-        MatPaginatorModule,
         MatFormFieldModule,
         MatPaginatorModule,
         MatSortModule,
