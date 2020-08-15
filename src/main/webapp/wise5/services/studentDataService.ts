@@ -61,6 +61,9 @@ export class StudentDataService {
     score: criteria => {
       return this.evaluateScoreCriteria(criteria);
     },
+    teacherRemoval: criteria => {
+      return false;
+    },
     usedXSubmits: criteria => {
       return this.evaluateUsedXSubmitsCriteria(criteria);
     },
