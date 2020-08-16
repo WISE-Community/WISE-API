@@ -1276,4 +1276,27 @@ export class TeacherProjectService extends ProjectService {
     }
     return null;
   }
+
+  lockNode(nodeId: string, doLock: boolean) {
+    const node = this.getNodeById(nodeId);
+    if (doLock) {
+      const lockConstraint = {
+        id: this.UtilService.generateKey(),
+        action: 'makeThisNodeNotVisitable',
+        targetId: node.id,
+        targetPeriodIds: [],
+        removalConditional: 'any',
+        removalCriteria: [{
+          'name': 'teacherRemoval',
+          'params': {}
+        }]
+      };
+      this.addConstraintToNode(node, lockConstraint);
+    } else {
+      node.constraints = node.constraints.filter(constraint => {
+        return constraint.action !== 'makeThisNodeNotVisitable';
+      });
+    }
+    this.saveProject();
+  }
 }
