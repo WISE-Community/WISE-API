@@ -62,7 +62,7 @@ export class StudentDataService {
       return this.evaluateScoreCriteria(criteria);
     },
     teacherRemoval: criteria => {
-      return false;
+      return this.evaluateTeacherRemovalCriteria(criteria);
     },
     usedXSubmits: criteria => {
       return this.evaluateUsedXSubmitsCriteria(criteria);
@@ -574,6 +574,10 @@ export class StudentDataService {
       }
     }
     return false;
+  }
+
+  evaluateTeacherRemovalCriteria(criteria: any) {
+    return criteria.params.periodId !== this.ConfigService.getPeriodId();
   }
 
   isScoreInExpectedScores(expectedScores, score) {
