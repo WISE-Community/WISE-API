@@ -5,9 +5,14 @@ $flex-grow: 10px;
 $small-column: 10px;
 $medium-column: 20px;
 $large-column: 40px;
+$font-size: 14px;
 
 .buttons {
-  width: 100px;
+    width: 100px;
+}
+
+.main-style {
+    font-size: 12px;
 }
 
 .basic-container {
@@ -22,7 +27,28 @@ $large-column: 40px;
 
 .table-controls {
     width: 91vw;
+    align-items: center;
     background: #eef1ee;
+}
+
+::ng-deep .mat-paginator {
+    .mat-paginator-container {
+        justify-content: center;
+        flex-wrap: wrap-reverse;
+        width: 91vw;
+    }
+
+    // override material paginator page switch
+    .mat-paginator-range-label {
+        order: 2;
+    }
+
+    .mat-paginator-navigation-previous {
+        order: 1;
+    }
+    .mat-paginator-navigation-next {
+        order: 3;
+    }
 }
 
 table {
@@ -44,14 +70,15 @@ h3 {
     justify-content: center;
     text-align: center;
     align-items: center;
+    font-size: $font-size;
 }
 
 .mat-cell {
     justify-content: center;
     text-align: center;
     align-items: center;
+    font-size: $font-size;
 }
-
 
 .mat-column-id {
     padding: $padding;
