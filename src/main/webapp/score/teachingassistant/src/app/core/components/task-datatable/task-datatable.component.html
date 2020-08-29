@@ -1,4 +1,4 @@
-<div class="l-constrained view-content view-content--with-sidemenu" fxLayout="column" fxLayoutAlign="center">
+<div class="l-constrained view-content view-content--with-sidemenu main-style" fxLayout="column" fxLayoutAlign="center">
     <!-- <h2>Task Information {{selectionTitle}}</h2> -->
     <!-- <br> -->
     <div *ngIf="periodName === 'All Periods'">
@@ -89,7 +89,6 @@
             <tr *matRowDef="let row; columns: tasksDisplayedColumns;" mat-row></tr>
         </table>
         <mat-paginator
-            class="table-controls"
             [pageSizeOptions]="[10,20,40]"
             [pageSize]="10" showFirstLastButtons></mat-paginator>
     </div>
