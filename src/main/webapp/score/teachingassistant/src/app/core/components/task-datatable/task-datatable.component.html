@@ -1,13 +1,13 @@
-<div class="tab-container l-constrained" fxLayout="column" fxLayoutAlign="start stretch">
-    <h2>Task Information {{selectionTitle}}</h2>
-    <br>
+<div class="l-constrained view-content view-content--with-sidemenu" fxLayout="column" fxLayoutAlign="center">
+    <!-- <h2>Task Information {{selectionTitle}}</h2> -->
+    <!-- <br> -->
     <div *ngIf="periodName === 'All Periods'">
         <div style="display: inline-flex; vertical-align: middle; align-items: center;">
             <i class="material-icons">error_outline</i>
             <span> Showing tasks for all periods is currently not supported. Please choose a specific period.</span>
         </div>
     </div>
-    <div class="mat-elevation-z1">
+    <div class="view-content--with-sidemenu" class="mat-elevation-z1">
         <table [dataSource]="tasksDataSource" mat-table matSort>
             <!-- Position Column -->
             <ng-container matColumnDef="id">
@@ -89,6 +89,7 @@
             <tr *matRowDef="let row; columns: tasksDisplayedColumns;" mat-row></tr>
         </table>
         <mat-paginator
+            class="table-controls"
             [pageSizeOptions]="[10,20,40]"
             [pageSize]="10" showFirstLastButtons></mat-paginator>
     </div>
