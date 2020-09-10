@@ -27,6 +27,9 @@ class ClassResponseController {
   @Input()
   isvotingallowed: boolean;
 
+  @Input()
+  iscommentingallowed: boolean = true;
+
   $scope: any;
   $filter: any;
   $translate: any;

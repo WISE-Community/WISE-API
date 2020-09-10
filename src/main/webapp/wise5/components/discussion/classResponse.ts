@@ -13,7 +13,8 @@ const ClassResponse = {
     createunvoteannotation: '&',
     studentdatachanged: '&',
     isdisabled: '<',
-    isvotingallowed: '<'
+    isvotingallowed: '<',
+    iscommentingallowed: '<'
   },
   templateUrl: 'wise5/components/discussion/classResponse.html',
   controller: 'ClassResponseController as classResponseCtrl'

@@ -61,6 +61,9 @@ class DiscussionAuthoringController extends DiscussionController {
       $mdMedia
     );
     this.allowedConnectedComponentTypes = [{ type: 'Discussion' }];
+    if (this.authoringComponentContent.isCommentingAllowed == null) {
+      this.authoringComponentContent.isCommentingAllowed = true;
+    }
   }
 
   authoringConnectedComponentTypeChanged(connectedComponent) {
