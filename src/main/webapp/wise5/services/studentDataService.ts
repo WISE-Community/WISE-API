@@ -757,6 +757,7 @@ export class StudentDataService {
     } else {
       this.upgrade.$injector.get('$rootScope').$broadcast('annotationReceived', { annotation: annotation });
     }
+    this.updateNodeStatuses();
   }
 
   saveComponentEvent(component, category, event, data) {

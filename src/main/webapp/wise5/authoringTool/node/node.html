@@ -524,10 +524,10 @@
                   <span class="node-select__text" style="color: red">{{ ::'pleaseChooseAComponent' | translate }}</span>
                 </span>
               </md-option>
-              <md-option ng-repeat="component in ::projectController.getComponentsByNodeId(criteria.params.nodeId) track by $index"
+              <md-option ng-repeat="component in projectController.getComponentsByNodeId(criteria.params.nodeId) track by $index"
                          ng-value="component.id">
                 <span layout="row" layout-align="start center">
-                  <span class="node-select__text">{{::($index + 1)}}. {{::component.type}} ({{ ::'prompt' | translate }}: {{::component.prompt}})</span>
+                  <span class="node-select__text">{{($index + 1)}}. {{component.type}} ({{ 'prompt' | translate }}: {{component.prompt}})</span>
                 </span>
               </md-option>
             </md-select>
