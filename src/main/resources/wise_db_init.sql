@@ -565,6 +565,7 @@ CREATE TABLE tasks
     complete      tinyint(1)   DEFAULT NULL,
     workgroupName varchar(255) DEFAULT NULL,
     activityId varchar(255) DEFAULT NULL,
+    username varchar(255) DEFAULT NULL,
     started tinyint(1) DEFAULT NULL,
     duration bigint(20) DEFAULT NULL,
     active tinyint(1) DEFAULT NULL,

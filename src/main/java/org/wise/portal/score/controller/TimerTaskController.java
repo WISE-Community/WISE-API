@@ -1,22 +1,27 @@
 package org.wise.portal.score.controller;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.wise.portal.score.domain.Task;
-import org.wise.portal.score.domain.TaskRequest;
-import org.wise.portal.score.repository.TaskRepository;
-import org.wise.portal.score.repository.TaskRequestRepository;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.wise.portal.score.domain.Task;
+import org.wise.portal.score.domain.TaskRequest;
+import org.wise.portal.score.repository.TaskRepository;
+import org.wise.portal.score.repository.TaskRequestRepository;
 
 @RestController
 @RequestMapping(value = "/api", produces = "application/json;charset=UTF-8")
@@ -48,6 +53,7 @@ public class TimerTaskController {
     String periodName = objectNode.get("periodName").asText();
     String projectIdString = objectNode.get("projectId").asText();
     String workgroupIdString = objectNode.get("workgroupId").asText();
+    String usernameString = objectNode.get("username").asText();
     String tasksString = objectNode.get("tasks").asText();
 
     if (tasksString != null && runIdString != null && periodIdString != null
@@ -56,14 +62,12 @@ public class TimerTaskController {
       JSONArray nodes = nodeVisitJSON.getJSONArray("nodes");
       for (int i = 0; i < nodes.length(); i++) {
         JSONObject n = nodes.getJSONObject(i);
-        System.out.println("NODE " + n);
         String activityId = n.getString("id");
         String activityName = n.getString("title");
-        Integer duration = n.getInt("duration");
-        this.createTask(Long.parseLong(runIdString),
-            Long.parseLong(periodIdString), periodName,
-            Long.parseLong(projectIdString), Long.parseLong(workgroupIdString),
-            activityId, activityName, duration);
+        Integer duration = n.has("duration") ? n.getInt("duration") : 0;
+        this.createTask(Long.parseLong(runIdString), Long.parseLong(periodIdString), periodName,
+            Long.parseLong(projectIdString), Long.parseLong(workgroupIdString), activityId,
+            activityName, duration, usernameString);
       }
     }
 
@@ -81,17 +85,15 @@ public class TimerTaskController {
    * @param activityName
    * @param duration
    */
-  public void createTask(Long runId, Long periodId, String periodName,
-      Long projectId, Long workgroupId, String activityId, String activityName,
-      Integer duration) {
-    Optional<Task> found = this.taskRepository
-        .findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(runId, periodId,
-            workgroupId, activityId);
+  public void createTask(Long runId, Long periodId, String periodName, Long projectId,
+      Long workgroupId, String activityId, String activityName, Integer duration, String username) {
+    Optional<Task> found = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(
+        runId, periodId, workgroupId, activityId);
     if (!found.isPresent()) {
-      Task task = Task.builder().runId(runId).complete(false)
-          .workgroupId(workgroupId).projectId(projectId).periodName(periodName)
-          .periodId(periodId).duration(duration).complete(false).active(false)
-          .name(activityName).activityId(activityId).build();
+      Task task = Task.builder().runId(runId).complete(false).workgroupId(workgroupId)
+          .projectId(projectId).periodName(periodName).periodId(periodId).duration(duration)
+          .complete(false).active(false).name(activityName).username(username)
+          .activityId(activityId).build();
       this.taskRepository.save(task);
     }
   }
@@ -105,8 +107,8 @@ public class TimerTaskController {
    *                     ID of the run
    */
   @GetMapping(value = { "/tasks/name/{runId}/{periodName}" })
-  protected List<Task> findAllTasksByRunIdAndPeriodName(
-      @PathVariable Long runId, @PathVariable String periodName) {
+  protected List<Task> findAllTasksByRunIdAndPeriodName(@PathVariable Long runId,
+      @PathVariable String periodName) {
     System.out.println("RunId: " + runId);
     System.out.println("PeriodName: " + periodName);
     if (periodName != null && runId != null) {
@@ -138,8 +140,8 @@ public class TimerTaskController {
    * starts stops the timer for a task
    */
   @PostMapping(value = { "/tasks/timer" })
-  protected String timer(@RequestBody ObjectNode objectNode,
-      HttpServletResponse response) throws Exception {
+  protected String timer(@RequestBody ObjectNode objectNode, HttpServletResponse response)
+      throws Exception {
     String runIdString = objectNode.get("runId").asText();
     String periodIdString = objectNode.get("periodId").asText();
     String projectIdString = objectNode.get("projectId").asText();
@@ -147,20 +149,17 @@ public class TimerTaskController {
     String activityId = objectNode.get("activityId").asText();
     String eventType = objectNode.get("eventType").asText();
 
-    if (runIdString != null && periodIdString != null
-        && workgroupIdString != null && activityId != null && eventType != null
-        && projectIdString != null) {
-      Optional<Task> byId = this.taskRepository
-          .findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(
-              Long.parseLong(runIdString), Long.parseLong(periodIdString),
-              Long.parseLong(workgroupIdString), activityId);
+    if (runIdString != null && periodIdString != null && workgroupIdString != null
+        && activityId != null && eventType != null && projectIdString != null) {
+      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(
+          Long.parseLong(runIdString), Long.parseLong(periodIdString),
+          Long.parseLong(workgroupIdString), activityId);
       if (eventType.equalsIgnoreCase("start_timer")) {
         byId.ifPresent(task -> {
           long startTime = System.currentTimeMillis();
           task.setActive(true);
           task.setStartTime(new Timestamp(startTime));
-          task.setEndTime(
-              new Timestamp(startTime + (task.getDuration() * 1000)));
+          task.setEndTime(new Timestamp(startTime + (task.getDuration() * 1000)));
           this.taskRepository.save(task);
         });
       } else {
@@ -184,19 +183,15 @@ public class TimerTaskController {
     String activityId = objectNode.get("activityId").asText();
     String requestType = objectNode.get("requestType").asText();
 
-    if (runIdString != null && periodIdString != null
-        && workgroupIdString != null && activityId != null
-        && requestType != null && projectIdString != null) {
-      Optional<Task> byId = this.taskRepository
-          .findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(
-              Long.parseLong(runIdString), Long.parseLong(periodIdString),
-              Long.parseLong(workgroupIdString), activityId);
+    if (runIdString != null && periodIdString != null && workgroupIdString != null
+        && activityId != null && requestType != null && projectIdString != null) {
+      Optional<Task> byId = this.taskRepository.findByRunIdAndPeriodIdAndWorkgroupIdAndActivityId(
+          Long.parseLong(runIdString), Long.parseLong(periodIdString),
+          Long.parseLong(workgroupIdString), activityId);
       byId.ifPresent(task -> {
-        TaskRequest taskRequest = TaskRequest.builder()
-            .periodId(Long.parseLong(periodIdString))
-            .projectId(Long.parseLong(projectIdString))
-            .runId(Long.parseLong(runIdString)).complete(false)
-            .workgroupId(Long.parseLong(workgroupIdString)).status(requestType)
+        TaskRequest taskRequest = TaskRequest.builder().periodId(Long.parseLong(periodIdString))
+            .projectId(Long.parseLong(projectIdString)).runId(Long.parseLong(runIdString))
+            .complete(false).workgroupId(Long.parseLong(workgroupIdString)).status(requestType)
             .task(task).build();
         task.addTaskRequest(taskRequest);
         this.taskRepository.save(task);
@@ -212,13 +207,12 @@ public class TimerTaskController {
    *                        the group associated with the task
    */
   @GetMapping(value = { "/tasks/taskrequest/{taskRequestId}/{status}" })
-  protected TaskRequest markCompleteTaskRequest(
-      @PathVariable Long taskRequestId, @PathVariable String status) {
+  protected TaskRequest markCompleteTaskRequest(@PathVariable Long taskRequestId,
+      @PathVariable String status) {
     System.out.println("taskRequestId: " + taskRequestId);
 
     if (taskRequestId != null && status != null) {
-      Optional<TaskRequest> tr = this.taskRequestRepository
-          .findById(taskRequestId);
+      Optional<TaskRequest> tr = this.taskRequestRepository.findById(taskRequestId);
       if (tr.isPresent()) {
         TaskRequest taskRequest = tr.get();
         if (status.equals("approved")) {

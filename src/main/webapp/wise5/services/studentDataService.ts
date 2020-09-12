@@ -85,12 +85,12 @@ export class StudentDataService {
   $translate: any;
 
   constructor(private upgrade: UpgradeModule,
-      public http: HttpClient,
-      private AnnotationService: AnnotationService,
-      private ConfigService: ConfigService,
-      private ProjectService: ProjectService,
-      private TagService: TagService,
-      private UtilService: UtilService) {
+    public http: HttpClient,
+    private AnnotationService: AnnotationService,
+    private ConfigService: ConfigService,
+    private ProjectService: ProjectService,
+    private TagService: TagService,
+    private UtilService: UtilService) {
   }
 
   handleNodeStatusesChanged() {
@@ -146,6 +146,8 @@ export class StudentDataService {
     if (this.ConfigService.isPreview()) {
       this.retrieveStudentDataForPreview();
     } else {
+      console.log('-------- TASK CREATION 2');
+      this.initializeStudentTasks();
       return this.retrieveStudentDataForSignedInStudent();
     }
   }
@@ -161,23 +163,24 @@ export class StudentDataService {
     this.AnnotationService.setAnnotations(this.studentData.annotations);
     this.populateHistories(this.studentData.events);
     this.updateNodeStatuses();
+    ;
   }
 
   retrieveStudentDataForSignedInStudent() {
     const params = new HttpParams()
-        .set('runId', this.ConfigService.getRunId())
-        .set('workgroupId', this.ConfigService.getWorkgroupId() + '')
-        .set('getStudentWork', true + '')
-        .set('getEvents', true + '')
-        .set('getAnnotations', true + '')
-        .set('toWorkgroupId', this.ConfigService.getWorkgroupId());
+      .set('runId', this.ConfigService.getRunId())
+      .set('workgroupId', this.ConfigService.getWorkgroupId() + '')
+      .set('getStudentWork', true + '')
+      .set('getEvents', true + '')
+      .set('getAnnotations', true + '')
+      .set('toWorkgroupId', this.ConfigService.getWorkgroupId());
     const options = {
       params: params
     };
     return this.http.get(this.ConfigService.getConfigParam('studentDataURL'), options).toPromise()
-        .then(resultData => {
-      return this.handleStudentDataResponse(resultData);
-    });
+      .then(resultData => {
+        return this.handleStudentDataResponse(resultData);
+      });
   }
 
   handleStudentDataResponse(resultData) {
@@ -207,9 +210,9 @@ export class StudentDataService {
         params: params
       };
       return this.http.get(this.ConfigService.getConfigParam('runStatusURL'), options).toPromise()
-          .then((runStatus: any) => {
-        this.runStatus = runStatus;
-      });
+        .then((runStatus: any) => {
+          this.runStatus = runStatus;
+        });
     }
   }
 
@@ -247,7 +250,7 @@ export class StudentDataService {
     for (const group of groups) {
       group.depth = this.ProjectService.getNodeDepth(group.id, 0);
     }
-    groups.sort(function(a, b) {
+    groups.sort(function (a, b) {
       return b.depth - a.depth;
     });
     for (const group of groups) {
@@ -643,7 +646,7 @@ export class StudentDataService {
       const notebook = notebookService.getNotebookByWorkgroup();
       const notebookItemsByNodeId = this.getNotebookItemsByNodeId(notebook, nodeId);
       return notebookItemsByNodeId.length >= requiredNumberOfNotes;
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 
@@ -849,14 +852,14 @@ export class StudentDataService {
         annotations: angular.toJson(annotations)
       };
       return this.http.post(this.ConfigService.getConfigParam('studentDataURL'), params).toPromise()
-          .then(
-        (resultData: any) => {
-          return this.handleSaveToServerSuccess(resultData);
-        },
-        (resultData: any) => {
-          return this.handleSaveToServerError();
-        }
-      );
+        .then(
+          (resultData: any) => {
+            return this.handleSaveToServerSuccess(resultData);
+          },
+          (resultData: any) => {
+            return this.handleSaveToServerError();
+          }
+        );
     }
   }
 
@@ -972,6 +975,9 @@ export class StudentDataService {
         const periodName = this.ConfigService.getPeriodName();
         const projectId = this.ConfigService.getProjectId();
         const workgroupId = this.ConfigService.getWorkgroupId();
+        const userInfo = this.ConfigService.getUserInfoByWorkgroupId(workgroupId);
+        const username = userInfo.username;
+        console.log('GROUP NAME -----', userInfo.username);
         let nodes = this.ProjectService.getNodes();
 
         // console.log("PERIOD ID PROJECT", periodId, periodName);
@@ -984,8 +990,10 @@ export class StudentDataService {
 
         for (let node of nodes) {
           if (!this.ProjectService.isGroupNode(node.id)) {
-            // console.log('NODE ----', node);
+            console.log('NODE ----', node);
             if (node.task) {
+
+              console.log('NODE ---', node);
               const nodeJSON = {
                 id: node.id,
                 title: node.title,
@@ -1003,6 +1011,7 @@ export class StudentDataService {
           periodName: periodName,
           projectId: projectId,
           workgroupId: workgroupId,
+          username: username,
           tasks: nodesJSON
         };
         this.http.post('/api/task', taskParams).toPromise();
@@ -1118,14 +1127,14 @@ export class StudentDataService {
         status: angular.toJson(studentStatusJSON)
       };
       return this.http.post(this.ConfigService.getStudentStatusURL(), studentStatusParams)
-          .toPromise().then(
-        result => {
-          return true;
-        },
-        result => {
-          return false;
-        }
-      );
+        .toPromise().then(
+          result => {
+            return true;
+          },
+          result => {
+            return false;
+          }
+        );
     }
   }
 
@@ -1605,13 +1614,13 @@ export class StudentDataService {
 
   getClassmateStudentWork(nodeId, componentId, periodId) {
     let params = new HttpParams()
-        .set('runId', this.ConfigService.getRunId())
-        .set('nodeId', nodeId + '')
-        .set('componentId', componentId + '')
-        .set('getStudentWork', true + '')
-        .set('getEvents', false + '')
-        .set('getAnnotations', false + '')
-        .set('onlyGetLatest', true + '');
+      .set('runId', this.ConfigService.getRunId())
+      .set('nodeId', nodeId + '')
+      .set('componentId', componentId + '')
+      .set('getStudentWork', true + '')
+      .set('getEvents', false + '')
+      .set('getAnnotations', false + '')
+      .set('onlyGetLatest', true + '');
     if (periodId != null) {
       params = params.set('periodId', periodId);
     }
@@ -1619,20 +1628,20 @@ export class StudentDataService {
       params: params
     };
     return this.http.get(this.ConfigService.getConfigParam('studentDataURL'), options).toPromise()
-        .then((resultData: any) => {
-      return resultData.studentWorkList;
-    });
+      .then((resultData: any) => {
+        return resultData.studentWorkList;
+      });
   }
 
   getClassmateScores(nodeId, componentId, periodId) {
     let params = new HttpParams()
-        .set('runId', this.ConfigService.getRunId())
-        .set('nodeId', nodeId + '')
-        .set('componentId', componentId + '')
-        .set('getStudentWork', false + '')
-        .set('getEvents', false + '')
-        .set('getAnnotations', true + '')
-        .set('onlyGetLatest', false + '');
+      .set('runId', this.ConfigService.getRunId())
+      .set('nodeId', nodeId + '')
+      .set('componentId', componentId + '')
+      .set('getStudentWork', false + '')
+      .set('getEvents', false + '')
+      .set('getAnnotations', true + '')
+      .set('onlyGetLatest', false + '');
     if (periodId != null) {
       params = params.set('periodId', periodId);
     }
@@ -1640,29 +1649,29 @@ export class StudentDataService {
       params: params
     };
     return this.http.get(this.ConfigService.getConfigParam('studentDataURL'), options).toPromise()
-        .then((resultData: any) => {
-      return resultData.annotations;
-    });
+      .then((resultData: any) => {
+        return resultData.annotations;
+      });
   }
 
   getStudentWorkById(id) {
     const params = new HttpParams()
-        .set('runId', this.ConfigService.getRunId())
-        .set('id', id + '')
-        .set('getStudentWork', true + '')
-        .set('getEvents', false + '')
-        .set('getAnnotations', false + '')
-        .set('onlyGetLatest', true + '');
+      .set('runId', this.ConfigService.getRunId())
+      .set('id', id + '')
+      .set('getStudentWork', true + '')
+      .set('getEvents', false + '')
+      .set('getAnnotations', false + '')
+      .set('onlyGetLatest', true + '');
     const options = {
       params: params
     };
     return this.http.get(this.ConfigService.getConfigParam('studentDataURL'), options).toPromise()
-        .then((resultData: any) => {
-      if (resultData != null && resultData.studentWorkList.length > 0) {
-        return resultData.studentWorkList[0];
-      }
-      return null;
-    });
+      .then((resultData: any) => {
+        if (resultData != null && resultData.studentWorkList.length > 0) {
+          return resultData.studentWorkList[0];
+        }
+        return null;
+      });
   }
 
   /**

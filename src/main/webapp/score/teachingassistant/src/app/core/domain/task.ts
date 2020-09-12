@@ -1,4 +1,4 @@
-import {TaskRequest} from "./task-request";
+import { TaskRequest } from "./task-request";
 
 export class Task {
     constructor(
@@ -10,12 +10,13 @@ export class Task {
         public projectId?: number,
         public startTime?: string,
         public endTime?: string,
-        public periodName?:string,
+        public periodName?: string,
         public periodId?: number,
         public started?: boolean,
         public complete?: boolean,
         public active?: boolean,
         public taskRequests?: TaskRequest[],
         public duration?: number,
-    ) {}
+        public username?: string,
+    ) { }
 }
