@@ -35,4 +35,3 @@ src/main/webapp/curriculum/*
 !src/main/webapp/curriculum/e2e-test1/
 .classpath
 tokens/
-.project
