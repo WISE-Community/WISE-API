@@ -151,16 +151,26 @@ export class AnnotationService {
       deferred.resolve(annotation);
       return deferred.promise;
     } else {
-      const params = {
+      const params: any = {
         runId: this.ConfigService.getRunId(),
         workgroupId: this.ConfigService.getWorkgroupId(),
         annotations: angular.toJson(annotations)
       };
-      const headers = new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'});
-      return this.http.post(this.ConfigService.getConfigParam('teacherDataURL'), $.param(params),
-          { headers: headers }).toPromise().then((savedAnnotationDataResponse: any) => {
-        return this.saveToServerSuccess(savedAnnotationDataResponse);
-      });
+      if (this.ConfigService.getMode() === "studentRun") {
+        params.studentWorkList = JSON.stringify([]),
+        params.events = JSON.stringify([])
+        return this.http.post(this.ConfigService.getConfigParam('studentDataURL'), params,
+          { headers: new HttpHeaders({'Content-Type': 'application/json'}) })
+              .toPromise().then((savedAnnotationDataResponse: any) => {
+            return this.saveToServerSuccess(savedAnnotationDataResponse);
+        });
+      } else {
+        return this.http.post(this.ConfigService.getConfigParam('teacherDataURL'), $.param(params),
+          { headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'}) })
+              .toPromise().then((savedAnnotationDataResponse: any) => {
+            return this.saveToServerSuccess(savedAnnotationDataResponse);
+        });
+      }
     }
   };
 

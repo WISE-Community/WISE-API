@@ -18,7 +18,7 @@ class DiscussionController extends ComponentController {
   destroyAnnotationReceivedListener: any;
   destroyStudentWorkSavedToServerListener: any;
   destroyStudentWorkReceivedListener: any;
-  componentAnnotations: any;
+  componentAnnotations: any = [];
   componentStateIdReplyingTo: any;
   sortOptions = ["newest", "oldest"];
   sortPostsBy = "newest";
