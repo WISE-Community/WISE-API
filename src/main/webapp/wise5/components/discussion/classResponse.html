@@ -51,7 +51,7 @@
     </div>
   </div>
   <md-divider></md-divider>
-  <div class='discussion-comments'>
+  <div class='discussion-comments' ng-if='classResponseCtrl.iscommentingallowed'>
     <div class='discussion-comments__contents' ng-if='classResponseCtrl.response.replies.length'>
       <md-subheader class='md-no-sticky discussion-comments__header'>
         <span ng-if='classResponseCtrl.response.replies.length == 1'>

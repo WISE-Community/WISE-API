@@ -168,6 +168,9 @@ class DiscussionController extends ComponentController {
     this.registerAnnotationReceivedListener();
     this.initializeWatchMdMedia();
     this.broadcastDoneRenderingComponent();
+    if (this.componentContent.isCommentingAllowed == null) {
+      this.componentContent.isCommentingAllowed = true;
+    }
   }
 
   isConnectedComponentShowWorkMode() {

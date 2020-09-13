@@ -219,6 +219,14 @@
     <br/>
     <md-input-container style='margin-top: 0; margin-bottom: 0;'>
       <md-checkbox class='md-primary'
+                   ng-model='discussionController.authoringComponentContent.isCommentingAllowed'
+                   ng-change='discussionController.authoringViewComponentChanged()'>
+        {{ ::'discussion.allowCommenting' | translate }}
+      </md-checkbox>
+    </md-input-container>
+    <br/>
+    <md-input-container style='margin-top: 0; margin-bottom: 0;'>
+      <md-checkbox class='md-primary'
                    ng-model='discussionController.authoringComponentContent.isVotingAllowed'
                    ng-change='discussionController.authoringViewComponentChanged()'>
         {{ ::'discussion.allowVoting' | translate }}
