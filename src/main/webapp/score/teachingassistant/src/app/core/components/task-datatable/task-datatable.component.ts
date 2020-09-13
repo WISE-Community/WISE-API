@@ -21,16 +21,9 @@ import { UpgradeModule } from '@angular/upgrade/static';
 export class TaskDatatableComponent implements OnInit {
     tasksDataSource = new MatTableDataSource<Task>();
     tasksDisplayedColumns = [
-        'id',
-        'name',
         'workgroupId',
-        'periodId',
-        'duration',
-        'startTime',
-        'endTime',
+        'name',
         'timeLeft',
-        'active',
-        'complete',
         'requests',
     ];
     periods: Period[];
@@ -47,7 +40,7 @@ export class TaskDatatableComponent implements OnInit {
         private teacherService: TeacherService,
         private tasksService: TasksService,
         private websocketService: WebSocketService,
-    ) {}
+    ) { }
 
     ngOnInit() {
         this.websocketService._connect();
@@ -90,11 +83,13 @@ export class TaskDatatableComponent implements OnInit {
                     for (let i = 0; i < tasks.length; i++) {
                         let task: Task = tasks[i];
                         if (task.complete == false) {
-                            this.tasksDataSource.data.filter(function(element) {
+                            this.tasksDataSource.data.filter(function (element) {
                                 return element.id != task.id;
                             });
                         }
-                        this.tasksDataSource.data.push(task);
+                        if (task.active) {
+                            this.tasksDataSource.data.push(task);
+                        }
                         this.resetAttributes();
                     }
                 });
@@ -131,6 +126,8 @@ export class TaskDatatableComponent implements OnInit {
             var duration = end.diff(now);
             // console.log('DIFFF', duration);
         }
+
+        return 0;
     }
 
     taskRequestCompleteAction(taskRequest: TaskRequest, status: string) {

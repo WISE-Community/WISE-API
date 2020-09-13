@@ -37,6 +37,7 @@ class NodeController {
   static $inject = [
     '$compile',
     '$filter',
+    '$mdDialog',
     '$q',
     '$rootScope',
     '$scope',
@@ -53,6 +54,7 @@ class NodeController {
   constructor(
     private $compile: any,
     $filter: any,
+    private $mdDialog: any,
     private $q: any,
     private $rootScope: any,
     private $scope: any,
@@ -130,7 +132,6 @@ class NodeController {
       ) {
         this.NodeService.evaluateTransitionLogic();
       }
-      console.log('ENTERED NODE SEND MESSAGE TO AGENT TO START STUDENTS TIMER ---------->');
       if (this.nodeContent.task != null) {
         this.editTaskTimer('start_timer');
       }
@@ -166,7 +167,7 @@ class NodeController {
         nodeId: nodeId
       };
       this.StudentDataService.saveVLEEvent(nodeId, componentId, componentType, category, event,
-          eventData);
+        eventData);
 
       if (this.nodeContent != null) {
         this.rubric = this.nodeContent.rubric;
@@ -514,11 +515,11 @@ class NodeController {
   }
 
   hasHelpRequest() {
-    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('help') != -1: false);
+    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('help') != -1 : false);
   }
 
   hasApprovalRequest() {
-    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('approval') != -1: false);
+    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('approval') != -1 : false);
   }
   taskDuration() {
     // $interval(this.startTaskDuration(), 5000);
@@ -539,7 +540,15 @@ class NodeController {
       this.timeTitle = minutesStr + ":" + secondsStr;
       this.timeLeft = this.timeLeft - 1;
       if (this.timeLeft < 0) {
-        window.alert('Time out!');
+
+        const confirm = this.$mdDialog.alert({
+          title: 'Time Expired',
+          textContent: 'Time for this step has expired.',
+          ok: 'Ok'
+        });
+
+        this.$mdDialog.show(confirm);
+
         //send noticiation to the TA
         clearInterval(this.timerTimerTaskId);
       }
@@ -552,7 +561,15 @@ class NodeController {
 
 
   performTaskRequest(type) {
-    window.alert('The TA has been contacted');
+
+    const confirm = this.$mdDialog.alert({
+      title: 'Request Approval',
+      textContent: 'The teaching assistant has been sent your request for approval.',
+      ok: 'Ok'
+    });
+
+    this.$mdDialog.show(confirm);
+
     this.StudentDataService.performTaskRequest(type);
   }
 
@@ -564,14 +581,14 @@ class NodeController {
     return component.rubric != null && component.rubric != '' && this.mode === 'preview';
   }
 
-  setStudentWork() {}
+  setStudentWork() { }
 
-  importWork() {}
+  importWork() { }
 
   getRevisions(componentId) {
     const revisions = [];
     const componentStates = this.StudentDataService
-        .getComponentStatesByNodeIdAndComponentId(this.nodeId, componentId);
+      .getComponentStatesByNodeIdAndComponentId(this.nodeId, componentId);
     return componentStates;
   }
 
@@ -723,68 +740,68 @@ class NodeController {
    */
   createAndSaveComponentData(isAutoSave, componentId = null, isSubmit = null) {
     return this.createComponentStates(isAutoSave, componentId, isSubmit)
-        .then(componentStatesFromComponents => {
-      if (this.UtilService.arrayHasNonNullElement(componentStatesFromComponents)) {
-        const { componentStates, componentEvents, componentAnnotations } =
+      .then(componentStatesFromComponents => {
+        if (this.UtilService.arrayHasNonNullElement(componentStatesFromComponents)) {
+          const { componentStates, componentEvents, componentAnnotations } =
             this.getDataArraysToSaveFromComponentStates(componentStatesFromComponents);
-        return this.StudentDataService.saveToServer(
-          componentStates,
-          componentEvents,
-          componentAnnotations
-        ).then(savedStudentDataResponse => {
-          if (savedStudentDataResponse) {
-            if (this.NodeService.currentNodeHasTransitionLogic()) {
-              if (this.NodeService.evaluateTransitionLogicOn('studentDataChanged')) {
-                this.NodeService.evaluateTransitionLogic();
-              }
-              if (this.NodeService.evaluateTransitionLogicOn('scoreChanged')) {
-                if (componentAnnotations != null && componentAnnotations.length > 0) {
-                  let evaluateTransitionLogic = false;
-                  for (const componentAnnotation of componentAnnotations) {
-                    if (componentAnnotation != null) {
-                      if (componentAnnotation.type === 'autoScore') {
-                        evaluateTransitionLogic = true;
+          return this.StudentDataService.saveToServer(
+            componentStates,
+            componentEvents,
+            componentAnnotations
+          ).then(savedStudentDataResponse => {
+            if (savedStudentDataResponse) {
+              if (this.NodeService.currentNodeHasTransitionLogic()) {
+                if (this.NodeService.evaluateTransitionLogicOn('studentDataChanged')) {
+                  this.NodeService.evaluateTransitionLogic();
+                }
+                if (this.NodeService.evaluateTransitionLogicOn('scoreChanged')) {
+                  if (componentAnnotations != null && componentAnnotations.length > 0) {
+                    let evaluateTransitionLogic = false;
+                    for (const componentAnnotation of componentAnnotations) {
+                      if (componentAnnotation != null) {
+                        if (componentAnnotation.type === 'autoScore') {
+                          evaluateTransitionLogic = true;
+                        }
                       }
                     }
                   }
-                }
-                const studentWorkList = savedStudentDataResponse.studentWorkList;
-                if (!componentId && studentWorkList && studentWorkList.length) {
-                  const latestStudentWork = studentWorkList[studentWorkList.length - 1];
-                  const serverSaveTime = latestStudentWork.serverSaveTime;
-                  const clientSaveTime = this.ConfigService.convertToClientTimestamp(serverSaveTime);
-                  if (isAutoSave) {
-                    this.setAutoSavedMessage(clientSaveTime);
-                  } else if (isSubmit) {
-                    this.setSubmittedMessage(clientSaveTime);
+                  const studentWorkList = savedStudentDataResponse.studentWorkList;
+                  if (!componentId && studentWorkList && studentWorkList.length) {
+                    const latestStudentWork = studentWorkList[studentWorkList.length - 1];
+                    const serverSaveTime = latestStudentWork.serverSaveTime;
+                    const clientSaveTime = this.ConfigService.convertToClientTimestamp(serverSaveTime);
+                    if (isAutoSave) {
+                      this.setAutoSavedMessage(clientSaveTime);
+                    } else if (isSubmit) {
+                      this.setSubmittedMessage(clientSaveTime);
+                    } else {
+                      this.setSavedMessage(clientSaveTime);
+                    }
                   } else {
-                    this.setSavedMessage(clientSaveTime);
+                    this.clearSaveText();
                   }
-                } else {
-                  this.clearSaveText();
                 }
               }
-            }
-            const studentWorkList = savedStudentDataResponse.studentWorkList;
-            if (!componentId && studentWorkList && studentWorkList.length) {
-              const latestStudentWork = studentWorkList[studentWorkList.length - 1];
-              const serverSaveTime = latestStudentWork.serverSaveTime;
-              const clientSaveTime = this.ConfigService.convertToClientTimestamp(serverSaveTime);
-              if (isAutoSave) {
-                this.setAutoSavedMessage(clientSaveTime);
-              } else if (isSubmit) {
-                this.setSubmittedMessage(clientSaveTime);
+              const studentWorkList = savedStudentDataResponse.studentWorkList;
+              if (!componentId && studentWorkList && studentWorkList.length) {
+                const latestStudentWork = studentWorkList[studentWorkList.length - 1];
+                const serverSaveTime = latestStudentWork.serverSaveTime;
+                const clientSaveTime = this.ConfigService.convertToClientTimestamp(serverSaveTime);
+                if (isAutoSave) {
+                  this.setAutoSavedMessage(clientSaveTime);
+                } else if (isSubmit) {
+                  this.setSubmittedMessage(clientSaveTime);
+                } else {
+                  this.setSavedMessage(clientSaveTime);
+                }
               } else {
-                this.setSavedMessage(clientSaveTime);
+                this.clearSaveText();
               }
-            } else {
-              this.clearSaveText();
             }
-          }
-          return savedStudentDataResponse;
-        });
-      }
-    });
+            return savedStudentDataResponse;
+          });
+        }
+      });
   }
 
   getDataArraysToSaveFromComponentStates(componentStates) {
@@ -840,7 +857,7 @@ class NodeController {
           if (childScope != null) {
             if (childScope.getComponentState) {
               const componentStatePromise =
-                  this.getComponentStateFromChildScope(childScope, runId, periodId, workgroupId,
+                this.getComponentStateFromChildScope(childScope, runId, periodId, workgroupId,
                   nodeId, componentId, tempComponentId, componentType, isAutoSave, isSubmit);
               componentStatePromises.push(componentStatePromise);
             }
@@ -933,9 +950,9 @@ class NodeController {
     let nodeId = this.nodeId;
     let workgroupId = this.workgroupId;
     latestScoreAnnotation = this.AnnotationService
-        .getLatestScoreAnnotation(nodeId, componentId, workgroupId, 'any');
+      .getLatestScoreAnnotation(nodeId, componentId, workgroupId, 'any');
     latestCommentAnnotation = this.AnnotationService
-        .getLatestCommentAnnotation(nodeId, componentId, workgroupId, 'any');
+      .getLatestCommentAnnotation(nodeId, componentId, workgroupId, 'any');
 
     return {
       score: latestScoreAnnotation,
@@ -1040,7 +1057,7 @@ class NodeController {
   getComponentStateByComponentId(componentId) {
     if (componentId != null) {
       return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(this.nodeId,
-          componentId);
+        componentId);
     }
     return null;
   }
@@ -1048,7 +1065,7 @@ class NodeController {
   getComponentStateByNodeIdAndComponentId(nodeId, componentId) {
     if (nodeId != null && componentId != null) {
       return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(nodeId,
-          componentId);
+        componentId);
     }
     return null;
   }
@@ -1065,7 +1082,7 @@ class NodeController {
       nodeId: nodeId
     };
     this.StudentDataService.saveVLEEvent(nodeId, componentId, componentType, category, event,
-        eventData);
+      eventData);
   };
 
   getSubmitDirty() {
