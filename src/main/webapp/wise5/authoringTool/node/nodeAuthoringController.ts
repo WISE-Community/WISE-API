@@ -183,7 +183,7 @@ class NodeAuthoringController {
             text: this.$translate('step')
           },
           {
-            value: 'component',
+            value: 'componentId',
             text: this.$translate('component')
           },
           {
