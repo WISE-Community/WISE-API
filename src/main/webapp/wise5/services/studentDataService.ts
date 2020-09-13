@@ -146,7 +146,6 @@ export class StudentDataService {
     if (this.ConfigService.isPreview()) {
       this.retrieveStudentDataForPreview();
     } else {
-      console.log('-------- TASK CREATION 2');
       this.initializeStudentTasks();
       return this.retrieveStudentDataForSignedInStudent();
     }
@@ -977,7 +976,6 @@ export class StudentDataService {
         const workgroupId = this.ConfigService.getWorkgroupId();
         const userInfo = this.ConfigService.getUserInfoByWorkgroupId(workgroupId);
         const username = userInfo.username;
-        console.log('GROUP NAME -----', userInfo.username);
         let nodes = this.ProjectService.getNodes();
 
         // console.log("PERIOD ID PROJECT", periodId, periodName);
@@ -990,10 +988,7 @@ export class StudentDataService {
 
         for (let node of nodes) {
           if (!this.ProjectService.isGroupNode(node.id)) {
-            console.log('NODE ----', node);
             if (node.task) {
-
-              console.log('NODE ---', node);
               const nodeJSON = {
                 id: node.id,
                 title: node.title,
