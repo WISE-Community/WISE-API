@@ -3,6 +3,7 @@ package org.wise.portal.score.domain;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -24,8 +25,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Each Task has one or more TaskRequests (Approved,Need Help)
- * Each task is associated with an activity
+ * Each Task has one or more TaskRequests (Approved,Need Help) Each task is associated with an
+ * activity
  *
  * @author Anthony Perritano
  */
@@ -68,6 +69,21 @@ public class Task {
       if (this.taskRequests == null) {
         this.taskRequests = new ArrayList<>();
       }
+
+      List<TaskRequest> r = this.taskRequests.stream()
+          .filter(tq -> tq.getTask().getId().equals(taskRequest.getTask().getId())
+              && tq.getWorkgroupId().equals(taskRequest.getWorkgroupId())
+              && tq.getStatus().equals(taskRequest.getStatus())
+              && tq.getComplete().equals(taskRequest.getComplete()))
+          .collect(Collectors.toList());
+
+      if (r.size() > 0) {
+        return;
+      }
+
+      // this.taskRequests.removeIf(u -> u.getTask().getId().equals(taskRequest.getTask().getId())
+      // & u.getStatus().equals(taskRequest.getStatus())
+      // & u.getComplete().equals(taskRequest.getComplete()));
       this.taskRequests.add(taskRequest);
     }
   }
