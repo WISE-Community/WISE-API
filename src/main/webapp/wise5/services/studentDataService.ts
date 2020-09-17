@@ -1434,7 +1434,7 @@ export class StudentDataService {
         if (this.previousStep.task != null) {
           this.editTaskTimer('end_timer');
         }
-        console.log('EXITING THE CURRENT NODE');
+        // console.log('EXITING THE CURRENT NODE');
       }
       this.currentNode = node;
       this.upgrade.$injector.get('$rootScope').$broadcast('currentNodeChanged', {

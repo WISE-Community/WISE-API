@@ -521,6 +521,12 @@ class NodeController {
   hasApprovalRequest() {
     return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('approval') != -1 : false);
   }
+
+  hasTaskDuration() {
+    console.log('this.nodeContent.task.duration ---', this.nodeContent.task.duration);
+    return this.nodeContent.task.duration;
+  }
+
   taskDuration() {
     // $interval(this.startTaskDuration(), 5000);
     return this.nodeContent.task.duration ? (this.nodeContent.task.duration / 60.0).toFixed(2) : 0;
