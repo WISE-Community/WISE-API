@@ -440,7 +440,8 @@ class DiscussionController extends ComponentController {
 
   getClassmateResponses(components = [{ nodeId: this.nodeId, componentId: this.componentId }]) {
     const runId = this.ConfigService.getRunId();
-    const periodId = this.ConfigService.getPeriodId();
+    const periodId = this.componentContent.isSharedAcrossAllPeriods ? null :
+        this.ConfigService.getPeriodId();
     this.DiscussionService.getClassmateResponses(runId, periodId, components)
         .then(({studentWorkList, annotations}) => {
       this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
