@@ -65,14 +65,10 @@ public class RedisMessageSubscriber implements MessageListener {
       } else if (messageJSON.get("type").equals("goToNextNode")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("goToNextNode",
             "");
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
-            webSockeMessage);
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       } else if (messageJSON.get("type").equals("node")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("node",
             messageJSON.getString("node"));
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
-            webSockeMessage);
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       } else if (messageJSON.get("type").equals("tagsToWorkgroup")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("tagsToWorkgroup", messageJSON.getString("tags"));
