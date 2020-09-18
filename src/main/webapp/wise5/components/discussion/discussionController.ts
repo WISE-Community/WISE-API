@@ -397,12 +397,15 @@ class DiscussionController extends ComponentController {
     this.destroyAnnotationReceivedListener =
     this.$rootScope.$on('annotationReceived', (event, annotation) => {
       if (this.isForThisComponent(annotation)) {
-        const annotations = this.componentAnnotations.concat(annotation);
-        this.componentAnnotations =
-            this.filterLatestAnnotationsByWorkgroup(annotations);
+        this.addAnnotation(annotation);
         this.topLevelResponses = this.getLevel1Responses();
       }
     });
+  }
+
+  addAnnotation(annotation: any) {
+    const annotations = this.componentAnnotations.concat(annotation);
+    this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
   }
 
   isWorkFromClassmate(componentState) {
@@ -844,7 +847,9 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation);
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.addAnnotation(annotation);
+    });
   }
 
   /**
@@ -869,7 +874,9 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation);
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.addAnnotation(annotation);
+    });
   }
 
   /**
@@ -894,7 +901,9 @@ class DiscussionController extends ComponentController {
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
         runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
-    return this.AnnotationService.saveAnnotation(annotation);
+    return this.AnnotationService.saveAnnotation(annotation).then(() => {
+      this.addAnnotation(annotation);
+    });
   }
 
   /**
