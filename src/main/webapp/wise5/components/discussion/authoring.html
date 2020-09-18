@@ -5,6 +5,15 @@
       <h6>{{ ::'advancedAuthoringOptions' | translate }}</h6>
     </div>
     <div>
+      <md-input-container style='margin-top: 0; margin-bottom: 0;'>
+        <md-checkbox class='md-primary'
+                     ng-model='discussionController.authoringComponentContent.isSharedAcrossAllPeriods'
+                     ng-change='discussionController.authoringViewComponentChanged()'>
+          {{ ::'discussion.discussAcrossAllPeriods' | translate }}
+        </md-checkbox>
+      </md-input-container>
+    </div>
+    <div>
       <md-input-container style='margin-right: 20px; width: 150px; height: 25px;'>
         <label>{{ ::'MAX_SCORE' | translate }}</label>
         <input type='number'
