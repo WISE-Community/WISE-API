@@ -109,8 +109,6 @@ public class TimerTaskController {
   @GetMapping(value = { "/tasks/name/{runId}/{periodName}" })
   protected List<Task> findAllTasksByRunIdAndPeriodName(@PathVariable Long runId,
       @PathVariable String periodName) {
-    System.out.println("RunId: " + runId);
-    System.out.println("PeriodName: " + periodName);
     if (periodName != null && runId != null) {
       return this.taskRepository.findAllByRunIdAndPeriodName(runId, periodName);
     }
@@ -128,8 +126,6 @@ public class TimerTaskController {
   @GetMapping(value = { "/tasks/id/{runId}/{periodId}" })
   protected List<Task> findAllTasksByRunIdAndPeriodId(@PathVariable Long runId,
       @PathVariable Long periodId) {
-    System.out.println("RunId: " + runId);
-    System.out.println("PeriodId: " + periodId);
     if (periodId != null && runId != null) {
       return this.taskRepository.findAllByRunIdAndPeriodId(runId, periodId);
     }
@@ -209,8 +205,6 @@ public class TimerTaskController {
   @GetMapping(value = { "/tasks/taskrequest/{taskRequestId}/{status}" })
   protected TaskRequest markCompleteTaskRequest(@PathVariable Long taskRequestId,
       @PathVariable String status) {
-    System.out.println("taskRequestId: " + taskRequestId);
-
     if (taskRequestId != null && status != null) {
       Optional<TaskRequest> tr = this.taskRequestRepository.findById(taskRequestId);
       if (tr.isPresent()) {

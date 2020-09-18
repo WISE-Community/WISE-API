@@ -110,7 +110,6 @@ export class TaskDatatableComponent implements OnInit {
     findTask(taskRequests: TaskRequest[]): string {
         for (let i = 0; i < taskRequests.length; i++) {
             let taskRequest: TaskRequest = taskRequests[i];
-            console.log('taskRequest ', taskRequest);
             if (taskRequest.complete == false) {
                 return taskRequest.status;
             }
@@ -138,7 +137,6 @@ export class TaskDatatableComponent implements OnInit {
                     this.sendRequestApprovedMessageToStudent(tr);
                 }
                 this.refreshTasks();
-                console.log('Task Request', taskRequest);
             });
     }
 
