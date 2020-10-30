@@ -66,8 +66,10 @@ public class NotificationDeserializer extends JsonDeserializer<Notification> {
     try {
       notification.setRun(runService.retrieveById(node.get("runId").asLong()));
       notification.setPeriod(groupService.retrieveById(node.get("periodId").asLong()));
-      notification
-          .setToWorkgroup(workgroupService.retrieveById(node.get("toWorkgroupId").asLong()));
+      if (node.get("toWorkgroupId") != null) {
+        notification
+            .setToWorkgroup(workgroupService.retrieveById(node.get("toWorkgroupId").asLong()));
+      }
       notification
           .setFromWorkgroup(workgroupService.retrieveById(node.get("fromWorkgroupId").asLong()));
     } catch (ObjectNotFoundException e) {

@@ -6,6 +6,7 @@ import { ProjectService } from "./projectService";
 import { UtilService } from "./utilService";
 import * as angular from 'angular';
 import { Notification } from "../../site/src/app/domain/notification";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class NotificationService {
@@ -125,6 +126,15 @@ export class NotificationService {
         notificationForScore.nodeId, notificationForScore.componentId,
         fromWorkgroupId, toWorkgroupId, notificationMessage, notificationData, notificationGroupId);
     return this.saveNotificationToServer(notification);
+  }
+
+  notifyClassmatesInPeriod(notification): Observable<any> {
+    return this.http.post(`/notification/${notification.runId}/period/${notification.periodId}`,
+        notification);
+  }
+
+  notifyClassmatesInAllPeriods(notification): Observable<any> {
+    return this.http.post(`/notification/${notification.runId}/all-periods`, notification);
   }
 
   saveNotificationToServer(notification) {

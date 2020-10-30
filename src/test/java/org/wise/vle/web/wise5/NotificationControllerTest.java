@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.notification.Notification;
 
@@ -52,5 +53,17 @@ public class NotificationControllerTest extends APIControllerTest {
         null, null, null);
     assertEquals(1, notifications.size());
     verify(userService, runService, vleService);
+  }
+
+  @Test
+  public void notifyClassmatesInPeriod_UserAssociatedWithRun_NotifyClassmates() throws Exception {
+    expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.getWorkgroups(runId1, run1Period1.getId()))
+        .andReturn(new ArrayList<Workgroup>());
+    replay(runService, userService);
+    controller.notifyClassmatesInPeriod(runId1, run1Period1.getId(), new Notification(),
+        studentAuth);
+    verify(runService, userService);
   }
 }
