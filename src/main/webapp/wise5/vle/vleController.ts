@@ -486,6 +486,8 @@ class VLEController {
             }
           } else if (notificationType === 'CRaterResult') {
             message = this.$translate('newFeedback');
+          } else {
+            message = notification.message;
           }
           let newNotificationAggregate = {
             latestNotificationTimestamp: notification.timeGenerated,
