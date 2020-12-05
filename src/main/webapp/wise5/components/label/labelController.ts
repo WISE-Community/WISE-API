@@ -32,10 +32,11 @@ class LabelController extends ComponentController {
   disabled: boolean;
   selectedLabel: any;
   selectedLabelText: any;
-  editLabelMode: boolean;
+  editLabelMode: boolean = false;
 
   static $inject = [
     '$filter',
+    '$injector',
     '$mdDialog',
     '$q',
     '$rootScope',
@@ -43,10 +44,12 @@ class LabelController extends ComponentController {
     '$timeout',
     '$window',
     'AnnotationService',
+    'AudioRecorderService',
     'ConfigService',
     'LabelService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -55,6 +58,7 @@ class LabelController extends ComponentController {
 
   constructor(
     $filter,
+    $injector,
     $mdDialog,
     $q,
     $rootScope,
@@ -62,10 +66,12 @@ class LabelController extends ComponentController {
     $timeout,
     $window,
     AnnotationService,
+    AudioRecorderService,
     ConfigService,
     LabelService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -73,14 +79,17 @@ class LabelController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -185,7 +194,26 @@ class LabelController extends ComponentController {
       this.enableCircles = this.componentContent.enableCircles;
     }
 
-    if (this.mode === 'student') {
+    if (this.mode === 'grading' || this.mode === 'gradingRevision') {
+      this.isSaveButtonVisible = false;
+      this.isSubmitButtonVisible = false;
+      this.isNewLabelButtonVisible = false;
+      this.isDisabled = true;
+
+      if (componentState != null) {
+        // create a unique id for the application label element using this component state
+        this.canvasId = 'labelCanvas_' + componentState.id;
+        if (this.mode === 'gradingRevision') {
+          this.canvasId = 'labelCanvas_gradingRevision_' + componentState.id;
+        }
+      }
+    } else if (this.mode === 'showPreviousWork') {
+      this.isPromptVisible = true;
+      this.isSaveButtonVisible = false;
+      this.isSubmitButtonVisible = false;
+      this.isNewLabelButtonVisible = false;
+      this.isDisabled = true;
+    } else {
       this.isPromptVisible = true;
       this.isSaveButtonVisible = this.componentContent.showSaveButton;
       this.isSubmitButtonVisible = this.componentContent.showSubmitButton;
@@ -205,33 +233,7 @@ class LabelController extends ComponentController {
         this.canCreateLabels = false;
         this.isResetButtonVisible = false;
       }
-    } else if (this.mode === 'grading' || this.mode === 'gradingRevision') {
-      this.isSaveButtonVisible = false;
-      this.isSubmitButtonVisible = false;
-      this.isNewLabelButtonVisible = false;
-      this.isDisabled = true;
-
-      if (componentState != null) {
-        // create a unique id for the application label element using this component state
-        this.canvasId = 'labelCanvas_' + componentState.id;
-        if (this.mode === 'gradingRevision') {
-          this.canvasId = 'labelCanvas_gradingRevision_' + componentState.id;
-        }
-      }
-    } else if (this.mode === 'onlyShowWork') {
-      this.isPromptVisible = false;
-      this.isSaveButtonVisible = false;
-      this.isSubmitButtonVisible = false;
-      this.isNewLabelButtonVisible = false;
-      this.isDisabled = true;
-    } else if (this.mode === 'showPreviousWork') {
-      this.isPromptVisible = true;
-      this.isSaveButtonVisible = false;
-      this.isSubmitButtonVisible = false;
-      this.isNewLabelButtonVisible = false;
-      this.isDisabled = true;
     }
-
     this.$timeout(
       angular.bind(this, function() {
         // wait for angular to completely render the html before we initialize the canvas
@@ -288,16 +290,6 @@ class LabelController extends ComponentController {
 
       return deferred.promise;
     }.bind(this);
-
-    /**
-     * Listen for the 'exitNode' event which is fired when the student
-     * exits the parent node. This will perform any necessary cleanup
-     * when the student exits the parent node.
-     */
-    this.$scope.$on(
-      'exitNode',
-      angular.bind(this, function(event, args) {})
-    );
 
     /**
      * The student has changed the file input
@@ -364,10 +356,7 @@ class LabelController extends ComponentController {
       }
     };
 
-    this.$rootScope.$broadcast('doneRenderingComponent', {
-      nodeId: this.nodeId,
-      componentId: this.componentId
-    });
+    this.broadcastDoneRenderingComponent();
   }
 
   handleNodeSubmit() {
@@ -719,7 +708,7 @@ class LabelController extends ComponentController {
     const deferred = this.$q.defer();
 
     // create a new component state
-    const componentState = this.NodeService.createNewComponentState();
+    const componentState: any = this.NodeService.createNewComponentState();
 
     const studentData: any = {};
     studentData.version = this.getStudentDataVersion();
@@ -1516,7 +1505,7 @@ class LabelController extends ComponentController {
       const imageObject = this.UtilService.getImageObjectFromBase64String(img_b64);
 
       // create a notebook item with the image populated into it
-      this.NotebookService.addNote($event, imageObject);
+      this.NotebookService.addNote(imageObject);
     }
   }
 
@@ -1635,7 +1624,7 @@ class LabelController extends ComponentController {
    * @return a component state with the merged student responses
    */
   createMergedComponentState(componentStates) {
-    let mergedComponentState = this.NodeService.createNewComponentState();
+    let mergedComponentState: any = this.NodeService.createNewComponentState();
 
     if (componentStates != null) {
       let mergedLabels = [];
@@ -1741,7 +1730,7 @@ class LabelController extends ComponentController {
    * @param componentState A component state.
    */
   setComponentStateAsBackgroundImage(componentState) {
-    this.UtilService.generateImageFromComponentState(componentState).then(image => {
+    this.generateImageFromComponentState(componentState).then(image => {
       this.setBackgroundImage(image.url);
     });
   }
@@ -1762,6 +1751,10 @@ class LabelController extends ComponentController {
 
       for (let tempLabel of tempLabels) {
         this.deleteLabel(tempLabel);
+      }
+
+      if (this.componentContent.backgroundImage != null) {
+        this.setBackgroundImage(this.componentContent.backgroundImage);
       }
 
       /*
@@ -1840,6 +1833,11 @@ class LabelController extends ComponentController {
       }
     }
     return false;
+  }
+
+  generateStarterState() {
+    this.NodeService.respondStarterState({nodeId: this.nodeId, componentId: this.componentId,
+        starterState: this.getLabelData()});
   }
 }
 

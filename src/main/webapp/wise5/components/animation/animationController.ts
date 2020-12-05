@@ -28,6 +28,7 @@ class AnimationController extends ComponentController {
 
   static $inject = [
     '$filter',
+    '$injector',
     '$mdDialog',
     '$q',
     '$rootScope',
@@ -35,9 +36,11 @@ class AnimationController extends ComponentController {
     '$timeout',
     'AnimationService',
     'AnnotationService',
+    'AudioRecorderService',
     'ConfigService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -46,6 +49,7 @@ class AnimationController extends ComponentController {
 
   constructor(
     $filter,
+    $injector,
     $mdDialog,
     $q,
     $rootScope,
@@ -53,9 +57,11 @@ class AnimationController extends ComponentController {
     $timeout,
     AnimationService,
     AnnotationService,
+    AudioRecorderService,
     ConfigService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -63,14 +69,17 @@ class AnimationController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -809,7 +818,7 @@ class AnimationController extends ComponentController {
       t: t
     };
 
-    this.$scope.$emit('componentStudentDataChanged', {
+    this.StudentDataService.broadcastComponentStudentData({
       nodeId: this.nodeId,
       componentId: this.componentId,
       componentState: componentState
@@ -966,19 +975,10 @@ class AnimationController extends ComponentController {
   studentDataChanged() {
     this.setIsDirty(true);
     this.emitComponentDirty(true);
-
     this.setIsSubmit(true);
     this.emitComponentSubmitDirty(true);
-
     this.clearSaveText();
-
-    this.createComponentState('change').then(componentState => {
-      this.$scope.$emit('componentStudentDataChanged', {
-        nodeId: this.nodeId,
-        componentId: this.componentId,
-        componentState: componentState
-      });
-    });
+    this.createComponentStateAndBroadcast('change');
   }
 
   /**
@@ -989,7 +989,7 @@ class AnimationController extends ComponentController {
    */
   createComponentState(action) {
     const deferred = this.$q.defer();
-    const componentState = this.NodeService.createNewComponentState();
+    const componentState: any = this.NodeService.createNewComponentState();
     const studentData = {
       submitCounter: this.submitCounter
     };
@@ -1048,13 +1048,6 @@ class AnimationController extends ComponentController {
       componentId,
       toWorkgroupId,
       data
-    );
-  }
-
-  getRevisions() {
-    return this.StudentDataService.getComponentStatesByNodeIdAndComponentId(
-      this.nodeId,
-      this.componentId
     );
   }
 
@@ -1161,10 +1154,6 @@ class AnimationController extends ComponentController {
     } else if (speedSliderValue == 5) {
       this.millisecondsPerDataTime = 1;
     }
-  }
-
-  getComponentByNodeIdAndComponentId(nodeId, componentId) {
-    return this.ProjectService.getComponentByNodeIdAndComponentId(nodeId, componentId);
   }
 
   authoredObjectHasData(authoredObject) {

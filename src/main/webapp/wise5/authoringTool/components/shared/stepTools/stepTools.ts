@@ -1,11 +1,14 @@
 'use strict';
 
 import { ConfigService } from '../../../../services/configService';
-import NodeService from '../../../../services/nodeService';
+import { NodeService } from '../../../../services/nodeService';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import * as $ from 'jquery';
+import { Directive } from '@angular/core';
+import { Subscription } from 'rxjs';
 
+@Directive()
 class StepToolsController {
   is_rtl: boolean;
   icons: any;
@@ -14,6 +17,8 @@ class StepToolsController {
   nodeId: string;
   prevId: any;
   projectId: number;
+  currentNodeChangedSubscription: Subscription;
+  projectChangedSubscription: Subscription;
 
   static $inject = [
     '$scope',
@@ -46,14 +51,27 @@ class StepToolsController {
     this.nodeId = this.TeacherDataService.getCurrentNodeId();
     this.idToOrder = this.ProjectService.idToOrder;
     this.updateModel();
-    this.$scope.$on('currentNodeChanged', (event, args) => {
+    this.currentNodeChangedSubscription = this.TeacherDataService.currentNodeChanged$
+        .subscribe(() => {
       this.updateModel();
     });
-    this.$scope.$on('projectChanged', (event, args) => {
+    this.projectChangedSubscription = this.ProjectService.projectChanged$.subscribe(() => {
       this.projectId = this.ConfigService.getProjectId();
       this.idToOrder = this.ProjectService.idToOrder;
       this.updateModel();
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentNodeChangedSubscription.unsubscribe();
+    this.projectChangedSubscription.unsubscribe();
   }
 
   nodeIdChanged() {
@@ -99,7 +117,7 @@ class StepToolsController {
   }
 
   goToNextNode() {
-    this.NodeService.goToNextNode().then(nodeId => {
+    this.NodeService.goToNextNode().then((nodeId: any) => {
       this.nodeId = nodeId;
       this.$state.go('root.at.project.node', { projectId: this.projectId, nodeId: this.nodeId });
     });

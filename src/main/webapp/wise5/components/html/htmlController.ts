@@ -9,6 +9,7 @@ class HTMLController extends ComponentController {
   html: string;
 
   static $inject = [
+    '$injector',
     '$q',
     '$rootScope',
     '$scope',
@@ -18,9 +19,11 @@ class HTMLController extends ComponentController {
     '$filter',
     '$mdDialog',
     'AnnotationService',
+    'AudioRecorderService',
     'ConfigService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -28,6 +31,7 @@ class HTMLController extends ComponentController {
   ];
 
   constructor(
+    $injector,
     $q,
     $rootScope,
     $scope,
@@ -37,9 +41,11 @@ class HTMLController extends ComponentController {
     $filter,
     $mdDialog,
     AnnotationService,
+    AudioRecorderService,
     ConfigService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -47,14 +53,17 @@ class HTMLController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -63,19 +72,8 @@ class HTMLController extends ComponentController {
     this.$state = $state;
     this.$stateParams = $stateParams;
     this.$sce = $sce;
-
-    if (this.mode === 'authoring') {
-    } else if (this.mode === 'grading') {
-    } else if (this.mode === 'student') {
-      if (this.componentContent != null) {
-        this.html = this.componentContent.html;
-      }
-    }
-
-    this.$rootScope.$broadcast('doneRenderingComponent', {
-      nodeId: this.nodeId,
-      componentId: this.componentId
-    });
+    this.html = this.componentContent.html;
+    this.broadcastDoneRenderingComponent();
   }
 }
 

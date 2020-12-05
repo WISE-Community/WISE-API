@@ -7,8 +7,10 @@ class ThemeController {
     $filter,
     ConfigService,
     ProjectService,
+    StudentAssetService,
     StudentDataService,
     NotebookService,
+    NotificationService,
     SessionService,
     $mdDialog,
     $mdMedia,
@@ -20,8 +22,10 @@ class ThemeController {
     this.$filter = $filter;
     this.ConfigService = ConfigService;
     this.ProjectService = ProjectService;
+    this.StudentAssetService = StudentAssetService;
     this.StudentDataService = StudentDataService;
     this.NotebookService = NotebookService;
+    this.NotificationService = NotificationService;
     this.SessionService = SessionService;
     this.$mdDialog = $mdDialog;
     this.$mdMedia = $mdMedia;
@@ -75,44 +79,43 @@ class ThemeController {
     this.setLayoutState();
 
     // update layout state when current node changes
-    this.$scope.$on('currentNodeChanged', (event, args) => {
+    this.currentNodeChangedSubscription = this.StudentDataService.currentNodeChanged$
+        .subscribe(() => {
       this.currentNode = this.StudentDataService.getCurrentNode();
       this.setLayoutState();
     });
 
-    // alert user when a locked node has been clicked
-    this.$scope.$on('nodeClickLocked', (event, args) => {
-      var message = this.$translate('sorryYouCannotViewThisItemYet');
-      let nodeId = args.nodeId;
-      var node = this.ProjectService.getNodeById(nodeId);
+    this.nodeClickLockedSubscription = 
+        this.StudentDataService.nodeClickLocked$.subscribe(({ nodeId }) => {
+      let message = this.$translate('sorryYouCannotViewThisItemYet');
+      const node = this.ProjectService.getNodeById(nodeId);
       if (node != null) {
         // get the constraints that affect this node
-        var constraints = this.ProjectService.getConstraintsThatAffectNode(node);
+        const constraints = this.ProjectService.getConstraintsThatAffectNode(node);
         this.ProjectService.orderConstraints(constraints);
 
         if (constraints != null && constraints.length > 0) {
           // get the node title the student is trying to go to
-          let nodeTitle = this.ProjectService.getNodePositionAndTitleByNodeId(nodeId);
-          message = this.$translate('toVisitNodeTitleYouNeedTo', { nodeTitle: nodeTitle });
+          const nodeTitle = this.ProjectService.getNodePositionAndTitleByNodeId(nodeId);
+          message = 
+            `<p>
+              ${this.$translate('toVisitNodeTitleYouNeedTo', { nodeTitle: nodeTitle })}
+            </p>
+            <ul>`;
         }
 
         // loop through all the constraints that affect this node
-        for (var c = 0; c < constraints.length; c++) {
-          var constraint = constraints[c];
+        for (let c = 0; c < constraints.length; c++) {
+          const constraint = constraints[c];
 
           // check if the constraint has been satisfied
           if (constraint != null && !this.StudentDataService.evaluateConstraint(constraint)) {
             // the constraint has not been satisfied and is still active
-
-            if (message != '') {
-              // separate multiple constraints with line breaks
-              message += '<br/>';
-            }
-
             // get the message that describes how to disable the constraint
-            message += this.ProjectService.getConstraintMessage(nodeId, constraint);
+            message += `<li>${this.ProjectService.getConstraintMessage(nodeId, constraint)}</li>`;
           }
         }
+        message += `</ul>`;
       }
 
       this.$mdDialog.show(
@@ -123,88 +126,22 @@ class ThemeController {
           .htmlContent(message)
           .ariaLabel(this.$translate('itemLocked'))
           .ok(this.$translate('ok'))
-          .targetEvent(event)
       );
     });
 
-    // alert user when inactive for a long time
-    this.$scope.$on('showRequestLogout', ev => {
-      let alert = this.$mdDialog
-        .confirm()
-        .parent(angular.element(document.body))
-        .title(this.$translate('serverUpdate'))
-        .textContent(this.$translate('serverUpdateRequestLogoutMessage'))
-        .ariaLabel(this.$translate('serverUpdate'))
-        .targetEvent(ev)
-        .ok(this.$translate('ok'));
-
-      this.$mdDialog.show(alert).then(
-        () => {
-          // do nothing
-        },
-        () => {
-          // do nothing
-        }
-      );
-    });
-
-    // alert user when server loses connection
-    this.$scope.$on('serverDisconnected', () => {
-      this.handleServerDisconnect();
-    });
-
-    // remove alert when server regains connection
-    this.$scope.$on('serverConnected', () => {
-      this.handleServerReconnect();
-    });
-
-    // show list of revisions in a dialog when user clicks the show revisions link for a component
-    this.$scope.$on('showRevisions', (event, args) => {
-      let revisions = args.revisions;
-      let componentController = args.componentController;
-      let allowRevert = args.allowRevert;
-      let $event = args.$event;
-      let revisionsTemplateUrl = this.themePath + '/templates/componentRevisions.html';
-
-      this.$mdDialog.show({
-        parent: angular.element(document.body),
-        targetEvent: $event,
-        templateUrl: revisionsTemplateUrl,
-        locals: {
-          items: revisions.reverse(),
-          componentController: componentController,
-          allowRevert: allowRevert
-        },
-        controller: RevisionsController
-      });
-      function RevisionsController($scope, $mdDialog, items, componentController, allowRevert) {
-        $scope.items = items;
-        $scope.componentController = componentController;
-        $scope.allowRevert = allowRevert;
-        $scope.close = () => {
-          $mdDialog.hide();
-        };
-        $scope.revertWork = componentState => {
-          $scope.componentController.setStudentWork(componentState);
-          $scope.componentController.studentDataChanged();
-          $mdDialog.hide();
-        };
+    this.serverConnectionStatusSubscription = 
+        this.NotificationService.serverConnectionStatus$.subscribe((isConnected) => {
+      if (isConnected) {
+        this.handleServerReconnect();
+      } else {
+        this.handleServerDisconnect();
       }
-      RevisionsController.$inject = [
-        '$scope',
-        '$mdDialog',
-        'items',
-        'componentController',
-        'allowRevert'
-      ];
     });
 
-    this.$scope.$on('showStudentAssets', (event, args) => {
-      let componentController = args.componentController;
-      let $event = args.$event;
-      let studentAssetDialogTemplateUrl = this.themePath + '/templates/studentAssetDialog.html';
-      let studentAssetTemplateUrl = this.themePath + '/studentAsset/studentAsset.html';
-
+    this.showStudentAssetsSubscription = 
+        this.StudentAssetService.showStudentAssets$.subscribe(({ componentController, $event }) => {
+      const studentAssetDialogTemplateUrl = this.themePath + '/templates/studentAssetDialog.html';
+      const studentAssetTemplateUrl = this.themePath + '/studentAsset/studentAsset.html';
       this.$mdDialog.show({
         parent: angular.element(document.body),
         targetEvent: $event,
@@ -226,7 +163,9 @@ class ThemeController {
     });
 
     // handle request for notification dismiss codes
-    this.$scope.$on('viewCurrentAmbientNotification', (event, args) => {
+    this.viewCurrentAmbientNotificationSubscription = 
+        this.NotificationService.viewCurrentAmbientNotification$.subscribe((args) => {
+
       let notification = args.notification;
       let ev = args.event;
       let notificationDismissDialogTemplateUrl =
@@ -351,6 +290,22 @@ class ThemeController {
         eventData
       );
     });
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentNodeChangedSubscription.unsubscribe();
+    this.nodeClickLockedSubscription.unsubscribe();
+    this.serverConnectionStatusSubscription.unsubscribe();
+    this.showStudentAssetsSubscription.unsubscribe();
+    this.viewCurrentAmbientNotificationSubscription.unsubscribe();
   }
 
   /**
@@ -426,8 +381,10 @@ ThemeController.$inject = [
   '$filter',
   'ConfigService',
   'ProjectService',
+  'StudentAssetService',
   'StudentDataService',
   'NotebookService',
+  'NotificationService',
   'SessionService',
   '$mdDialog',
   '$mdMedia',

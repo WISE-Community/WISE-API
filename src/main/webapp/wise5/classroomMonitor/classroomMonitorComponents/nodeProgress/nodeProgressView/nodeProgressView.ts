@@ -1,9 +1,11 @@
 'use strict';
 
+import { Directive } from '@angular/core';
 import { StudentStatusService } from '../../../../services/studentStatusService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
 
+@Directive()
 class NodeProgressViewController {
   $translate: any;
   currentGroup: any;
@@ -14,6 +16,8 @@ class NodeProgressViewController {
   nodeId: string;
   rootNode: any;
   showRubricButton: boolean;
+  currentNodeChangedSubscription: any;
+  currentWorkgroupChangedSubscription: any;
 
   static $inject = [
     '$filter',
@@ -37,6 +41,18 @@ class NodeProgressViewController {
     private TeacherDataService: TeacherDataService
   ) {
     this.$translate = $filter('translate');
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentNodeChangedSubscription.unsubscribe();
+    this.currentWorkgroupChangedSubscription.unsubscribe();
   }
 
   $onInit() {
@@ -77,22 +93,21 @@ class NodeProgressViewController {
       this.showRubricButton = true;
     }
 
-    this.$scope.$on('currentNodeChanged', (event, args) => {
-      let currentNode = args.currentNode;
-      if (currentNode != null) {
-        this.nodeId = currentNode.id;
-        this.TeacherDataService.setCurrentNode(currentNode);
-        if (this.isGroupNode(this.nodeId)) {
-          this.currentGroup = currentNode;
-          this.currentGroupId = this.currentGroup.id;
-          this.$scope.currentgroupid = this.currentGroupId;
-        }
+    this.currentNodeChangedSubscription = this.TeacherDataService.currentNodeChanged$
+        .subscribe(({ currentNode }) => {
+      this.nodeId = currentNode.id;
+      this.TeacherDataService.setCurrentNode(currentNode);
+      if (this.isGroupNode(this.nodeId)) {
+        this.currentGroup = currentNode;
+        this.currentGroupId = this.currentGroup.id;
+        this.$scope.currentgroupid = this.currentGroupId;
       }
       this.$state.go('root.cm.unit.node', { nodeId: this.nodeId });
     });
 
-    this.$scope.$on('currentWorkgroupChanged', (event, args) => {
-      this.currentWorkgroup = args.currentWorkgroup;
+    this.currentWorkgroupChangedSubscription = 
+        this.TeacherDataService.currentWorkgroupChanged$.subscribe(({ currentWorkgroup }) => {
+      this.currentWorkgroup = currentWorkgroup;
     });
 
     this.$transitions.onSuccess({}, $transition => {
@@ -205,10 +220,8 @@ class NodeProgressViewController {
                 <div class="md-dialog-content">${rubricContent}</div>
             </md-dialog-content>`;
     let dialogString = `<md-dialog class="dialog--wider" aria-label="${projectTitle} - ${rubricTitle}">${dialogHeader}${dialogContent}${dialogActions}</md-dialog>`;
-    let windowString = `<link rel='stylesheet' href='/wise5/lib/bootstrap/css/bootstrap.min.css' />
-            <link rel='stylesheet' href='/wise5/themes/default/style/monitor.css'>
+    let windowString = `<link rel='stylesheet' href='/wise5/themes/default/style/monitor.css'>
             <link rel='stylesheet' href='/wise5/themes/default/style/angular-material.css'>
-            <link rel='stylesheet' href='/wise5/lib/summernote/dist/summernote.css' />
             <body class="layout-column">
                 <div class="layout-column">${windowHeader}<md-content class="md-padding">${rubricContent}</div></md-content></div>
             </body>`;

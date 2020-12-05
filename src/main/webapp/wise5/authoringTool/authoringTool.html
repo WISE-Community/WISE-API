@@ -1,7 +1,5 @@
-<link rel="stylesheet" href="/wise5/lib/bootstrap/css/bootstrap.min.css" />
 <link rel="stylesheet" href="/wise5/themes/default/style/angular-material.css">
 <link rel="stylesheet" href="/wise5/themes/default/style/author.css">
-<link rel="stylesheet" href="/wise5/lib/summernote/dist/summernote.css" />
 <style>
 .global-message.ng-change {
   transition: 2s linear all;
@@ -9,7 +7,7 @@
 }
 </style>
 
-<div disable-delete-keypress
+<div class="app-styles" disable-delete-keypress
     ng-mousemove='authoringToolController.mouseMoved()'
     role="main" layout="column" layout-fill md-theme="at">
   <at-top-bar logo-path="{{::authoringToolController.logoPath}}"
@@ -33,9 +31,8 @@
       flex role="main">
     <div ui-view></div>
   </md-content>
-  <at-side-menu ng-if="authoringToolController.showToolbar"
+  <side-menu ng-if="authoringToolController.showToolbar"
       state="authoringToolController.$state"
-      views="authoringToolController.views"
-      on-menu-toggle="authoringToolController.toggleMenu()">
-  </at-side-menu>
+      views="authoringToolController.views"></side-menu>
+  </side-menu>
 </div>

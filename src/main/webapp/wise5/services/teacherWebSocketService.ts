@@ -5,19 +5,39 @@ import { ConfigService } from "./configService";
 import { StudentStatusService } from "./studentStatusService";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { NotificationService } from "./notificationService";
+import { Observable, Subject } from "rxjs";
+import { AchievementService } from "./achievementService";
 
 @Injectable()
 export class TeacherWebSocketService {
+
   runId: number;
-  studentsOnlineArray: any[] = [];
   rootScope: any;
   stomp: any;
+  private newAnnotationReceivedSource: Subject<any> = new Subject<any>();
+  public newAnnotationReceived$: Observable<any> = this.newAnnotationReceivedSource.asObservable();
+  private newStudentWorkReceivedSource: Subject<any> = new Subject<any>();
+  public newStudentWorkReceived$: Observable<any> =
+      this.newStudentWorkReceivedSource.asObservable();
 
   constructor(
       private upgrade: UpgradeModule,
+      private AchievementService: AchievementService,
       private ConfigService: ConfigService,
       private NotificationService: NotificationService,
       private StudentStatusService: StudentStatusService) {
+    if (this.upgrade.$injector != null) {
+      this.initializeStomp();
+    }
+  }
+
+  initializeStomp() {
+    this.stomp = this.upgrade.$injector.get('$stomp');
+    this.stomp.setDebug(() => {});
+  }
+
+  getStomp() {
+    return this.stomp;
   }
 
   getRootScope() {
@@ -25,14 +45,6 @@ export class TeacherWebSocketService {
       this.rootScope = this.upgrade.$injector.get('$rootScope');
     }
     return this.rootScope;
-  }
-
-  getStomp() {
-    if (this.stomp == null) {
-      this.stomp = this.upgrade.$injector.get('$stomp');
-      this.stomp.setDebug(() => {});
-    }
-    return this.stomp;
   }
 
   initialize() {
@@ -51,19 +63,27 @@ export class TeacherWebSocketService {
     this.getStomp().subscribe(`/topic/teacher/${this.runId}`, (message, headers, res) => {
       if (message.type === 'studentWork') {
         const studentWork = JSON.parse(message.content);
-        this.getRootScope().$broadcast('newStudentWorkReceived', {studentWork: studentWork});
+        this.broadcastNewStudentWorkReceived({studentWork: studentWork});
       } else if (message.type === 'studentStatus') {
         const status = JSON.parse(message.content);
         this.StudentStatusService.setStudentStatus(status);
-        this.getRootScope().$emit('studentStatusReceived', {studentStatus: status});
+        this.StudentStatusService.broadcastStudentStatusReceived({studentStatus: status});
       } else if (message.type === 'newStudentAchievement') {
         const achievement = JSON.parse(message.content);
-        this.getRootScope().$broadcast('newStudentAchievement', {studentAchievement: achievement});
+        this.AchievementService.broadcastNewStudentAchievement({studentAchievement: achievement});
       } else if (message.type === 'annotation') {
         const annotationData = JSON.parse(message.content);
-        this.getRootScope().$broadcast('newAnnotationReceived', {annotation: annotationData});
+        this.broadcastNewAnnotationReceived({annotation: annotationData});
       }
     });
+  }
+
+  broadcastNewStudentWorkReceived(args: any) {
+    this.newStudentWorkReceivedSource.next(args);
+  }
+
+  broadcastNewAnnotationReceived(args: any) {
+    this.newAnnotationReceivedSource.next(args);
   }
 
   subscribeToTeacherWorkgroupTopic() {
@@ -75,29 +95,15 @@ export class TeacherWebSocketService {
     });
   }
 
-  handleStudentsOnlineReceived(studentsOnlineMessage) {
-    this.studentsOnlineArray = studentsOnlineMessage.studentsOnlineList;
-    this.getRootScope().$broadcast('studentsOnlineReceived',
-        {studentsOnline: this.studentsOnlineArray});
-  }
-
-  getStudentsOnline() {
-    return this.studentsOnlineArray;
-  }
-
-  isStudentOnline(workgroupId) {
-    return this.studentsOnlineArray.indexOf(workgroupId) > -1;
-  }
-
-  handleStudentDisconnected(studentDisconnectedMessage) {
-    this.getRootScope().$broadcast('studentDisconnected', {data: studentDisconnectedMessage});
-  }
-
   pauseScreens(periodId) {
     this.getStomp().send(`/app/pause/${this.runId}/${periodId}`, {}, {});
   }
 
   unPauseScreens(periodId) {
     this.getStomp().send(`/app/unpause/${this.runId}/${periodId}`, {}, {});
+  }
+
+  sendNodeToClass(periodId: number, node: any) {
+    this.stomp.send(`/app/api/teacher/run/${this.runId}/node-to-period/${periodId}`, node, {});
   }
 }

@@ -3,10 +3,13 @@ import { HttpClient } from "@angular/common/http";
 import { AnnotationService } from "./annotationService";
 import { ConfigService } from "./configService";
 import { ProjectService } from "./projectService";
+import { Observable, Subject } from "rxjs";
 
 @Injectable()
 export class StudentStatusService {
   studentStatuses = [];
+  private studentStatusReceivedSource: Subject<any> = new Subject<any>();
+  public studentStatusReceived$: Observable<any> = this.studentStatusReceivedSource.asObservable();
 
   constructor(private http: HttpClient, private AnnotationService: AnnotationService,
       private ConfigService: ConfigService, private ProjectService: ProjectService) {
@@ -247,37 +250,6 @@ export class StudentStatusService {
   }
 
   /**
-   * Check if there is a workgroup that is online and on the node
-   * @param workgroupsOnline the workgroup ids that are online
-   * @param nodeId the node id
-   * @param periodId the period id. pass in -1 to select all periods.
-   * @returns whether there is a workgroup that is online and on the node
-   */
-  isWorkgroupOnlineOnNode(workgroupsOnline, nodeId, periodId) {
-    let workgroupsOnlineInPeriod = [];
-    for (let workgroup of workgroupsOnline) {
-      let studentStatus = this.getStudentStatusForWorkgroupId(workgroup);
-      if (studentStatus) {
-        let pId = studentStatus.periodId;
-        if (periodId === -1 || pId === periodId) {
-          workgroupsOnlineInPeriod.push(workgroup);
-        }
-      }
-    }
-
-    if (workgroupsOnlineInPeriod.length) {
-      let workgroupsOnNode = this.getWorkgroupIdsOnNode(nodeId, periodId);
-
-      // check if any online workgroups in the current period are on this node
-      return workgroupsOnNode.some(w => {
-        return workgroupsOnlineInPeriod.indexOf(w) > -1;
-      });
-    }
-
-    return false;
-  }
-
-  /**
    * Get the average score for a node for a period
    * @param nodeId the node id
    * @param periodId the period id. pass in -1 to select all periods.
@@ -347,5 +319,9 @@ export class StudentStatusService {
       }
     }
     return maxScore;
+  }
+
+  broadcastStudentStatusReceived(args: any) {
+    this.studentStatusReceivedSource.next(args);
   }
 }

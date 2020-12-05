@@ -25,13 +25,28 @@ class StepToolsCtrl {
 
         this.updateModel();
 
-        this.$scope.$on('currentNodeChanged', (event, args) => {
+        this.currentNodeChangedSubscription = this.StudentDataService.currentNodeChanged$
+                .subscribe(() => {
             this.updateModel();
         });
 
-        this.$scope.$on('nodeStatusesChanged', (event, arge) => {
+        this.nodeStatusesChangedSubscription = 
+                this.StudentDataService.nodeStatusesChanged$.subscribe(() => {
             this.updateModel();
-        })
+        });
+
+        this.$scope.$on('$destroy', () => {
+            this.ngOnDestroy();
+        });
+    }
+
+    ngOnDestroy() {
+        this.unsubscribeAll();
+    }
+
+    unsubscribeAll() {
+        this.currentNodeChangedSubscription.unsubscribe();
+        this.currentNodeChangedSubscription.unsubscribe();
     }
 
     /*toggleStepNav() {

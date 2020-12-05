@@ -7,16 +7,29 @@ import { UtilService } from '../services/utilService';
 import { Injectable } from '@angular/core';
 import { UpgradeModule } from '@angular/upgrade/static';
 import { HttpClient } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
+import { SessionService } from './sessionService';
 
 @Injectable()
 export class TeacherProjectService extends ProjectService {
+
+  private nodeChangedSource: Subject<boolean> = new Subject<boolean>();
+  public nodeChanged$: Observable<boolean> = this.nodeChangedSource.asObservable();
+  private refreshProjectSource: Subject<void> = new Subject<void>();
+  public refreshProject$ = this.refreshProjectSource.asObservable();
+  private scrollToBottomOfPageSource: Subject<void> = new Subject<void>();
+  public scrollToBottomOfPage$ = this.scrollToBottomOfPageSource.asObservable();
+  private showAdvancedComponentViewSource: Subject<any> = new Subject<any>();
+  public showAdvancedComponentView$: Observable<any> =
+      this.showAdvancedComponentViewSource.asObservable();
 
   constructor(
       protected upgrade: UpgradeModule,
       protected http: HttpClient,
       protected ConfigService: ConfigService,
+      protected SessionService: SessionService,
       protected UtilService: UtilService) {
-    super(upgrade, http, ConfigService, UtilService);
+    super(upgrade, http, ConfigService, SessionService, UtilService);
   }
 
   getNewProjectTemplate() {
@@ -204,28 +217,6 @@ export class TeacherProjectService extends ProjectService {
         .then( newProjectId => {
           return newProjectId;
         });
-  }
-
-  /**
-   * Replace a node. This is used when we want to revert a node back to a
-   * previous version in the authoring tool.
-   * @param nodeId the node id
-   * @param node the node object
-   */
-  replaceNode(nodeId, node) {
-    this.setIdToNode(nodeId, node);
-    const nodes = this.getNodes();
-    for (let n = 0; n < nodes.length; n++) {
-      if (nodeId === nodes[n].id) {
-        nodes.splice(n, 1, node);
-        break;
-      }
-    }
-    for (let a = 0; a < this.applicationNodes.length; a++) {
-      if (nodeId === this.applicationNodes[a].id) {
-        this.applicationNodes.splice(a, 1, node);
-      }
-    }
   }
 
   /**
@@ -1276,4 +1267,64 @@ export class TeacherProjectService extends ProjectService {
     }
     return null;
   }
+
+  nodeChanged(doParseProject: boolean = false): void {
+    this.nodeChangedSource.next(doParseProject);
+  }
+
+  refreshProject() {
+    this.refreshProjectSource.next();
+  }
+
+  scrollToBottomOfPage() {
+    this.scrollToBottomOfPageSource.next();
+  }
+
+  showAdvancedComponentView(componentId: string, isShow: boolean) {
+    this.showAdvancedComponentViewSource
+        .next({componentId: componentId, isShow: isShow});
+  }
+
+  addTeacherRemovalConstraint(node: any, periodId: number) {
+    const lockConstraint = {
+      id: this.UtilService.generateKey(),
+      action: 'makeThisNodeNotVisitable',
+      targetId: node.id,
+      removalConditional: 'any',
+      removalCriteria: [{
+        'name': 'teacherRemoval',
+        'params': {
+          periodId: periodId
+        }
+      }]
+    };
+    this.addConstraintToNode(node, lockConstraint);
+  }
+
+  removeTeacherRemovalConstraint(node: any, periodId: number) {
+    node.constraints = node.constraints.filter(constraint => {
+      return !(constraint.action === 'makeThisNodeNotVisitable' &&
+          constraint.targetId === node.id &&
+          constraint.removalCriteria[0].name === 'teacherRemoval' &&
+          constraint.removalCriteria[0].params.periodId === periodId);
+    });
+  }
+
+  openWISELinkChooser({ projectId, nodeId, componentId, target }): any {
+    const stateParams = {
+      projectId: projectId,
+      nodeId: nodeId,
+      componentId: componentId,
+      target: target
+    };
+    return this.upgrade.$injector.get('$mdDialog').show({
+      templateUrl: 'wise5/authoringTool/wiseLink/wiseLinkAuthoring.html',
+      controller: 'WISELinkAuthoringController',
+      controllerAs: 'wiseLinkAuthoringController',
+      $stateParams: stateParams,
+      clickOutsideToClose: true,
+      escapeToClose: true
+    });
+  }
+
 }

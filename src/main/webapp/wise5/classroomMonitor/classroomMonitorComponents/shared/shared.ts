@@ -3,45 +3,45 @@
 import AlertStatusCorner from './alertStatusCorner/alertStatusCorner';
 import AlertStatusIcon from './alertStatusIcon/alertStatusIcon';
 import ComponentGrading from './componentGrading/componentGrading';
-import ComponentNewWorkBadge from './componentNewWorkBadge/componentNewWorkBadge';
+import { ComponentNewWorkBadgeComponent } from '../../../../site/src/app/classroom-monitor/component-new-work-badge/component-new-work-badge.component';
 import ComponentRevisionsInfo from './componentRevisionsInfo/componentRevisionsInfo';
 import MainMenu from './mainMenu/mainMenu';
-import NodeCompletionIcon from './nodeCompletionIcon/nodeCompletionIcon';
 import NodeInfo from './nodeInfo/nodeInfo';
 import NotificationsMenu from './notificationsMenu/notificationsMenu';
 import PauseScreensMenu from './pauseScreensMenu/pauseScreensMenu';
 import PeriodSelect from './periodSelect/periodSelect';
-import SideMenu from './sideMenu/sideMenu';
-import StatusIcon from './statusIcon/statusIcon';
+import { StatusIconComponent } from '../../../../site/src/app/classroom-monitor/status-icon/status-icon.component';
 import Toolbar from './toolbar/toolbar';
 import TopBar from './topBar/topBar';
 import WorkgroupComponentRevisions from './workgroupComponentRevisions/workgroupComponentRevisions';
 import WorkgroupNodeGrading from './workgroupNodeGrading/workgroupNodeGrading';
-import WorkgroupNodeScore from './workgroupNodeScore/workgroupNodeScore';
 import WorkgroupNodeStatus from './workgroupNodeStatus/workgroupNodeStatus';
 import WorkgroupSelect from './workgroupSelect/workgroupSelect';
 import * as angular from 'angular';
+import { WorkgroupNodeScoreComponent } from './workgroupNodeScore/workgroup-node-score.component';
+import { downgradeComponent } from '@angular/upgrade/static';
 
 const Shared = angular
-  .module('shared', [])
+  .module('cmShared', [])
   .component('alertStatusCorner', AlertStatusCorner)
   .component('alertStatusIcon', AlertStatusIcon)
   .component('componentGrading', ComponentGrading)
-  .component('componentNewWorkBadge', ComponentNewWorkBadge)
+  .directive('componentNewWorkBadge',
+      downgradeComponent({ component: ComponentNewWorkBadgeComponent }) as angular.IDirectiveFactory)
   .component('componentRevisionsInfo', ComponentRevisionsInfo)
   .component('cmMainMenu', MainMenu)
   .component('notificationsMenu', NotificationsMenu)
-  .component('nodeCompletionIcon', NodeCompletionIcon)
   .component('nodeInfo', NodeInfo)
   .component('pauseScreensMenu', PauseScreensMenu)
   .component('periodSelect', PeriodSelect)
-  .component('cmSideMenu', SideMenu)
-  .component('statusIcon', StatusIcon)
+  .directive('statusIcon',
+      downgradeComponent({ component: StatusIconComponent }) as angular.IDirectiveFactory)
   .component('cmToolbar', Toolbar)
   .component('cmTopBar', TopBar)
   .component('workgroupComponentRevisions', WorkgroupComponentRevisions)
   .component('workgroupNodeGrading', WorkgroupNodeGrading)
-  .component('workgroupNodeScore', WorkgroupNodeScore)
+  .directive('workgroupNodeScore',
+      downgradeComponent({ component: WorkgroupNodeScoreComponent}) as angular.IDirectiveFactory)
   .component('workgroupNodeStatus', WorkgroupNodeStatus)
   .component('workgroupSelect', WorkgroupSelect);
 

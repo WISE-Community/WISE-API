@@ -1,24 +1,34 @@
 import { AnnotationService } from '../../services/annotationService';
 import { ConfigService } from '../../services/configService';
-import NodeService from '../../services/nodeService';
+import { NodeService } from '../../services/nodeService';
 import { VLEProjectService } from '../vleProjectService';
 import { StudentDataService } from '../../services/studentDataService';
 import { UtilService } from '../../services/utilService';
 import * as hopscotch from 'hopscotch';
 window['hopscotch'] = hopscotch;
 import * as $ from 'jquery';
+import { Subscription } from 'rxjs';
+import { SessionService } from '../../services/sessionService';
+import { StudentAssetService } from '../../services/studentAssetService';
+import { Directive } from '@angular/core';
 
+@Directive()
 class NodeController {
   $translate: any;
   autoSaveInterval: any;
   autoSaveIntervalId: any;
+  componentDirtySubscription: Subscription;
+  componentSaveTriggeredSubscription: Subscription;
+  componentStudentDataSubscription: Subscription;
+  componentSubmitDirtySubscription: Subscription;
+  componentSubmitTriggeredSubscription: Subscription;
   componentToScope: any;
   dirtyComponentIds: any;
   dirtySubmitComponentIds: any;
   endedAndLockedMessage: string;
+  exitSubscription: Subscription;
   isDisabled: boolean;
   isEndedAndLocked: boolean;
-  logOutListener: any;
   mode: any;
   nodeContent: any;
   nodeId: string;
@@ -27,6 +37,7 @@ class NodeController {
   rubric: any;
   rubricTour: any;
   saveMessage: any;
+  showRubricSubscription: Subscription;
   submit: any;
   teacherWorkgroupId: number;
   workgroupId: number;
@@ -35,7 +46,6 @@ class NodeController {
     '$compile',
     '$filter',
     '$q',
-    '$rootScope',
     '$scope',
     '$state',
     '$timeout',
@@ -43,6 +53,8 @@ class NodeController {
     'ConfigService',
     'NodeService',
     'ProjectService',
+    'SessionService',
+    'StudentAssetService',
     'StudentDataService',
     'UtilService'
   ];
@@ -51,7 +63,6 @@ class NodeController {
     private $compile: any,
     $filter: any,
     private $q: any,
-    private $rootScope: any,
     private $scope: any,
     private $state: any,
     private $timeout: any,
@@ -59,21 +70,11 @@ class NodeController {
     private ConfigService: ConfigService,
     private NodeService: NodeService,
     private ProjectService: VLEProjectService,
+    private SessionService: SessionService,
+    private StudentAssetService: StudentAssetService,
     private StudentDataService: StudentDataService,
     private UtilService: UtilService
   ) {
-    this.$compile = $compile;
-    this.$q = $q;
-    this.$rootScope = $rootScope;
-    this.$scope = $scope;
-    this.$state = $state;
-    this.$timeout = $timeout;
-    this.AnnotationService = AnnotationService;
-    this.ConfigService = ConfigService;
-    this.NodeService = NodeService;
-    this.ProjectService = ProjectService;
-    this.StudentDataService = StudentDataService;
-    this.UtilService = UtilService;
     this.$translate = $filter('translate');
     this.autoSaveInterval = 60000; // in milliseconds
     this.nodeId = null;
@@ -107,11 +108,8 @@ class NodeController {
     this.rubric = null;
     this.mode = this.ConfigService.getMode();
 
-    // perform setup of this node only if the current node is not a group.
-    if (
-      this.StudentDataService.getCurrentNode() &&
-      this.ProjectService.isApplicationNode(this.StudentDataService.getCurrentNodeId())
-    ) {
+    if (this.StudentDataService.getCurrentNode() &&
+        this.ProjectService.isApplicationNode(this.StudentDataService.getCurrentNodeId())) {
       const currentNode = this.StudentDataService.getCurrentNode();
       if (currentNode != null) {
         this.nodeId = currentNode.id;
@@ -177,140 +175,95 @@ class NodeController {
       }
     }
 
-    this.$scope.$on('componentSaveTriggered', (event, args) => {
-      if (args != null) {
-        const nodeId = args.nodeId;
-        const componentId = args.componentId;
-
-        if (nodeId != null && componentId != null) {
-          if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
-            const isAutoSave = false;
-            this.createAndSaveComponentData(isAutoSave, componentId);
-          }
-        }
+    this.componentSaveTriggeredSubscription =
+        this.StudentDataService.componentSaveTriggered$.subscribe(({ nodeId, componentId }) => {
+      if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
+        const isAutoSave = false;
+        this.createAndSaveComponentData(isAutoSave, componentId);
       }
     });
 
-    /**
-     * Listen for the componentSubmitTriggered event which occurs when a
-     * component is requesting student data to be submitted
-     */
-    this.$scope.$on('componentSubmitTriggered', (event, args) => {
-      if (args != null) {
-        const nodeId = args.nodeId;
-        const componentId = args.componentId;
-
-        if (nodeId != null && componentId != null) {
-          if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
-            const isAutoSave = false;
-            const isSubmit = true;
-            this.createAndSaveComponentData(isAutoSave, componentId, isSubmit);
-          }
-        }
+    this.componentSubmitTriggeredSubscription =
+        this.StudentDataService.componentSubmitTriggered$.subscribe(({ nodeId, componentId }) => {
+      if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
+        const isAutoSave = false;
+        const isSubmit = true;
+        this.createAndSaveComponentData(isAutoSave, componentId, isSubmit);
       }
     });
 
-    /**
-     * Listen for the componentStudentDataChanged event that will come from
-     * child component scopes
-     * @param event
-     * @param args the arguments provided when the event is fired
-     */
-    this.$scope.$on('componentStudentDataChanged', (event, args) => {
-      if (args != null) {
-        const componentId = args.componentId;
-        const componentState = args.componentState;
-        if (componentId != null && componentState != null) {
-          if (componentState.nodeId == null) {
-            if (args.nodeId != null) {
-              /*
-               * set the node id into the component state because
-               * the component state hasn't had it set at this
-               * point.
-               */
-              componentState.nodeId = args.nodeId;
-            }
-          }
-
-          if (componentState.componentId == null) {
-            if (args.componentId != null) {
-              /*
-               * set the component id into the component state
-               * because the component state hasn't had it set at
-               * this point.
-               */
-              componentState.componentId = args.componentId;
-            }
-          }
-          this.notifyConnectedParts(componentId, componentState);
-          this.$scope.$broadcast('siblingComponentStudentDataChanged', args);
+    this.componentStudentDataSubscription =
+        this.StudentDataService.componentStudentData$.subscribe((componentStudentData: any) => {
+      const componentId = componentStudentData.componentId;
+      const componentState = componentStudentData.componentState;
+      if (componentState.nodeId == null) {
+        if (componentStudentData.nodeId != null) {
+          componentState.nodeId = componentStudentData.nodeId;
         }
+      }
+      if (componentState.componentId == null) {
+        if (componentStudentData.componentId != null) {
+          componentState.componentId = componentStudentData.componentId;
+        }
+      }
+      this.notifyConnectedParts(componentId, componentState);
+      this.NodeService.broadcastSiblingComponentStudentDataChanged(componentStudentData);
+    });
+
+    this.componentDirtySubscription =
+        this.StudentDataService.componentDirty$.subscribe(({ componentId, isDirty }) => {
+      const index = this.dirtyComponentIds.indexOf(componentId);
+      if (isDirty && index === -1) {
+        this.dirtyComponentIds.push(componentId);
+      } else if (!isDirty && index > -1) {
+        this.dirtyComponentIds.splice(index, 1);
       }
     });
 
-    /**
-     * Listen for the componentDirty event that will come from child component
-     * scopes; notifies node that component has/doesn't have unsaved work
-     * @param event
-     * @param args the arguments provided when the event is fired
-     */
-    this.$scope.$on('componentDirty', (event, args) => {
-      const componentId = args.componentId;
-      if (componentId) {
-        const isDirty = args.isDirty;
-        const index = this.dirtyComponentIds.indexOf(componentId);
-        if (isDirty && index === -1) {
-          this.dirtyComponentIds.push(componentId);
-        } else if (!isDirty && index > -1) {
-          this.dirtyComponentIds.splice(index, 1);
-        }
+    this.componentSubmitDirtySubscription =
+        this.StudentDataService.componentSubmitDirty$.subscribe(({ componentId, isDirty }) => {
+      const index = this.dirtySubmitComponentIds.indexOf(componentId);
+      if (isDirty && index === -1) {
+        this.dirtySubmitComponentIds.push(componentId);
+      } else if (!isDirty && index > -1) {
+        this.dirtySubmitComponentIds.splice(index, 1);
       }
     });
 
-    /**
-     * Listen for the componentSubmitDirty event that will come from child
-     * component scopes; notifies node that work has/has not changed for a
-     * component since last submission
-     * @param event
-     * @param args the arguments provided when the event is fired
-     */
-    this.$scope.$on('componentSubmitDirty', (event, args) => {
-      const componentId = args.componentId;
-      if (componentId) {
-        const isDirty = args.isDirty;
-        const index = this.dirtySubmitComponentIds.indexOf(componentId);
-        if (isDirty && index === -1) {
-          this.dirtySubmitComponentIds.push(componentId);
-        } else if (!isDirty && index > -1) {
-          this.dirtySubmitComponentIds.splice(index, 1);
-        }
-      }
+    this.showRubricSubscription = this.NodeService.showRubric$.subscribe((id: string) => {
+      this.showRubric(id);
     });
 
-    /**
-     * Listen for the 'exitNode' event which is fired when the student
-     * exits the node. This will perform saving when the student exits
-     * the node.
-     */
-    this.$scope.$on('exitNode', (event, args) => {
-      const nodeToExit = args.nodeToExit;
-      if (nodeToExit.id === this.nodeId) {
-        this.stopAutoSaveInterval();
-        this.nodeUnloaded(this.nodeId);
-        if (
-          this.NodeService.currentNodeHasTransitionLogic() &&
-          this.NodeService.evaluateTransitionLogicOn('exitNode')
-        ) {
-          this.NodeService.evaluateTransitionLogic();
-        }
-      }
-    });
     const script = this.nodeContent.script;
     if (script != null) {
       this.ProjectService.retrieveScript(script).then((script: string) => {
         new Function(script).call(this);
       });
     }
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.stopAutoSaveInterval();
+    this.nodeUnloaded(this.nodeId);
+    if (this.NodeService.currentNodeHasTransitionLogic() &&
+        this.NodeService.evaluateTransitionLogicOn('exitNode')) {
+      this.NodeService.evaluateTransitionLogic();
+    }
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.componentDirtySubscription.unsubscribe();
+    this.componentSaveTriggeredSubscription.unsubscribe();
+    this.componentStudentDataSubscription.unsubscribe();
+    this.componentSubmitDirtySubscription.unsubscribe();
+    this.componentSubmitTriggeredSubscription.unsubscribe();
+    this.exitSubscription.unsubscribe();
+    this.showRubricSubscription.unsubscribe();
   }
 
   createRubricTour() {
@@ -338,13 +291,14 @@ class NodeController {
 
     if (this.rubric) {
       const thisTarget = '#nodeRubric_' + this.nodeId;
-
+      const content = this.UtilService.insertWISELinks(this.ProjectService.replaceAssetPaths(
+          this.rubric));
       // add a tour bubble for the node rubric
       this.rubricTour.steps.push({
         target: thisTarget,
         placement: 'bottom',
         title: this.$translate('STEP_INFO'),
-        content: this.ProjectService.replaceAssetPaths(this.rubric),
+        content: content,
         xOffset: 'center',
         arrowOffset: 'center',
         onShow: this.onShowRubric,
@@ -357,13 +311,15 @@ class NodeController {
     for (let component of components) {
       if (component.rubric) {
         const thisTarget = '#rubric_' + component.id;
+        const content = this.UtilService.insertWISELinks(this.ProjectService.replaceAssetPaths(
+            component.rubric));
         this.rubricTour.steps.push({
           target: thisTarget,
           arrowOffset: 21,
           placement: 'right',
           yOffset: 1,
           title: this.$translate('ITEM_INFO'),
-          content: this.ProjectService.replaceAssetPaths(component.rubric),
+          content: content,
           onShow: this.onShowRubric,
           viewed: false
         });
@@ -375,8 +331,6 @@ class NodeController {
     if (this.rubricTour) {
       let step = -1;
       let index = 0;
-
-      let thisTarget = '#nodeRubric_' + this.nodeId;
       if (this.nodeId === id) {
         step = index;
       }
@@ -389,7 +343,6 @@ class NodeController {
         const components = this.getComponents();
         for (let component of components) {
           if (component.rubric) {
-            thisTarget = '#rubric_' + component.id;
             if (component.id === id) {
               step = index;
               break;
@@ -527,37 +480,6 @@ class NodeController {
 
   importWork() {}
 
-  getRevisions(componentId) {
-    const revisions = [];
-    const componentStates = this.StudentDataService.getComponentStatesByNodeIdAndComponentId(
-      this.nodeId,
-      componentId
-    );
-    return componentStates;
-  }
-
-  showRevisions($event, componentId, isComponentDisabled) {
-    const revisions = this.getRevisions(componentId);
-    const allowRevert = !isComponentDisabled;
-    const childScope = this.componentToScope[componentId];
-
-    // TODO: generalize for other controllers
-    let componentController = null;
-
-    if (childScope.openResponseController) {
-      componentController = childScope.openResponseController;
-    } else if (childScope.drawController) {
-      componentController = childScope.drawController;
-    }
-
-    this.$rootScope.$broadcast('showRevisions', {
-      revisions: revisions,
-      componentController: componentController,
-      allowRevert: allowRevert,
-      $event: $event
-    });
-  }
-
   showStudentAssets($event, componentId) {
     const childScope = this.componentToScope[componentId];
 
@@ -576,20 +498,19 @@ class NodeController {
       componentController = childScope.graphController;
     }
 
-    this.$rootScope.$broadcast('showStudentAssets', {
+    this.StudentAssetService.broadcastShowStudentAssets({
       componentController: componentController,
       $event: $event
     });
   }
 
   saveButtonClicked() {
-    this.$rootScope.$broadcast('nodeSaveClicked', { nodeId: this.nodeId });
     const isAutoSave = false;
     this.createAndSaveComponentData(isAutoSave);
   }
 
   submitButtonClicked() {
-    this.$rootScope.$broadcast('nodeSubmitClicked', { nodeId: this.nodeId });
+    this.NodeService.broadcastNodeSubmitClicked({ nodeId: this.nodeId });
     const isAutoSave = false;
     const isSubmit = true;
     this.createAndSaveComponentData(isAutoSave, null, isSubmit);
@@ -1046,9 +967,8 @@ class NodeController {
   getSubmitDirty() {
     const components = this.getComponents();
     if (components != null) {
-      for (let component of components) {
-        const componentId = component.id;
-        const latestState = this.getComponentStateByComponentId(componentId);
+      for (const component of components) {
+        const latestState = this.getComponentStateByComponentId(component.id);
         if (latestState && !latestState.isSubmit) {
           return true;
         }
@@ -1058,11 +978,9 @@ class NodeController {
   }
 
   registerExitListener() {
-    this.logOutListener = this.$scope.$on('exit', (event, args) => {
+    this.exitSubscription = this.SessionService.exit$.subscribe(() => {
       this.stopAutoSaveInterval();
       this.nodeUnloaded(this.nodeId);
-      this.logOutListener();
-      this.$rootScope.$broadcast('doneExiting');
     });
   }
 }

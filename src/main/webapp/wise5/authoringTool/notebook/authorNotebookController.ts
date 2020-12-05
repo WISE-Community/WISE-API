@@ -14,9 +14,7 @@ class AuthorNotebookController {
 
   static $inject = [
     '$filter',
-    '$mdDialog',
     '$stateParams',
-    '$scope',
     'ConfigService',
     'ProjectService',
     'SpaceService',
@@ -25,9 +23,7 @@ class AuthorNotebookController {
 
   constructor(
     $filter,
-    private $mdDialog,
     $stateParams,
-    private $scope,
     private ConfigService: ConfigService,
     private ProjectService: TeacherProjectService,
     private SpaceService: SpaceService,
@@ -52,28 +48,6 @@ class AuthorNotebookController {
     this.initializeStudentNotesAuthoring();
     this.initializeTeacherNotesAuthoring();
 
-    this.$scope.$on('assetSelected', (event, args) => {
-      if (
-        args.projectId == this.projectId &&
-        args.assetItem != null &&
-        args.assetItem.fileName != null &&
-        args.target != null
-      ) {
-        const assetsDirectoryPath = this.ConfigService.getProjectAssetsDirectoryPath();
-        const fileName = args.assetItem.fileName;
-        const fullAssetPath = assetsDirectoryPath + '/' + fileName;
-        const reportId = args.target;
-        const summernoteId = 'summernoteNotebook_' + reportId;
-        if (this.UtilService.isImage(fileName)) {
-          this.UtilService.restoreSummernoteCursorPosition(summernoteId);
-          this.UtilService.insertImageIntoSummernote(summernoteId, fullAssetPath, fileName);
-        } else if (this.UtilService.isVideo(fileName)) {
-          this.UtilService.restoreSummernoteCursorPosition(summernoteId);
-          this.UtilService.insertVideoIntoSummernote(summernoteId, fullAssetPath);
-        }
-      }
-      this.$mdDialog.hide();
-    });
     this.isPublicNotebookEnabled = this.ProjectService.isSpaceExists('public');
   }
 
@@ -93,36 +67,9 @@ class AuthorNotebookController {
 
   initializeNoteAuthoring(note) {
     const authoringReportNote = {
-      summernoteId: `summernoteNotebook_${note.reportId}`,
-      summernoteHTML: this.UtilService.replaceWISELinks(
+      html: this.UtilService.replaceWISELinks(
         this.ProjectService.replaceAssetPaths(note.content)
-      ),
-      summernoteOptions: {
-        toolbar: [
-          ['style', ['style']],
-          ['font', ['bold', 'underline', 'clear']],
-          ['fontname', ['fontname']],
-          ['fontsize', ['fontsize']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['table', ['table']],
-          ['insert', ['link', 'video']],
-          ['view', ['fullscreen', 'codeview', 'help']],
-          ['customButton', ['insertAssetButton']]
-        ],
-        height: 300,
-        disableDragAndDrop: true,
-        buttons: {
-          insertAssetButton: this.UtilService.createInsertAssetButton(
-            this.projectId,
-            null,
-            null,
-            note.reportId,
-            this.$translate('INSERT_ASSET')
-          )
-        },
-        dialogsInBody: true
-      }
+      )
     };
     this.setReportIdToAuthoringNote(note.reportId, authoringReportNote);
   }
@@ -166,10 +113,10 @@ class AuthorNotebookController {
   reportStarterTextChanged(reportId) {
     const note = this.getReportNote(reportId);
     const authoringNote = this.getAuthoringReportNote(reportId);
-    let summernoteHTML = authoringNote.summernoteHTML;
-    summernoteHTML = this.ConfigService.removeAbsoluteAssetPaths(summernoteHTML);
-    summernoteHTML = this.UtilService.insertWISELinks(summernoteHTML);
-    note.content = summernoteHTML;
+    let html = authoringNote.html;
+    html = this.ConfigService.removeAbsoluteAssetPaths(html);
+    html = this.UtilService.insertWISELinks(html);
+    note.content = html;
     this.save();
   }
 

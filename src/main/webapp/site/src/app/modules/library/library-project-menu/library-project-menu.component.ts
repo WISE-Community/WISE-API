@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Project } from '../../../domain/project';
 import { TeacherService } from '../../../teacher/teacher.service';
@@ -13,12 +13,12 @@ import { EditRunWarningDialogComponent } from '../../../teacher/edit-run-warning
   templateUrl: './library-project-menu.component.html',
   styleUrls: ['./library-project-menu.component.scss']
 })
-export class LibraryProjectMenuComponent implements OnInit {
+export class LibraryProjectMenuComponent {
   @Input()
   project: Project;
 
-  @Output('menuAction')
-  select: EventEmitter<string> = new EventEmitter<string>();
+  @Input()
+  isRun: boolean;
 
   editLink: string = '';
   previewLink: string = '';
@@ -27,15 +27,15 @@ export class LibraryProjectMenuComponent implements OnInit {
   isChild: boolean = false;
 
   constructor(
-    public dialog: MatDialog,
-    public teacherService: TeacherService,
-    public userService: UserService,
-    public configService: ConfigService
+    private dialog: MatDialog,
+    private teacherService: TeacherService,
+    private userService: UserService,
+    private configService: ConfigService
   ) {}
 
   ngOnInit() {
     this.isCanEdit = this.isOwner() || this.isSharedOwnerWithEditPermission();
-    this.isCanShare = this.isOwner();
+    this.isCanShare = this.isOwner() && !this.isRun;
     this.editLink = `${this.configService.getContextPath()}/teacher/edit/unit/${this.project.id}`;
     this.isChild = this.project.isChild();
   }
@@ -59,10 +59,7 @@ export class LibraryProjectMenuComponent implements OnInit {
   }
 
   copyProject() {
-    this.dialog.open(CopyProjectDialogComponent, {
-      data: { project: this.project },
-      panelClass: 'mat-dialog--sm'
-    });
+    this.teacherService.copyProject(this.project, this.dialog);
   }
 
   editProject() {

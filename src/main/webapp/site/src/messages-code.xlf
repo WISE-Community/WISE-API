@@ -324,7 +324,7 @@
         <source>Class Schedule</source>
       </trans-unit>
       <trans-unit id="968047685667963368">
-        <source>Browse WISE Units</source>
+        <source>Unit Library</source>
       </trans-unit>
       <trans-unit id="4967231969832964676">
         <source>Profile updated.</source>
@@ -334,6 +334,30 @@
       </trans-unit>
       <trans-unit id="399164538965188389">
         <source>Free, standards-aligned, and research-based inquiry curricula that address <x id="START_LINK"/>NGSS 3D proficiency<x id="CLOSE_LINK"/></source>
+      </trans-unit>
+      <trans-unit id="19198353055300541">
+        <source>The JSON is invalid. Invalid JSON will not be saved.\nClick "OK" to revert back to the last valid JSON.\nClick "Cancel" to keep the invalid JSON open so you can fix it.</source>
+      </trans-unit>
+      <trans-unit id="8057745565493131709">
+        <source>Copied to clipboard.</source>
+      </trans-unit>
+      <trans-unit id="8455204924704616723">
+        <source>Insert from Notebook</source>
+      </trans-unit>
+      <trans-unit id="3075681036535086015">
+        <source>File</source>
+      </trans-unit>
+      <trans-unit id="535405804327281099">
+        <source>Insert note +</source>
+      </trans-unit>
+      <trans-unit id="8560978883976627945">
+        <source>Alignment</source>
+      </trans-unit>
+      <trans-unit id="3696320199419440058">
+        <source>Insert WISE Link</source>
+      </trans-unit>
+      <trans-unit id="7138428925866529608">
+        <source>Image from notebook</source>
       </trans-unit>
     </body>
   </file>

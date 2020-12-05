@@ -3,9 +3,11 @@
 import { ConfigService } from '../../../../services/configService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import * as angular from 'angular';
-import NodeService from '../../../../services/nodeService';
+import { NodeService } from '../../../../services/nodeService';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
+import { Directive } from '@angular/core';
 
+@Directive()
 class MilestoneDetailsController {
   $translate: any;
   onShowWorkgroup: any;
@@ -13,6 +15,7 @@ class MilestoneDetailsController {
   milestone: any;
   periodId: number;
   requirements: any;
+  currentPeriodChangedSubscription: any;
 
   static $inject = [
     '$filter',
@@ -24,7 +27,7 @@ class MilestoneDetailsController {
   ];
   constructor(
     $filter,
-    $scope,
+    private $scope,
     private ConfigService: ConfigService,
     private NodeService: NodeService,
     private ProjectService: TeacherProjectService,
@@ -32,10 +35,22 @@ class MilestoneDetailsController {
   ) {
     this.$translate = $filter('translate');
     this.periodId = this.TeacherDataService.getCurrentPeriod().periodId;
-    $scope.$on('currentPeriodChanged', (event, { currentPeriod }) => {
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
+        .subscribe(({ currentPeriod }) => {
       this.periodId = currentPeriod.periodId;
       this.saveMilestoneCurrentPeriodSelectedEvent(currentPeriod);
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentPeriodChangedSubscription.unsubscribe();
   }
 
   $onInit() {

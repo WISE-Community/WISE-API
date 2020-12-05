@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { UpgradeModule } from '@angular/upgrade/static';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from "./configService";
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class SessionService {
@@ -13,19 +14,18 @@ export class SessionService {
   private showWarningInterval: number;
   private checkMouseEventInterval: number;
   private lastActivityTimestamp: number;
+  private exitSource: Subject<any> = new Subject<any>();
+  public exit$: Observable<any> = this.exitSource.asObservable();
+  private showSessionWarningSource: Subject<any> = new Subject<any>();
+  public showSessionWarning$: Observable<any> = this.showSessionWarningSource.asObservable();
+  private logOutSource: Subject<void> = new Subject<void>();
+  public logOut$ = this.logOutSource.asObservable();
 
   constructor(
     protected upgrade: UpgradeModule,
     protected http: HttpClient,
     protected ConfigService: ConfigService
   ) {
-    const intervals: any = 
-        this.calculateIntervals(this.ConfigService.getConfigParam('sessionTimeout'));
-    this.showWarningInterval = intervals.showWarningInterval;
-    this.forceLogoutAfterWarningInterval = intervals.forceLogoutAfterWarningInterval;
-    this.checkMouseEventInterval = this.convertMinutesToMilliseconds(1);
-    this.updateLastActivityTimestamp();
-    this.initializeSession();
   }
 
   calculateIntervals(sessionTimeout): any {
@@ -41,10 +41,14 @@ export class SessionService {
   }
 
   goHome() {
-    this.upgrade.$injector.get('$rootScope').$broadcast('exit');
+    this.broadcastExit();
     this.upgrade.$injector.get('$location').url(
       this.ConfigService.getConfigParam('userType')
     );
+  }
+
+  broadcastExit() {
+    this.exitSource.next();
   }
 
   logOut() {
@@ -52,9 +56,13 @@ export class SessionService {
   }
 
   initializeSession() {
-    if (!this.ConfigService.isPreview()) {
-      this.startCheckMouseEvent();
-    }
+    const intervals: any =
+        this.calculateIntervals(this.ConfigService.getConfigParam('sessionTimeout'));
+    this.showWarningInterval = intervals.showWarningInterval;
+    this.forceLogoutAfterWarningInterval = intervals.forceLogoutAfterWarningInterval;
+    this.checkMouseEventInterval = this.convertMinutesToMilliseconds(1);
+    this.updateLastActivityTimestamp();
+    this.startCheckMouseEvent();
   }
 
   startCheckMouseEvent() {
@@ -92,7 +100,11 @@ export class SessionService {
 
   checkForLogout() {
     if (this.isInactiveLongEnoughToForceLogout()) {
-      this.forceLogOut();
+      this.checkIfSessionIsActive().subscribe(isSessionActive => {
+        if (!isSessionActive) {
+          this.forceLogOut();
+        }
+      });
     } else if (this.isInactiveLongEnoughToWarn() && !this.isShowingWarning()) {
       this.showWarning();
     }
@@ -100,7 +112,7 @@ export class SessionService {
 
   isActiveWithinLastMinute(): boolean {
     return (
-      new Date().getTime() - this.lastActivityTimestamp < 
+      new Date().getTime() - this.lastActivityTimestamp <
       this.convertMinutesToMilliseconds(1)
     );
   }
@@ -129,12 +141,16 @@ export class SessionService {
   }
 
   forceLogOut() {
-    this.upgrade.$injector.get('$rootScope').$broadcast('logOut');
+    this.logOutSource.next();
   }
 
   showWarning() {
     this.warningVisible = true;
-    this.upgrade.$injector.get('$rootScope').$broadcast('showSessionWarning');
+    this.broadcastShowSessionWarning();
+  }
+
+  broadcastShowSessionWarning() {
+    this.showSessionWarningSource.next();
   }
 
   closeWarningAndRenewSession() {
@@ -143,10 +159,13 @@ export class SessionService {
     this.renewSession();
   }
 
+  checkIfSessionIsActive() {
+    return this.http.get(this.ConfigService.getConfigParam('renewSessionURL'));
+  }
+
   renewSession() {
-    const renewSessionURL = this.ConfigService.getConfigParam('renewSessionURL');
-    this.http.get(renewSessionURL).toPromise().then(result => {
-      if (result === 'false') {
+    this.checkIfSessionIsActive().subscribe(isSessionActive => {
+      if (!isSessionActive) {
         this.logOut();
       }
     });

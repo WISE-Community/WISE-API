@@ -1,10 +1,12 @@
 'use strict';
 
-import NodeService from '../../../../services/nodeService';
+import { NodeService } from '../../../../services/nodeService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import * as $ from 'jquery';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
+import { Directive } from '@angular/core';
 
+@Directive()
 class StepToolsController {
   icons: any;
   idToOrder: any;
@@ -14,9 +16,10 @@ class StepToolsController {
   prevId: string;
   showPosition: boolean;
   toNodeId: string;
+  currentNodeChangedSubscription: any;
   static $inject = ['$scope', 'NodeService', 'ProjectService', 'TeacherDataService'];
   constructor(
-    $scope: any,
+    private $scope: any,
     private NodeService: NodeService,
     private ProjectService: TeacherProjectService,
     private TeacherDataService: TeacherDataService
@@ -29,9 +32,21 @@ class StepToolsController {
 
     this.idToOrder = this.ProjectService.idToOrder;
     this.updateModel();
-    $scope.$on('currentNodeChanged', (event, args) => {
+    this.currentNodeChangedSubscription = this.TeacherDataService.currentNodeChanged$
+        .subscribe(() => {
       this.updateModel();
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentNodeChangedSubscription.unsubscribe();
   }
 
   toNodeIdChanged() {

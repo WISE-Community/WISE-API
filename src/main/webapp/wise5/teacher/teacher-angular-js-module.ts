@@ -1,8 +1,7 @@
 import '../lib/jquery/jquery-global';
-import '../lib/bootstrap/js/bootstrap.min'
 import * as angular from 'angular';
-import { downgradeInjectable } from '@angular/upgrade/static';
-import { createCommonModule } from '../common-angular-js-module';
+import { downgradeComponent, downgradeInjectable } from '@angular/upgrade/static';
+import '../common-angular-js-module';
 import { MilestoneService } from '../services/milestoneService';
 import { TeacherProjectService } from '../services/teacherProjectService';
 import { ProjectAssetService } from '../../site/src/app/services/projectAssetService';
@@ -10,9 +9,9 @@ import { SpaceService } from '../services/spaceService';
 import { StudentStatusService } from '../services/studentStatusService';
 import { TeacherDataService } from '../services/teacherDataService';
 import { TeacherWebSocketService } from '../services/teacherWebSocketService';
+import { AdvancedProjectAuthoringComponent } from '../authoringTool/advanced/advanced-project-authoring.component';
 import AuthoringToolController from '../authoringTool/authoringToolController';
 import AuthoringToolMainController from '../authoringTool/main/authoringToolMainController';
-import AdvancedAuthoringController from '../authoringTool/advanced/advancedAuthoringController';
 import AuthorNotebookController from '../authoringTool/notebook/authorNotebookController';
 import ClassroomMonitorController from '../classroomMonitor/classroomMonitorController';
 import DataExportController from '../classroomMonitor/dataExport/dataExportController';
@@ -20,15 +19,22 @@ import ExportController from '../classroomMonitor/dataExport/exportController';
 import ExportVisitsController from '../classroomMonitor/dataExport/exportVisitsController';
 import MilestonesAuthoringController from '../authoringTool/milestones/milestonesAuthoringController';
 import MilestonesController from '../classroomMonitor/milestones/milestonesController';
+import { NodeAdvancedAuthoringComponent } from '../authoringTool/node/advanced/node-advanced-authoring.component';
+import { NodeAdvancedBranchAuthoringComponent } from '../authoringTool/node/advanced/branch/node-advanced-branch-authoring.component';
+import { NodeAdvancedConstraintAuthoringComponent } from '../authoringTool/node/advanced/constraint/node-advanced-constraint-authoring.component';
+import { NodeAdvancedGeneralAuthoringComponent } from '../authoringTool/node/advanced/general/node-advanced-general-authoring.component';
+import { NodeAdvancedJsonAuthoringComponent } from '../authoringTool/node/advanced/json/node-advanced-json-authoring.component';
+import { NodeAdvancedPathAuthoringComponent } from '../authoringTool/node/advanced/path/node-advanced-path-authoring.component';
 import NodeAuthoringController from '../authoringTool/node/nodeAuthoringController';
 import NotebookGradingController from '../classroomMonitor/notebook/notebookGradingController';
 import ProjectAssetController from '../authoringTool/asset/projectAssetController';
 import ProjectController from '../authoringTool/project/projectController';
 import ProjectInfoController from '../authoringTool/info/projectInfoController';
-import RubricAuthoringController from '../authoringTool/rubric/rubricAuthoringController';
+import { RubricAuthoringComponent } from '../authoringTool/rubric/rubric-authoring.component';
 import StudentGradingController from '../classroomMonitor/studentGrading/studentGradingController';
 import StudentProgressController from '../classroomMonitor/studentProgress/studentProgressController';
 import WISELinkAuthoringController from '../authoringTool/wiseLink/wiseLinkAuthoringController';
+import { WiseAuthoringTinymceEditorComponent } from '../directives/wise-tinymce-editor/wise-authoring-tinymce-editor.component';
 
 import '../classroomMonitor/classroomMonitorComponents';
 import '../authoringTool/structure/structureAuthoringModule';
@@ -41,6 +47,9 @@ import '../components/draw/drawAuthoringComponentModule';
 import '../components/embedded/embeddedAuthoringComponentModule';
 import '../components/graph/graphAuthoringComponentModule';
 import '../components/html/htmlAuthoringComponentModule';
+import '../authoringTool/addComponent/addComponentModule';
+import '../authoringTool/node/editRubric/editRubricModule';
+import '../authoringTool/importComponent/importComponentModule';
 import '../authoringTool/importStep/importStepModule';
 import '../components/label/labelAuthoringComponentModule';
 import '../components/match/matchAuthoringComponentModule';
@@ -49,15 +58,12 @@ import '../components/openResponse/openResponseAuthoringComponentModule';
 import '../components/outsideURL/outsideURLAuthoringComponentModule';
 import '../components/summary/summaryAuthoringComponentModule';
 import '../components/table/tableAuthoringComponentModule';
-import '../lib/summernote/dist/summernote.min';
-import '../lib/summernoteExtensions/summernote-ext-addNote.js';
-import '../lib/summernoteExtensions/summernote-ext-print.js'
 
-export function createTeacherAngularJSModule() {
-    createCommonModule();
-    return angular.module('teacher', [
+    angular.module('teacher', [
       'common',
       'angular-inview',
+      'addComponentModule',
+      'editRubricModule',
       'summaryAuthoringComponentModule',
       'animationAuthoringComponentModule',
       'audioOscillatorAuthoringComponentModule',
@@ -69,6 +75,7 @@ export function createTeacherAngularJSModule() {
       'embeddedAuthoringComponentModule',
       'graphAuthoringComponentModule',
       'htmlAuthoringComponentModule',
+      'importComponentModule',
       'importStepModule',
       'labelAuthoringComponentModule',
       'matchAuthoringComponentModule',
@@ -88,9 +95,20 @@ export function createTeacherAngularJSModule() {
     .factory('StudentStatusService', downgradeInjectable(StudentStatusService))
     .service('TeacherDataService', downgradeInjectable(TeacherDataService))
     .service('TeacherWebSocketService', downgradeInjectable(TeacherWebSocketService))
+    .component('nodeAdvancedAuthoringComponent', NodeAdvancedAuthoringComponent)
+    .component('nodeAdvancedBranchAuthoringComponent', NodeAdvancedBranchAuthoringComponent)
+    .component('nodeAdvancedConstraintAuthoringComponent', NodeAdvancedConstraintAuthoringComponent)
+    .directive('nodeAdvancedGeneralAuthoringComponent', downgradeComponent(
+        { component: NodeAdvancedGeneralAuthoringComponent }) as angular.IDirectiveFactory)
+    .directive('nodeAdvancedJsonAuthoringComponent', downgradeComponent(
+        { component: NodeAdvancedJsonAuthoringComponent }) as angular.IDirectiveFactory)
+    .component('nodeAdvancedPathAuthoringComponent', NodeAdvancedPathAuthoringComponent)
+    .directive('advancedProjectAuthoringComponent', downgradeComponent(
+        { component: AdvancedProjectAuthoringComponent }) as angular.IDirectiveFactory)
+    .directive('wiseAuthoringTinymceEditor', downgradeComponent(
+        { component: WiseAuthoringTinymceEditorComponent }) as angular.IDirectiveFactory)
     .controller('AuthoringToolController', AuthoringToolController)
     .controller('AuthoringToolMainController', AuthoringToolMainController)
-    .controller('AdvancedAuthoringController', AdvancedAuthoringController)
     .controller('AuthorNotebookController', AuthorNotebookController)
     .controller('ClassroomMonitorController', ClassroomMonitorController)
     .controller('DataExportController', DataExportController)
@@ -103,7 +121,8 @@ export function createTeacherAngularJSModule() {
     .controller('ProjectAssetController', ProjectAssetController)
     .controller('ProjectController', ProjectController)
     .controller('ProjectInfoController', ProjectInfoController)
-    .controller('RubricAuthoringController', RubricAuthoringController)
+    .directive('rubricAuthoringComponent', downgradeComponent(
+        { component: RubricAuthoringComponent }) as angular.IDirectiveFactory)
     .controller('StudentGradingController', StudentGradingController)
     .controller('StudentProgressController', StudentProgressController)
     .controller('WISELinkAuthoringController', WISELinkAuthoringController)
@@ -158,9 +177,13 @@ export function createTeacherAngularJSModule() {
           resolve: {
             projectConfig: [
               'ConfigService',
+              'SessionService',
               '$stateParams',
-              (ConfigService, $stateParams) => {
-                return ConfigService.retrieveConfig(`/author/config/${$stateParams.projectId}`);
+              (ConfigService, SessionService, $stateParams) => {
+                return ConfigService.retrieveConfig(`/author/config/${$stateParams.projectId}`)
+                    .then(() => {
+                      SessionService.initializeSession();
+                    });
               }
             ],
             project: [
@@ -193,21 +216,34 @@ export function createTeacherAngularJSModule() {
           templateUrl: '/wise5/authoringTool/node/node.html',
           controller: 'NodeAuthoringController',
           controllerAs: 'nodeAuthoringController',
-          resolve: {}
+          resolve: {},
+          params: {
+            newComponents: []
+          }
         })
-        .state('root.at.project.nodeConstraints', {
-          url: '/node/constraints/:nodeId',
-          templateUrl: '/wise5/authoringTool/node/node.html',
-          controller: 'NodeAuthoringController',
-          controllerAs: 'nodeAuthoringController',
-          resolve: {}
+        .state('root.at.project.node.advanced', {
+          url: '/advanced',
+          component: 'nodeAdvancedAuthoringComponent'
         })
-        .state('root.at.project.nodeEditPaths', {
-          url: '/node/editpaths/:nodeId',
-          templateUrl: '/wise5/authoringTool/node/node.html',
-          controller: 'NodeAuthoringController',
-          controllerAs: 'nodeAuthoringController',
-          resolve: {}
+        .state('root.at.project.node.advanced.branch', {
+          url: '/branch',
+          component: 'nodeAdvancedBranchAuthoringComponent'
+        })
+        .state('root.at.project.node.advanced.constraint', {
+          url: '/constraint',
+          component: 'nodeAdvancedConstraintAuthoringComponent'
+        })
+        .state('root.at.project.node.advanced.general', {
+          url: '/general',
+          component: 'nodeAdvancedGeneralAuthoringComponent'
+        })
+        .state('root.at.project.node.advanced.json', {
+          url: '/json',
+          component: 'nodeAdvancedJsonAuthoringComponent'
+        })
+        .state('root.at.project.node.advanced.path', {
+          url: '/path',
+          component: 'nodeAdvancedPathAuthoringComponent'
         })
         .state('root.at.project.asset', {
           url: '/asset',
@@ -225,15 +261,11 @@ export function createTeacherAngularJSModule() {
         })
         .state('root.at.project.advanced', {
           url: '/advanced',
-          templateUrl: '/wise5/authoringTool/advanced/advancedAuthoring.html',
-          controller: 'AdvancedAuthoringController',
-          controllerAs: 'advancedAuthoringController'
+          component: 'advancedProjectAuthoringComponent',
         })
         .state('root.at.project.rubric', {
           url: '/rubric',
-          templateUrl: '/wise5/authoringTool/rubric/rubricAuthoring.html',
-          controller: 'RubricAuthoringController',
-          controllerAs: 'rubricAuthoringController'
+          component: 'rubricAuthoringComponent'
         })
         .state('root.at.project.notebook', {
           url: '/notebook',
@@ -258,11 +290,14 @@ export function createTeacherAngularJSModule() {
           resolve: {
             config: [
               'ConfigService',
+              'SessionService',
               '$stateParams',
-              (ConfigService, $stateParams) => {
+              (ConfigService, SessionService, $stateParams) => {
                 return ConfigService.retrieveConfig(
                   `/config/classroomMonitor/${$stateParams.runId}`
-                );
+                ).then(() => {
+                  SessionService.initializeSession();
+                });
               }
             ],
             project: [
@@ -446,4 +481,3 @@ export function createTeacherAngularJSModule() {
         $mdThemingProvider.setDefaultTheme('at');
       }
     ]);
-  }

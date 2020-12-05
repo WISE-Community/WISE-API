@@ -8,9 +8,9 @@ import { ProjectService } from '../../../../wise5/services/projectService';
 import { UtilService } from '../../../../wise5/services/utilService';
 import * as angular from 'angular';
 import { TagService } from '../../../../wise5/services/tagService';
+import { SessionService } from '../../../../wise5/services/sessionService';
 
 let $injector, $rootScope;
-
 let http: HttpTestingController;
 let service: StudentDataService;
 let configService: ConfigService;
@@ -19,12 +19,14 @@ let projectService: ProjectService;
 let tagService: TagService;
 let utilService: UtilService;
 let upgrade: UpgradeModule;
+let criteria1: any;
+let criteria2: any;
 
 describe('StudentDataService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, UpgradeModule ],
-      providers: [ StudentDataService, ConfigService, AnnotationService, ProjectService,
+      providers: [ AnnotationService, ConfigService, ProjectService, SessionService, StudentDataService, 
           TagService, UtilService ]
     });
     http = TestBed.get(HttpTestingController);
@@ -35,6 +37,18 @@ describe('StudentDataService', () => {
     tagService = TestBed.get(TagService);
     utilService = TestBed.get(UtilService);
     upgrade = TestBed.get(UpgradeModule);
+    criteria1 = {
+      name: 'isCompleted',
+      params: {
+        nodeId: 'node1'
+      }
+    };
+    criteria2 = {
+      name: 'isCompleted',
+      params: {
+        nodeId: 'node2'
+      }
+    }
   });
 
   shouldHandleNodeStatusesChanged();
@@ -103,6 +117,7 @@ describe('StudentDataService', () => {
   shouldGetClassmateScores();
   shouldGetStudentWorkById();
   shouldGetMaxScore();
+  shouldEvaluateCriterias();
 });
 
 function shouldHandleNodeStatusesChanged() {
@@ -1224,7 +1239,6 @@ function shouldHandleSaveEventsToServerSuccess() {
     expect(service.studentData.events[1].requestToken).toEqual(null);
     expect(service.studentData.events[2].serverSaveTime).toEqual(3000);
     expect(service.studentData.events[2].requestToken).toEqual(null);
-    expect($rootScope.$broadcast).toHaveBeenCalledWith('eventSavedToServer', jasmine.any(Object));
     expect(service.saveToServerRequestCount).toEqual(0);
     expect(service.updateNodeStatuses).toHaveBeenCalled();
     expect(service.saveStudentStatus).toHaveBeenCalled();
@@ -1254,7 +1268,7 @@ function shouldHandleSaveAnnotationsToServerSuccess() {
         createAnnotation(3, 'c', 3000)
       ]
     };
-    spyOn($rootScope, '$broadcast');
+    spyOn(annotationService, 'broadcastAnnotationSavedToServer');
     spyOn(service, 'updateNodeStatuses').and.callFake(() => {});
     spyOn(service, 'saveStudentStatus').and.callFake(() => {
         return new Promise(() => { return true })});
@@ -1266,8 +1280,7 @@ function shouldHandleSaveAnnotationsToServerSuccess() {
     expect(service.studentData.annotations[1].requestToken).toEqual(null);
     expect(service.studentData.annotations[2].serverSaveTime).toEqual(3000);
     expect(service.studentData.annotations[2].requestToken).toEqual(null);
-    expect($rootScope.$broadcast).toHaveBeenCalledWith(
-      'annotationSavedToServer',
+    expect(annotationService.broadcastAnnotationSavedToServer).toHaveBeenCalledWith(
       jasmine.any(Object)
     );
     expect(service.saveToServerRequestCount).toEqual(0);
@@ -2002,7 +2015,7 @@ function shouldGetStudentWorkById() {
       .and.returnValue('/student');
     service.getStudentWorkById(1000);
     http.expectOne('/student?runId=1&id=1000&getStudentWork=true&getEvents=false&' +
-        'getAnnotations=false&onlyGetLatest=true').flush({});
+        'getAnnotations=false&onlyGetLatest=true').flush({ studentWorkList: [] });
   });
 }
 
@@ -2035,5 +2048,66 @@ function shouldGetMaxScore() {
       }
     });
     expect(service.getMaxScore()).toEqual(6);
+  });
+}
+
+function shouldEvaluateCriterias() {
+  it('should evaluate criterias when it is passed one criteria that is false', () => {
+    const criterias = [criteria1];
+    spyOn(service, 'evaluateCriteria').and.callFake(() => {
+      return false;
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(false);
+  });
+  it('should evaluate criterias when it is passed one criteria that is true', () => {
+    const criterias = [criteria1];
+    spyOn(service, 'evaluateCriteria').and.callFake(() => {
+      return true;
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(true);
+  });
+  it('should evaluate criterias when it is passed multiple criteria false and false', () => {
+    const criterias = [criteria1, criteria2];
+    spyOn(service, 'evaluateCriteria').and.callFake((criteria) => {
+      if (criteria === criteria1) {
+        return false;
+      } else if (criteria === criteria2) {
+        return false;
+      }
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(false);
+  });
+  it('should evaluate criterias when it is passed multiple criteria false and true', () => {
+    const criterias = [criteria1, criteria2];
+    spyOn(service, 'evaluateCriteria').and.callFake((criteria) => {
+      if (criteria === criteria1) {
+        return false;
+      } else if (criteria === criteria2) {
+        return true;
+      }
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(false);
+  });
+  it('should evaluate criterias when it is passed multiple criteria true and false', () => {
+    const criterias = [criteria1, criteria2];
+    spyOn(service, 'evaluateCriteria').and.callFake((criteria) => {
+      if (criteria === criteria1) {
+        return true;
+      } else if (criteria === criteria2) {
+        return false;
+      }
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(false);
+  });
+  it('should evaluate criterias when it is passed multiple criteria true and true', () => {
+    const criterias = [criteria1, criteria2];
+    spyOn(service, 'evaluateCriteria').and.callFake((criteria) => {
+      if (criteria === criteria1) {
+        return true;
+      } else if (criteria === criteria2) {
+        return true;
+      }
+    });
+    expect(service.evaluateCriterias(criterias)).toEqual(true);
   });
 }

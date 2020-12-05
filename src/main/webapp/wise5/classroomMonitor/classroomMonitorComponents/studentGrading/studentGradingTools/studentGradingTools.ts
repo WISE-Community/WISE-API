@@ -4,7 +4,9 @@ import { ConfigService } from '../../../../services/configService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import * as $ from 'jquery';
 import * as angular from 'angular';
+import { Directive } from '@angular/core';
 
+@Directive()
 class StudentGradingToolsController {
   $translate: any;
   avatarColor: string;
@@ -16,6 +18,7 @@ class StudentGradingToolsController {
   selectTeamPlaceholder: string;
   workgroupId: number;
   workgroups: any;
+  currentPeriodChangedSubscription: any;
 
   static $inject = [
     '$filter',
@@ -28,7 +31,7 @@ class StudentGradingToolsController {
 
   constructor(
     $filter: any,
-    $scope: any,
+    private $scope: any,
     private $state: any,
     private orderBy: any,
     private ConfigService: ConfigService,
@@ -42,10 +45,22 @@ class StudentGradingToolsController {
       this.icons = { prev: 'chevron_right', next: 'chevron_left' };
     }
 
-    $scope.$on('currentPeriodChanged', (event, args) => {
-      this.periodId = args.currentPeriod.periodId;
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
+        .subscribe(({ currentPeriod }) => {
+      this.periodId = currentPeriod.periodId;
       this.filterForPeriod();
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentPeriodChangedSubscription.unsubscribe();
   }
 
   $onInit() {

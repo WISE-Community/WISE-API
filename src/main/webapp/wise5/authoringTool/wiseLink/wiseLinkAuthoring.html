@@ -25,7 +25,6 @@
           {{ ::wiseLinkAuthoringController.getNodeTitleByNodeId(item.$key) }}
           ({{item.$key}})
         </span>
-        <node-status-icon node-id="item.$key" custom-class="'node-select__status'"></node-status-icon>
       </span>
     </md-option>
   </md-select>
@@ -51,7 +50,7 @@
   <md-input-container>
     <label>{{ ::'setLinkText' | translate }}</label>
     <input ng-model="wiseLinkAuthoringController.wiseLinkText"
-         ng-model-options='{ debounce: 1000 }'
+         ng-model-options='{ debounce: 500 }'
          size="50"/>
   </md-input-container>
   <br/>

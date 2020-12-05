@@ -33,10 +33,12 @@ class DrawController extends ComponentController {
     '$scope',
     '$timeout',
     'AnnotationService',
+    'AudioRecorderService',
     'ConfigService',
     'DrawService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -52,10 +54,12 @@ class DrawController extends ComponentController {
     $scope,
     $timeout,
     AnnotationService,
+    AudioRecorderService,
     ConfigService,
     DrawService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -63,14 +67,17 @@ class DrawController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -99,12 +106,12 @@ class DrawController extends ComponentController {
 
     this.componentType = this.componentContent.type;
 
-    if (this.isStudentMode()) {
+    if (this.isStudentMode() || this.isAuthoringComponentPreviewMode()) {
       this.isSaveButtonVisible = this.componentContent.showSaveButton;
       this.isSubmitButtonVisible = this.componentContent.showSubmitButton;
       this.isResetButtonVisible = true;
       this.drawingToolId = 'drawingtool_' + this.nodeId + '_' + this.componentId;
-    } else if (this.isGradingMode() || this.isGradingRevisionMode() || this.isOnlyShowWorkMode()) {
+    } else if (this.isGradingMode() || this.isGradingRevisionMode()) {
       const componentState = this.$scope.componentState;
       if (componentState != null) {
         if (this.isGradingRevisionMode()) {
@@ -126,7 +133,7 @@ class DrawController extends ComponentController {
     this.broadcastDoneRenderingComponent();
   }
 
-  handleStudentWorkSavedToServerAdditionalProcessing(event, args) {
+  handleStudentWorkSavedToServerAdditionalProcessing(args: any) {
     let componentState = args.studentWork;
     if (
       this.isForThisComponent(componentState) &&
@@ -238,7 +245,7 @@ class DrawController extends ComponentController {
           this.drawingTool.setBackgroundImage(this.componentContent.background);
         }
       }
-    } else if (this.isAuthoringMode()) {
+    } else if (this.isAuthoringComponentPreviewMode()) {
       if (this.componentContent.starterDrawData != null) {
         this.drawingTool.load(this.componentContent.starterDrawData);
       }
@@ -282,7 +289,7 @@ class DrawController extends ComponentController {
       });
     }
 
-    if (this.isGradingMode() || this.isGradingRevisionMode() || this.isOnlyShowWorkMode()) {
+    if (this.isGradingMode() || this.isGradingRevisionMode()) {
       $('#' + this.drawingToolId)
         .find('.dt-tools')
         .hide();
@@ -499,7 +506,7 @@ class DrawController extends ComponentController {
    */
   createComponentState(action) {
     const deferred = this.$q.defer();
-    const componentState = this.NodeService.createNewComponentState();
+    const componentState: any = this.NodeService.createNewComponentState();
     const studentData: any = {};
     const studentDataJSONString = this.getDrawData();
     studentData.drawData = studentDataJSONString;
@@ -591,17 +598,18 @@ class DrawController extends ComponentController {
       const canvasBase64Image = canvas.toDataURL('image/png');
       const imageObject = this.UtilService.getImageObjectFromBase64String(canvasBase64Image);
       const noteText = null;
-      this.NotebookService.addNote($event, imageObject, noteText, [studentWorkId]);
+      this.NotebookService.addNote(imageObject, noteText, [studentWorkId]);
     }
   }
 
   snipButtonClicked($event) {
     if (this.isDirty) {
-      const deregisterListener = this.$scope.$on('studentWorkSavedToServer', (event, args) => {
-        let componentState = args.studentWork;
+      const studentWorkSavedToServerSubscription = this.StudentDataService.studentWorkSavedToServer$
+          .subscribe((args: any) => {
+        const componentState = args.studentWork;
         if (this.isForThisComponent(componentState)) {
           this.snipDrawing($event, componentState.id);
-          deregisterListener();
+          studentWorkSavedToServerSubscription.unsubscribe();
         }
       });
       this.saveButtonClicked();
@@ -620,7 +628,7 @@ class DrawController extends ComponentController {
    * @return a component state with the merged student responses
    */
   createMergedComponentState(componentStates) {
-    const mergedComponentState = this.NodeService.createNewComponentState();
+    const mergedComponentState: any = this.NodeService.createNewComponentState();
     if (componentStates != null) {
       let allDrawCanvasObjects = [];
       let firstDrawData = {};
@@ -673,9 +681,14 @@ class DrawController extends ComponentController {
    * @param componentState A component state.
    */
   setComponentStateAsBackgroundImage(componentState) {
-    this.UtilService.generateImageFromComponentState(componentState).then(image => {
+    this.generateImageFromComponentState(componentState).then(image => {
       this.drawingTool.setBackgroundImage(image.url);
     });
+  }
+
+  generateStarterState() {
+    this.NodeService.respondStarterState({nodeId: this.nodeId, componentId: this.componentId,
+        starterState: this.getDrawData()});
   }
 }
 
