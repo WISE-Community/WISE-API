@@ -1,14 +1,17 @@
 'use strict';
 
+import { Directive } from '@angular/core';
 import { StudentStatusService } from '../../../../services/studentStatusService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
 
+@Directive()
 class PeriodSelectController {
   $translate: any;
   currentPeriod: any;
   periods: any;
   rootNodeId: string;
+  currentPeriodChangedSubscription: any;
   static $inject = [
     '$filter',
     '$scope',
@@ -19,7 +22,7 @@ class PeriodSelectController {
 
   constructor(
     $filter: any,
-    $scope: any,
+    private $scope: any,
     private ProjectService: TeacherProjectService,
     private StudentStatusService: StudentStatusService,
     private TeacherDataService: TeacherDataService
@@ -35,9 +38,21 @@ class PeriodSelectController {
     this.currentPeriod = null;
     this.periods = [];
     this.initializePeriods();
-    $scope.$on('currentPeriodChanged', (event, args) => {
-      this.currentPeriod = args.currentPeriod;
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
+        .subscribe(({ currentPeriod }) => {
+      this.currentPeriod = currentPeriod;
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentPeriodChangedSubscription.unsubscribe();
   }
 
   initializePeriods() {
@@ -77,7 +92,7 @@ class PeriodSelectController {
 
   getSelectedText() {
     if (this.currentPeriod.periodId === -1) {
-      return this.currentPeriod.periodName;
+      return this.$translate('allPeriods');
     } else {
       return this.$translate('periodLabel', { name: this.currentPeriod.periodName });
     }

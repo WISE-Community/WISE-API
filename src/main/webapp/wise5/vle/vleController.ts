@@ -2,14 +2,16 @@
 
 import { AnnotationService } from '../services/annotationService';
 import { ConfigService } from '../services/configService';
+import { NotebookService } from '../services/notebookService';
 import { NotificationService } from '../services/notificationService';
-import NotebookService from '../services/notebookService';
 import { VLEProjectService } from './vleProjectService';
 import { SessionService } from '../services/sessionService';
 import { StudentDataService } from '../services/studentDataService';
 import * as angular from 'angular';
 import * as $ from 'jquery';
+import { Directive } from '@angular/core';
 
+@Directive()
 class VLEController {
   $translate: any;
   workgroupId: number;
@@ -29,9 +31,11 @@ class VLEController {
   projectName: string;
   projectStyle: string;
   reportItem: any;
-  snippableItems: any;
   themePath: string;
   totalScore: any;
+  currentNodeChangedSubscription: any;
+  showSessionWarningSubscription: any;
+  notificationChangedSubscription: any;
 
   static $inject = [
     '$anchorScroll',
@@ -78,7 +82,7 @@ class VLEController {
     this.SessionService = SessionService;
     this.StudentDataService = StudentDataService;
     this.$translate = this.$filter('translate');
-    this.$window.onbeforeunload = () => { this.$rootScope.$broadcast('exit'); };
+    this.$window.onbeforeunload = () => { this.SessionService.broadcastExit() };
 
     this.workgroupId = this.ConfigService.getWorkgroupId();
     this.currentNode = null;
@@ -119,7 +123,8 @@ class VLEController {
       });
     }
 
-    this.$scope.$on('showSessionWarning', () => {
+    this.showSessionWarningSubscription = 
+        this.SessionService.showSessionWarning$.subscribe(() => {
       const confirm = $mdDialog
         .confirm()
         .parent(angular.element(document.body))
@@ -138,12 +143,12 @@ class VLEController {
       );
     });
 
-    this.$scope.$on('logOut', () => {
+    this.SessionService.logOut$.subscribe(() => {
       this.logOut();
     });
 
-    this.$scope.$on('currentNodeChanged', (event, args) => {
-      let previousNode = args.previousNode;
+    this.currentNodeChangedSubscription = this.StudentDataService.currentNodeChanged$
+        .subscribe(({ previousNode }) => {
       let currentNode = this.StudentDataService.getCurrentNode();
       let currentNodeId = currentNode.id;
 
@@ -198,37 +203,18 @@ class VLEController {
     this.notifications = this.NotificationService.notifications;
     this.newNotifications = this.getNewNotifications();
 
-    this.$scope.$on('notificationChanged', (event, notification) => {
+    this.notificationChangedSubscription = this.NotificationService.notificationChanged$
+        .subscribe(() => {
       // update new notifications
       this.notifications = this.NotificationService.notifications;
       this.newNotifications = this.getNewNotifications();
     });
 
-    this.$scope.$on('componentStudentDataChanged', () => {});
-
-    this.$scope.$on('pauseScreen', (event, args) => {
-      this.pauseScreen();
-    });
-
-    this.$scope.$on('unPauseScreen', (event, args) => {
-      this.unPauseScreen();
-    });
-
-    this.$scope.$on('requestImageCallback', (event, args) => {
-      if (this.snippableItems == null) {
-        this.snippableItems = [];
-      }
-
-      if (args.imageObject != null) {
-        this.snippableItems.push(args.imageObject);
-      }
-
-      if (args.imageObjects != null) {
-        for (const imageObject of args.imageObjects) {
-          if (imageObject != null) {
-            this.snippableItems.push(imageObject);
-          }
-        }
+    this.StudentDataService.pauseScreen$.subscribe((doPause: boolean) => {
+      if (doPause) {
+        this.pauseScreen();
+      } else {
+        this.unPauseScreen();
       }
     });
 
@@ -297,83 +283,20 @@ class VLEController {
         this.pauseScreen();
       }
     }
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
   }
 
-  // TODO: remove and use inline clipping (with guidance)
-  snipNewNote($event) {
-    // Ask all of the components on the page for snippable items
-    let templateUrl = this.themePath + '/notebook/contentSnipper.html';
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
 
-    let currentNodeId = this.StudentDataService.getCurrentNodeId();
-    let currentComponents = this.ProjectService.getComponentsByNodeId(currentNodeId);
-
-    /*
-     * initialize the snippable items array that will become populated
-     * with snippable items
-     */
-    this.snippableItems = [];
-
-    for (const currentComponent of currentComponents) {
-      const args = {
-        nodeId: currentNodeId,
-        componentId: currentComponent.id
-      };
-      this.$rootScope.$broadcast('requestImage', args);
-    }
-    this.$mdDialog.show({
-      parent: angular.element(document.body),
-      targetEvent: $event,
-      templateUrl: templateUrl,
-      clickOutsideToClose: true,
-      locals: {
-        snippableItems: this.snippableItems
-      },
-      controller: NotebookContentSnippetController,
-      controllerAs: 'notebookContentSnippetController',
-      bindToController: true
-    });
-    function NotebookContentSnippetController(
-      $rootScope,
-      $scope,
-      $mdDialog,
-      snippableItems,
-      NotebookService,
-      StudentDataService,
-      ProjectService
-    ) {
-      $scope.NotebookService = NotebookService;
-      $scope.StudentDataService = StudentDataService;
-      $scope.ProjectService = ProjectService;
-      $scope.snippableItems = snippableItems;
-
-      for (const snippableItem of snippableItems) {
-        if (snippableItem != null) {
-          /*
-           * create a local browser URL for the snippable item so
-           * we can display it as an image
-           */
-          snippableItem.url = URL.createObjectURL(snippableItem);
-        }
-      }
-
-      $scope.close = () => {
-        $mdDialog.hide();
-      };
-      $scope.chooseSnippet = snippableItem => {
-        $scope.NotebookService.addNote($event, snippableItem);
-        $mdDialog.hide();
-      };
-    }
-
-    NotebookContentSnippetController.$inject = [
-      '$rootScope',
-      '$scope',
-      '$mdDialog',
-      'snippableItems',
-      'NotebookService',
-      'StudentDataService',
-      'ProjectService'
-    ];
+  unsubscribeAll() {
+    this.currentNodeChangedSubscription.unsubscribe();
+    this.showSessionWarningSubscription.unsubscribe();
+    this.notificationChangedSubscription.unsubscribe();
   }
 
   goHome() {
@@ -528,7 +451,7 @@ class VLEController {
         event: event,
         notification: notification
       };
-      this.$rootScope.$broadcast('viewCurrentAmbientNotification', args);
+      this.NotificationService.broadcastViewCurrentAmbientNotification(args);
       this.$mdMenu.hide();
     }
   }
@@ -544,7 +467,7 @@ class VLEController {
         event: event,
         notification: ambientNotifications[0]
       };
-      this.$rootScope.$broadcast('viewCurrentAmbientNotification', args);
+      this.NotificationService.broadcastViewCurrentAmbientNotification(args);
     }
   }
 
@@ -584,7 +507,7 @@ class VLEController {
     } else if (notebookItemId != null) {
       // assume notification with notebookItemId is for the report for now,
       // as we don't currently support annotations on notes
-      this.$rootScope.$broadcast('showReportAnnotations', { ev: event });
+      this.NotebookService.broadcastShowReportAnnotations();
     }
   }
 
@@ -592,7 +515,7 @@ class VLEController {
     // TODO: i18n
     this.pauseDialog = this.$mdDialog.show({
       template:
-        '<md-dialog aria-label="Screen Paused"><md-dialog-content><div class="md-dialog-content">' +
+        '<md-dialog aria-label="Screen Paused"><md-dialog-content><div class="md-dialog-content center">' +
         this.$translate('yourTeacherHasPausedAllTheScreensInTheClass') +
         '</div></md-dialog-content></md-dialog>',
       escapeToClose: false

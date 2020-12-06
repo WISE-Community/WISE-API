@@ -15,8 +15,8 @@ export class UtilService {
   constructor(private upgrade: UpgradeModule) {
   }
 
-  broadcastEventInRootScope(event) {
-    this.upgrade.$injector.get('$rootScope').$broadcast(event);
+  broadcastEventInRootScope(event, data = {}) {
+    this.upgrade.$injector.get('$rootScope').$broadcast(event, data);
   }
 
   translate(key) {
@@ -92,13 +92,18 @@ export class UtilService {
     return imageObject;
   }
 
-  isImage(fileName) {
-    const imageExtensionsRegEx = new RegExp('.*.(png|jpg|jpeg|bmp|gif|tiff|svg)');
+  isImage(fileName: string): boolean {
+    const imageExtensionsRegEx = new RegExp('.*.(png|jpg|jpeg|bmp|gif|tiff|svg|webp)');
     return fileName.toLowerCase().match(imageExtensionsRegEx) != null;
   }
 
-  isVideo(fileName) {
-    const videoExtensionsRegEx = new RegExp('.*.(mp4|mpg|mpeg|m4v|m2v|avi|gifv|mov|qt)');
+  isVideo(fileName: string): boolean {
+    const videoExtensionsRegEx = new RegExp('.*.(mp4|mpg|mpeg|m4v|m2v|avi|gifv|mov|qt|webm)');
+    return fileName.toLowerCase().match(videoExtensionsRegEx) != null;
+  }
+
+  isAudio(fileName: string): boolean {
+    const videoExtensionsRegEx = new RegExp('.*.(mp3|flac|m4a|ogg|wav|webm)');
     return fileName.toLowerCase().match(videoExtensionsRegEx) != null;
   }
 
@@ -272,7 +277,7 @@ export class UtilService {
       let newElement = null;
       if (type == 'link') {
         newElement =
-          "<a wiselink='true' node-id='" + nodeId + "' " + componentHTML + '>' + linkText + '</a>';
+          "<a href='#' wiselink='true' node-id='" + nodeId + "' " + componentHTML + '>' + linkText + '</a>';
       } else if (type == 'button') {
         newElement =
           "<button wiselink='true' node-id='" +
@@ -284,7 +289,7 @@ export class UtilService {
           '</button>';
       } else {
         newElement =
-          "<a wiselink='true' node-id='" + nodeId + "' " + componentHTML + '>' + linkText + '</a>';
+          "<a href='#' wiselink='true' node-id='" + nodeId + "' " + componentHTML + '>' + linkText + '</a>';
       }
       if (newElement != null) {
         html = html.replace(wiseLinkHTML, newElement);
@@ -292,82 +297,6 @@ export class UtilService {
       wiseLinkRegExMatchResult = wiseLinkRegEx.exec(html);
     }
     return html;
-  }
-
-  /**
-   * Create a custom summernote button that inserts a WISE asset into summernote
-   * @param nodeId the node id of the component that is creating the button
-   * @param componentId the component id of the component that is creating the button
-   * @param target the target element in the component to insert the asset into
-   * e.g. 'prompt' or 'rubricSummernoteId'
-   * @param tooltip the tooltip text for the custom button
-   * @return custom summernote button
-   */
-  createInsertAssetButton(projectId, nodeId, componentId, target, tooltip) {
-    const thisRootScope = this.upgrade.$injector.get('$rootScope');
-    const InsertAssetButton = function(context) {
-      const ui = ($ as any).summernote.ui;
-      const button = ui.button({
-        contents: '<i class="note-icon-picture"></i>',
-        tooltip: tooltip,
-        click: function() {
-          context.invoke('editor.saveRange');
-          const params: any = {};
-          params.isPopup = true;
-          if (projectId != null) {
-            params.projectId = projectId;
-          }
-          if (nodeId != null) {
-            params.nodeId = nodeId;
-          }
-          if (componentId != null) {
-            params.componentId = componentId;
-          }
-          params.target = target;
-          thisRootScope.$broadcast('openAssetChooser', params);
-        }
-      });
-      return button.render(); // return button as jquery object
-    };
-    return InsertAssetButton;
-  }
-
-  /**
-   * Create a custom summernote button that inserts a WISE link into
-   * summernote
-   * @param nodeId the node id of the component that is creating the WISE link
-   * @param componentId the component id of the component that is creating the WISE link
-   * @param target the target element in the component to insert the WISE link into
-   * e.g. 'prompt' or 'rubricSummernoteId'
-   * @param tooltip the tooltip text for the custom button
-   * @return custom summernote button
-   */
-  createInsertWISELinkButton(projectId, nodeId, componentId, target, tooltip) {
-    const thisRootScope = this.upgrade.$injector.get('$rootScope');
-    const InsertWISELinkButton = function(context) {
-      const ui = ($ as any).summernote.ui;
-      const button = ui.button({
-        contents: '<i class="note-icon-link"></i>',
-        tooltip: tooltip,
-        click: function() {
-          context.invoke('editor.saveRange');
-          const params: any = {};
-          if (projectId != null) {
-            params.projectId = projectId;
-          }
-          if (nodeId != null) {
-            params.nodeId = nodeId;
-          }
-          if (componentId != null) {
-            params.componentId = componentId;
-          }
-          params.target = target;
-          thisRootScope.$broadcast('openWISELinkChooser', params);
-        }
-      });
-      return button.render(); // return button as jquery object
-    };
-    return InsertWISELinkButton;
   }
 
   /**
@@ -683,91 +612,6 @@ export class UtilService {
   }
 
   /**
-   * Render the component state and then generate an image from it.
-   * @param componentState The component state to render.
-   * @return A promise that will return an image.
-   */
-  generateImageFromComponentState(componentState) {
-    let deferred = this.upgrade.$injector.get('$q').defer();
-    this.upgrade.$injector.get('$mdDialog').show({
-      template: `
-        <div style="position: fixed; width: 100%; height: 100%; top: 0; left: 0; background-color: rgba(0,0,0,0.2); z-index: 2;"></div>
-        <div align="center" style="position: absolute; top: 100px; left: 200px; z-index: 1000; padding: 20px; background-color: yellow;">
-          <span>{{ "importingWork" | translate }}...</span>
-          <br/>
-          <br/>
-          <md-progress-circular md-mode="indeterminate"></md-progress-circular>
-        </div>
-        <component node-id="{{nodeId}}"
-                   component-id="{{componentId}}"
-                   component-state="{{componentState}}"
-                   mode="student"></component>
-      `,
-      locals: {
-        nodeId: componentState.nodeId,
-        componentId: componentState.componentId,
-        componentState: componentState
-      },
-      controller: DialogController
-    });
-    function DialogController($scope, $mdDialog, nodeId, componentId, componentState) {
-      $scope.nodeId = nodeId;
-      $scope.componentId = componentId;
-      $scope.componentState = componentState;
-      $scope.closeDialog = function() {
-        $mdDialog.hide();
-      };
-    }
-    DialogController.$inject = ['$scope', '$mdDialog', 'nodeId', 'componentId', 'componentState'];
-    // wait for the component in the dialog to finish rendering
-    let doneRenderingComponentListener = this.upgrade.$injector.get('$rootScope').$on(
-      'doneRenderingComponent',
-      (event, args) => {
-        if (
-          componentState.nodeId == args.nodeId &&
-          componentState.componentId == args.componentId
-        ) {
-          setTimeout(() => {
-            this.generateImageFromComponentStateHelper(componentState).then(image => {
-              /*
-               * Destroy the listener otherwise this block of code will be called every time
-               * doneRenderingComponent is fired in the future.
-               */
-              doneRenderingComponentListener();
-              clearTimeout(destroyDoneRenderingComponentListenerTimeout);
-              deferred.resolve(image);
-            });
-          }, 1000);
-        }
-      }
-    );
-    /*
-     * Set a timeout to destroy the listener in case there is an error creating the image and
-     * we don't get to destroying it above.
-     */
-    const destroyDoneRenderingComponentListenerTimeout = setTimeout(() => {
-      doneRenderingComponentListener();
-    }, 10000);
-    return deferred.promise;
-  }
-
-  /**
-   * The component state has been rendered in the DOM and now we want to create an image
-   * from it.
-   * @param componentState The component state that has been rendered.
-   * @return A promise that will return an image.
-   */
-  generateImageFromComponentStateHelper(componentState) {
-    let deferred = this.upgrade.$injector.get('$q').defer();
-    let componentService = this.upgrade.$injector.get(componentState.componentType + 'Service');
-    componentService.generateImageFromRenderedComponentState(componentState).then(image => {
-      deferred.resolve(image);
-      this.upgrade.$injector.get('$mdDialog').hide();
-    });
-    return deferred.promise;
-  }
-
-  /**
    * Get the connected component associated with the component state.
    * @param componentContent The component content.
    * @param componentState The component state.
@@ -794,29 +638,6 @@ export class UtilService {
     }
   }
 
-  showJSONValidMessage() {
-    this.setIsJSONValidMessage(true);
-  }
-
-  showJSONInvalidMessage() {
-    this.setIsJSONValidMessage(false);
-  }
-
-  hideJSONValidMessage() {
-    this.setIsJSONValidMessage(null);
-  }
-
-  /**
-   * Show the message in the toolbar that says "JSON Valid" or "JSON Invalid".
-   * @param isJSONValid
-   * true if we want to show "JSON Valid"
-   * false if we want to show "JSON Invalid"
-   * null if we don't want to show anything
-   */
-  setIsJSONValidMessage(isJSONValid) {
-    this.upgrade.$injector.get('$rootScope').$broadcast('setIsJSONValid', { isJSONValid: isJSONValid });
-  }
-
   moveObjectUp(objects, index) {
     if (index !== 0) {
       const object = objects[index];
@@ -831,35 +652,6 @@ export class UtilService {
       objects.splice(index, 1);
       objects.splice(index + 1, 0, object);
     }
-  }
-
-  insertFileInSummernoteEditor(summernoteId, fullFilePath, fileName) {
-    this.restoreSummernoteCursorPosition(summernoteId);
-    if (this.isImage(fileName)) {
-      this.insertImageIntoSummernote(summernoteId, fullFilePath, fileName);
-    } else if (this.isVideo(fileName)) {
-      this.insertVideoIntoSummernote(summernoteId, fullFilePath);
-    }
-  }
-
-  restoreSummernoteCursorPosition(summernoteId) {
-    angular.element(document.querySelector(`#${summernoteId}`)).summernote('editor.restoreRange');
-    angular.element(document.querySelector(`#${summernoteId}`)).summernote('editor.focus');
-  }
-
-  insertImageIntoSummernote(summernoteId, fullFilePath, fileName) {
-    angular
-      .element(document.querySelector(`#${summernoteId}`))
-      .summernote('insertImage', fullFilePath, fileName);
-  }
-
-  insertVideoIntoSummernote(summernoteId, fullFilePath) {
-    const videoElement = document.createElement('video');
-    videoElement.controls = true;
-    videoElement.innerHTML = '<source ng-src="' + fullFilePath + '" type="video/mp4">';
-    angular
-      .element(document.querySelector(`#${summernoteId}`))
-      .summernote('insertNode', videoElement);
   }
 
   rgbToHex(color, opacity) {

@@ -25,7 +25,7 @@
                       createdownvoteannotation='discussionController.createdownvoteannotation(componentState)'
                       createunvoteannotation='discussionController.createunvoteannotation(componentState)'
                       studentdatachanged='studentdatachanged()'
-                      class='post animate-repeat'>
+                      class='post'>
                   </class-response>
                 </div>
               </div>
@@ -78,8 +78,8 @@
           </div>
           <component-annotations ng-if='::discussionController.mode === "student"'
               class='annotations--inside'
-              annotations='discussionController.latestAnnotations'
-              max-score='::discussionController.componentContent.maxScore'>
+              [annotations]='discussionController.latestAnnotations'
+              [max-score]='::discussionController.componentContent.maxScore'>
           </component-annotations>
           <div layout='row'>
             <div class='discussion-posts' flex>
@@ -151,7 +151,7 @@
                   isdisabled='::discussionController.isDisabled'
                   iscommentingallowed='::discussionController.componentContent.isCommentingAllowed'
                   isvotingallowed='::discussionController.isVotingAllowed()'
-                  class='post animate-repeat'>
+                  class='post'>
               </class-response>
               <class-response ng-repeat='componentState in discussionController.topLevelResponses.col2'
                   ng-if='mdScreen'
@@ -168,7 +168,7 @@
                   isdisabled='::discussionController.isDisabled'
                   iscommentingallowed='::discussionController.componentContent.isCommentingAllowed'
                   isvotingallowed='::discussionController.isVotingAllowed()'
-                  class='post animate-repeat'>
+                  class='post'>
               </class-response>
             </div>
             <div class='discussion-posts' ng-if='mdScreen' flex>
@@ -186,7 +186,6 @@
                   isdisabled='::discussionController.isDisabled'
                   iscommentingallowed='::discussionController.componentContent.isCommentingAllowed'
                   isvotingallowed='::discussionController.isVotingAllowed()'
-                  class='animate-repeat'
                   style='display: block;'>
               </class-response>
             </div>

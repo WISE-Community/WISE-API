@@ -7,6 +7,7 @@ import { UtilService } from '../../../../wise5/services/utilService';
 import demoProjectJSON_import from './sampleData/curriculum/Demo.project.json';
 import scootersProjectJSON_import from './sampleData/curriculum/SelfPropelledVehiclesChallenge.project.json';
 import { getAuthServiceConfigs } from '../app.module';
+import { SessionService } from '../../../../wise5/services/sessionService';
 const projectIdDefault = 1;
 const projectBaseURL = 'http://localhost:8080/curriculum/12345/';
 const projectURL = projectBaseURL + 'project.json';
@@ -14,6 +15,7 @@ const saveProjectURL = 'http://localhost:8080/wise/project/save/' + projectIdDef
 const wiseBaseURL = '/wise';
 let service: ProjectService;
 let configService: ConfigService;
+let sessionService: SessionService;
 let utilService: UtilService;
 let http: HttpTestingController;
 let demoProjectJSON: any;
@@ -23,10 +25,11 @@ describe('ProjectService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ HttpClientTestingModule, UpgradeModule ],
-      providers: [ ProjectService, ConfigService, UtilService ]
+      providers: [ ProjectService, ConfigService, SessionService, UtilService ]
     });
     http = TestBed.get(HttpTestingController);
     configService = TestBed.get(ConfigService);
+    sessionService = TestBed.get(SessionService)
     utilService = TestBed.get(UtilService);
     spyOn(utilService, 'broadcastEventInRootScope').and.callFake(() => {});
     service = TestBed.get(ProjectService);
@@ -39,6 +42,7 @@ describe('ProjectService', () => {
   shouldRetrieveProjectWhenConfigProjectURLIsValid();
   shouldNotRetrieveProjectWhenConfigProjectURLIsUndefined();
   shouldSaveProject();
+  shouldHandleSaveProjectResponse();
   shouldNotSaveProjectWhenTheUserDoesNotHavePermissionToEditTheProject();
   shouldGetDefaultThemePathWhenThemeIsNotDefinedInTheProject();
   shouldGetProjectThemePathWhenThemeIsDefinedInTheProject();
@@ -82,6 +86,7 @@ describe('ProjectService', () => {
   deleteTheLastStepInAnActivity();
   deleteAllStepsInAnActivity();
   getTags();
+  addCurrentUserToAuthors_CM_shouldAddUserInfo();
   // TODO: add test for service.getFlattenedProjectAsNodeIds()
   // TODO: add test for service.getAllPaths()
   // TODO: add test for service.consolidatePaths()
@@ -215,6 +220,42 @@ function shouldSaveProject() {
     expect(configService.getConfigParam).toHaveBeenCalledWith('saveProjectURL');
     http.expectOne(saveProjectURL);
   });
+}
+
+function shouldHandleSaveProjectResponse() {
+  it('should broadcast project saved', () => {
+    shouldHandleSaveProjectResponseSuccessHelper('broadcastProjectSaved');
+  });
+  it('should broadcast not logged in project not saved', () => {
+    shouldHandleSaveProjectResponseErrorHelper('notSignedIn',
+        'broadcastNotLoggedInProjectNotSaved');
+  });
+  it('should broadcast not allowed to edit this project', () => {
+    shouldHandleSaveProjectResponseErrorHelper('notAllowedToEditThisProject',
+        'broadcastNotAllowedToEditThisProject');
+  });
+  it('should broadcast error saving project', () => {
+    shouldHandleSaveProjectResponseErrorHelper('errorSavingProject', 'broadcastErrorSavingProject');
+  });
+}
+
+function shouldHandleSaveProjectResponseSuccessHelper(functionName: any) {
+  shouldHandleSaveProjectResponseHelper('success', '', functionName);
+}
+
+function shouldHandleSaveProjectResponseErrorHelper(messageCode: string, functionName: any) {
+  shouldHandleSaveProjectResponseHelper('error', messageCode, functionName);
+}
+
+function shouldHandleSaveProjectResponseHelper(status: string, messageCode: string,
+    functionName: any) {
+  const response = {
+    status: status,
+    messageCode: messageCode
+  };
+  spyOn(service, functionName).and.callFake(() => {});
+  service.handleSaveProjectResponse(response);
+  expect(service[functionName]).toHaveBeenCalled();
 }
 
 function shouldNotSaveProjectWhenTheUserDoesNotHavePermissionToEditTheProject() {
@@ -1002,5 +1043,20 @@ function getTags() {
     expect(tags.length).toEqual(2);
     expect(tags[0].name).toEqual('Group 1');
     expect(tags[1].name).toEqual('Group 2');
+  });
+}
+
+function addCurrentUserToAuthors_CM_shouldAddUserInfo() {
+  it('should add current user to authors in CM mode', () => {
+    spyOn(configService, 'getMyUserInfo').and.returnValue({
+      userIds: [1],
+      firstName: 'wise',
+      lastName: 'panda',
+      username: 'wisepanda'
+    });
+    spyOn(configService, 'isClassroomMonitor').and.returnValue(true);
+    const authors = service.addCurrentUserToAuthors([]);
+    expect(authors.length).toEqual(1);
+    expect(authors[0].id).toEqual(1);
   });
 }

@@ -1,8 +1,10 @@
 'use strict';
 
+import { Directive } from '@angular/core';
 import ComponentController from '../componentController';
-import AudioOscillatorService from './audioOscillatorService';
+import { AudioOscillatorService } from './audioOscillatorService';
 
+@Directive()
 class AudioOscillatorController extends ComponentController {
   $q: any;
   $timeout: any;
@@ -31,6 +33,7 @@ class AudioOscillatorController extends ComponentController {
 
   static $inject = [
     '$filter',
+    '$injector',
     '$mdDialog',
     '$q',
     '$rootScope',
@@ -38,9 +41,11 @@ class AudioOscillatorController extends ComponentController {
     '$timeout',
     'AnnotationService',
     'AudioOscillatorService',
+    'AudioRecorderService',
     'ConfigService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -49,6 +54,7 @@ class AudioOscillatorController extends ComponentController {
 
   constructor(
     $filter,
+    $injector,
     $mdDialog,
     $q,
     $rootScope,
@@ -56,9 +62,11 @@ class AudioOscillatorController extends ComponentController {
     $timeout,
     AnnotationService,
     AudioOscillatorService,
+    AudioRecorderService,
     ConfigService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -66,14 +74,17 @@ class AudioOscillatorController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -134,6 +145,14 @@ class AudioOscillatorController extends ComponentController {
     this.broadcastDoneRenderingComponent();
   }
 
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    if (!this.isGradingMode()) {
+      this.stop();
+      this.audioContext.close();
+    }
+  }
+
   initializeDefaultSettings() {
     this.isPlaying = false;
     this.oscillatorType = 'sine';
@@ -159,13 +178,6 @@ class AudioOscillatorController extends ComponentController {
     this.$timeout(() => {
       this.drawOscilloscopeGrid();
     }, 0);
-  }
-
-  cleanupBeforeExiting() {
-    if (!this.isGradingMode()) {
-      this.stop();
-      this.audioContext.close();
-    }
   }
 
   handleNodeSubmit() {
@@ -203,7 +215,7 @@ class AudioOscillatorController extends ComponentController {
 
   createComponentState(action) {
     const deferred = this.$q.defer();
-    const componentState = this.NodeService.createNewComponentState();
+    const componentState: any = this.NodeService.createNewComponentState();
     componentState.isSubmit = this.isSubmit;
     componentState.componentType = 'AudioOscillator';
     componentState.nodeId = this.nodeId;
@@ -476,7 +488,7 @@ class AudioOscillatorController extends ComponentController {
    * @return A component state with the merged student responses.
    */
   createMergedComponentState(componentStates) {
-    const mergedComponentState = this.NodeService.createNewComponentState();
+    const mergedComponentState: any = this.NodeService.createNewComponentState();
     if (componentStates != null) {
       const mergedStudentData = {};
       for (let c = 0; c < componentStates.length; c++) {

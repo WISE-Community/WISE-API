@@ -135,14 +135,6 @@
             </div>
           </div>
           <div id='{{conceptMapController.feedbackContainerId}}'></div>
-          <md-button class='input--textarea__action input--textarea__action--revision md-icon-button'
-                     ng-click='nodeController.showRevisions($event, component.id, conceptMapController.isDisabled)'
-                     ng-if='nodeController.getRevisions(component.id).length > 1'>
-            <md-icon> history </md-icon>
-            <md-tooltip md-direction='left'>
-              {{nodeController.getRevisions(component.id).length}} Versions
-            </md-tooltip>
-          </md-button>
         </div>
       </md-input-container>
     </div>
@@ -203,7 +195,7 @@
       </span>
   </div>
   <component-annotations ng-if='::conceptMapController.mode === "student"'
-                         annotations='conceptMapController.latestAnnotations'
-                         max-score='conceptMapController.componentContent.maxScore'>
+                         [annotations]='conceptMapController.latestAnnotations'
+                         [max-score]='conceptMapController.componentContent.maxScore'>
   </component-annotations>
 </div>

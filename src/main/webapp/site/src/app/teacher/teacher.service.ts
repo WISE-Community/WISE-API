@@ -7,6 +7,8 @@ import { Run } from "../domain/run";
 import { Course } from "../domain/course";
 import { Workgroup } from "../domain/workgroup";
 import { Period } from "../domain/period";
+import { MatDialog } from '@angular/material/dialog';
+import { CopyProjectDialogComponent } from '../modules/library/copy-project-dialog/copy-project-dialog.component';
 
 @Injectable()
 export class TeacherService {
@@ -44,6 +46,13 @@ export class TeacherService {
 
   constructor(private http: HttpClient) {}
 
+  copyProject(project: Project, dialog: MatDialog) {
+    dialog.open(CopyProjectDialogComponent, {
+      data: { project: project },
+      panelClass: 'mat-dialog--sm'
+    });
+  }
+
   getRuns(): Observable<Run[]> {
     const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
     return this.http.get<Run[]>(this.runsUrl, { headers: headers });
@@ -78,19 +87,12 @@ export class TeacherService {
       });
   }
 
-  registerTeacherAccount(teacherUser: Teacher, callback: any) {
+  registerTeacherAccount(teacherUser: Teacher): Observable<any> {
     const headers = {
       "Content-Type": "application/json"
     };
-    this.http
-      .post(this.registerUrl, teacherUser, {
-        headers: headers,
-        responseType: "text"
-      })
-      .subscribe(response => {
-        const username = response;
-        callback(username);
-      });
+    return this.http.post(this.registerUrl, teacherUser,
+        { headers: headers, responseType: 'json' });
   }
 
   createRun(projectId: number, periods: string, isRandomPeriodAssignment: boolean,

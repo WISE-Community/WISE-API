@@ -1,14 +1,13 @@
 'use strict';
 
 import * as angular from 'angular';
-import HTMLService from './htmlService';
-import HTMLController from './htmlController';
-import HTMLAuthoringController from './htmlAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { HTMLService } from './htmlService';
+import HTMLAuthoring from './htmlAuthoring';
 
 const htmlComponentModule = angular.module('htmlAuthoringComponentModule', [])
-  .service('HTMLService', HTMLService)
-  .controller('HTMLController', HTMLController)
-  .controller('HTMLAuthoringController', HTMLAuthoringController)
+  .service('HTMLService', downgradeInjectable(HTMLService))
+  .component('htmlAuthoring', HTMLAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

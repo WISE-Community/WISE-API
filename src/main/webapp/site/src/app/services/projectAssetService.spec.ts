@@ -1,10 +1,11 @@
-import { TestBed, fakeAsync } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from '../../../../wise5/services/configService';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ProjectService } from '../../../../wise5/services/projectService';
 import { UtilService } from '../../../../wise5/services/utilService';
 import { ProjectAssetService } from './projectAssetService';
 import { UpgradeModule } from '@angular/upgrade/static';
+import { SessionService } from '../../../../wise5/services/sessionService';
 let service: ProjectAssetService;
 let configService: ConfigService;
 let http: HttpTestingController;
@@ -14,7 +15,7 @@ describe('ProjectAssetService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, UpgradeModule],
-      providers: [ConfigService, ProjectAssetService, ProjectService, UtilService]
+      providers: [ConfigService, ProjectAssetService, ProjectService, SessionService, UtilService]
     });
     http = TestBed.get(HttpTestingController);
     configService = TestBed.get(ConfigService);
@@ -49,6 +50,7 @@ describe('ProjectAssetService', () => {
   calculateUsedFiles();
   getFileNameFromURL();
   getTextFiles();
+  injectFileTypeValues();
 });
 
 function retrieveProjectAssets() {
@@ -99,6 +101,7 @@ function deleteAssetItem() {
       totalFileSize: 1
     };
     request.flush(response);
+    tick();
     expect(service.getProjectAssets().getValue()).toEqual(response);
   }));
 }
@@ -289,4 +292,18 @@ function getTextFiles() {
     request1.flush(result1);
     request2.flush(result2);
   }));
+}
+
+function injectFileTypeValues() {
+  it('should inject file type values', () => {
+    const files: any = [
+      { fileName: 'spongebob.png' },
+      { fileName: 'squidward.mp4' },
+      { fileName: 'plankton.pdf' }
+    ];
+    service.injectFileTypeValues(files);
+    expect(files[0].fileType).toEqual('image');
+    expect(files[1].fileType).toEqual('video');
+    expect(files[2].fileType).toEqual('other');
+  })
 }

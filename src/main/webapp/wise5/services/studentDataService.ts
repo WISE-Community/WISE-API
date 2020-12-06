@@ -9,11 +9,12 @@ import { UpgradeModule } from "@angular/upgrade/static";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import * as angular from 'angular';
 import { TagService } from "./tagService";
+import { DataService } from "../../site/src/app/services/data.service";
+import { Observable, Subject } from "rxjs";
 
 @Injectable()
-export class StudentDataService {
+export class StudentDataService extends DataService {
 
-  currentNode = null;
   dummyStudentWorkId: number = 1;
   maxScore: any = null;
   nodeStatuses: any = {};
@@ -80,17 +81,54 @@ export class StudentDataService {
       return this.evaluateHasTagCriteria(criteria);
     }
   };
-  $q: any;
-  $rootScope: any;
-  $translate: any;
 
-  constructor(private upgrade: UpgradeModule,
-    public http: HttpClient,
-    private AnnotationService: AnnotationService,
-    private ConfigService: ConfigService,
-    private ProjectService: ProjectService,
-    private TagService: TagService,
-    private UtilService: UtilService) {
+  $q: any;
+  $translate: any;
+  private deleteKeyPressedSource: Subject<any> = new Subject<any>();
+  public deleteKeyPressed$: Observable<any> = this.deleteKeyPressedSource.asObservable();
+  private nodeClickLockedSource: Subject<any> = new Subject<any>();
+  public nodeClickLocked$: Observable<any> = this.nodeClickLockedSource.asObservable();
+  private componentDirtySource: Subject<boolean> = new Subject<boolean>();
+  public componentDirty$: Observable<any> = this.componentDirtySource.asObservable();
+  private componentSaveTriggeredSource: Subject<boolean> = new Subject<boolean>();
+  public componentSaveTriggered$: Observable<any> =
+      this.componentSaveTriggeredSource.asObservable();
+  private componentSubmitDirtySource: Subject<boolean> = new Subject<boolean>();
+  public componentSubmitDirty$: Observable<any> = this.componentSubmitDirtySource.asObservable();
+  private componentSubmitTriggeredSource: Subject<boolean> = new Subject<boolean>();
+  public componentSubmitTriggered$: Observable<any> =
+      this.componentSubmitTriggeredSource.asObservable();
+  private notebookItemAnnotationReceivedSource: Subject<boolean> = new Subject<boolean>();
+  public notebookItemAnnotationReceived$ = this.notebookItemAnnotationReceivedSource.asObservable();
+  private pauseScreenSource: Subject<boolean> = new Subject<boolean>();
+  public pauseScreen$: Observable<any> = this.pauseScreenSource.asObservable();
+  private componentStudentDataSource: Subject<any> = new Subject<any>();
+  public componentStudentData$: Observable<any> = this.componentStudentDataSource.asObservable();
+  private studentWorkSavedToServerSource: Subject<any> = new Subject<any>();
+  public studentWorkSavedToServer$: Observable<any> =
+      this.studentWorkSavedToServerSource.asObservable();
+  private navItemIsExpandedSource: Subject<any> = new Subject<any>();
+  public navItemIsExpanded$: Observable<any> = this.navItemIsExpandedSource.asObservable();
+  private nodeStatusesChangedSource: Subject<any> = new Subject<any>();
+  public nodeStatusesChanged$: Observable<any> = this.nodeStatusesChangedSource.asObservable();
+
+  constructor(
+      upgrade: UpgradeModule,
+      public http: HttpClient,
+      private AnnotationService: AnnotationService,
+      private ConfigService: ConfigService,
+      ProjectService: ProjectService,
+      private TagService: TagService,
+      private UtilService: UtilService) {
+    super(upgrade, ProjectService);
+  }
+
+  pauseScreen(doPause: boolean) {
+    this.pauseScreenSource.next(doPause);
+  }
+
+  broadcastComponentStudentData(componentStudentData: any) {
+    this.componentStudentDataSource.next(componentStudentData);
   }
 
   handleNodeStatusesChanged() {
@@ -232,7 +270,11 @@ export class StudentDataService {
     this.updateGroupNodeStatuses();
     this.maxScore = this.getMaxScore();
     this.handleNodeStatusesChanged();
-    this.upgrade.$injector.get('$rootScope').$broadcast('nodeStatusesChanged');
+    this.broadcastNodeStatusesChanged();
+  }
+
+  broadcastNodeStatusesChanged() {
+    this.nodeStatusesChangedSource.next();
   }
 
   updateStepNodeStatuses() {
@@ -348,9 +390,6 @@ export class StudentDataService {
       this.nodeStatuses[nodeId].isVisible = nodeStatus.isVisible;
       this.nodeStatuses[nodeId].isVisitable = nodeStatus.isVisitable;
       this.nodeStatuses[nodeId].isCompleted = nodeStatus.isCompleted;
-      if (!previousIsCompletedValue && nodeStatus.isCompleted) {
-        this.upgrade.$injector.get('$rootScope').$broadcast('nodeCompleted', { nodeId: nodeId });
-      }
     }
   }
 
@@ -409,6 +448,15 @@ export class StudentDataService {
       }
     }
     return result;
+  }
+
+  evaluateCriterias(criterias): boolean {
+    for (const criteria of criterias) {
+      if (!this.evaluateCriteria(criteria)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   evaluateCriteria(criteria) {
@@ -755,11 +803,15 @@ export class StudentDataService {
   handleAnnotationReceived(annotation) {
     this.studentData.annotations.push(annotation);
     if (annotation.notebookItemId) {
-      this.upgrade.$injector.get('$rootScope').$broadcast('notebookItemAnnotationReceived', { annotation: annotation });
+      this.broadcastNotebookItemAnnotationReceived({ annotation: annotation });
     } else {
-      this.upgrade.$injector.get('$rootScope').$broadcast('annotationReceived', { annotation: annotation });
+      this.AnnotationService.broadcastAnnotationReceived({ annotation: annotation });
     }
     this.updateNodeStatuses();
+  }
+
+  broadcastNotebookItemAnnotationReceived(args: any) {
+    this.notebookItemAnnotationReceivedSource.next(args);
   }
 
   saveComponentEvent(component, category, event, data) {
@@ -1029,11 +1081,15 @@ export class StudentDataService {
             this.setRemoteServerSaveTimeIntoLocalServerSaveTime(savedStudentWork, localStudentWork);
           }
           this.clearRequestToken(localStudentWork);
-          this.upgrade.$injector.get('$rootScope').$broadcast('studentWorkSavedToServer', { studentWork: localStudentWork });
+          this.broadcastStudentWorkSavedToServer({ studentWork: localStudentWork });
           break;
         }
       }
     }
+  }
+
+  broadcastStudentWorkSavedToServer(args: any) {
+    this.studentWorkSavedToServerSource.next(args);
   }
 
   isMatchingRequestToken(localObj, remoteObj) {
@@ -1070,7 +1126,6 @@ export class StudentDataService {
           this.setRemoteIdIntoLocalId(savedEvent, localEvent);
           this.setRemoteServerSaveTimeIntoLocalServerSaveTime(savedEvent, localEvent);
           this.clearRequestToken(localEvent);
-          this.upgrade.$injector.get('$rootScope').$broadcast('eventSavedToServer', { event: localEvent });
           break;
         }
       }
@@ -1086,7 +1141,7 @@ export class StudentDataService {
           this.setRemoteIdIntoLocalId(savedAnnotation, localAnnotation);
           this.setRemoteServerSaveTimeIntoLocalServerSaveTime(savedAnnotation, localAnnotation);
           this.clearRequestToken(localAnnotation);
-          this.upgrade.$injector.get('$rootScope').$broadcast('annotationSavedToServer', { annotation: localAnnotation });
+          this.AnnotationService.broadcastAnnotationSavedToServer({ annotation: localAnnotation });
           break;
         }
       }
@@ -1410,51 +1465,25 @@ export class StudentDataService {
     return result;
   }
 
-  getCurrentNode() {
-    return this.currentNode;
-  }
-
-  getCurrentNodeId() {
-    if (this.currentNode != null) {
-      return this.currentNode.id;
-    }
-    return null;
-  }
-
-  setCurrentNodeByNodeId(nodeId) {
-    const node = this.ProjectService.getNodeById(nodeId);
-    this.setCurrentNode(node);
-  }
-
   setCurrentNode(node) {
     const previousCurrentNode = this.currentNode;
+    this.currentNode = node;
     if (previousCurrentNode !== node) {
       if (previousCurrentNode && !this.ProjectService.isGroupNode(previousCurrentNode.id)) {
         this.previousStep = previousCurrentNode;
         if (this.previousStep.task != null) {
           this.editTaskTimer('end_timer');
         }
-        // console.log('EXITING THE CURRENT NODE');
       }
-      this.currentNode = node;
-      this.upgrade.$injector.get('$rootScope').$broadcast('currentNodeChanged', {
+      this.broadcastCurrentNodeChanged({
         previousNode: previousCurrentNode,
         currentNode: this.currentNode
       });
     }
   }
 
-  endCurrentNode() {
-
-    const previousCurrentNode = this.currentNode;
-    if (previousCurrentNode != null) {
-      this.upgrade.$injector.get('$rootScope').$broadcast('exitNode', { nodeToExit: previousCurrentNode });
-    }
-  }
-
   endCurrentNodeAndSetCurrentNodeByNodeId(nodeId) {
     if (this.nodeStatuses[nodeId].isVisitable) {
-      this.endCurrentNode();
       this.setCurrentNodeByNodeId(nodeId);
     } else {
       this.nodeClickLocked(nodeId);
@@ -1462,7 +1491,11 @@ export class StudentDataService {
   }
 
   nodeClickLocked(nodeId) {
-    this.upgrade.$injector.get('$rootScope').$broadcast('nodeClickLocked', { nodeId: nodeId });
+    this.broadcastNodeClickLocked({ nodeId: nodeId });
+  }
+
+  broadcastNodeClickLocked(args: any) {
+    this.nodeClickLockedSource.next(args);
   }
 
   getTotalScore() {
@@ -1693,5 +1726,24 @@ export class StudentDataService {
       }
     }
     return maxScore;
+  }
+
+  broadcastComponentDirty(args: any) {
+    this.componentDirtySource.next(args);
+  }
+  broadcastComponentSaveTriggered(args: any) {
+    this.componentSaveTriggeredSource.next(args);
+  }
+  broadcastComponentSubmitDirty(args: any) {
+    this.componentSubmitDirtySource.next(args);
+  }
+  broadcastComponentSubmitTriggered(args: any) {
+    this.componentSubmitTriggeredSource.next(args);
+  }
+  broadcastDeleteKeyPressed() {
+    this.deleteKeyPressedSource.next();
+  }
+  setNavItemExpanded(nodeId: string, isExpanded: boolean) {
+    this.navItemIsExpandedSource.next({nodeId: nodeId, isExpanded: isExpanded});
   }
 }

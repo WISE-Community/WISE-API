@@ -8,7 +8,10 @@ import { TeacherDataService } from '../../../../services/teacherDataService';
 import { TeacherWebSocketService } from '../../../../services/teacherWebSocketService';
 import * as $ from 'jquery';
 import { TeacherProjectService } from '../../../../services/teacherProjectService';
+import { Subscription } from 'rxjs';
+import { Directive } from '@angular/core';
 
+@Directive()
 class NavItemController {
   $translate: any;
   alertIconClass: string;
@@ -25,7 +28,6 @@ class NavItemController {
   icon: any;
   isCurrentNode: boolean;
   isGroup: boolean;
-  isWorkgroupOnlineOnNode: boolean;
   item: any;
   maxScore: number;
   newAlert: any;
@@ -39,10 +41,13 @@ class NavItemController {
   rubricIconName: string;
   showPosition: any;
   workgroupsOnNodeData: any;
+  currentPeriodChangedSubscription: Subscription;
+  studentStatusReceivedSubscription: Subscription;
 
   static $inject = [
     '$element',
     '$filter',
+    '$mdToast',
     '$rootScope',
     '$scope',
     'AnnotationService',
@@ -57,6 +62,7 @@ class NavItemController {
   constructor(
     private $element: any,
     $filter: any,
+    private $mdToast: any,
     private $rootScope: any,
     private $scope: any,
     private AnnotationService: AnnotationService,
@@ -69,7 +75,6 @@ class NavItemController {
   ) {
     this.$element = $element;
     this.$rootScope = $rootScope;
-    this.$scope = $scope;
     this.AnnotationService = AnnotationService;
     this.ConfigService = ConfigService;
     this.NotificationService = NotificationService;
@@ -96,7 +101,6 @@ class NavItemController {
     this.setCurrentNodeStatus();
     this.maxScore = this.ProjectService.getMaxScoreForNode(this.nodeId);
     this.workgroupsOnNodeData = [];
-    this.isWorkgroupOnlineOnNode = false;
     this.icon = this.ProjectService.getNodeIconByNodeId(this.nodeId);
     this.parentGroupId = null;
     var parentGroup = this.ProjectService.getParentGroup(this.nodeId);
@@ -105,21 +109,19 @@ class NavItemController {
     }
     this.setWorkgroupsOnNodeData();
 
-    this.$onInit = () => {
-      this.hasAlert = false;
-      this.newAlert = false;
-      this.alertNotifications = [];
+    this.hasAlert = false;
+    this.newAlert = false;
+    this.alertNotifications = [];
 
-      this.getAlertNotifications();
+    this.getAlertNotifications();
 
-      this.hasRubrics = this.ProjectService.getNumberOfRubricsByNodeId(this.nodeId) > 0;
-      this.alertIconLabel = this.$translate('HAS_ALERTS_NEW');
-      this.alertIconClass = 'warn';
-      this.alertIconName = 'notifications';
-      this.rubricIconLabel = this.$translate('STEP_HAS_RUBRICS_TIPS');
-      this.rubricIconClass = 'info';
-      this.rubricIconName = 'info';
-    };
+    this.hasRubrics = this.ProjectService.getNumberOfRubricsByNodeId(this.nodeId) > 0;
+    this.alertIconLabel = this.$translate('HAS_ALERTS_NEW');
+    this.alertIconClass = 'warn';
+    this.alertIconName = 'notifications';
+    this.rubricIconLabel = this.$translate('STEP_HAS_RUBRICS_TIPS');
+    this.rubricIconClass = 'info';
+    this.rubricIconName = 'info';
 
     this.$scope.$watch(
       () => {
@@ -185,24 +187,32 @@ class NavItemController {
       }
     );
 
-    // listen for the studentsOnlineReceived event
-    this.$rootScope.$on('studentsOnlineReceived', (event, args) => {
-      this.setWorkgroupsOnNodeData();
-    });
-
-    // listen for the studentStatusReceived event
-    this.$rootScope.$on('studentStatusReceived', (event, args) => {
+    this.studentStatusReceivedSubscription =
+        this.StudentStatusService.studentStatusReceived$.subscribe(() => {
       this.setWorkgroupsOnNodeData();
       this.setCurrentNodeStatus();
       this.getAlertNotifications();
     });
 
-    // listen for the currentPeriodChanged event
-    this.$rootScope.$on('currentPeriodChanged', (event, args) => {
-      this.currentPeriod = args.currentPeriod;
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
+        .subscribe(({ currentPeriod }) => {
+      this.currentPeriod = currentPeriod;
       this.setWorkgroupsOnNodeData();
       this.getAlertNotifications();
     });
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentPeriodChangedSubscription.unsubscribe();
+    this.studentStatusReceivedSubscription.unsubscribe();
   }
 
   zoomToElement() {
@@ -260,22 +270,43 @@ class NavItemController {
   }
 
   isLockedForPeriod(constraints: any, periodId: number): boolean {
-    return constraints.filter(constraint => {
-      return constraint.action === 'makeThisNodeNotVisitable' &&
+    for (const constraint of constraints) {
+      if (constraint.action === 'makeThisNodeNotVisitable' &&
           constraint.targetId === this.nodeId &&
-          constraint.removalCriteria[0].params.periodId === periodId;
-    }).length > 0;
+          constraint.removalCriteria[0].params.periodId === periodId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   toggleLockNode() {
     const node = this.ProjectService.getNodeById(this.nodeId);
+    const isLocked = this.isLocked();
     if (this.isLocked()) {
       this.unlockNode(node);
     } else {
       this.lockNode(node);
     }
-    this.ProjectService.saveProject();
-    this.sendNodeToClass(node);
+    this.ProjectService.saveProject().then(() => {
+      this.sendNodeToClass(node);
+      this.showToggleLockNodeConfirmation(!isLocked);
+    });
+  }
+
+  showToggleLockNodeConfirmation(isLocked: boolean) {
+    let message = '';
+    if (isLocked) {
+      message = this.$translate('lockNodeConfirmation', { nodeTitle: this.nodeTitle,
+          periodName: this.getPeriodLabel() });
+    } else {
+      message = this.$translate('unlockNodeConfirmation', { nodeTitle: this.nodeTitle,
+        periodName: this.getPeriodLabel() });
+    }
+    this.$mdToast.show(
+      this.$mdToast.simple()
+      .textContent(message)
+      .hideDelay(5000));
   }
 
   unlockNode(node: any) {
@@ -391,7 +422,6 @@ class NavItemController {
 
   setWorkgroupsOnNodeData() {
     let workgroupIdsOnNode = this.getWorkgroupIdsOnNode();
-    let workgroupOnlineOnNode = false;
     this.workgroupsOnNodeData = [];
 
     let n = workgroupIdsOnNode.length;
@@ -400,20 +430,12 @@ class NavItemController {
 
       let usernames = this.ConfigService.getDisplayUsernamesByWorkgroupId(id);
       let avatarColor = this.ConfigService.getAvatarColorForWorkgroupId(id);
-      let online = this.TeacherWebSocketService.isStudentOnline(id);
-      if (online) {
-        workgroupOnlineOnNode = true;
-      }
-
       this.workgroupsOnNodeData.push({
         workgroupId: id,
         usernames: usernames,
         avatarColor: avatarColor,
-        online: online
       });
     }
-
-    this.isWorkgroupOnlineOnNode = workgroupOnlineOnNode;
   }
 
   setCurrentNodeStatus() {
@@ -449,6 +471,19 @@ class NavItemController {
       }
     }
     return result;
+  }
+
+  getPeriodLabel() {
+    return this.isShowingAllPeriods() ? this.$translate('allPeriods') :
+       this.$translate('periodLabel', { name: this.currentPeriod.periodName });
+  }
+
+  getNodeLockedText(): string {
+    if (this.isLocked()) {
+      return this.$translate('unlockNodeForPeriod', { periodName: this.getPeriodLabel() });
+    } else {
+      return this.$translate('lockNodeForPeriod', { periodName: this.getPeriodLabel() });
+    }
   }
 }
 

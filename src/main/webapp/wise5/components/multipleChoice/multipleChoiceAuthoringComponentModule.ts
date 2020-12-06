@@ -1,15 +1,14 @@
 'use strict';
 
 import * as angular from 'angular';
-import MultipleChoiceService from './multipleChoiceService';
-import MultipleChoiceController from './multipleChoiceController';
-import MultipleChoiceAuthoringController from './multipleChoiceAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { MultipleChoiceService } from './multipleChoiceService';
+import MultipleChoiceAuthoring from './multipleChoiceAuthoring';
 
 const multipleChoiceAuthoringComponentModule = angular
   .module('multipleChoiceAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('MultipleChoiceService', MultipleChoiceService)
-  .controller('MultipleChoiceController', MultipleChoiceController)
-  .controller('MultipleChoiceAuthoringController', MultipleChoiceAuthoringController)
+  .service('MultipleChoiceService', downgradeInjectable(MultipleChoiceService))
+  .component('multipleChoiceAuthoring', MultipleChoiceAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

@@ -1,15 +1,14 @@
 'use strict';
 
 import * as angular from 'angular';
-import EmbeddedService from './embeddedService';
-import EmbeddedController from './embeddedController';
-import EmbeddedAuthoringController from './embeddedAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { EmbeddedService } from './embeddedService';
+import EmbeddedAuthoring from './embeddedAuthoring';
 
 const embeddedAuthoringComponentModule = angular
   .module('embeddedAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('EmbeddedService', EmbeddedService)
-  .controller('EmbeddedController', EmbeddedController)
-  .controller('EmbeddedAuthoringController', EmbeddedAuthoringController)
+  .service('EmbeddedService', downgradeInjectable(EmbeddedService))
+  .component('embeddedAuthoring', EmbeddedAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

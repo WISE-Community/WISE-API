@@ -1,15 +1,14 @@
 'use strict';
 
-import ConceptMapService from './conceptMapService';
-import ConceptMapController from './conceptMapController';
-import ConceptMapAuthoringController from './conceptMapAuthoringController';
 import * as angular from 'angular';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { ConceptMapService } from './conceptMapService';
+import ConceptMapAuthoring from './conceptMapAuthoring';
 
 const conceptMapAuthoringComponentModule = angular
   .module('conceptMapAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('ConceptMapService', ConceptMapService)
-  .controller('ConceptMapController', ConceptMapController)
-  .controller('ConceptMapAuthoringController', ConceptMapAuthoringController)
+  .service('ConceptMapService', downgradeInjectable(ConceptMapService))
+  .component('conceptMapAuthoring', ConceptMapAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

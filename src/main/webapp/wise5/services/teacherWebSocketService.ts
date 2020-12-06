@@ -5,31 +5,52 @@ import { ConfigService } from "./configService";
 import { StudentStatusService } from "./studentStatusService";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { NotificationService } from "./notificationService";
+import { Observable, Subject } from "rxjs";
+import { AchievementService } from "./achievementService";
 
 @Injectable()
 export class TeacherWebSocketService {
 
   runId: number;
-  studentsOnlineArray: any[] = [];
   rootScope: any;
   stomp: any;
+  private newAnnotationReceivedSource: Subject<any> = new Subject<any>();
+  public newAnnotationReceived$: Observable<any> = this.newAnnotationReceivedSource.asObservable();
+  private newStudentWorkReceivedSource: Subject<any> = new Subject<any>();
+  public newStudentWorkReceived$: Observable<any> =
+      this.newStudentWorkReceivedSource.asObservable();
 
   constructor(
       private upgrade: UpgradeModule,
+      private AchievementService: AchievementService,
       private ConfigService: ConfigService,
       private NotificationService: NotificationService,
       private StudentStatusService: StudentStatusService) {
-    this.rootScope = this.upgrade.$injector.get('$rootScope');
+    if (this.upgrade.$injector != null) {
+      this.initializeStomp();
+    }
+  }
+
+  initializeStomp() {
     this.stomp = this.upgrade.$injector.get('$stomp');
-    this.stomp.setDebug((args) => {
-      this.upgrade.$injector.get('$log').debug(args);
-    });
+    this.stomp.setDebug(() => {});
+  }
+
+  getStomp() {
+    return this.stomp;
+  }
+
+  getRootScope() {
+    if (this.rootScope == null) {
+      this.rootScope = this.upgrade.$injector.get('$rootScope');
+    }
+    return this.rootScope;
   }
 
   initialize() {
     this.runId = this.ConfigService.getRunId();
     try {
-      this.stomp.connect(this.ConfigService.getWebSocketURL()).then((frame) => {
+      this.getStomp().connect(this.ConfigService.getWebSocketURL()).then((frame) => {
         this.subscribeToTeacherTopic();
         this.subscribeToTeacherWorkgroupTopic();
       });
@@ -39,55 +60,47 @@ export class TeacherWebSocketService {
   }
 
   subscribeToTeacherTopic() {
-    this.stomp.subscribe(`/topic/teacher/${this.runId}`, (message, headers, res) => {
+    this.getStomp().subscribe(`/topic/teacher/${this.runId}`, (message, headers, res) => {
       if (message.type === 'studentWork') {
         const studentWork = JSON.parse(message.content);
-        this.rootScope.$broadcast('newStudentWorkReceived', {studentWork: studentWork});
+        this.broadcastNewStudentWorkReceived({studentWork: studentWork});
       } else if (message.type === 'studentStatus') {
         const status = JSON.parse(message.content);
         this.StudentStatusService.setStudentStatus(status);
-        this.rootScope.$emit('studentStatusReceived', {studentStatus: status});
+        this.StudentStatusService.broadcastStudentStatusReceived({studentStatus: status});
       } else if (message.type === 'newStudentAchievement') {
         const achievement = JSON.parse(message.content);
-        this.rootScope.$broadcast('newStudentAchievement', {studentAchievement: achievement});
+        this.AchievementService.broadcastNewStudentAchievement({studentAchievement: achievement});
       } else if (message.type === 'annotation') {
         const annotationData = JSON.parse(message.content);
-        this.rootScope.$broadcast('newAnnotationReceived', {annotation: annotationData});
+        this.broadcastNewAnnotationReceived({annotation: annotationData});
       }
     });
   }
 
+  broadcastNewStudentWorkReceived(args: any) {
+    this.newStudentWorkReceivedSource.next(args);
+  }
+
+  broadcastNewAnnotationReceived(args: any) {
+    this.newAnnotationReceivedSource.next(args);
+  }
+
   subscribeToTeacherWorkgroupTopic() {
-    this.stomp.subscribe(`/topic/workgroup/${this.ConfigService.getWorkgroupId()}`, (message, headers, res) => {
+    this.getStomp().subscribe(`/topic/workgroup/${this.ConfigService.getWorkgroupId()}`,
+        (message, headers, res) => {
       if (message.type === 'notification') {
         this.NotificationService.addNotification(JSON.parse(message.content));
       }
     });
   }
 
-  handleStudentsOnlineReceived(studentsOnlineMessage) {
-    this.studentsOnlineArray = studentsOnlineMessage.studentsOnlineList;
-    this.rootScope.$broadcast('studentsOnlineReceived', {studentsOnline: this.studentsOnlineArray});
-  }
-
-  getStudentsOnline() {
-    return this.studentsOnlineArray;
-  }
-
-  isStudentOnline(workgroupId) {
-    return this.studentsOnlineArray.indexOf(workgroupId) > -1;
-  }
-
-  handleStudentDisconnected(studentDisconnectedMessage) {
-    this.rootScope.$broadcast('studentDisconnected', {data: studentDisconnectedMessage});
-  }
-
   pauseScreens(periodId) {
-    this.stomp.send(`/app/pause/${this.runId}/${periodId}`, {}, {});
+    this.getStomp().send(`/app/pause/${this.runId}/${periodId}`, {}, {});
   }
 
   unPauseScreens(periodId) {
-    this.stomp.send(`/app/unpause/${this.runId}/${periodId}`, {}, {});
+    this.getStomp().send(`/app/unpause/${this.runId}/${periodId}`, {}, {});
   }
 
   sendWorkgroupToNode(workgroupId, nodeId) {

@@ -3,7 +3,9 @@
 import { ConfigService } from '../../../../services/configService';
 import { TeacherDataService } from '../../../../services/teacherDataService';
 import * as angular from 'angular';
+import { Directive } from '@angular/core';
 
+@Directive()
 class WorkgroupSelectController {
   $translate: any;
   byStudent: boolean;
@@ -14,28 +16,42 @@ class WorkgroupSelectController {
   searchTerm: string;
   selectedItem: any;
   workgroups: any;
+  currentPeriodChangedSubscription: any;
+  currentWorkgroupChangedSubscription: any;
 
   static $inject = ['$filter', '$scope', 'orderByFilter', 'ConfigService', 'TeacherDataService'];
   constructor(
     $filter: any,
-    $scope: any,
+    private $scope: any,
     private orderBy: any,
     private ConfigService: ConfigService,
     private TeacherDataService: TeacherDataService
   ) {
     this.$translate = $filter('translate');
 
-    $scope.$on('currentWorkgroupChanged', (event, args) => {
-      let workgroup = args.currentWorkgroup;
-      if (workgroup != null) {
+    this.currentWorkgroupChangedSubscription = 
+        this.TeacherDataService.currentWorkgroupChanged$.subscribe(({ currentWorkgroup }) => {
+      if (currentWorkgroup != null) {
         this.setWorkgroups();
       }
     });
-
-    $scope.$on('currentPeriodChanged', (event, args) => {
-      this.periodId = args.currentPeriod.periodId;
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
+        .subscribe(({ currentPeriod }) => {
+      this.periodId = currentPeriod.periodId;
       this.setWorkgroups();
     });
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.currentPeriodChangedSubscription.unsubscribe();
+    this.currentWorkgroupChangedSubscription.unsubscribe();
   }
 
   $onInit() {
@@ -110,7 +126,7 @@ class WorkgroupSelectController {
       for (let workgroup of this.workgroups) {
         if (currentWorkgroup.workgroupId === workgroup.workgroupId) {
           if (this.byStudent) {
-            if (currentWorkgroup.userId === workgroup.userId) {
+            if (currentWorkgroup.userIds.indexOf(workgroup.userId) > -1) {
               localGroup = workgroup;
               break;
             }

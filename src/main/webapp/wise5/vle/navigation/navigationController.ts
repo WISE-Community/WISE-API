@@ -1,20 +1,27 @@
 import { VLEProjectService } from '../vleProjectService';
+import { StudentDataService } from '../../services/studentDataService';
+import { Subscription } from 'rxjs';
 
 class NavigationController {
+  navItemIsExpanded: any = {};
+  navItemIsExpandedSubscription: Subscription;
   rootNode: any;
-  static $inject = ['$transitions', 'ProjectService'];
+  static $inject = ['ProjectService', 'StudentDataService'];
 
-  constructor(
-    $transitions,
-    private ProjectService: VLEProjectService
-  ) {
+  constructor(private ProjectService: VLEProjectService,
+      private StudentDataService: StudentDataService) {
     this.rootNode = this.ProjectService.rootNode;
-    $transitions.onSuccess({}, $transition => {
-      const toNodeId = $transition.params('to').nodeId;
-      if ($transition.name === 'root.vle' && this.ProjectService.isApplicationNode(toNodeId)) {
-        document.getElementById('content').scrollTop = 0;
-      }
+  }
+
+  $onInit() {
+    this.navItemIsExpandedSubscription = this.StudentDataService.navItemIsExpanded$
+        .subscribe(({nodeId, isExpanded}) => {
+      this.navItemIsExpanded[nodeId] = isExpanded;
     });
+  }
+
+  $onDestroy() {
+    this.navItemIsExpandedSubscription.unsubscribe();
   }
 }
 

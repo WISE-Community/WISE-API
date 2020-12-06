@@ -24,6 +24,17 @@ class NotebookItemController {
     this.StudentDataService = StudentDataService;
     this.UtilService = UtilService;
     this.$translate = this.$filter('translate');
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.notebookUpdatedSubscription.unsubscribe();
   }
 
   $onInit() {
@@ -36,7 +47,7 @@ class NotebookItemController {
       this.color = this.label.color;
     }
 
-    this.$rootScope.$on('notebookUpdated', (event, args) => {
+    this.notebookUpdatedSubscription = this.NotebookService.notebookUpdated$.subscribe((args) => {
       const notebook = args.notebook;
       if (notebook.items[this.itemId]) {
         this.item = notebook.items[this.itemId].last();
@@ -98,7 +109,7 @@ class NotebookItemController {
     this.$mdDialog.show(confirm).then(() => {
       this.NotebookService.reviveNote(this.item);
     }, () => {
-      // they chose not to delete. Do nothing, the dialog will close.
+      // they chose not to revive. Do nothing, the dialog will close.
     });
   }
 

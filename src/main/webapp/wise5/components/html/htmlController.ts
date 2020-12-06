@@ -1,6 +1,5 @@
 'use strict';
 
-import * as angular from 'angular';
 import ComponentController from '../componentController';
 
 class HTMLController extends ComponentController {
@@ -10,6 +9,7 @@ class HTMLController extends ComponentController {
   html: string;
 
   static $inject = [
+    '$injector',
     '$q',
     '$rootScope',
     '$scope',
@@ -19,9 +19,11 @@ class HTMLController extends ComponentController {
     '$filter',
     '$mdDialog',
     'AnnotationService',
+    'AudioRecorderService',
     'ConfigService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -29,6 +31,7 @@ class HTMLController extends ComponentController {
   ];
 
   constructor(
+    $injector,
     $q,
     $rootScope,
     $scope,
@@ -38,9 +41,11 @@ class HTMLController extends ComponentController {
     $filter,
     $mdDialog,
     AnnotationService,
+    AudioRecorderService,
     ConfigService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -48,14 +53,17 @@ class HTMLController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -64,77 +72,8 @@ class HTMLController extends ComponentController {
     this.$state = $state;
     this.$stateParams = $stateParams;
     this.$sce = $sce;
-
-    if (this.mode === 'authoring') {
-    } else if (this.mode === 'grading') {
-    } else if (this.mode === 'student') {
-      if (this.componentContent != null) {
-        this.html = this.componentContent.html;
-      }
-    }
-
-    /*
-     * Listen for the requestImage event which is fired when something needs
-     * an image representation of the student data from a specific
-     * component.
-     */
-    this.$scope.$on('requestImage', (event, args) => {
-      // get the node id and component id from the args
-      let nodeId = args.nodeId;
-      let componentId = args.componentId;
-
-      // check if the image is being requested from this component
-      if (this.nodeId === nodeId && this.componentId === componentId) {
-        // obtain the image objects
-        let imageObjects = this.getImageObjects();
-
-        if (imageObjects != null) {
-          let args: any = {};
-          args.nodeId = nodeId;
-          args.componentId = componentId;
-          args.imageObjects = imageObjects;
-
-          // fire an event that contains the image objects
-          this.$scope.$emit('requestImageCallback', args);
-        }
-      }
-    });
-
-    this.$rootScope.$broadcast('doneRenderingComponent', {
-      nodeId: this.nodeId,
-      componentId: this.componentId
-    });
-  }
-
-  performTeachingAssistantRequest(type) {
-    console.log('TYPE, NODID, WG_ID, RUNID, MODE, PERIOD ', type, this.$stateParams.nodeId, this.workgroupId, this.$stateParams.runId,this.mode, this.ConfigService.getPeriodId());
-  }
-
-  /**
-   * Get the image object representation of the student data
-   * @returns an image object
-   */
-  getImageObjects() {
-    const imageObjects = [];
-
-    // get the image elements in the scope
-    let componentId = this.componentId;
-    let imageElements = angular.element(document.querySelector('#' + componentId + ' img'));
-
-    if (imageElements != null) {
-      // loop through all the image elements
-      for (let i = 0; i < imageElements.length; i++) {
-        let imageElement = imageElements[i];
-
-        if (imageElement != null) {
-          // create an image object
-          let imageObject = this.UtilService.getImageObjectFromImageElement(imageElement);
-          imageObjects.push(imageObject);
-        }
-      }
-    }
-
-    return imageObjects;
+    this.html = this.componentContent.html;
+    this.broadcastDoneRenderingComponent();
   }
 }
 

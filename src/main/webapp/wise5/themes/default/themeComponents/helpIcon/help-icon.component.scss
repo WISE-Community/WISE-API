@@ -1,0 +1,34 @@
+.help-icon {
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+.help-icon__button {
+  min-height: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mat-icon {
+  color: #ef6c00 !important;
+  font-size: 36px;
+  width: 36px;
+  min-width: 0;
+  line-height: normal;
+}
+
+.pulse {
+  animation: pulse 4s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 1px #ef6c00;
+  }
+  50% {
+    box-shadow: 0 0 0 10px #ef6c00;
+  }
+  100% {
+    box-shadow: 0 0 0 1px #ef6c00;
+  }
+}

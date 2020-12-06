@@ -1,20 +1,12 @@
 @import '~@angular/material/theming';
 
-// Define a custom mixin that takes in the current material theme and colors
-@mixin theme-setup($theme, $colors) {
-  // Include angular material theme
-  @include angular-material-theme($theme);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-
-  // Create theme-specific styles
-  color: map-get($foreground, text);
-
+// Define a custom mixin for common styles
+@mixin common-setup() {
   // Define a custom typography config
   $custom-typography: mat-typography-config(
     $body-1: mat-typography-level(16px, 22px, 400),
     $body-2: mat-typography-level(16px, 22px, 500),
-    $caption: mat-typography-level(13px, 20px, 400),
+    $caption: mat-typography-level(14px, 20px, 400),
     $subheading-1: mat-typography-level(17px, 24px, 400),
     $subheading-2: mat-typography-level(17px, 24px, 500),
     $headline: mat-typography-level(24px, 32px, 500)
@@ -43,23 +35,6 @@
 
   h1, .mat-headline {
     @include mat-typography-level-to-styles($custom-typography, headline);
-  }
-
-  a {
-    &:not(.mat-button):not(.mat-raised-button):not(.mat-menu-item):not(.mat-flat-button):not(.mat-stroked-button):not(.mat-icon-button):not(.mat-tab-link) {
-      color: map-get($colors, primary);
-
-      // Set classes for each named color in the $colors map
-      @each $key, $value in $colors {
-        &.#{$key} {
-          color: $value;
-        }
-      }
-    }
-  }
-
-  a.active {
-    color: map-get($colors, primary);
   }
 
   h1, h2, .mat-display-1, .mat-display-2, .mat-display-3, .mat-display-4 {
@@ -100,30 +75,6 @@
     }
   }
 
-  .app-background {
-    background-color: map-get($colors, app-bg);
-  }
-
-  .content-block, .info-block, .notice {
-    background-color: map-get($colors, notice-bg);
-  }
-
-  .content-block__title {
-    border-color: map-get($background, focused-button);
-  }
-
-  .cta__headline {
-    border-color: map-get($colors, notice-bg);
-  }
-
-  .cta__wrap, .blurb {
-    background-color: map-get($background, card);
-  }
-
-  .can-highlight {
-    transition: 1s background-color;
-  }
-
   .mat-button, .mat-raised-button, .mat-flat-button, .mat-stroked-button {
     min-width: 0;
   }
@@ -140,21 +91,8 @@
     }
   }
 
-  .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
-    &.mat-secondary-text {
-      background-color: map-get($colors, secondary-text);
-      color: white;
-    }
-
-    &.mat-success {
-      background-color: map-get($colors, success);
-      color: map-get($colors, success-contrast);
-    }
-
-    &.mat-info {
-      background-color: map-get($colors, info);
-      color: map-get($colors, info-contrast);
-    }
+  .mat-divider {
+    margin: 16px 0;
   }
 
   .mat-card-actions {
@@ -168,6 +106,10 @@
 
     >.mat-card-actions:last-child {
       margin-bottom: 0;
+    }
+
+    .mat-divider {
+      margin: 0;
     }
   }
 
@@ -187,10 +129,8 @@
   }
 
   .mat-dialog-content--scroll {
-    background-color: map-get($colors, notice-bg);
     border-bottom: 1px solid;
     border-top: 1px solid;
-    border-color: map_get($background, background);
   }
 
   .mat-dialog-actions {
@@ -223,6 +163,98 @@
     font-size: 14px;
   }
 
+  .mat-tab-label-active {
+    opacity: 1;
+  }
+
+  td {
+    &.mat-cell, &.mat-footer-cell, &.mat-header-cell {
+      padding: 4px 8px 4px 0;
+    }
+  }
+}
+
+// Define a custom mixin that takes in the current material theme and colors
+@mixin theme-setup($theme, $colors) {
+  // Include angular material theme
+  @include angular-material-theme($theme);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  // Create theme-specific styles
+  color: map-get($foreground, text);
+
+  a {
+    &:not(.mat-button):not(.mat-raised-button):not(.mat-menu-item):not(.mat-flat-button):not(.mat-stroked-button):not(.mat-icon-button):not(.mat-tab-link) {
+      color: map-get($colors, primary);
+
+      // Set classes for each named color in the $colors map
+      @each $key, $value in $colors {
+        &.#{$key} {
+          color: $value;
+        }
+      }
+    }
+  }
+
+  a.active {
+    color: map-get($colors, primary);
+  }
+
+  .app-background {
+    background-color: map-get($colors, app-bg);
+  }
+
+  .app-bar {
+    background-color: map-get($background, app-bar);
+  }
+
+  .avatar--icon {
+    background-color: map-get($colors, disabled-text);
+  }
+
+  .content-block, .info-block, .notice {
+    background-color: map-get($colors, notice-bg);
+  }
+
+  .content-block__title {
+    border-color: map-get($background, focused-button);
+  }
+
+  .cta__headline {
+    border-color: map-get($colors, notice-bg);
+  }
+
+  .cta__wrap, .blurb {
+    background-color: map-get($background, card);
+  }
+
+  .can-highlight {
+    transition: 1s background-color;
+  }
+
+  .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
+    &.mat-secondary-text {
+      background-color: map-get($foreground, secondary-text);
+      color: white;
+    }
+
+    &.mat-success {
+      background-color: map-get($colors, success);
+      color: map-get($colors, success-contrast);
+    }
+
+    &.mat-info {
+      background-color: map-get($colors, info);
+      color: map-get($colors, info-contrast);
+    }
+  }
+
+  .mat-dialog-content--scroll {
+    background-color: map-get($colors, notice-bg);
+    border-color: map_get($background, background);
+  }
+
   .mat-menu-item {
     &.active {
       background-color: map-get($background, hover);
@@ -233,17 +265,13 @@
     }
   }
 
-  .mat-tab-label-active {
-    opacity: 1;
-  }
-
   .mat-form-field-prefix, .mat-form-field-suffix {
     color: map-get($foreground, secondary-text);
   }
 
-  td {
-    &.mat-cell, &.mat-footer-cell, &.mat-header-cell {
-      padding: 4px 8px 4px 0;
+  figure {
+    &.image {
+      border: 1px solid map-get($background, status-bar);
     }
   }
 
@@ -270,7 +298,6 @@
 // Set Angular Material icon button size (use mat-icon size as the $size parameter)
 @mixin mat-icon-button-size($size: 24px) {
   $button-size: ($size*1) + 16px;
-
   height: $button-size;
   width: $button-size;
   line-height: $button-size;
