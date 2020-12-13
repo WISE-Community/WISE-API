@@ -4,10 +4,11 @@ import 'svg.js';
 import 'svg.draggable.js';
 import * as angular from 'angular';
 import ComponentController from '../componentController';
-import ConceptMapService from './conceptMapService';
+import { ConceptMapService } from './conceptMapService';
 
 class ConceptMapController extends ComponentController {
   $anchorScroll: any;
+  $injector: any;
   $location: any;
   $q: any;
   $timeout: any;
@@ -54,6 +55,7 @@ class ConceptMapController extends ComponentController {
   static $inject = [
     '$anchorScroll',
     '$filter',
+    '$injector',
     '$location',
     '$mdDialog',
     '$q',
@@ -61,10 +63,12 @@ class ConceptMapController extends ComponentController {
     '$scope',
     '$timeout',
     'AnnotationService',
+    'AudioRecorderService',
     'ConceptMapService',
     'ConfigService',
     'NodeService',
     'NotebookService',
+    'NotificationService',
     'ProjectService',
     'StudentAssetService',
     'StudentDataService',
@@ -74,6 +78,7 @@ class ConceptMapController extends ComponentController {
   constructor(
     $anchorScroll,
     $filter,
+    $injector,
     $location,
     $mdDialog,
     $q,
@@ -81,10 +86,12 @@ class ConceptMapController extends ComponentController {
     $scope,
     $timeout,
     AnnotationService,
+    AudioRecorderService,
     ConceptMapService,
     ConfigService,
     NodeService,
     NotebookService,
+    NotificationService,
     ProjectService,
     StudentAssetService,
     StudentDataService,
@@ -92,14 +99,17 @@ class ConceptMapController extends ComponentController {
   ) {
     super(
       $filter,
+      $injector,
       $mdDialog,
       $q,
       $rootScope,
       $scope,
       AnnotationService,
+      AudioRecorderService,
       ConfigService,
       NodeService,
       NotebookService,
+      NotificationService,
       ProjectService,
       StudentAssetService,
       StudentDataService,
@@ -148,10 +158,7 @@ class ConceptMapController extends ComponentController {
 
     this.initialize();
 
-    if (this.isStudentMode()) {
-      this.availableNodes = this.componentContent.nodes;
-      this.availableLinks = this.componentContent.links;
-    } else if (this.isGradingMode() || this.isGradingRevisionMode()) {
+    if (this.isGradingMode() || this.isGradingRevisionMode()) {
       const componentState = this.$scope.componentState;
       if (componentState) {
         if (this.mode === 'gradingRevision') {
@@ -162,19 +169,9 @@ class ConceptMapController extends ComponentController {
       } else {
         this.setIdsWithNodeIdComponentIdWorkgroupId();
       }
-    } else if (this.isOnlyShowWorkMode()) {
-      const componentState = this.$scope.componentState;
-      if (componentState == null) {
-        this.setSVGId(this.nodeId, this.componentId, this.workgroupId, 'onlyShowWork_');
-      } else {
-        this.setSVGId(
-          this.nodeId,
-          this.componentId,
-          this.workgroupId,
-          this.componentStateId,
-          'onlyShowWork_'
-        );
-      }
+    } else {
+      this.availableNodes = this.componentContent.nodes;
+      this.availableLinks = this.componentContent.links;
     }
 
     /*
@@ -186,6 +183,7 @@ class ConceptMapController extends ComponentController {
     this.$timeout(angular.bind(this, this.initializeSVG));
 
     this.initializeScopeGetComponentState(this.$scope, 'conceptMapController');
+    this.broadcastDoneRenderingComponent();
   }
 
   initialize() {
@@ -674,7 +672,7 @@ class ConceptMapController extends ComponentController {
    */
   createComponentState(action) {
     const deferred = this.$q.defer();
-    const componentState = this.NodeService.createNewComponentState();
+    const componentState: any = this.NodeService.createNewComponentState();
     const studentData: any = {};
     const conceptMapData = this.getConceptMapData();
     studentData.conceptMapData = conceptMapData;
@@ -709,13 +707,6 @@ class ConceptMapController extends ComponentController {
             data
           );
           componentState.annotations.push(scoreAnnotation);
-
-          if (this.isAuthoringMode()) {
-            if (this.latestAnnotations == null) {
-              this.latestAnnotations = {};
-            }
-            this.latestAnnotations.score = scoreAnnotation;
-          }
         }
 
         if (this.hasAutoFeedbackText()) {
@@ -732,13 +723,6 @@ class ConceptMapController extends ComponentController {
             data
           );
           componentState.annotations.push(commentAnnotation);
-
-          if (this.isAuthoringMode()) {
-            if (this.latestAnnotations == null) {
-              this.latestAnnotations = {};
-            }
-            this.latestAnnotations.comment = commentAnnotation;
-          }
         }
       }
     }
@@ -1876,7 +1860,7 @@ class ConceptMapController extends ComponentController {
 
           // get the image object
           const imageObject = thisUtilService.getImageObjectFromBase64String(base64Image);
-          this.NotebookService.addNote($event, imageObject);
+          this.NotebookService.addNote(imageObject);
         };
 
         // set the src of the image so that the image gets loaded
@@ -1929,7 +1913,7 @@ class ConceptMapController extends ComponentController {
       }
     }
 
-    let mergedComponentState = this.NodeService.createNewComponentState();
+    let mergedComponentState: any = this.NodeService.createNewComponentState();
     mergedComponentState.studentData = {
       conceptMapData: {
         nodes: mergedNodes,
@@ -1951,7 +1935,7 @@ class ConceptMapController extends ComponentController {
    * @param componentState A component state.
    */
   setComponentStateAsBackgroundImage(componentState) {
-    this.UtilService.generateImageFromComponentState(componentState).then(image => {
+    this.generateImageFromComponentState(componentState).then(image => {
       const stretchBackground = false;
       this.setBackgroundImage(image.url, stretchBackground);
     });
@@ -1973,6 +1957,11 @@ class ConceptMapController extends ComponentController {
       // use the original dimensions of the background image
       this.backgroundSize = '';
     }
+  }
+
+  generateStarterState(): void {
+    this.NodeService.respondStarterState({nodeId: this.nodeId, componentId: this.componentId,
+        starterState: this.getConceptMapData()});
   }
 }
 

@@ -4,12 +4,15 @@ import { Injectable } from '@angular/core';
 import { UpgradeModule } from '@angular/upgrade/static';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { ConfigService } from './configService';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable()
 export class StudentAssetService {
   allAssets = [];
   imageFileExtensions = ['png', 'jpg', 'jpeg', 'gif'];
   audioFileExtensions = ['wav', 'mp3', 'ogg', 'm4a', 'm4p', 'raw', 'aiff', 'webm'];
+  private showStudentAssetsSource: Subject<any> = new Subject<any>();
+  public showStudentAssets$: Observable<any> = this.showStudentAssetsSource.asObservable();
 
   constructor(private upgrade: UpgradeModule, private http: HttpClient,
       private ConfigService: ConfigService) {
@@ -31,14 +34,11 @@ export class StudentAssetService {
       deferred.resolve(this.allAssets);
       return deferred.promise;
     } else {
-      const options = {
-        params: new HttpParams().set("workgroupId", this.ConfigService.getWorkgroupId())
-      };
-      return this.http.get(this.ConfigService.getStudentAssetsURL(), options)
+      return this.http.get(
+          `${this.ConfigService.getStudentAssetsURL()}/${this.ConfigService.getWorkgroupId()}`)
           .toPromise().then((assets: any) => {
-        // loop through the assets and make them into JSON object with more details
-        let result = [];
-        let studentUploadsBaseURL = this.ConfigService.getStudentUploadsBaseURL();
+        this.allAssets = [];
+        const studentUploadsBaseURL = this.ConfigService.getStudentUploadsBaseURL();
         for (const asset of assets) {
           if (!asset.isReferenced && asset.serverDeleteTime == null &&
               asset.fileName !== '.DS_Store') {
@@ -53,11 +53,10 @@ export class StudentAssetService {
               asset.type = 'file';
               asset.iconURL = 'wise5/vle/notebook/file.png';
             }
-            result.push(asset);
+            this.allAssets.push(asset);
           }
         }
-        this.allAssets = result;
-        return result;
+        return this.allAssets;
       });
     }
   }
@@ -209,23 +208,28 @@ export class StudentAssetService {
     }
   }
 
-  deleteAsset(studentAsset) {
+  deleteAsset(studentAsset: any) {
     if (this.ConfigService.isPreview()) {
       return this.upgrade.$injector.get('$q')((resolve, reject) => {
         this.allAssets = this.allAssets.splice(this.allAssets.indexOf(studentAsset), 1);
         return resolve(studentAsset);
       });
     } else {
-      return this.http.post(`${this.ConfigService.getStudentAssetsURL()}/delete`,
-          {
-            studentAssetId: studentAsset.id,
-            workgroupId: this.ConfigService.getWorkgroupId(),
-            periodId: this.ConfigService.getPeriodId(),
-            clientDeleteTime: Date.parse(new Date().toString()),
-          }).toPromise().then(() => {
-        this.allAssets = this.allAssets.splice(this.allAssets.indexOf(studentAsset), 1);
+      let httpParams = new HttpParams();
+      httpParams = httpParams.set('studentAssetId', studentAsset.id);
+      httpParams = httpParams.set('workgroupId', this.ConfigService.getWorkgroupId());
+      httpParams = httpParams.set('periodId', this.ConfigService.getPeriodId());
+      httpParams = httpParams.set('clientDeleteTime', `${Date.parse(new Date().toString())}`);
+      const options = { params: httpParams };
+      return this.http.delete(`${this.ConfigService.getStudentAssetsURL()}/delete`, options)
+          .toPromise().then(() => {
+        this.allAssets.splice(this.allAssets.indexOf(studentAsset), 1);
         return studentAsset;
       });
     }
+  }
+
+  broadcastShowStudentAssets(args: any) {
+    this.showStudentAssetsSource.next(args);
   }
 }

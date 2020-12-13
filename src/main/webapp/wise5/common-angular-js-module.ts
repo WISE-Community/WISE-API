@@ -1,7 +1,6 @@
 import './lib/jquery/jquery-global';
-import './lib/bootstrap/js/bootstrap.min'
 import * as angular from 'angular';
-import { downgradeInjectable } from '@angular/upgrade/static';
+import { downgradeComponent, downgradeInjectable } from '@angular/upgrade/static';
 import { AchievementService } from './services/achievementService';
 import * as angularDragula from 'angular-dragula';
 import 'angular-file-saver';
@@ -32,6 +31,7 @@ import './components/draw/drawComponentModule';
 import './components/embedded/embeddedComponentModule';
 import * as fabric from 'fabric';
 window['fabric'] = fabric.fabric
+import Filters from './filters/filters';
 import './lib/highcharts/highcharts-ng';
 import * as Highcharts from './lib/highcharts/highcharts.src';
 import './lib/draggable-points/draggable-points';
@@ -48,8 +48,8 @@ import HttpInterceptor from './services/httpInterceptor';
 import './components/label/labelComponentModule';
 import './components/match/matchComponentModule';
 import './components/multipleChoice/multipleChoiceComponentModule';
-import NodeService from './services/nodeService';
-import NotebookService from './services/notebookService';
+import { NodeService } from './services/nodeService';
+import { NotebookService } from './services/notebookService';
 import { NotificationService } from './services/notificationService';
 import './components/openResponse/openResponseComponentModule';
 import './components/outsideURL/outsideURLComponentModule';
@@ -66,11 +66,12 @@ import * as SockJS from 'sockjs-client';
 import * as StompJS from '@stomp/stompjs';
 window['SockJS'] = SockJS;
 window['Stomp'] = StompJS.Stomp;
-import './lib/angular-summernote/dist/angular-summernote.min';
 import './themes/default/theme';
+import SideMenu from './common/sideMenuComponent';
+import { EditorComponent } from '@tinymce/tinymce-angular';
+import { WiseTinymceEditorComponent } from './directives/wise-tinymce-editor/wise-tinymce-editor.component';
 
-export function createCommonModule() {
-  return angular.module('common', [
+  angular.module('common', [
     angularDragula(angular),
     'angularMoment',
     'angular-toArrayFilter',
@@ -96,25 +97,31 @@ export function createCommonModule() {
     'openResponseComponentModule',
     'outsideURLComponentModule',
     'pascalprecht.translate',
-    'summernote',
+    'summaryComponentModule',
     'tableComponentModule',
     'ui.router'
   ])
   .service('AchievementService', downgradeInjectable(AchievementService))
+  .directive('editor', downgradeComponent(
+      { component: EditorComponent }) as angular.IDirectiveFactory)
+  .directive('wiseTinymceEditor', downgradeComponent(
+      { component: WiseTinymceEditorComponent }) as angular.IDirectiveFactory)
   .factory('AnnotationService', downgradeInjectable(AnnotationService))
   .factory('AudioRecorderService', downgradeInjectable(AudioRecorderService))
   .factory('ConfigService', downgradeInjectable(ConfigService))
   .factory('ComponentService', downgradeInjectable(ComponentService))
   .factory('CRaterService', downgradeInjectable(CRaterService))
   .service('HttpInterceptor', HttpInterceptor)
-  .service('NodeService', NodeService)
-  .service('NotebookService', NotebookService)
+  .service('NodeService', downgradeInjectable(NodeService))
+  .service('NotebookService', downgradeInjectable(NotebookService))
   .service('NotificationService', downgradeInjectable(NotificationService))
   .factory('SessionService', downgradeInjectable(SessionService))
   .factory('StudentAssetService', downgradeInjectable(StudentAssetService))
   .factory('TagService', downgradeInjectable(TagService))
   .factory('StudentDataService', downgradeInjectable(StudentDataService))
   .factory('UtilService', downgradeInjectable(UtilService))
+  .component('sideMenu', SideMenu)
+  .filter('Filters', Filters)
   .config([
       '$httpProvider',
       '$locationProvider',
@@ -206,4 +213,3 @@ export function createCommonModule() {
       }
     });
   }]);
-}

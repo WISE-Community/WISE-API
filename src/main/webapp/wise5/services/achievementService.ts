@@ -7,13 +7,17 @@ import { StudentDataService } from "./studentDataService";
 import { Injectable } from "@angular/core";
 import { UpgradeModule } from "@angular/upgrade/static";
 import { UtilService } from "./utilService";
+import { Observable, Subject } from "rxjs";
 
 @Injectable()
 export class AchievementService {
 
-  $rootScope: any;
   studentAchievementsByWorkgroupId: any;
   debug: boolean;
+  private achievementCompletedSource: Subject<any> = new Subject<any>();
+  public achievementCompleted$: Observable<any> = this.achievementCompletedSource.asObservable();
+  private newStudentAchievementSource: Subject<any> = new Subject<any>();
+  public newStudentAchievement$: Observable<any> = this.newStudentAchievementSource.asObservable();
 
   constructor(
     private upgrade: UpgradeModule,
@@ -23,7 +27,6 @@ export class AchievementService {
     private StudentDataService: StudentDataService,
     private UtilService: UtilService
   ) {
-    this.$rootScope = this.upgrade.$injector.get('$rootScope');
     this.studentAchievementsByWorkgroupId = {};
     this.debug = false;
   }
@@ -262,7 +265,7 @@ export class AchievementService {
        * deregister the achievement listener now that the student has
        * completed the achievement
        */
-      projectAchievement.deregisterListenerFunction();
+      projectAchievement.deregisterListenerFunction.unsubscribe();
       this.debugOutput('deregistering ' + projectAchievement.id);
     }
 
@@ -272,18 +275,18 @@ export class AchievementService {
     const achievements = this.getStudentAchievementsByWorkgroupId(workgroupId);
     achievements.push(newAchievement);
     this.saveAchievementToServer(newAchievement);
-    this.$rootScope.$broadcast('achievementCompleted', { achievementId: achievement.id });
+    this.broadcastAchievementCompleted({ achievementId: achievement.id });
   }
 
   /**
    * Create a listener for the component completed achievement
    * @param projectAchievement the achievement to listen for
-   * @return the deregister function for the listener
+   * @return the subscription object that we will use later to unsubscribe from the observable
    */
   createStudentWorkSavedListener(projectAchievement) {
     this.debugOutput('registering ' + projectAchievement.id);
-    const deregisterListenerFunction = this.$rootScope.$on('studentWorkSavedToServer',
-        (event, args) => {
+    return this.StudentDataService.studentWorkSavedToServer$
+        .subscribe((args: any) => {
       this.debugOutput('createStudentWorkSavedListener checking ' + projectAchievement.id +
           ' completed ' + args.nodeId);
       if (!this.isStudentAchievementExists(projectAchievement.id)) {
@@ -292,7 +295,6 @@ export class AchievementService {
         }
       }
     });
-    return deregisterListenerFunction;
   }
 
   /**
@@ -339,14 +341,13 @@ export class AchievementService {
   /**
    * Create a listener for an aggregate achievement
    * @param projectAchievement the project achievement
-   * @return the deregister function for the listener
+   * @return the subscription object that we will use later to unsubscribe from the observable
    */
   createAggregateAchievementListener(projectAchievement) {
     const thisAchievementService = this;
     const thisAchievement = projectAchievement;
     this.debugOutput('registering ' + projectAchievement.id);
-    const deregisterListenerFunction = this.$rootScope.$on('achievementCompleted',
-        (event, args) => {
+    return this.achievementCompleted$.subscribe((args: any) => {
       const projectAchievement = thisAchievement;
       if (projectAchievement != null) {
         this.debugOutput('createAggregateAchievementListener checking ' + projectAchievement.id +
@@ -360,7 +361,6 @@ export class AchievementService {
         }
       }
     });
-    return deregisterListenerFunction;
   }
 
   /**
@@ -460,5 +460,13 @@ export class AchievementService {
       }
     }
     return id;
+  }
+
+  broadcastAchievementCompleted(args: any) {
+    this.achievementCompletedSource.next(args);
+  }
+
+  broadcastNewStudentAchievement(args: any) {
+    this.newStudentAchievementSource.next(args);
   }
 }

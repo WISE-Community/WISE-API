@@ -138,13 +138,11 @@ const NodeInfo = {
                 <div id="component_{{::component.id}}" ng-repeat='component in ::$ctrl.components' class="component">
                     <md-divider class="divider divider--dashed" ng-if="!$first"></md-divider>
                     <h3 ng-if="component.hasWork"
-                        class="accent-2 md-body-2 gray-lightest-bg
+                        class="accent-1 md-body-2 gray-lightest-bg
                             component__header">
                         {{ component.assessmentItemIndex + '. ' + $ctrl.getComponentTypeLabel(component.type) }}&nbsp;
                     </h3>
-                    <component node-id='{{::$ctrl.nodeId}}'
-                               component-id='{{::component.id}}'
-                               mode='student'></component>
+                    <preview-component component-content='component'/>
                     <md-card class="annotations annotations--info" ng-if="component.rubric">
                        <md-card-title class="annotations__header">
                            <div class="annotations__avatar md-avatar avatar--icon md-36 avatar md-whiteframe-1dp">

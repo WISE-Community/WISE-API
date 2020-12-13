@@ -1,7 +1,8 @@
 import { AnnotationService } from '../../services/annotationService';
 import { ConfigService } from '../../services/configService';
-import { Input } from '@angular/core';
+import { Input, Directive } from '@angular/core';
 
+@Directive()
 class ClassResponseController {
   @Input()
   submitbuttonclicked: any;

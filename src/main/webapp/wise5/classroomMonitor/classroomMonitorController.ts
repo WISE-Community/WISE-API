@@ -1,14 +1,16 @@
 'use strict';
 
 import { ConfigService } from '../services/configService';
-import NodeService from '../services/nodeService';
-import NotebookService from '../services/notebookService';
+import { NodeService } from '../services/nodeService';
+import { NotebookService } from '../services/notebookService';
 import { NotificationService } from '../services/notificationService';
 import { TeacherDataService } from '../services/teacherDataService';
 import { SessionService } from '../services/sessionService';
 import * as angular from 'angular';
 import { TeacherProjectService } from '../services/teacherProjectService';
+import { Directive } from '@angular/core';
 
+@Directive()
 class ClassroomMonitorController {
   $translate: any;
   connectionLostDisplay: any;
@@ -31,6 +33,8 @@ class ClassroomMonitorController {
   themePath: string;
   views: any;
   workgroupId: number;
+  serverConnectionStatusSubscription: any;
+  showSessionWarningSubscription: any;
 
   static $inject = [
     '$filter',
@@ -137,10 +141,11 @@ class ClassroomMonitorController {
     });
     this.connectionLostShown = false;
 
-    this.$scope.$on('showSessionWarning', () => {
+    this.showSessionWarningSubscription = this.SessionService.showSessionWarning$.subscribe(() => {
       const confirm = $mdDialog
         .confirm()
         .parent(angular.element(document.body))
+        .theme('cm')
         .title(this.$translate('SESSION_TIMEOUT'))
         .content(this.$translate('SESSION_TIMEOUT_MESSAGE'))
         .ariaLabel(this.$translate('SESSION_TIMEOUT'))
@@ -155,21 +160,9 @@ class ClassroomMonitorController {
         }
       );
     });
-
-    this.$scope.$on('logOut', () => {
+    
+    this.SessionService.logOut$.subscribe(() => {
       this.logOut();
-    });
-
-    this.$scope.$on('showRequestLogout', ev => {
-      const alert = $mdDialog
-        .confirm()
-        .parent(angular.element(document.body))
-        .title(this.$translate('serverUpdate'))
-        .textContent(this.$translate('serverUpdateRequestLogoutMessage'))
-        .ariaLabel(this.$translate('serverUpdate'))
-        .targetEvent(ev)
-        .ok(this.$translate('ok'));
-      $mdDialog.show(alert);
     });
 
     $transitions.onSuccess({}, $transition => {
@@ -177,12 +170,13 @@ class ClassroomMonitorController {
       this.processUI();
     });
 
-    this.$scope.$on('serverDisconnected', () => {
-      this.handleServerDisconnect();
-    });
-
-    this.$scope.$on('serverConnected', () => {
-      this.handleServerReconnect();
+    this.serverConnectionStatusSubscription = 
+        this.NotificationService.serverConnectionStatus$.subscribe((isConnected: boolean) => {
+      if (isConnected) {
+        this.handleServerReconnect();
+      } else {
+        this.handleServerDisconnect();
+      }
     });
 
     // TODO: make dynamic, set somewhere like in config?
@@ -219,6 +213,19 @@ class ClassroomMonitorController {
         }
       }
     };
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.serverConnectionStatusSubscription.unsubscribe();
+    this.showSessionWarningSubscription.unsubscribe();
   }
 
   /**

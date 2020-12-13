@@ -1,4 +1,4 @@
-<div class='animation' ng-controller='AnimationAuthoringController as animationController' flex>
+<div class='animation' flex>
   <style>
     {{animationController.nodeContent.style}}
     .regularButton {
@@ -73,14 +73,10 @@
           </md-tooltip>
         </md-button>
         <div ng-if='animationController.showRubricAuthoring'>
-          <summernote id='{{animationController.summernoteRubricId}}'
-                      ng-model='animationController.summernoteRubricHTML'
-                      ng-change='animationController.summernoteRubricHTMLChanged()'
-                      config='animationController.summernoteRubricOptions'
-                      ng-model-options='{ debounce: 1000 }'
-                      rows='10'
-                      cols='100'>
-          </summernote>
+          <wise-authoring-tinymce-editor
+              [(model)]='animationController.rubric'
+              (model-change)='animationController.rubricChanged()'>
+          </wise-authoring-tinymce-editor>
         </div>
       </div>
       <div>
@@ -89,7 +85,7 @@
             {{ ::'CONNECTED_COMPONENTS' | translate }}
           </label>
           <md-button class='topButton md-raised md-primary'
-                     ng-click='animationController.authoringAddConnectedComponent()'>
+                     ng-click='animationController.addConnectedComponent()'>
             <md-icon>add</md-icon>
             <md-tooltip md-direction='top'
                         class='projectButtonTooltip'>
@@ -104,7 +100,7 @@
             <md-input-container style='margin-right: 20; width: 300;'>
               <label>{{ ::'step' | translate }}</label>
               <md-select ng-model='connectedComponent.nodeId'
-                         ng-change='animationController.authoringConnectedComponentNodeIdChanged(connectedComponent)'
+                         ng-change='animationController.connectedComponentNodeIdChanged(connectedComponent)'
                          style='width: 300'>
                 <md-option ng-repeat='item in animationController.idToOrder | toArray | orderBy : "order"'
                            value='{{item.$key}}'
@@ -116,7 +112,7 @@
             <md-input-container style='margin-right: 20; width: 300;'>
               <label>{{ ::'component' | translate }}</label>
               <md-select ng-model='connectedComponent.componentId'
-                         ng-change='animationController.authoringConnectedComponentComponentIdChanged(connectedComponent)'
+                         ng-change='animationController.connectedComponentComponentIdChanged(connectedComponent)'
                          style='width: 300'>
                 <md-option ng-repeat='(componentIndex, component) in animationController.getComponentsByNodeId(connectedComponent.nodeId)'
                            value='{{component.id}}'
@@ -131,7 +127,7 @@
             <md-input-container style='margin-right: 20; width: 200;'>
               <label>{{ ::'type' | translate }}</label>
               <md-select ng-model='connectedComponent.type'
-                         ng-change='animationController.authoringConnectedComponentTypeChanged(connectedComponent)'
+                         ng-change='animationController.connectedComponentTypeChanged(connectedComponent)'
                          style='width: 200'>
                 <md-option value='importWork'>
                   {{ ::'importWork' | translate }}
@@ -144,7 +140,7 @@
             <span flex></span>
             <md-input-container style='margin-left: 20;'>
               <md-button class='topButton md-raised md-primary'
-                         ng-click='animationController.authoringDeleteConnectedComponent($index)'>
+                         ng-click='animationController.deleteConnectedComponent($index)'>
                 <md-icon>delete</md-icon>
                 <md-tooltip md-direction='top'
                             class='projectButtonTooltip'>
@@ -305,7 +301,7 @@
     <div layout='row'>
       <h6>{{ ::'animation.objects' | translate }}</h6>
       <md-button class='topButton md-raised md-primary'
-                 ng-click='animationController.authoringAddObject()'>
+                 ng-click='animationController.addObject()'>
         <md-icon>add</md-icon>
         <md-tooltip md-direction='top'
                     class='projectButtonTooltip'>
@@ -346,7 +342,7 @@
         </md-input-container>
         <div>
           <md-radio-group ng-model='object.type'
-                          ng-change='animationController.authoringAuthoredObjectTypeChanged(object)'>
+                          ng-change='animationController.authoredObjectTypeChanged(object)'>
             <md-radio-button value='image'
                              class='md-primary'>
               {{ ::'animation.image' | translate }}
@@ -359,7 +355,7 @@
         </div>
         <span flex></span>
         <md-button class='regularButton md-raised md-primary'
-                   ng-click='animationController.authoringMoveAuthoredObjectUp($index)'>
+                   ng-click='animationController.moveAuthoredObjectUp($index)'>
           <md-icon>arrow_upward</md-icon>
           <md-tooltip md-direction='top'
                       class='projectButtonTooltip'>
@@ -367,7 +363,7 @@
           </md-tooltip>
         </md-button>
         <md-button class='regularButton md-raised md-primary'
-                   ng-click='animationController.authoringMoveAuthoredObjectDown($index)'>
+                   ng-click='animationController.moveAuthoredObjectDown($index)'>
           <md-icon>arrow_downward</md-icon>
           <md-tooltip md-direction='top'
                       class='projectButtonTooltip'>
@@ -375,7 +371,7 @@
           </md-tooltip>
         </md-button>
         <md-button class='regularButton md-raised md-primary'
-                   ng-click="animationController.authoringConfirmDeleteAnimationObject($index)">
+                   ng-click="animationController.confirmDeleteAnimationObject($index)">
           <md-icon>delete</md-icon>
           <md-tooltip md-direction='top'
                       class='projectButtonTooltip'>
@@ -470,7 +466,7 @@
       <div>
         <span>{{ ::'animation.dataPoints' | translate }}</span>
         <md-button class='topButton md-raised md-primary'
-                   ng-click='animationController.authoringAddDataPointToObject(object)'>
+                   ng-click='animationController.addDataPointToObject(object)'>
           <md-icon>add</md-icon>
           <md-tooltip md-direction='top'
                       class='projectButtonTooltip'>
@@ -507,7 +503,7 @@
                    ng-change='animationController.authoringViewComponentChanged()'/>
           </md-input-container>
           <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.authoringMoveAuthoredObjectDataPointUp(object, $index)'>
+                     ng-click='animationController.moveAuthoredObjectDataPointUp(object, $index)'>
             <md-icon>arrow_upward</md-icon>
             <md-tooltip md-direction='top'
                         class='projectButtonTooltip'>
@@ -515,7 +511,7 @@
             </md-tooltip>
           </md-button>
           <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.authoringMoveAuthoredObjectDataPointDown(object, $index)'>
+                     ng-click='animationController.moveAuthoredObjectDataPointDown(object, $index)'>
             <md-icon>arrow_downward</md-icon>
             <md-tooltip md-direction='top'
                         class='projectButtonTooltip'>
@@ -523,7 +519,7 @@
             </md-tooltip>
           </md-button>
           <md-button class='regularButton md-raised md-primary'
-                     ng-click="animationController.authoringConfirmDeleteAnimationObjectDataPoint(object, $index)">
+                     ng-click="animationController.confirmDeleteAnimationObjectDataPoint(object, $index)">
             <md-icon>delete</md-icon>
             <md-tooltip md-direction='top'
                         class='projectButtonTooltip'>
@@ -535,7 +531,7 @@
       <div>
         <span>{{ ::'animation.dataSource' | translate }}</span>
         <md-button class='topButton md-raised md-primary'
-                   ng-click='animationController.authoringAddDataSource(object)'
+                   ng-click='animationController.addDataSource(object)'
                    ng-show='object.dataSource == null'>
           <md-icon>add</md-icon>
           <md-tooltip md-direction='top'
@@ -544,7 +540,7 @@
           </md-tooltip>
         </md-button>
         <md-button class='topButton md-raised md-primary'
-                   ng-click="animationController.authoringConfirmDeleteDataSource(object)"
+                   ng-click="animationController.confirmDeleteDataSource(object)"
                    ng-show='object.dataSource != null'>
           <md-icon>delete</md-icon>
           <md-tooltip md-direction='top'
@@ -623,129 +619,6 @@
     <div>
       <h5>{{ ::'studentPreview' | translate }}</h5>
     </div>
-    <div>
-      <div>
-        <md-input-container class='input-container input-container--open-response md-block md-no-float'>
-          <label class='input-label md-no-float'
-                 ng-disabled='animationController.isDisabled'
-                 ng-if='animationController.isPromptVisible'>
-            <compile data='animationController.getPrompt()'></compile>
-            <possible-score [max-score]='animationController.componentContent.maxScore'></possible-score>
-          </label>
-          <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.playButtonClicked()'
-                     ng-show='animationController.animationState == "stopped"'>
-            <md-icon>play_arrow</md-icon>
-            <md-tooltip>{{ ::'animation.play' | translate }}</md-tooltip>
-          </md-button>
-          <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.pauseButtonClicked()'
-                     ng-show='animationController.animationState == "playing"'>
-            <md-icon>pause</md-icon>
-            <md-tooltip>{{ ::'animation.pause' | translate }}</md-tooltip>
-          </md-button>
-          <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.resumeButtonClicked()'
-                     ng-show='animationController.animationState == "paused"'>
-            <md-icon>play_arrow</md-icon>
-            <md-tooltip>{{ ::'animation.resume' | translate }}</md-tooltip>
-          </md-button>
-          <md-button class='regularButton md-raised md-primary'
-                     ng-click='animationController.resetButtonClicked()'>
-            <md-icon>replay</md-icon>
-            <md-tooltip>{{ ::'animation.reset' | translate }}</md-tooltip>
-          </md-button>
-          <span style='display: inline-block;'>
-            <md-slider-container style='width: 100px;'>
-              <div style='margin-right: 35'>
-                {{ ::'animation.slower' | translate }}
-              </div>
-              <md-slider ng-model='animationController.speedSliderValue'
-                         ng-change='animationController.speedSliderChanged()'
-                         min='1'
-                         max='5'>
-              </md-slider>
-              <div>
-                {{ ::'animation.faster' | translate }}
-              </div>
-            </md-slider-container>
-          </span>
-          <br/>
-          <svg id='{{animationController.svgId}}'
-               width='{{animationController.width}}'
-               height='{{animationController.height}}'
-               ng-style='{"background-image": animationController.componentContent.background != null ? "url(" + animationController.componentContent.background + ")" : "",
-              "background-size": animationController.backgroundSize,
-              "background-repeat": "no-repeat",
-              "border": "1px solid black",
-              "-moz-user-select": "none",
-              "-webkit-user-select": "none",
-              "-ms-user-select":"none",
-              "user-select":"none",
-              "-o-user-select":"none"}'>
-          </svg>
-        </md-input-container>
-      </div>
-    </div>
-    <div ng-if='nodeController.getRevisions().length > 1'
-         layout='row'
-         layout-align='center end'>
-      <a ng-click='nodeController.showRevisions($event, component.id, animationController.isDisabled)'>
-        + {{ ::'animation.previousVersions' | translate }}: {{nodeController.getRevisions().length - 1}}
-      </a>
-    </div>
-    <div class='component__actions'
-         ng-if='animationController.isStudentAttachmentEnabled'
-         layout='row'
-         layout-wrap='true'>
-      <div class='component__add-attachment'>
-        <md-button class='md-accent'
-                   ng-click='nodeController.showStudentAssets($event, component.id, animationController.isDisabled)'>
-          <md-icon>image</md-icon> <span>{{ ::'animation.addFile' | translate }}</span>
-        </md-button>
-      </div>
-      <div class='component__attachment'
-           ng-repeat='attachment in animationController.attachments'>
-        <img ng-src='{{attachment.iconURL}}'
-             class='component__attachment__content' />
-        <md-button ng-if='!animationController.isDisabled'
-                   class='component__attachment__delete'
-                   ng-click='animationController.removeAttachment(attachment)'
-                   title='Remove file'>
-          <md-icon>cancel</md-icon>
-        </md-button>
-      </div>
-    </div>
-    <div ng-if='animationController.isSaveButtonVisible || animationController.isSubmitButtonVisible'
-         class='component__actions'
-         layout='row'
-         layout-align='start center'>
-      <md-button class='md-raised md-primary'
-                 ng-class='{"md-raised": !animationController.isSubmitButtonVisible}'
-                 ng-click='animationController.saveButtonClicked()'
-                 ng-disabled='animationController.isDisabled || !animationController.isDirty'
-                 ng-if='animationController.isSaveButtonVisible'
-                 aria-label='{{ ::"SAVE" | translate }}'
-                 translate='SAVE'>
-      </md-button>
-      <md-button class='md-raised md-primary'
-                 ng-click='animationController.submitButtonClicked()'
-                 ng-disabled='animationController.isDisabled || !animationController.isSubmitDirty || animationController.isSubmitButtonDisabled'
-                 ng-if='animationController.isSubmitButtonVisible'
-                 aria-label='{{ ::"SUBMIT" | translate}}'
-                 translate='SUBMIT'>
-      </md-button>
-      <span ng-if='animationController.saveMessage.text'
-            class='component__actions__info md-caption'>
-        {{animationController.saveMessage.text}}
-        <span class='component__actions__more'>
-          <md-tooltip md-direction='top'>
-            {{ animationController.saveMessage.time | amDateFormat:'ddd, MMM D YYYY, h:mm a' }}
-          </md-tooltip>
-          <span am-time-ago='animationController.saveMessage.time'>
-          </span>
-        </span>
-      </span>
-    </div>
+    <preview-component component-content='animationController.componentContent'/>
   </div>
 </div>

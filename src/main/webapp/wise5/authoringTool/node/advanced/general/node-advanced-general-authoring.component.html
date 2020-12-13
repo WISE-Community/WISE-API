@@ -1,0 +1,18 @@
+<div class="bodyDiv">
+  <div>
+    <mat-checkbox class="mat-primary"
+        [(ngModel)]="node.showSaveButton"
+        (change)="saveProject()"
+        i18n>
+      Show Save Button
+    </mat-checkbox>
+  </div>
+  <div>
+    <mat-checkbox class="mat-primary"
+        [(ngModel)]="node.showSubmitButton"
+        (change)="saveProject()"
+        i18n>
+      Show Submit Button
+    </mat-checkbox>
+  </div>
+</div>

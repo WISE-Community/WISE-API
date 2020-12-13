@@ -35,6 +35,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
+import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
@@ -155,11 +156,15 @@ public class TeacherAPIController extends UserAPIController {
 
   @PostMapping("/register")
   @Secured({ "ROLE_ANONYMOUS" })
-  String createTeacherAccount(@RequestBody Map<String, String> teacherFields,
-      HttpServletRequest request) throws DuplicateUsernameException {
+  HashMap<String, Object> createTeacherAccount(@RequestBody Map<String, String> teacherFields,
+      HttpServletRequest request) throws DuplicateUsernameException, InvalidNameException {
     TeacherUserDetails tud = new TeacherUserDetails();
     String firstName = teacherFields.get("firstName");
     String lastName = teacherFields.get("lastName");
+    if (!isFirstNameAndLastNameValid(firstName, lastName)) {
+      String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
+      throw new InvalidNameException(messageCode);
+    }
     tud.setFirstname(firstName);
     tud.setLastname(lastName);
     String email = teacherFields.get("email");
@@ -189,7 +194,7 @@ public class TeacherAPIController extends UserAPIController {
     if (iSendEmailEnabled) {
       sendCreateTeacherAccountEmail(email, displayName, username, googleUserId, locale, request);
     }
-    return username;
+    return createRegisterSuccessResponse(username);
   }
 
   private void sendCreateTeacherAccountEmail(String email, String displayName, String username,

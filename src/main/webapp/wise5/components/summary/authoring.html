@@ -1,4 +1,4 @@
-<div class='summary' ng-controller='SummaryAuthoringController as summaryController' flex>
+<div class='summary' flex>
   <style>
     {{summaryController.nodeContent.style}}
   </style>
@@ -58,14 +58,10 @@
           <md-tooltip md-direction='top' class='projectButtonTooltip'>{{ ::'EDIT_COMPONENT_RUBRIC' | translate }}</md-tooltip>
         </md-button>
         <div ng-if='summaryController.showRubricAuthoring'>
-          <summernote id='{{summaryController.summernoteRubricId}}'
-                      ng-model='summaryController.summernoteRubricHTML'
-                      ng-change='summaryController.summernoteRubricHTMLChanged()'
-                      config='summaryController.summernoteRubricOptions'
-                      ng-model-options='{ debounce: 1000 }'
-                      rows='10'
-                      cols='100'>
-          </summernote>
+          <wise-authoring-tinymce-editor
+              [(model)]='summaryController.rubric'
+              (model-change)='summaryController.rubricChanged()'>
+          </wise-authoring-tinymce-editor>
         </div>
       </div>
       <div style='margin-top: 10px; margin-bottom: 10px;'>
@@ -148,7 +144,7 @@
       <md-input-container>
         <label>{{ ::'step' | translate }}</label>
         <md-select ng-model='summaryController.authoringComponentContent.summaryNodeId'
-            ng-change='summaryController.authoringSummaryNodeIdChanged()'
+            ng-change='summaryController.summaryNodeIdChanged()'
             style='min-width: 300px'>
           <md-option ng-repeat='item in summaryController.idToOrder | toArray | orderBy : "order"'
               value='{{item.$key}}'
@@ -162,7 +158,7 @@
       <md-input-container>
         <label>{{ ::'component' | translate }}</label>
         <md-select ng-model='summaryController.authoringComponentContent.summaryComponentId'
-            ng-change='summaryController.authoringSummaryComponentIdChanged()'
+            ng-change='summaryController.summaryComponentIdChanged()'
             style='min-width: 300px'>
           <md-option ng-repeat='(componentIndex, component) in summaryController.getComponentsByNodeId(summaryController.authoringComponentContent.summaryNodeId)'
               value='{{component.id}}'
@@ -307,26 +303,14 @@
       </md-tooltip>
     </md-button>
   </div>
-  <div style='border: 5px solid black; padding: 20px;'>
-    <div>
+  <div ng-style='{"border": "5px solid black"}'>
+    <div ng-style='{"padding-top": "20px", "padding-left": "20px"}'>
       <h5>{{ ::'studentPreview' | translate }}</h5>
     </div>
     <div>
       <compile id='prompt' data='summaryController.getPrompt()'></compile>
-      <div ng-if='summaryController.componentContent.showPromptFromOtherComponent'>
-        <br/>
-        <compile data='summaryController.otherPrompt'></compile>
+      <div>
+        <preview-component component-content='summaryController.componentContent'/>
       </div>
-      <summary-display node-id='summaryController.authoringComponentContent.summaryNodeId'
-          component-id='summaryController.authoringComponentContent.summaryComponentId'
-          student-data-type='summaryController.authoringComponentContent.studentDataType'
-          source='summaryController.authoringComponentContent.source'
-          period-id='summaryController.authoringComponentContent.periodId'
-          chart-type='summaryController.authoringComponentContent.chartType'
-          highlight-correct-answer='summaryController.authoringComponentContent.highlightCorrectAnswer'
-          custom-label-colors='summaryController.authoringComponentContent.customLabelColors'
-          do-render='true'>
-      </summary-display>
-    </div>
   </div>
 </div>

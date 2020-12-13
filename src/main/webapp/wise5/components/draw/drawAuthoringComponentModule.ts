@@ -1,15 +1,14 @@
 'use strict';
 
 import * as angular from 'angular';
-import DrawService from './drawService';
-import DrawController from './drawController';
-import DrawAuthoringController from './drawAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { DrawService } from './drawService';
+import DrawAuthoring from './drawAuthoring';
 
 const drawAuthoringComponentModule = angular
   .module('drawAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('DrawService', DrawService)
-  .controller('DrawController', DrawController)
-  .controller('DrawAuthoringController', DrawAuthoringController)
+  .service('DrawService', downgradeInjectable(DrawService))
+  .component('drawAuthoring', DrawAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

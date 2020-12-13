@@ -1,15 +1,14 @@
 'use strict';
 
-import AnimationService from './animationService';
-import AnimationController from './animationController';
-import AnimationAuthoringController from './animationAuthoringController';
 import * as angular from 'angular';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { AnimationService } from './animationService';
+import AnimationAuthoring from './animationAuthoring';
 
 const animationAuthoringComponentModule = angular
   .module('animationAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('AnimationService', AnimationService)
-  .controller('AnimationController', AnimationController)
-  .controller('AnimationAuthoringController', AnimationAuthoringController)
+  .service('AnimationService', downgradeInjectable(AnimationService))
+  .component('animationAuthoring', AnimationAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

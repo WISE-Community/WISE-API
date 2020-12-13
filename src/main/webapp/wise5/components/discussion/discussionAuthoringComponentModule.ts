@@ -1,17 +1,14 @@
 'use strict';
 
 import * as angular from 'angular';
-import ClassResponseController from './classResponseController';
-import DiscussionService from './discussionService';
-import DiscussionController from './discussionController';
-import DiscussionAuthoringController from './discussionAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { DiscussionService } from './discussionService';
+import DiscussionAuthoring from './discussionAuthoring';
 
 const discussionAuthoringComponentModule = angular
   .module('discussionAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('DiscussionService', DiscussionService)
-  .controller('DiscussionController', DiscussionController)
-  .controller('DiscussionAuthoringController', DiscussionAuthoringController)
-  .controller('ClassResponseController', ClassResponseController)
+  .service('DiscussionService', downgradeInjectable(DiscussionService))
+  .component('discussionAuthoring', DiscussionAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

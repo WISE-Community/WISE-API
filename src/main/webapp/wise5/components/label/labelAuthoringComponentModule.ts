@@ -1,15 +1,14 @@
 'use strict';
 
 import * as angular from 'angular';
-import LabelService from './labelService';
-import LabelController from './labelController';
-import LabelAuthoringController from './labelAuthoringController';
+import { downgradeInjectable } from '@angular/upgrade/static';
+import { LabelService } from './labelService';
+import LabelAuthoring from './labelAuthoring';
 
 const labelAuthoringComponentModule = angular
   .module('labelAuthoringComponentModule', ['pascalprecht.translate'])
-  .service('LabelService', LabelService)
-  .controller('LabelController', LabelController)
-  .controller('LabelAuthoringController', LabelAuthoringController)
+  .service('LabelService', downgradeInjectable(LabelService))
+  .component('labelAuthoring', LabelAuthoring)
   .config([
     '$translatePartialLoaderProvider',
     $translatePartialLoaderProvider => {

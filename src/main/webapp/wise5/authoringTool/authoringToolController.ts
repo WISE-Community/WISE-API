@@ -1,10 +1,14 @@
 'use strict';
+import { Directive } from '@angular/core';
 import * as angular from 'angular';
+import { Subscription } from 'rxjs';
 import { ConfigService } from '../services/configService';
+import { NotificationService } from '../services/notificationService';
 import { SessionService } from '../services/sessionService';
 import { TeacherDataService } from '../services/teacherDataService';
 import { TeacherProjectService } from '../services/teacherProjectService';
 
+@Directive()
 class AuthoringToolController {
   $anchorScroll: any;
   $filter: any;
@@ -27,9 +31,16 @@ class AuthoringToolController {
   showToolbar: boolean = true;
   views: any;
   ConfigService: ConfigService;
+  NotificationService: NotificationService;
   ProjectService: TeacherProjectService;
   SessionService: SessionService;
   TeacherDataService: TeacherDataService;
+  errorSavingProjectSubscription: Subscription;
+  notAllowedToEditThisProjectSubscription: Subscription;
+  notLoggedInProjectNotSavedSubscription: Subscription;
+  projectSavedSubscription: Subscription;
+  savingProjectSubscription: Subscription;
+  showSessionWarningSubscription: Subscription;
 
   static $inject = [
     '$anchorScroll',
@@ -41,6 +52,7 @@ class AuthoringToolController {
     '$transitions',
     '$timeout',
     'ConfigService',
+    'NotificationService',
     'ProjectService',
     'SessionService',
     'TeacherDataService'
@@ -56,6 +68,7 @@ class AuthoringToolController {
     $transitions,
     $timeout,
     ConfigService,
+    NotificationService,
     ProjectService,
     SessionService,
     TeacherDataService
@@ -70,6 +83,7 @@ class AuthoringToolController {
     this.$timeout = $timeout;
     this.$translate = this.$filter('translate');
     this.ConfigService = ConfigService;
+    this.NotificationService = NotificationService;
     this.ProjectService = ProjectService;
     this.SessionService = SessionService;
     this.TeacherDataService = TeacherDataService;
@@ -137,7 +151,7 @@ class AuthoringToolController {
         showToolbar: true,
         active: false
       },
-      'root.at.project.nodeConstraints': {
+      'root.at.project.node.advanced.branch': {
         name: '',
         label: '',
         icon: '',
@@ -145,7 +159,39 @@ class AuthoringToolController {
         showToolbar: true,
         active: false
       },
-      'root.at.project.nodeEditPaths': {
+      'root.at.project.node.advanced.constraint': {
+        name: '',
+        label: '',
+        icon: '',
+        type: 'secondary',
+        showToolbar: true,
+        active: false
+      },
+      'root.at.project.node.advanced.path': {
+        name: '',
+        label: '',
+        icon: '',
+        type: 'secondary',
+        showToolbar: true,
+        active: false
+      },
+      'root.at.project.node.advanced': {
+        name: '',
+        label: '',
+        icon: '',
+        type: 'secondary',
+        showToolbar: true,
+        active: false
+      },
+      'root.at.project.node.advanced.general': {
+        name: '',
+        label: '',
+        icon: '',
+        type: 'secondary',
+        showToolbar: true,
+        active: false
+      },
+      'root.at.project.node.advanced.json': {
         name: '',
         label: '',
         icon: '',
@@ -168,6 +214,14 @@ class AuthoringToolController {
         type: 'secondary',
         showToolbar: true,
         active: false
+      },
+      'root.at.project.node.edit-rubric': {
+        name: '',
+        label: '',
+        icon: '',
+        type: 'secondary',
+        showToolbar: true,
+        active: false
       }
     };
     this.processUI();
@@ -180,10 +234,12 @@ class AuthoringToolController {
       }
     });
 
-    $scope.$on('showSessionWarning', () => {
+    this.showSessionWarningSubscription =
+        this.SessionService.showSessionWarning$.subscribe(() => {
       const confirm = this.$mdDialog
         .confirm()
         .parent(angular.element(document.body))
+        .theme('at')
         .title(this.$translate('sessionTimeout'))
         .content(this.$translate('autoLogoutMessage'))
         .ariaLabel(this.$translate('sessionTimeout'))
@@ -199,27 +255,15 @@ class AuthoringToolController {
       );
     });
 
-    $scope.$on('logOut', () => {
+    this.SessionService.logOut$.subscribe(() => {
       this.logOut();
     });
 
-    this.$scope.$on('showRequestLogout', ev => {
-      const alert = this.$mdDialog
-        .confirm()
-        .parent(angular.element(document.body))
-        .title(this.$translate('serverUpdate'))
-        .textContent(this.$translate('serverUpdateRequestLogoutMessage'))
-        .ariaLabel(this.$translate('serverUpdate'))
-        .targetEvent(ev)
-        .ok(this.$translate('ok'));
-      this.$mdDialog.show(alert);
-    });
-
-    this.$scope.$on('savingProject', () => {
+    this.savingProjectSubscription = this.ProjectService.savingProject$.subscribe(() => {
       this.setGlobalMessage(this.$translate('saving'), true, null);
     });
 
-    this.$scope.$on('projectSaved', () => {
+    this.projectSavedSubscription = this.ProjectService.projectSaved$.subscribe(() => {
       /*
        * Wait half a second before changing the message to 'Saved' so that
        * the 'Saving...' message stays up long enough for the author to
@@ -232,52 +276,18 @@ class AuthoringToolController {
       }, 500);
     });
 
-    this.$scope.$on('errorSavingProject', () => {
+    this.errorSavingProjectSubscription = this.ProjectService.errorSavingProject$.subscribe(() => {
       this.setGlobalMessage(this.$translate('errorSavingProject'), false, null);
     });
 
-    this.$scope.$on('notLoggedInProjectNotSaved', () => {
+    this.notLoggedInProjectNotSavedSubscription =
+        this.ProjectService.notLoggedInProjectNotSaved$.subscribe(() => {
       this.setGlobalMessage(this.$translate('notLoggedInProjectNotSaved'), false, null);
     });
 
-    this.$scope.$on('notAllowedToEditThisProject', () => {
+    this.notAllowedToEditThisProjectSubscription =
+        this.ProjectService.notAllowedToEditThisProject$.subscribe(() => {
       this.setGlobalMessage(this.$translate('notAllowedToEditThisProject'), false, null);
-    });
-
-    this.$scope.$on('openAssetChooser', (event, params) => {
-      const stateParams = {
-        isPopup: params.isPopup,
-        projectId: params.projectId,
-        nodeId: params.nodeId,
-        componentId: params.componentId,
-        target: params.target,
-        targetObject: params.targetObject
-      };
-      this.$mdDialog.show({
-        templateUrl: 'wise5/authoringTool/asset/asset.html',
-        controller: 'ProjectAssetController',
-        controllerAs: 'projectAssetController',
-        $stateParams: stateParams,
-        clickOutsideToClose: true,
-        escapeToClose: true
-      });
-    });
-
-    this.$scope.$on('openWISELinkChooser', (event, params) => {
-      const stateParams = {
-        projectId: params.projectId,
-        nodeId: params.nodeId,
-        componentId: params.componentId,
-        target: params.target
-      };
-      this.$mdDialog.show({
-        templateUrl: 'wise5/authoringTool/wiseLink/wiseLinkAuthoring.html',
-        controller: 'WISELinkAuthoringController',
-        controllerAs: 'wiseLinkAuthoringController',
-        $stateParams: stateParams,
-        clickOutsideToClose: true,
-        escapeToClose: true
-      });
     });
 
     if (this.$state.current.name === 'root.at.main') {
@@ -289,6 +299,23 @@ class AuthoringToolController {
         this.setGlobalMessage(this.$translate('notAllowedToEditThisProject'), false, null);
       }, 1000);
     }
+
+    this.$scope.$on('$destroy', () => {
+      this.ngOnDestroy();
+    });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribeAll();
+  }
+
+  unsubscribeAll() {
+    this.errorSavingProjectSubscription.unsubscribe();
+    this.notAllowedToEditThisProjectSubscription.unsubscribe();
+    this.notLoggedInProjectNotSavedSubscription.unsubscribe();
+    this.projectSavedSubscription.unsubscribe();
+    this.savingProjectSubscription.unsubscribe();
+    this.showSessionWarningSubscription.unsubscribe();
   }
 
   /**
@@ -300,8 +327,12 @@ class AuthoringToolController {
     this.showStepTools = [
       'root.at.project',
       'root.at.project.node',
-      'root.at.project.nodeConstraints',
-      'root.at.project.nodeEditPaths'
+      'root.at.project.node.advanced',
+      'root.at.project.node.advanced.branch',
+      'root.at.project.node.advanced.constraint',
+      'root.at.project.node.advanced.general',
+      'root.at.project.node.advanced.json',
+      'root.at.project.node.advanced.path'
     ].includes(this.$state.$current.name);
     const view = this.views[this.$state.$current.name];
     if (view) {
@@ -323,7 +354,7 @@ class AuthoringToolController {
   }
 
   turnOffJSONValidMessage() {
-    this.$rootScope.$broadcast('setIsJSONValid', { isJSONValid: null });
+    this.NotificationService.hideJSONValidMessage();
   }
 
   toggleMenu() {
@@ -346,7 +377,7 @@ class AuthoringToolController {
       isProgressIndicatorVisible: isProgressIndicatorVisible,
       time: time
     };
-    this.$rootScope.$broadcast('setGlobalMessage', { globalMessage: globalMessage });
+    this.NotificationService.broadcastSetGlobalMessage({ globalMessage: globalMessage });
   }
 
   logOut() {
