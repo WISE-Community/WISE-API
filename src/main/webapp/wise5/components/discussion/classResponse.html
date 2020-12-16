@@ -26,10 +26,12 @@
       ng-src='{{::attachment.iconURL}}' alt='Image' class='discussion-post__attachment' />
     <div layout='row' layout-align='end center' ng-if='::classResponseCtrl.isvotingallowed'>
         <md-button ng-class="classResponseCtrl.isUpvoteClicked ? 'md-accent' : ''"
+          ng-disabled="classResponseCtrl.mode === 'showAllPosts'"
           ng-click='classResponseCtrl.upvoteClicked(classResponseCtrl.response)'>
         <md-icon>thumb_up</md-icon>
         </md-button>
         <md-button ng-class="classResponseCtrl.isDownvoteClicked ? 'md-accent' : ''"
+          ng-disabled="classResponseCtrl.mode === 'showAllPosts'"
           ng-click='classResponseCtrl.downvoteClicked(classResponseCtrl.response)'>
         <md-icon>thumb_down</md-icon>
       </md-button>

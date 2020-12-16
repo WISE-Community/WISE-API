@@ -5,6 +5,7 @@ import { DiscussionService } from './discussionService';
 import { NotificationService } from '../../services/notificationService';
 import { Directive } from '@angular/core';
 import { Subscription } from 'rxjs';
+import * as angular from 'angular';
 
 @Directive()
 class DiscussionController extends ComponentController {
@@ -166,9 +167,12 @@ class DiscussionController extends ComponentController {
           componentIds,
           this.workgroupId
         );
-        const annotations = this.getInappropriateFlagAnnotationsByComponentStates(componentStates);
-        this.setClassResponses(componentStates, annotations);
+        this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(this.nodeId);
+        this.setClassResponses(componentStates, this.componentAnnotations);
       }
+    } else if (this.isShowAllPostsMode()) {
+      this.getClassmateResponses();
+      this.isDisabled = true;
     }
     this.initializeScopeSubmitButtonClicked();
     this.initializeScopeGetComponentState();
@@ -463,14 +467,24 @@ class DiscussionController extends ComponentController {
   }
 
   getClassmateResponses(components = [{ nodeId: this.nodeId, componentId: this.componentId }]) {
-    const runId = this.ConfigService.getRunId();
-    const periodId = this.componentContent.isSharedAcrossAllPeriods ? null :
-        this.ConfigService.getPeriodId();
-    this.DiscussionService.getClassmateResponses(runId, periodId, components)
-        .then(({studentWorkList, annotations}) => {
-      this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
-      this.setClassResponses(studentWorkList, annotations);
-    });
+    if (this.isShowAllPostsMode()) {
+      const currentPeriodId = this.DiscussionService.TeacherDataService.getCurrentPeriod().periodId;
+      const postsForPeriod = this.DiscussionService.TeacherDataService.getComponentStatesByComponentId(this.componentId).filter(
+          (componentState) => {
+            return currentPeriodId === -1 || componentState.periodId === currentPeriodId;
+          }
+      )
+      this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(this.nodeId);
+      this.setClassResponses(postsForPeriod, this.componentAnnotations);
+    } else {
+      const runId = this.ConfigService.getRunId();
+      const periodId = this.componentContent.isSharedAcrossAllPeriods ? null : this.ConfigService.getPeriodId();
+      this.DiscussionService.getClassmateResponses(runId, periodId, components)
+          .then(({studentWorkList, annotations}) => {
+        this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
+        this.setClassResponses(studentWorkList, annotations);
+      });
+    }
   }
 
   filterLatestAnnotationsByWorkgroup(annotations) {
@@ -598,7 +612,7 @@ class DiscussionController extends ComponentController {
         );
         this.setUsernames(componentState);
         componentState.replies = [];
-        if (this.isGradingMode() || this.isGradingRevisionMode()) {
+        if (this.isGradingMode() || this.isGradingRevisionMode() || this.isShowAllPostsMode()) {
           if (latestInappropriateFlagAnnotation != null) {
             /*
              * Set the inappropriate flag annotation into the component state. This is used for the
@@ -979,6 +993,44 @@ class DiscussionController extends ComponentController {
       }
     }
     return annotations;
+  }
+
+  showEntireDiscussion($event) {
+    this.$mdDialog.show({
+      targetEvent: $event,
+      fullscreen: true,
+      clickOutsideToClose: true,
+      parent: angular.element(document.body),
+      template: `<md-dialog class="dialog--wider">
+        <md-toolbar><div class="md-toolbar-tools"><h2>{{$ctrl.stepTitle}}</h2></div></md-toolbar>
+        <md-dialog-content class="gray-lighter-bg md-dialog-content">
+          <component node-id="{{$ctrl.nodeId}}" component-id="{{$ctrl.componentId}}" mode="showAllPosts"></component>
+        </md-dialog-content>
+        <md-dialog-actions layout="row" layout-align="start center">
+          <span flex></span>
+          <md-button class="md-primary" ng-click="close()" aria-label="{{ ::'CLOSE' | translate }}">
+            {{ ::'CLOSE' | translate }}
+          </md-button>
+        </md-dialog-actions>
+      </md-dialog>`,
+      controller: ShowEntireDiscussionController,
+      bindToController: true,
+      controllerAs: '$ctrl',
+      locals: {
+        componentId: this.componentId,
+        nodeId: this.nodeId,
+        stepTitle: this.ProjectService.getNodePositionAndTitleByNodeId(this.nodeId)
+      }
+    });
+    function ShowEntireDiscussionController($scope, $mdDialog) {
+      $scope.close = () => {
+        $mdDialog.hide();
+      };
+    }
+  }
+
+  isShowAllPostsMode() {
+    return this.mode === 'showAllPosts';
   }
 }
 
