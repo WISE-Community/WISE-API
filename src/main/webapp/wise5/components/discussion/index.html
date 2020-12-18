@@ -24,6 +24,7 @@
                       createupvoteannotation='discussionController.createupvoteannotation(componentState)'
                       createdownvoteannotation='discussionController.createdownvoteannotation(componentState)'
                       createunvoteannotation='discussionController.createunvoteannotation(componentState)'
+                      isvotingallowed='::discussionController.isVotingAllowed()'
                       studentdatachanged='studentdatachanged()'
                       class='post'>
                   </class-response>
@@ -31,6 +32,8 @@
               </div>
             </div>
           </div>
+          <span flex></span>
+          <a style="margin-top: 10px" ng-click="discussionController.showEntireDiscussion($event)" translate="discussion.seeEntireClassDiscussion"></a>
           <span flex></span>
           <component-revisions-info node-id='discussionController.nodeId'
               component-id='discussionController.componentId'

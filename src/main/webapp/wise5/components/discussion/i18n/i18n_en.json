@@ -13,6 +13,7 @@
   "discussion.post": "Post",
   "discussion.repliedToADiscussionYouWereIn": "{{usernames}} replied to a discussion you were in!",
   "discussion.reply": "Reply",
+  "discussion.seeEntireClassDiscussion": "See entire class discussion",
   "discussion.shareDiscussionPostWithClass": "Share with class...",
   "discussion.sortOption.leastPopular": "Least Popular -> Most Popular",
   "discussion.sortOption.mostPopular": "Most Popular -> Least Popular",
