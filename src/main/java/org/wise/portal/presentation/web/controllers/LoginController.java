@@ -55,7 +55,7 @@ public class LoginController {
    * @param response
    * @throws IOException
    */
-  @GetMapping("/session/renew")
+  @GetMapping("/api/session/renew")
   public void renewSession(HttpServletResponse response) throws IOException {
     User loggedInUser = ControllerUtil.getSignedInUser();
     if (loggedInUser != null) {

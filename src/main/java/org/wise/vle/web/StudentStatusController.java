@@ -47,7 +47,7 @@ import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.status.StudentStatus;
 
 @Controller
-@RequestMapping("/studentStatus")
+@RequestMapping("/api/studentStatus")
 public class StudentStatusController {
 
   @Autowired

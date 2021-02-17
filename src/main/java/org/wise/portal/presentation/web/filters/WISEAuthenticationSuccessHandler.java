@@ -74,10 +74,10 @@ public class WISEAuthenticationSuccessHandler
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
         if (accessCode != null && !accessCode.equals("")) {
-          response.sendRedirect(contextPath + "/student?accessCode=" + accessCode);
+          //response.sendRedirect(contextPath + "/student?accessCode=" + accessCode);
           return;
         }
-        response.sendRedirect(contextPath + "/student");
+        //response.sendRedirect(contextPath + "/student");
         return;
       }
       // pLT= previous login time (not this time, but last time)
@@ -91,7 +91,7 @@ public class WISEAuthenticationSuccessHandler
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
         String contextPath = request.getContextPath();
-        response.sendRedirect(contextPath + "/teacher");
+        //response.sendRedirect(contextPath + "/teacher");
         return;
       }
       this.setDefaultTargetUrl(WISEAuthenticationProcessingFilter.TEACHER_DEFAULT_TARGET_PATH);
@@ -170,6 +170,6 @@ public class WISEAuthenticationSuccessHandler
     }
 
     userDetailsService.updateStatsOnSuccessfulLogin((MutableUserDetails) userDetails);
-    super.handle(request, response, authentication);
+    //super.handle(request, response, authentication);
   }
 }

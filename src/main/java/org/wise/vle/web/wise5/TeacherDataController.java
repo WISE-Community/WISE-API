@@ -179,7 +179,7 @@ public class TeacherDataController {
     return eventsJSONArray;
   }
 
-  @GetMapping("/teacher/data")
+  @GetMapping("/api/teacher/data")
   @ResponseBody
   protected HashMap<String, Object> getWISE5TeacherData(
       @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
@@ -237,7 +237,7 @@ public class TeacherDataController {
     return data;
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/teacher/data")
+  @RequestMapping(method = RequestMethod.POST, value = "/api/teacher/data")
   public void postWISETeacherData(HttpServletResponse response,
       @RequestParam(value = "workgroupId", required = false) Integer workgroupId,
       @RequestParam(value = "projectId", required = false) Integer projectId,

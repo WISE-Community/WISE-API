@@ -92,8 +92,8 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
       } catch (JSONException e) {
       }
     } else {
-      setDefaultFailureUrl(determineFailureUrl(request, response, exception));
-      super.onAuthenticationFailure(request, response, exception);
+      //setDefaultFailureUrl(determineFailureUrl(request, response, exception));
+      //super.onAuthenticationFailure(request, response, exception);
     }
   }
 

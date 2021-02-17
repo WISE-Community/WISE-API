@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -25,6 +26,7 @@ import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.achievement.Achievement;
 
 @RestController
+@RequestMapping("/api")
 public class AchievementController {
 
   @Autowired

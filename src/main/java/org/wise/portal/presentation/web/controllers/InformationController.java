@@ -73,6 +73,7 @@ import org.wise.vle.web.SecurityUtils;
  * @author Hiroki Terashima
  */
 @Controller
+@RequestMapping("/api")
 public class InformationController {
 
   @Autowired
@@ -226,9 +227,9 @@ public class InformationController {
     String contextPath = request.getContextPath();
     if (hasRunReadAccess(signedInUser, run)) {
       config.put("runCode", run.getRuncode());
-      config.put("teacherDataURL", contextPath + "/teacher/data");
+      config.put("teacherDataURL", contextPath + "/api/teacher/data");
       config.put("runDataExportURL", contextPath + "/teacher/export");
-      config.put("notebookURL", contextPath + "/teacher/notebook/run/" + runId);
+      config.put("notebookURL", contextPath + "/api/teacher/notebook/run/" + runId);
     }
     Project project = run.getProject();
     if (hasRunWriteAccess(signedInUser, run)) {
@@ -512,8 +513,8 @@ public class InformationController {
       config.put("runInfo", run.getInfo());
       config.put("isRealTimeEnabled", true); // TODO: make this run-specific setting
       config.put("webSocketURL", ControllerUtil.getWebSocketURL(request, contextPath));
-      config.put("studentStatusURL", contextPath + "/studentStatus");
-      config.put("runStatusURL", contextPath + "/runStatus");
+      config.put("studentStatusURL", contextPath + "/api/studentStatus");
+      config.put("runStatusURL", contextPath + "/api/runStatus");
       config.put("postLevel", run.getPostLevel());
       config.put("userInfoURL", contextPath + "/userInfo?runId=" + runId);
 
@@ -548,9 +549,9 @@ public class InformationController {
       addProjectBaseURL(config, projectURL);
       config.put("studentUploadsBaseURL", appProperties.getProperty("studentuploads_base_www"));
       config.put("theme", "WISE");
-      config.put("cRaterRequestURL", contextPath + "/c-rater");
+      config.put("cRaterRequestURL", contextPath + "/api/c-rater");
       config.put("mainHomePageURL", contextPath);
-      config.put("renewSessionURL", contextPath + "/session/renew");
+      config.put("renewSessionURL", contextPath + "/api/session/renew");
       config.put("sessionLogOutURL", contextPath + "/logout");
       addStep(request, config);
       setUserLocale(request, signedInUser, config);
@@ -646,14 +647,14 @@ public class InformationController {
     config.put("runInfo", run.getInfo());
     config.put("isRealTimeEnabled", run.isRealTimeEnabled());
     config.put("webSocketURL", ControllerUtil.getWebSocketURL(request, contextPath));
-    config.put("studentStatusURL", contextPath + "/studentStatus");
-    config.put("runStatusURL", contextPath + "/runStatus");
+    config.put("studentStatusURL", contextPath + "/api/studentStatus");
+    config.put("runStatusURL", contextPath + "/api/runStatus");
     config.put("userInfo", getUserInfo(run));
-    config.put("studentDataURL", contextPath + "/student/data"); // the url to get/post student data
-    config.put("studentAssetsURL", contextPath + "/student/asset/" + runId);
-    config.put("notebookURL", contextPath + "/student/notebook/run/" + runId);
-    config.put("achievementURL", contextPath + "/achievement/" + runId);
-    config.put("notificationURL", contextPath + "/notification/" + runId);
+    config.put("studentDataURL", contextPath + "/api/student/data"); // the url to get/post student data
+    config.put("studentAssetsURL", contextPath + "/api/student/asset/" + runId);
+    config.put("notebookURL", contextPath + "/api/student/notebook/run/" + runId);
+    config.put("achievementURL", contextPath + "/api/achievement/" + runId);
+    config.put("notificationURL", contextPath + "/api/notification/" + runId);
     config.put("startTime", run.getStartTimeMilliseconds());
     config.put("endTime", run.getEndTimeMilliseconds());
     config.put("isLockedAfterEndDate", run.isLockedAfterEndDate());
@@ -716,10 +717,10 @@ public class InformationController {
     config.put("projectURL", projectURL);
     addProjectBaseURL(config, projectURL);
     config.put("studentUploadsBaseURL", appProperties.getProperty("studentuploads_base_www"));
-    config.put("cRaterRequestURL", contextPath + "/c-rater");
+    config.put("cRaterRequestURL", contextPath + "/api/c-rater");
     config.put("contextPath", contextPath);
     config.put("mainHomePageURL", contextPath);
-    config.put("renewSessionURL", contextPath + "/session/renew");
+    config.put("renewSessionURL", contextPath + "/api/session/renew");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
     config.put("sessionLogOutURL", contextPath + "/logout");
 

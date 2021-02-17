@@ -60,6 +60,7 @@ import org.wise.vle.domain.work.StudentWork;
  * @author Hiroki Terashima
  */
 @Controller("wise5StudentDataController")
+@RequestMapping("/api")
 public class StudentDataController {
 
   @Autowired

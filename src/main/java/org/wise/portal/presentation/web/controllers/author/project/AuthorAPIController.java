@@ -95,7 +95,7 @@ import org.wise.vle.utils.FileManager;
  * @author Geoffrey Kwan
  */
 @Controller
-@RequestMapping("/author")
+@RequestMapping("/api/author")
 @Secured({ "ROLE_AUTHOR" })
 public class AuthorAPIController {
 
@@ -272,13 +272,13 @@ public class AuthorAPIController {
     config.put("userType", "teacher");
     config.put("copyProjectURL", contextPath + "/author/project/copy");
     config.put("mainHomePageURL", contextPath);
-    config.put("renewSessionURL", contextPath + "/session/renew");
+    config.put("renewSessionURL", contextPath + "/api/session/renew");
     config.put("sessionLogOutURL", contextPath + "/logout");
     config.put("registerNewProjectURL", contextPath + "/author/project/new");
     config.put("wiseBaseURL", contextPath);
     config.put("notifyAuthoringBeginEndURL", contextPath + "/author/project/notify");
     config.put("getLibraryProjectsURL", contextPath + "/api/project/library");
-    config.put("teacherDataURL", contextPath + "/teacher/data");
+    config.put("teacherDataURL", contextPath + "/api/teacher/data");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
 
     Portal portal = portalService.getById(new Integer(1));
@@ -393,7 +393,7 @@ public class AuthorAPIController {
     config.put("projectAssetURL", contextPath + "/author/project/asset/" + projectId);
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + projectId);
-    config.put("cRaterRequestURL", contextPath + "/c-rater");
+    config.put("cRaterRequestURL", contextPath + "/api/c-rater");
     config.put("importStepsURL", contextPath + "/author/project/importSteps/" + projectId);
     config.put("featuredProjectIconsURL", contextPath + "/author/project/featured/icons");
     config.put("projectIconURL", contextPath + "/author/project/icon");

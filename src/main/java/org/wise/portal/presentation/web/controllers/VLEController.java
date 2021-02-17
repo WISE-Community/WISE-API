@@ -40,7 +40,7 @@ import org.wise.portal.service.run.RunService;
 /**
  * Controller for handling student VLE-portal interactions.
  *
- * @author Hiroki Terashima
+ * @author Hiroki Terashima!
  * @author Geoffrey Kwan
  */
 @Controller

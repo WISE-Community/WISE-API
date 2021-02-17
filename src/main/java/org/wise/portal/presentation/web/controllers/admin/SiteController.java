@@ -55,7 +55,7 @@ public class SiteController {
   }
 
   @ResponseBody
-  @GetMapping("/announcement")
+  @GetMapping("/api/announcement")
   protected String getAnnouncement() throws ObjectNotFoundException {
     Portal portal = portalService.getById(new Integer(1));
     return portal.getAnnouncement();

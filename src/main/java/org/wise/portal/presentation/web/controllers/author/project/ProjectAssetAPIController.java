@@ -40,7 +40,7 @@ import org.wise.portal.service.user.UserService;
  * @author Geoffrey Kwan
  */
 @Controller
-@RequestMapping("/author/project/asset")
+@RequestMapping("/api/author/project/asset")
 @Secured({ "ROLE_AUTHOR" })
 public class ProjectAssetAPIController {
 

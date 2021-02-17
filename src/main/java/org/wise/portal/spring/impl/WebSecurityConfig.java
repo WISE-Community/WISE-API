@@ -24,6 +24,7 @@
 package org.wise.portal.spring.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpSessionListener;
@@ -56,6 +57,9 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -108,7 +112,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     filter.setAuthenticationManager(authenticationManager);
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
-    filter.setFilterProcessesUrl("/j_acegi_security_check");
+    filter.setFilterProcessesUrl("/api/j_acegi_security_check");
     return filter;
   }
 

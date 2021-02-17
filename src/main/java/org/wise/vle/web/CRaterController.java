@@ -34,6 +34,7 @@ import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
 import java.util.Properties;
 
 @RestController
+@RequestMapping("/api")
 public class CRaterController {
 
   @Autowired
