@@ -235,7 +235,7 @@ public class InformationController {
     if (hasRunWriteAccess(signedInUser, run)) {
       config.put("canEditProject", true);
       config.put("saveProjectURL",
-          contextPath + "/author/project/save/" + project.getId().toString());
+          contextPath + "/api/author/project/save/" + project.getId().toString());
     }
     config.put("canViewStudentNames", isAllowedToViewStudentNames(run, signedInUser));
     config.put("canGradeStudentWork", runService.isAllowedToGradeStudentWork(run, signedInUser));

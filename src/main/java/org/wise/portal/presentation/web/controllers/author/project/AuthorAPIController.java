@@ -270,13 +270,13 @@ public class AuthorAPIController {
     String contextPath = request.getContextPath();
     config.put("contextPath", contextPath);
     config.put("userType", "teacher");
-    config.put("copyProjectURL", contextPath + "/author/project/copy");
+    config.put("copyProjectURL", contextPath + "/api/author/project/copy");
     config.put("mainHomePageURL", contextPath);
     config.put("renewSessionURL", contextPath + "/api/session/renew");
     config.put("sessionLogOutURL", contextPath + "/logout");
-    config.put("registerNewProjectURL", contextPath + "/author/project/new");
+    config.put("registerNewProjectURL", contextPath + "/api/author/project/new");
     config.put("wiseBaseURL", contextPath);
-    config.put("notifyAuthoringBeginEndURL", contextPath + "/author/project/notify");
+    config.put("notifyAuthoringBeginEndURL", contextPath + "/api/author/project/notify");
     config.put("getLibraryProjectsURL", contextPath + "/api/project/library");
     config.put("teacherDataURL", contextPath + "/api/teacher/data");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
@@ -390,20 +390,20 @@ public class AuthorAPIController {
     config.put("projectId", projectId);
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/author/project/asset/" + projectId);
+    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + projectId);
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + projectId);
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
-    config.put("importStepsURL", contextPath + "/author/project/importSteps/" + projectId);
-    config.put("featuredProjectIconsURL", contextPath + "/author/project/featured/icons");
-    config.put("projectIconURL", contextPath + "/author/project/icon");
+    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + projectId);
+    config.put("featuredProjectIconsURL", contextPath + "/api/author/project/featured/icons");
+    config.put("projectIconURL", contextPath + "/api/author/project/icon");
     config.put("mode", "author");
 
     User user = userService.retrieveUserByUsername(auth.getName());
     boolean canEditProject = projectService.canAuthorProject(project, user);
     config.put("canEditProject", canEditProject);
     if (canEditProject) {
-      config.put("saveProjectURL", contextPath + "/author/project/save/" + projectId);
+      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + projectId);
       config.put("commitProjectURL", contextPath + "/project/commit/" + projectId);
     }
     List<Run> projectRuns = runService.getProjectRuns(projectId);
