@@ -135,7 +135,7 @@ public class UserAPIController {
     config.put("googleAnalyticsId", appProperties.get("google_analytics_id"));
     config.put("googleClientId", googleClientId);
     config.put("isGoogleClassroomEnabled", isGoogleClassroomEnabled());
-    config.put("logOutURL", contextPath + "/logout");
+    config.put("logOutURL", contextPath + "/api/logout");
     config.put("recaptchaPublicKey", appProperties.get("recaptcha_public_key"));
     config.put("wiseHostname", appProperties.get("wise.hostname"));
     config.put("wise4Hostname", appProperties.get("wise4.hostname"));

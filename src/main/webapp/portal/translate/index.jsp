@@ -439,7 +439,7 @@
             </style>
         </head>
         <body>
-        <span style="float:right; margin-right:10px"><a href="${contextPath}/translate?userLocale=${param.userLocale}">Go back to project select page</a> | <a href="${contextPath}/logout">Logout</a></span>
+        <span style="float:right; margin-right:10px"><a href="${contextPath}/translate?userLocale=${param.userLocale}">Go back to project select page</a> | <a href="${contextPath}/api/logout">Logout</a></span>
         <h1 id='heading'>WISE Translate: </h1>
         <div id="translationTableDiv">
         </div>

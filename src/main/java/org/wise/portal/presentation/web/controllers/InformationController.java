@@ -552,7 +552,7 @@ public class InformationController {
       config.put("cRaterRequestURL", contextPath + "/api/c-rater");
       config.put("mainHomePageURL", contextPath);
       config.put("renewSessionURL", contextPath + "/api/session/renew");
-      config.put("sessionLogOutURL", contextPath + "/logout");
+      config.put("sessionLogOutURL", contextPath + "/api/logout");
       addStep(request, config);
       setUserLocale(request, signedInUser, config);
       addUserTypeAndHomeURL(request, signedInUser, config);
@@ -722,7 +722,7 @@ public class InformationController {
     config.put("mainHomePageURL", contextPath);
     config.put("renewSessionURL", contextPath + "/api/session/renew");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
-    config.put("sessionLogOutURL", contextPath + "/logout");
+    config.put("sessionLogOutURL", contextPath + "/api/logout");
 
     User signedInUser = ControllerUtil.getSignedInUser();
     setUserLocale(request, signedInUser, config);

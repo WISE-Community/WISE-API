@@ -273,7 +273,7 @@ public class AuthorAPIController {
     config.put("copyProjectURL", contextPath + "/api/author/project/copy");
     config.put("mainHomePageURL", contextPath);
     config.put("renewSessionURL", contextPath + "/api/session/renew");
-    config.put("sessionLogOutURL", contextPath + "/logout");
+    config.put("sessionLogOutURL", contextPath + "/api/logout");
     config.put("registerNewProjectURL", contextPath + "/api/author/project/new");
     config.put("wiseBaseURL", contextPath);
     config.put("notifyAuthoringBeginEndURL", contextPath + "/api/author/project/notify");

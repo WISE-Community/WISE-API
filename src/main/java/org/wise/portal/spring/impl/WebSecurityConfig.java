@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSessionListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
@@ -102,7 +104,11 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
-    http.logout().addLogoutHandler(wiseLogoutHandler());
+    http.logout().addLogoutHandler(wiseLogoutHandler())
+        .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
+    http.logout().logoutSuccessHandler((request, response, authentication) -> {
+      response.setStatus(HttpServletResponse.SC_OK);
+    });
     http.headers().frameOptions().sameOrigin();
   }
 
@@ -204,8 +210,8 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
   public WISESwitchUserFilter switchUserProcessingFilter() {
     WISESwitchUserFilter filter = new WISESwitchUserFilter();
     filter.setUserDetailsService(userDetailsService);
-    filter.setSwitchUserUrl("/login/impersonate");
-    filter.setExitUserUrl("/logout/impersonate");
+    filter.setSwitchUserUrl("/api/login/impersonate");
+    filter.setExitUserUrl("/api/logout/impersonate");
     filter.setSuccessHandler(authSuccessHandler());
     return filter;
   }
