@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockRunner;
@@ -47,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
@@ -77,7 +77,7 @@ public class ProjectServiceImplTest {
   private ProjectDao<Project> projectDao;
 
   @Mock
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Mock
   private AclService<Project> mockAclService;

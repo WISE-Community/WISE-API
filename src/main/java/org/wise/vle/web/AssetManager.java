@@ -49,6 +49,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,7 +76,7 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @RequestMapping("/assetManager")
 public class AssetManager {
 
-  private static Properties appProperties;
+  private static Environment appProperties;
 
   @Autowired
   private RunService runService;
@@ -84,7 +85,7 @@ public class AssetManager {
   private WorkgroupService workgroupService;
 
   @Autowired
-  public void setAppProperties(Properties appProperties) {
+  public void setAppProperties(Environment appProperties) {
     AssetManager.appProperties = appProperties;
   }
 

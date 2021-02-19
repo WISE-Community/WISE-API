@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,14 +21,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 
 @RestController
 @RequestMapping("/api/teacher/forgot")
 public class TeacherForgotAccountAPIController {
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private UserService userService;
@@ -50,11 +50,11 @@ public class TeacherForgotAccountAPIController {
       String username = user.getUserDetails().getUsername();
       String from = appProperties.getProperty("portalemailaddress");
       String [] to = new String[] {email};
-      String subject = messageSource.getMessage("forgotaccount.teacher.username.email.subject", 
+      String subject = messageSource.getMessage("forgotaccount.teacher.username.email.subject",
           new Object[] {}, Locale.US);
       String signInUrl = getSignInUrl(request);
       String contactUrl = getContactUrl(request);
-      String body = messageSource.getMessage("forgotaccount.teacher.username.email.body", 
+      String body = messageSource.getMessage("forgotaccount.teacher.username.email.body",
           new Object[] {username, signInUrl, contactUrl}, Locale.US);
       boolean successfullySentEmail = sendEmail(to, subject, body, from);
       if (successfullySentEmail) {
@@ -121,7 +121,7 @@ public class TeacherForgotAccountAPIController {
         user.getUserDetails().getRecentFailedVerificationCodeAttemptTime();
     Integer numberOfRecentFailedVerificationCodeAttempts =
         user.getUserDetails().getNumberOfRecentFailedVerificationCodeAttempts();
-    if (recentFailedVerificationCodeAttemptTime == null || 
+    if (recentFailedVerificationCodeAttemptTime == null ||
         numberOfRecentFailedVerificationCodeAttempts == null) {
       return false;
     } else {
@@ -158,7 +158,7 @@ public class TeacherForgotAccountAPIController {
         } else {
           response = getVerificationCodeIncorrectErrorResponse();
         }
-      } else if (!isVerificationCodeExpired(user) && 
+      } else if (!isVerificationCodeExpired(user) &&
           isVerificationCodeCorrect(user, verificationCode)) {
         response = getVerificationCodeCorrectSuccessResponse();
       }
@@ -169,7 +169,7 @@ public class TeacherForgotAccountAPIController {
   }
 
   private void resetVerificationCodeAttemptsIfNecessary(User user) {
-    Date recentFailedVerificationCodeAttemptTime = 
+    Date recentFailedVerificationCodeAttemptTime =
         user.getUserDetails().getRecentFailedVerificationCodeAttemptTime();
     if (!isWithinLast10Minutes(recentFailedVerificationCodeAttemptTime)) {
       user.getUserDetails().clearNumberOfRecentFailedVerificationCodeAttempts();
@@ -226,10 +226,10 @@ public class TeacherForgotAccountAPIController {
   }
 
   private boolean isVerificationCodeExpired(User user) {
-    Date verificationCodeCreationTime = 
+    Date verificationCodeCreationTime =
         user.getUserDetails().getResetPasswordVerificationCodeRequestTime();
     Date now = new Date();
-    long timeDifferenceInMilliseconds = 
+    long timeDifferenceInMilliseconds =
         getTimeDifferenceInMilliseconds(now, verificationCodeCreationTime);
     long expirationInMilliseconds = ControllerUtil.convertMinutesToMilliseconds(10);
     return timeDifferenceInMilliseconds > expirationInMilliseconds;

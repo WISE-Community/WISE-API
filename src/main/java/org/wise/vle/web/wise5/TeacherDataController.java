@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -21,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +59,7 @@ public class TeacherDataController {
   private RunService runService;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private MessagePublisher redisPublisher;

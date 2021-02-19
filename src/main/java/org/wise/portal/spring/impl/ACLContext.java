@@ -32,6 +32,7 @@ import org.springframework.cache.ehcache.EhCacheFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
@@ -57,7 +58,7 @@ public class ACLContext {
   DataSource dataSource;
 
   @Autowired
-  Properties appProperties;
+  Environment appProperties;
 
   @Bean
   public EhCacheBasedAclCache aclCache() {
@@ -95,8 +96,8 @@ public class ACLContext {
   @Bean
   public MutableAclService aclservice() {
     JdbcMutableAclService aclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
-    if (appProperties.containsKey("spring.datasource.driver-class-name")) {
-      String driverClass = (String) appProperties.get("spring.datasource.driver-class-name");
+    if (appProperties.containsProperty("spring.datasource.driver-class-name")) {
+      String driverClass = (String) appProperties.getProperty("spring.datasource.driver-class-name");
       if ("com.mysql.jdbc.Driver".equals(driverClass)) {
         aclService.setClassIdentityQuery("SELECT @@IDENTITY");
         aclService.setSidIdentityQuery("SELECT @@IDENTITY");

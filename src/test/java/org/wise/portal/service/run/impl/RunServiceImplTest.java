@@ -51,6 +51,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.core.env.Environment;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.group.GroupDao;
 import org.wise.portal.dao.run.RunDao;
@@ -95,7 +96,7 @@ public class RunServiceImplTest {
   private AclService<Run> aclService;
 
   @Mock
-  private Properties appProperties;
+  private Environment appProperties;
 
   private Run run;
 
@@ -343,7 +344,7 @@ public class RunServiceImplTest {
 
   private void expectRunCodeGeneration() throws ObjectNotFoundException {
     expect(appProperties.getProperty(isA(String.class), isA(String.class))).andReturn("lion");
-    expect(appProperties.containsKey("runcode_prefixes_de")).andReturn(false);
+    expect(appProperties.containsProperty("runcode_prefixes_de")).andReturn(false);
     expect(runDao.retrieveByRunCode(EasyMock.isA(String.class)))
         .andThrow(new ObjectNotFoundException("runcode", Run.class));
   }

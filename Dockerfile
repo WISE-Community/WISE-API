@@ -7,4 +7,4 @@ RUN mvn dependency:go-offline
 
 COPY src/ /app/src/
 
-CMD mvn spring-boot:run
+CMD mvn spring-boot:run -Dspring-boot.run.profiles=dockerdev

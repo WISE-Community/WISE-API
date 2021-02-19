@@ -23,15 +23,12 @@
  */
 package org.wise.portal.presentation.web.controllers;
 
-import java.util.Properties;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
@@ -50,7 +47,7 @@ public class VLEController {
   private RunService runService;
 
   @Autowired
-  Properties appProperties;
+  Environment appProperties;
 
   @GetMapping(value = "/student/vle/vle.html")
   protected ModelAndView launchVLEWISE4Run(HttpServletRequest request)

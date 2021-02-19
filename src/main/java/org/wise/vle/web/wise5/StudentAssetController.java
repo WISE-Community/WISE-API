@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -77,7 +77,7 @@ public class StudentAssetController {
   private RunService runService;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private WorkgroupService workgroupService;

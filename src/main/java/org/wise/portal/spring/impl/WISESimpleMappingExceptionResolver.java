@@ -28,13 +28,13 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 import org.wise.portal.domain.user.User;
@@ -57,7 +57,7 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
   protected IMailFacade mailService;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   private static final String HANDLE_EXCEPTION_PROPERTY_KEY = "handle_exception";
 

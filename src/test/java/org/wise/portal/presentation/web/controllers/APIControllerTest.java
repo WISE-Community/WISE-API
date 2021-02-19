@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.easymock.Mock;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -122,7 +122,7 @@ public class APIControllerTest {
   protected PortalService portalService;
 
   @Mock
-  protected Properties appProperties;
+  protected Environment appProperties;
 
   @Before
   public void setUp() {

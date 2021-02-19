@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.domain.BasePermission;
@@ -95,7 +95,7 @@ import org.wise.vle.utils.FileManager;
 public class ProjectServiceImpl implements ProjectService {
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private ProjectDao<Project> projectDao;
@@ -325,14 +325,12 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   private ModelAndView previewProjectWISE4(PreviewProjectParameters params, Project project) {
-    String contextPath = params.getHttpServletRequest().getContextPath();
-    String wise4URL = contextPath + "/legacy/previewproject.html?projectId=" + project.getId();
+    String wise4URL = appProperties.getProperty("wise.hostname") + "/legacy/previewproject.html?projectId=" + project.getId();
     return new ModelAndView(new RedirectView(wise4URL));
   }
 
   private ModelAndView previewProjectWISE5(PreviewProjectParameters params, Project project) {
-    String contextPath = params.getHttpServletRequest().getContextPath();
-    String wise5URL = contextPath + "/preview/unit/" + project.getId();
+    String wise5URL = appProperties.getProperty("wise.hostname") + "/preview/unit/" + project.getId();
     return new ModelAndView(new RedirectView(wise5URL));
   }
 
