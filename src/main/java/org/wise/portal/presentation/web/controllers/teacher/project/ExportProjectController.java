@@ -56,7 +56,7 @@ import org.wise.portal.service.project.ProjectService;
  * @author Hiroki Terashima
  */
 @Controller
-@RequestMapping("/project/export/{projectId}")
+@RequestMapping("/api/project/export/{projectId}")
 public class ExportProjectController {
 
   @Autowired
