@@ -122,7 +122,7 @@ public class AuthorAPIController {
   @Autowired
   private MessagePublisher redisPublisher;
 
-  private String featuredProjectIconsFolderRelativePath = "wise5/authoringTool/projectIcons";
+  private String featuredProjectIconsFolderRelativePath = "src/main/resources/authoringTool/projectIcons";
 
   @GetMapping
   String authorProject() {
@@ -193,7 +193,7 @@ public class AuthorAPIController {
   @GetMapping("/project/featured/icons")
   @ResponseBody
   protected List<String> getFeaturedProjectIcons() {
-    File featuredProjectIconsDir = new File(getFeaturedProjectIconsFolderPathString());
+    File featuredProjectIconsDir = new File(featuredProjectIconsFolderRelativePath);
     List<String> featuredProjectIconPaths = new ArrayList<String>();
     for (File icon : featuredProjectIconsDir.listFiles()) {
       featuredProjectIconPaths.add(icon.getName());
@@ -568,7 +568,7 @@ public class AuthorAPIController {
   }
 
   private File getRandomFeaturedProjectIcon() {
-    File featuredProjectIconsDir = new File(getFeaturedProjectIconsFolderPathString());
+    File featuredProjectIconsDir = new File(featuredProjectIconsFolderRelativePath);
     File[] featuredProjectIcons = featuredProjectIconsDir.listFiles();
     if (featuredProjectIcons != null && featuredProjectIcons.length > 0) {
       return featuredProjectIcons[new Random().nextInt(featuredProjectIcons.length)];
@@ -577,11 +577,7 @@ public class AuthorAPIController {
     }
   }
 
-  private String getFeaturedProjectIconsFolderPathString() {
-    return servletContext.getRealPath(File.separator) + featuredProjectIconsFolderRelativePath;
-  }
-
   private Path getFeaturedProjectIconPath(String fileName) {
-    return Paths.get(getFeaturedProjectIconsFolderPathString() + "/" + fileName);
+    return Paths.get(featuredProjectIconsFolderRelativePath + "/" + fileName);
   }
 }
