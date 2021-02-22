@@ -65,7 +65,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = { "org.wise.portal.presentation", "org.wise.portal.service",
-    "org.wise.portal.dao", "org.wise.vle.web" })
+    "org.wise.portal.dao", "org.wise.vle.web", "org.wise.vle.utils" })
 public class WebConfig implements WebMvcConfigurer {
 
   @Value("${google_analytics_id:}")

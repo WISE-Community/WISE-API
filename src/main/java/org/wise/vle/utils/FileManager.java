@@ -29,9 +29,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.wise.portal.domain.project.Project;
 
 /**
@@ -39,20 +41,15 @@ import org.wise.portal.domain.project.Project;
  *
  * @author Patrick Lawler
  */
+@Component
 public class FileManager {
   static final long serialVersionUID = 1L;
 
-  private static Properties appProperties = null;
+  private static Environment appProperties = null;
 
-  static {
-    try {
-      appProperties = new Properties();
-      appProperties
-          .load(FileManager.class.getClassLoader().getResourceAsStream("application.properties"));
-    } catch (Exception e) {
-      System.err.println("FileManager could not read in appProperties file");
-      e.printStackTrace();
-    }
+  @Autowired
+  public void setAppProperties(Environment appProperties) {
+    FileManager.appProperties = appProperties;
   }
 
   /**
@@ -88,7 +85,7 @@ public class FileManager {
 
   /**
    * Import the asset from one project asset folder to another project asset folder
-   * 
+   *
    * @param fromAssetFileName
    *                                  the name of the file in the asset folder
    * @param fromAssetFileContent
@@ -198,7 +195,7 @@ public class FileManager {
 
   /**
    * Get the full path to the project json file
-   * 
+   *
    * @param project
    *                  the project object
    * @return the full project file path e.g.
@@ -212,7 +209,7 @@ public class FileManager {
 
   /**
    * Get the full project folder path given the project object
-   * 
+   *
    * @param project
    *                  the project object
    * @return the full project folder path e.g.
