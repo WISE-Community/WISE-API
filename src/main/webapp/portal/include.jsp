@@ -29,9 +29,14 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="java.util.Properties" %>
-<% 
+<%@ page import="java.io.InputStream" %>
+<%
 Properties appProperties = new Properties();
-appProperties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
+InputStream is = getClass().getClassLoader().getResourceAsStream("application.properties");
+if (is == null) {
+    is = getClass().getClassLoader().getResourceAsStream("application-dockerdev.properties");
+}
+appProperties.load(is);
 String defaultLocale = appProperties.getProperty("defaultLocale");
 request.setAttribute("defaultLocale", defaultLocale);
 %>

@@ -69,7 +69,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     replay(appProperties);
     HashMap<String, Object> config = userAPIController.getConfig(request);
     assertEquals("wise", config.get("contextPath"));
-    assertEquals("wise/logout", config.get("logOutURL"));
+    assertEquals("wise/api/logout", config.get("logOutURL"));
     assertFalse((boolean) config.get("isGoogleClassroomEnabled"));
     assertEquals("UA-XXXXXX-1", config.get("googleAnalyticsId"));
     verify(request);
