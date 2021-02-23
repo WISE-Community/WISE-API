@@ -103,7 +103,7 @@
 									<li><a href="${contextPath}/legacy/teacher/management/library.html"><spring:message code="accountmenu.library" /></a></li>
 									<li><a href="${contextPath}/legacy/teacher/management/classroomruns.html"><spring:message code="accountmenu.runs" /></a></li>
 									<li><a href="${contextPath}/author"><spring:message code="accountmenu.authoring" /></a></li>
-									<li><a href="${contextPath}/author/authorproject.html"><spring:message code="accountmenu.launchLegacyAuthoringTool" /></a></li>
+									<li><a href="${contextPath}/api/author/authorproject.html"><spring:message code="accountmenu.launchLegacyAuthoringTool" /></a></li>
 								</ul>
 							</li>
 							<li class="level1 menu3"><a href="${contextPath}/legacy/teacher"><spring:message code="accountmenu.teacherHome" /></a></li>

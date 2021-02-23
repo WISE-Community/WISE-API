@@ -151,9 +151,9 @@ public class AuthorAPIController {
     if (projectIdStr != null && !projectIdStr.equals("") && !projectIdStr.equals("none")) {
       project = projectService.getById(Long.parseLong(projectIdStr));
       if (project.getWiseVersion().equals(5)) {
-        ModelAndView wise5AuthoringView = new ModelAndView(
-            new RedirectView("../teacher/edit/unit/" + projectIdStr));
-        return wise5AuthoringView;
+        return new ModelAndView(
+            new RedirectView(appProperties.getProperty("wise.hostname") +
+            "/teacher/edit/unit/" + projectIdStr));
       } else if (project.getWiseVersion().equals(4)) {
         ModelAndView wise4AuthoringView = new ModelAndView(
             new RedirectView("/legacy/author/authorproject.html?projectId=" + projectIdStr));
