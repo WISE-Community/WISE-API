@@ -23,7 +23,6 @@
  */
 package org.wise;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -32,7 +31,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -52,26 +50,12 @@ public class Application extends SpringBootServletInitializer {
     SpringApplication.run(Application.class, args);
   }
 
-  // @Bean
-  // public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-  //   PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-  //   propertySourcesPlaceholderConfigurer.setLocations(new ClassPathResource("application.properties"));
-  //   return propertySourcesPlaceholderConfigurer;
-  // }
-
-  // @Bean
-  // public PropertiesFactoryBean appProperties() {
-  //   PropertiesFactoryBean bean = new PropertiesFactoryBean();
-  //   bean.setLocation(environment);
-  //   return bean;
-  // }
-
-  // @Bean
-  // public PropertiesFactoryBean i18nProperties() {
-  //   PropertiesFactoryBean bean = new PropertiesFactoryBean();
-  //   bean.setLocation(new ClassPathResource("i18n/i18n.properties"));
-  //   return bean;
-  // }
+  @Bean
+  public PropertiesFactoryBean i18nProperties() {
+    PropertiesFactoryBean bean = new PropertiesFactoryBean();
+    bean.setLocation(new ClassPathResource("i18n/i18n.properties"));
+    return bean;
+  }
 
   @Bean
   public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
