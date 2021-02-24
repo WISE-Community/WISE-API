@@ -122,7 +122,7 @@ public class AuthorAPIController {
   @Autowired
   private MessagePublisher redisPublisher;
 
-  private String featuredProjectIconsFolderRelativePath = "src/main/resources/authoringTool/projectIcons";
+  private String featuredProjectIconsFolderRelativePath = "src/main/webapp/projectIcons";
 
   @GetMapping
   String authorProject() {
