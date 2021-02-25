@@ -124,11 +124,6 @@ public class AuthorAPIController {
 
   private String featuredProjectIconsFolderRelativePath = "src/main/webapp/projectIcons";
 
-  @GetMapping
-  String authorProject() {
-    return "forward:/wise5/authoringTool/dist/index.html";
-  }
-
   @RequestMapping("/authorproject.html")
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
       HttpServletResponse response) throws Exception {

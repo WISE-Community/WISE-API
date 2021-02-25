@@ -83,15 +83,9 @@ public class WebConfig implements WebMvcConfigurer {
     registry.addResourceHandler("/portal/themes/**").addResourceLocations("/portal/themes/");
     registry.addResourceHandler("/portal/translate/**").addResourceLocations("/portal/translate/");
     registry.addResourceHandler("/vle/**").addResourceLocations("/vle/");
-    registry.addResourceHandler("/wise5/**").addResourceLocations("/wise5/");
-    registry.addResourceHandler("/tinymce/**").addResourceLocations("/site/dist/tinymce/");
-    registry.addResourceHandler("/site/**").addResourceLocations("/site/");
     registry.addResourceHandler("/curriculum/**").addResourceLocations("/curriculum/");
     registry.addResourceHandler("/studentuploads/**").addResourceLocations("/studentuploads/");
     registry.addResourceHandler("/projectIcons/**").addResourceLocations("/projectIcons/");
-    registry.addResourceHandler("/assets/**").addResourceLocations("/site/dist/assets/");
-    registry.addResourceHandler("/*.css*").addResourceLocations("/site/dist/");
-    registry.addResourceHandler("/*.js*").addResourceLocations("/site/dist/");
   }
 
   @Bean

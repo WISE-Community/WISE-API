@@ -31,8 +31,6 @@ if [ $1 = "reset" ]; then
 fi
 
 if [ $1 = "package" ]; then
-  npm install
-  npm run build-prod
   ./mvnw clean -Dmaven.test.skip=true package
   exit 0
 fi
