@@ -31,10 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import org.wise.portal.domain.project.Project;
 
 /**
  * Servlet implementation class for Servlet: FileManager
@@ -44,13 +41,6 @@ import org.wise.portal.domain.project.Project;
 @Component
 public class FileManager {
   static final long serialVersionUID = 1L;
-
-  private static Environment appProperties = null;
-
-  @Autowired
-  public void setAppProperties(Environment appProperties) {
-    FileManager.appProperties = appProperties;
-  }
 
   /**
    * Copies the given <code>File</code> src to the given <code>File</code> dest. If they are
@@ -191,36 +181,5 @@ public class FileManager {
     String fileNameEnding = fileName.substring(lastDot);
     newFileName = fileNameBeginning + "-" + counter + fileNameEnding;
     return newFileName;
-  }
-
-  /**
-   * Get the full path to the project json file
-   *
-   * @param project
-   *                  the project object
-   * @return the full project file path e.g.
-   *         /Users/geoffreykwan/dev/apache-tomcat-5.5.27/webapps/curriculum/667/wise4.project.json
-   */
-  public static String getProjectFilePath(Project project) {
-    String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
-    String projectModulePath = project.getModulePath();
-    return curriculumBaseDir + projectModulePath;
-  }
-
-  /**
-   * Get the full project folder path given the project object
-   *
-   * @param project
-   *                  the project object
-   * @return the full project folder path e.g.
-   *         /Users/geoffreykwan/dev/apache-tomcat-5.5.27/webapps/curriculum/667
-   */
-  public static String getProjectFolderPath(Project project) {
-    String projectFilePath = getProjectFilePath(project);
-    return projectFilePath.substring(0, projectFilePath.lastIndexOf("/"));
-  }
-
-  public static String getProjectAssetsFolderPath(Project project) {
-    return getProjectFolderPath(project) + "/assets";
   }
 }

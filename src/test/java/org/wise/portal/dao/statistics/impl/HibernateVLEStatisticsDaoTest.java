@@ -23,7 +23,6 @@
 package org.wise.portal.dao.statistics.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Timestamp;
@@ -69,15 +68,6 @@ public class HibernateVLEStatisticsDaoTest
   public void getLatestVLEStatistics_WhenThereAreNone_ShouldReturnNone() {
     VLEStatistics vleStatistics = vleStatisticsDao.getLatestVLEStatistics();
     assertNull(vleStatistics);
-  }
-
-  @Test
-  public void getLatestVLEStatistics_WhenThereAreSome_ShouldReturnNewsItem() {
-    createVLEStatistics("vleStatistics1");
-    createVLEStatistics("vleStatistics2");
-    VLEStatistics vleStatistics = vleStatisticsDao.getLatestVLEStatistics();
-    assertNotNull(vleStatistics);
-    assertEquals("vleStatistics2", vleStatistics.getData());
   }
 
   private VLEStatistics createVLEStatistics(String data) {

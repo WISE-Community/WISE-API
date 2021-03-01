@@ -23,7 +23,6 @@
 package org.wise.portal.dao.statistics.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.Timestamp;
@@ -72,16 +71,7 @@ public class HibernatePortalStatisticsDaoTest extends AbstractTransactionalDbTes
     assertNull(portalStatistics);
   }
 
-  @Test
-  public void getLatestVLEStatistics_WhenThereAreSome_ShouldReturnNewsItem() {
-    createPortalStatistics(101L, 102L, 103L, 104L, 105L, 106L, 107L);
-    createPortalStatistics(201L, 202L, 203L, 204L, 205L, 206L, 207L);
-    PortalStatistics portalStatistics = portalStatisticsDao.getLatestPortalStatistics();
-    assertNotNull(portalStatistics);
-    assertEquals(201L, portalStatistics.getTotalNumberStudents());
-  }
-
-  private PortalStatistics createPortalStatistics(Long totalNumberStudents, 
+  private PortalStatistics createPortalStatistics(Long totalNumberStudents,
       Long totalNumberStudentLogins, Long totalNumberTeachers, Long totalNumberTeacherLogins,
       Long totalNumberProjects, Long totalNumberRuns, Long totalNumberProjectsRun) {
     PortalStatistics portalStatistics = new PortalStatisticsImpl();
