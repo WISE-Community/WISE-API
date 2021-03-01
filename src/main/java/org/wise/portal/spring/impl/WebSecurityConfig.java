@@ -125,7 +125,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Bean
   public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
-    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/google-login");
+    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/api/google-login");
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
     return filter;

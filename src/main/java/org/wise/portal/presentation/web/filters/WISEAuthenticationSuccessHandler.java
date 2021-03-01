@@ -24,6 +24,7 @@
 package org.wise.portal.presentation.web.filters;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,21 +64,25 @@ public class WISEAuthenticationSuccessHandler
   @Autowired
   private PortalService portalService;
 
+  @Autowired
+  private Environment appProperties;
+
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws ServletException, IOException {
     MutableUserDetails userDetails = (MutableUserDetails) authentication.getPrincipal();
     boolean userIsAdmin = false;
+    
     if (userDetails instanceof StudentUserDetails) {
       String accessCode = (String) request.getAttribute("accessCode");
-      String contextPath = request.getContextPath();
+      String studentHome = appProperties.getProperty("wise.hostname") + "/student";
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
         if (accessCode != null && !accessCode.equals("")) {
-          //response.sendRedirect(contextPath + "/student?accessCode=" + accessCode);
+          response.sendRedirect(studentHome + "?accessCode=" + accessCode);
           return;
         }
-        //response.sendRedirect(contextPath + "/student");
+        response.sendRedirect(studentHome);
         return;
       }
       // pLT= previous login time (not this time, but last time)
@@ -90,8 +95,7 @@ public class WISEAuthenticationSuccessHandler
     } else if (userDetails instanceof TeacherUserDetails) {
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
-        String contextPath = request.getContextPath();
-        //response.sendRedirect(contextPath + "/teacher");
+        response.sendRedirect(appProperties.getProperty("wise.hostname") + "/teacher");
         return;
       }
       this.setDefaultTargetUrl(WISEAuthenticationProcessingFilter.TEACHER_DEFAULT_TARGET_PATH);

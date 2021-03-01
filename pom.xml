@@ -261,6 +261,7 @@
           <packagingExcludes>
             WEB-INF/classes/sample/**,
             WEB-INF/classes/application.properties,
+            WEB-INF/classes/application-dockerdev.properties,
             curriculum/**,
             studentuploads/**
           </packagingExcludes>
