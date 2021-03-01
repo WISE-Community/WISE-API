@@ -522,7 +522,7 @@ public class ProjectServiceImpl implements ProjectService {
   public Project copyProject(Long projectId, User user) throws Exception {
     Project parentProject = getById(projectId);
     long newProjectId = getNextAvailableProjectId();
-    File parentProjectDir = new File(FileManager.getProjectFolderPath(parentProject));
+    File parentProjectDir = new File(getProjectLocalPath(parentProject));
     String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
     File newProjectDir = new File(curriculumBaseDir, String.valueOf(newProjectId));
     FileManager.copy(parentProjectDir, newProjectDir);
@@ -739,7 +739,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
-  private String getProjectLocalPath(Project project) {
+  public String getProjectLocalPath(Project project) {
     String modulePath = project.getModulePath();
     int lastIndexOfSlash = modulePath.lastIndexOf("/");
     if (lastIndexOfSlash != -1) {
@@ -750,7 +750,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   public void writeProjectLicenseFile(Project project) throws JSONException {
-    String projectFolderPath = FileManager.getProjectFolderPath(project);
+    String projectFolderPath = getProjectLocalPath(project);
     ProjectMetadata metadata = project.getMetadata();
     String title = metadata.getTitle();
     JSONArray authorsArray = new JSONArray(metadata.getAuthors());

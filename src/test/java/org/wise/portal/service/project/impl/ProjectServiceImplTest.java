@@ -260,10 +260,14 @@ public class ProjectServiceImplTest {
       metadata.put("authors", newAuthors);
       metadata.put("title", "New Title");
       projectJSON.put("metadata", metadata);
+      expect(appProperties.getProperty("curriculum_base_dir"))
+        .andReturn("src/test/webapp/curriculum");
+      expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
+      replay(appProperties);
       projectServiceImpl.updateMetadataAndLicenseIfNecessary(project, projectJSON.toString());
       assertEquals(metadata.get("title"), project.getMetadata().getTitle());
       String licenseText = FileUtils.readFileToString(new File(licenseFilePath), "UTF-8");
-      assertTrue(licenseText.contains("licensed under CC BY-SA by\nSpongebob Squarepants"));
+      assertTrue(licenseText.contains("licensed under\nCC BY-SA by Spongebob Squarepants"));
     } catch (JSONException e) {
       fail();
     } catch (IOException e) {

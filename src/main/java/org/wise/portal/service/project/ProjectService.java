@@ -336,6 +336,8 @@ public interface ProjectService {
 
   String getLicensePath(Project project);
 
+  String getProjectLocalPath(Project project);
+
   List<HashMap<String, Object>> getProjectSharedOwnersList(Project project);
 
   void writeProjectLicenseFile(Project project) throws JSONException;
