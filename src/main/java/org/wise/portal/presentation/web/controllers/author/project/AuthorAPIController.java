@@ -122,7 +122,12 @@ public class AuthorAPIController {
   @Autowired
   private MessagePublisher redisPublisher;
 
-  private String featuredProjectIconsFolderRelativePath = "src/main/webapp/projectIcons";
+  private String featuredProjectIconsFolderRelativePath;
+
+  @Autowired
+  public AuthorAPIController(Environment appProperties) {
+    featuredProjectIconsFolderRelativePath = appProperties.getProperty("project_icons_base_dir");
+  }
 
   @RequestMapping("/authorproject.html")
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
