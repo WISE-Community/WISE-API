@@ -22,6 +22,7 @@ import org.easymock.TestSubject;
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpSession;
 import org.wise.portal.domain.portal.impl.PortalImpl;
 import org.wise.portal.domain.project.Project;
@@ -36,7 +37,7 @@ import org.wise.portal.spring.data.redis.MessagePublisher;
 public class AuthorAPIControllerTest extends APIControllerTest {
 
   @TestSubject
-  private AuthorAPIController authorAPIController = new AuthorAPIController();
+  private AuthorAPIController authorAPIController = new AuthorAPIController(new MockEnvironment());
 
   @Mock
   private SessionService sessionService;
