@@ -10,9 +10,9 @@ exec &>> $HOME/deploy.log
 
 echo "Starting deployment at $(date)"
 
-if [[ $DEPLOYMENT_GROUP_NAME == "qa-deployment-group" ]]; then
+if [[ $DEPLOYMENT_GROUP_NAME == "qa-wise-api-deployment-group" ]]; then
     env="qa"
-elif [[ $DEPLOYMENT_GROUP_NAME == "prod-deployment-group" ]]; then
+elif [[ $DEPLOYMENT_GROUP_NAME == "prod-wise-api-deployment-group" ]]; then
     env="prod"
 fi
 
@@ -80,7 +80,7 @@ sed 's/gzip on;/gzip on;\n        gzip_types text\/plain text\/xml image\/gif im
 
 echo "Copying WISE Nginx config file to Nginx sites-enabled folder"
 rm -f /etc/nginx/sites-enabled/*
-cp $BUILD_FILES/$env/wise.conf /etc/nginx/sites-enabled/wise.conf
+cp $BUILD_FILES/$env/api/wise.conf /etc/nginx/sites-enabled/wise.conf
 systemctl restart nginx
 
 echo "Creating additional folders for WISE"
@@ -89,13 +89,13 @@ sudo -u ubuntu -g ubuntu mkdir $HOME/backup
 sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 
 echo "Copying application.properties file to the build folder"
-cp $BUILD_FILES/$env/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
+cp $BUILD_FILES/$env/api/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
 
 echo "Installing network drive package"
 apt-get install nfs-common -y
 
 echo "Mounting network drive folders"
-cp $BUILD_FILES/$env/fstab /etc/fstab
+cp $BUILD_FILES/$env/api/fstab /etc/fstab
 mount -a
 
 echo "Copying .vimrc file to the ubuntu home folder"
@@ -103,12 +103,12 @@ sudo -u ubuntu -g ubuntu cp $BUILD_FILES/.vimrc $HOME/.vimrc
 
 echo "Appending text to .bashrc"
 cat $BUILD_FILES/append-to-bashrc.txt >> ~/.bashrc
-cat $BUILD_FILES/$env/append-to-bashrc.txt >> ~/.bashrc
+cat $BUILD_FILES/$env/api/append-to-bashrc.txt >> ~/.bashrc
 source ~/.bashrc
 
 echo "Copying message of the day file to update-motd.d folder to display notes on login"
 cp $BUILD_FILES/99-notes /etc/update-motd.d/99-notes
-cat $BUILD_FILES/$env/append-to-99-notes.txt >> /etc/update-motd.d/99-notes
+cat $BUILD_FILES/$env/api/append-to-99-notes.txt >> /etc/update-motd.d/99-notes
 chmod 755 /etc/update-motd.d/99-notes
 
 echo "Install mysql client"
