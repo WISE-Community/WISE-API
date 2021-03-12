@@ -4,17 +4,12 @@ export HOME=/home/ubuntu
 export BUILD_DIR=$HOME/build-folder
 export BUILD_FILES=$HOME/wise-build-files
 export CATALINA_HOME=/var/lib/tomcat9
+export env=prod
 
 sudo -u ubuntu -g ubuntu touch $HOME/deploy.log
 exec &>> $HOME/deploy.log
 
 echo "Starting deployment at $(date)"
-
-if [[ $DEPLOYMENT_GROUP_NAME == "qa-wise-api-deployment-group" ]]; then
-    env="qa"
-elif [[ $DEPLOYMENT_GROUP_NAME == "prod-wise-api-deployment-group" ]]; then
-    env="prod"
-fi
 
 echo "Updating Ubuntu"
 apt-get update
