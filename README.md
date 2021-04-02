@@ -13,7 +13,7 @@ Open-source license: GNU General Public License, v3.  See LICENSE.txt for detail
 
 To see WISE in action and for inquiry science curricula developed by the WISE research team at UC Berkeley, visit https://wise.berkeley.edu.
 
-Developer discussions: https://github.com/WISE-Community/WISE-Client/discussions
+Developer discussions: https://github.com/WISE-Community/WISE-API/discussions
 
 General WISE discussions: https://wise-discuss.berkeley.edu/
 
