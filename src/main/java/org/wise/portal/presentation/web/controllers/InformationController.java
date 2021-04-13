@@ -228,7 +228,7 @@ public class InformationController {
     if (hasRunReadAccess(signedInUser, run)) {
       config.put("runCode", run.getRuncode());
       config.put("teacherDataURL", contextPath + "/api/teacher/data");
-      config.put("runDataExportURL", contextPath + "/teacher/export");
+      config.put("runDataExportURL", contextPath + "/api/teacher/export");
       config.put("notebookURL", contextPath + "/api/teacher/notebook/run/" + runId);
     }
     Project project = run.getProject();
