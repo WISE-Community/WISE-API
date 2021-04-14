@@ -69,7 +69,7 @@ public class TeacherDataController {
    * notebook items
    */
   @ResponseBody
-  @RequestMapping(method = RequestMethod.GET, value = "/teacher/export/{runId}/{exportType}")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/{runId}/{exportType}")
   public void getWISE5TeacherExport(@PathVariable Integer runId, @PathVariable String exportType,
       @RequestParam(value = "id", required = false) Integer id,
       @RequestParam(value = "periodId", required = false) Integer periodId,
@@ -140,7 +140,7 @@ public class TeacherDataController {
     }
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/teacher/export/events")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/events")
   public void getEvents(HttpServletResponse response, Authentication authentication,
       @RequestParam(value = "runId", required = false) Integer runId,
       @RequestParam(value = "includeStudentEvents", required = false) Boolean includeStudentEvents,
