@@ -145,6 +145,10 @@ public class Event extends PersistableDomain {
         eventJSONObject.put("workgroupId", workgroupId);
       }
 
+      if (user != null) {
+        eventJSONObject.put("userId", user.getId());
+      }
+
       if (nodeId != null) {
         eventJSONObject.put("nodeId", nodeId);
       }
