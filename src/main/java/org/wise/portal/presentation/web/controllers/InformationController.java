@@ -350,6 +350,10 @@ public class InformationController {
         try {
           sharedTeacherUserInfo.put("workgroupId", sharedTeacherWorkgroup.getId());
           sharedTeacherUserInfo.put("username", sharedTeacherWorkgroup.generateWorkgroupName());
+          sharedTeacherUserInfo.put(
+              "userId",
+              sharedTeacherWorkgroup.getMembers().iterator().next().getId()
+          );
 
           String sharedTeacherRole = runService.getSharedTeacherRole(run, sharedOwner);
           if (sharedTeacherRole == null) {
@@ -380,6 +384,7 @@ public class InformationController {
 
       teacherUserInfo.put("workgroupId", runOwnerWorkgroup.getId());
       teacherUserInfo.put("username", runOwner.getUserDetails().getUsername());
+      teacherUserInfo.put("userId", runOwner.getId());
     } catch (JSONException e1) {
       e1.printStackTrace();
     }
