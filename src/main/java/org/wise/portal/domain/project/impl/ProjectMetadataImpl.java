@@ -320,11 +320,7 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
     }
     setStandardsAddressed(standardsAddressed.toString());
 
-    String discourseCategoryURL = metadataJSON.optString("discourseCategoryURL", "");
-    if (discourseCategoryURL.equals("null")) {
-      discourseCategoryURL = "";
-    }
-    setDiscourseCategoryURL(discourseCategoryURL);
+    setDiscourseCategoryURL(metadataJSON.optString("discourseCategoryURL", ""));
 
     String keywords = metadataJSON.optString("keywords", "");
     if (keywords.equals("null")) {
