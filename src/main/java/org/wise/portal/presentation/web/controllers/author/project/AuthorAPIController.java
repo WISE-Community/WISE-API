@@ -291,6 +291,7 @@ public class AuthorAPIController {
       ObjectMapper mapper = new ObjectMapper();
       Map<String, Integer> map = mapper.readValue(structures, Map.class);
       config.put("automatedAssessmentProjectId", map.get("automatedAssessmentProjectId"));
+      config.put("simulationProjectId", map.get("simulationProjectId"));
     }
 
     MutableUserDetails userDetails = user.getUserDetails();
