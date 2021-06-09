@@ -8,10 +8,11 @@ import { UpgradeModule } from '@angular/upgrade/static';
 
 @Injectable()
 export class MultipleChoiceService extends ComponentService {
-
-  constructor(private upgrade: UpgradeModule,
-      protected StudentDataService: StudentDataService,
-      protected UtilService: UtilService) {
+  constructor(
+    private upgrade: UpgradeModule,
+    protected StudentDataService: StudentDataService,
+    protected UtilService: UtilService
+  ) {
     super(StudentDataService, UtilService);
   }
 
@@ -38,8 +39,10 @@ export class MultipleChoiceService extends ComponentService {
     const nodeId = criteria.params.nodeId;
     const componentId = criteria.params.componentId;
     const constraintChoiceIds = criteria.params.choiceIds;
-    const latestComponentState = this.StudentDataService
-        .getLatestComponentStateByNodeIdAndComponentId(nodeId, componentId);
+    const latestComponentState = this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(
+      nodeId,
+      componentId
+    );
     if (latestComponentState != null) {
       const studentChoices = latestComponentState.studentData.studentChoices;
       const studentChoiceIds = this.getStudentChoiceIdsFromStudentChoiceObjects(studentChoices);
@@ -59,12 +62,12 @@ export class MultipleChoiceService extends ComponentService {
 
   isChoiceIdsMatch(choiceIds1: string[], choiceIds2: string[]) {
     if (choiceIds1.length === choiceIds2.length) {
-        for (let choiceId of choiceIds2) {
-          if (choiceIds1.indexOf(choiceId) === -1) {
-            return false;
-          }
+      for (let choiceId of choiceIds2) {
+        if (choiceIds1.indexOf(choiceId) === -1) {
+          return false;
         }
-        return true;
+      }
+      return true;
     }
     return false;
   }
@@ -87,15 +90,22 @@ export class MultipleChoiceService extends ComponentService {
     return choiceIds;
   }
 
-  isCompleted(component: any, componentStates: any[], componentEvents: any[], nodeEvents: any[],
-      node: any) {
+  isCompleted(
+    component: any,
+    componentStates: any[],
+    componentEvents: any[],
+    nodeEvents: any[],
+    node: any
+  ) {
     if (componentStates && componentStates.length) {
       const isSubmitRequired = this.isSubmitRequired(node, component);
       for (let c = componentStates.length - 1; c >= 0; c--) {
         const componentState = componentStates[c];
         const studentChoices = this.getStudentChoicesFromComponentState(componentState);
-        if (studentChoices != null &&
-            (!isSubmitRequired || (isSubmitRequired && componentState.isSubmit))) {
+        if (
+          studentChoices != null &&
+          (!isSubmitRequired || (isSubmitRequired && componentState.isSubmit))
+        ) {
           return true;
         }
       }
@@ -121,7 +131,7 @@ export class MultipleChoiceService extends ComponentService {
       if (studentData != null) {
         const studentChoices = studentData.studentChoices;
         if (studentChoices != null) {
-          return studentChoices.map(studentChoice => studentChoice.text).join(', ');
+          return studentChoices.map((studentChoice) => studentChoice.text).join(', ');
         }
       }
     }
@@ -148,5 +158,72 @@ export class MultipleChoiceService extends ComponentService {
       }
     }
     return false;
+  }
+
+  calculateIsCorrect(componentContent: any, componentState: any): boolean {
+    if (this.isRadio(componentContent)) {
+      return this.isRadioCorrect(componentContent, componentState);
+    } else if (this.isCheckbox(componentContent)) {
+      return this.isCheckboxCorrect(componentContent, componentState);
+    }
+  }
+
+  isRadio(componentContent: any): boolean {
+    return componentContent.choiceType === 'radio';
+  }
+
+  isCheckbox(componentContent: any): boolean {
+    return componentContent.choiceType === 'checkbox';
+  }
+
+  isRadioCorrect(componentContent: any, componentState: any): boolean {
+    const correctChoiceId = this.getCorrectChoiceIdForRadio(componentContent);
+    return componentState.studentData.studentChoices[0].id === correctChoiceId;
+  }
+
+  getCorrectChoiceIdForRadio(componentContent: any): string {
+    for (const choice of componentContent.choices) {
+      if (choice.isCorrect) {
+        return choice.id;
+      }
+    }
+    return null;
+  }
+
+  isCheckboxCorrect(componentContent: any, componentState: any): boolean {
+    const correctChoiceIds = this.getCorrectChoiceIdsForCheckbox(componentContent);
+    const choiceIdsStudentChose = this.getChoicesIdsStudentChose(
+      componentState.studentData.studentChoices
+    );
+    return this.isChoiceIdsSame(correctChoiceIds, choiceIdsStudentChose);
+  }
+
+  getCorrectChoiceIdsForCheckbox(componentContent: any): string[] {
+    const correctChoiceIds: string[] = [];
+    for (const choice of componentContent.choices) {
+      if (choice.isCorrect) {
+        correctChoiceIds.push(choice.id);
+      }
+    }
+    return correctChoiceIds;
+  }
+
+  getChoicesIdsStudentChose(studentChoices: any[]): string[] {
+    return studentChoices.map((studentChoice) => studentChoice.id);
+  }
+
+  isChoiceIdsSame(choiceIds1: string[], choiceIds2: string[]): boolean {
+    if (choiceIds1.length !== choiceIds2.length) {
+      return false;
+    } else {
+      choiceIds1.sort();
+      choiceIds2.sort();
+      for (let i = 0; i < choiceIds1.length; i++) {
+        if (choiceIds1[i] !== choiceIds2[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 }

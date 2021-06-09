@@ -82,20 +82,9 @@ class MultipleChoiceController extends ComponentController {
     // whether the latest component state was a submit
     this.isLatestComponentStateSubmit = false;
 
-    if (this.mode === 'student') {
-      this.isPromptVisible = true;
-      this.isSaveButtonVisible = this.componentContent.showSaveButton;
-      this.isSubmitButtonVisible = this.componentContent.showSubmitButton;
-    } else if (this.mode === 'grading' || this.mode === 'gradingRevision') {
-      this.isSaveButtonVisible = false;
-      this.isSubmitButtonVisible = false;
-      this.isDisabled = true;
-    } else if (this.mode === 'showPreviousWork') {
-      this.isPromptVisible = true;
-      this.isSaveButtonVisible = false;
-      this.isSubmitButtonVisible = false;
-      this.isDisabled = true;
-    }
+    this.isPromptVisible = true;
+    this.isSaveButtonVisible = this.componentContent.showSaveButton;
+    this.isSubmitButtonVisible = this.componentContent.showSubmitButton;
 
     // check if there is a correct answer
     this.componentHasCorrectAnswer = this.hasCorrectChoices();
@@ -165,7 +154,7 @@ class MultipleChoiceController extends ComponentController {
      * action (optional; default is false)
      * @return a promise of a component state containing the student data
      */
-    this.$scope.getComponentState = function(isSubmit) {
+    this.$scope.getComponentState = function (isSubmit) {
       const deferred = this.$q.defer();
       let getState = false;
       let action = 'change';
@@ -184,7 +173,7 @@ class MultipleChoiceController extends ComponentController {
 
       if (getState) {
         // create a component state populated with the student data
-        this.$scope.multipleChoiceController.createComponentState(action).then(componentState => {
+        this.$scope.multipleChoiceController.createComponentState(action).then((componentState) => {
           deferred.resolve(componentState);
         });
       } else {

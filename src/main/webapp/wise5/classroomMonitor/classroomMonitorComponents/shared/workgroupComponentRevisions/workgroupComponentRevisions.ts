@@ -39,7 +39,7 @@ class WorkgroupComponentRevisionsController {
   populateData() {
     this.data = {};
     this.total = 0;
-    this.getNodeEnteredEvents().then(({events}) => {
+    this.getNodeEnteredEvents().then(({ events }) => {
       const nodeVisits = [];
       for (const event of events) {
         nodeVisits.push({
@@ -50,11 +50,7 @@ class WorkgroupComponentRevisionsController {
       let nVisits = nodeVisits.length;
 
       // group all component states by node visit
-      for (
-        let cStatesIndex = this.componentStates.length - 1;
-        cStatesIndex > -1;
-        cStatesIndex--
-      ) {
+      for (let cStatesIndex = this.componentStates.length - 1; cStatesIndex > -1; cStatesIndex--) {
         let componentState = this.componentStates[cStatesIndex];
         let id = componentState.id;
         let componentSaveTime = componentState.serverSaveTime;
@@ -92,8 +88,9 @@ class WorkgroupComponentRevisionsController {
             isRevision = true;
           } else {
             // Double check to see if there is an annotation associated with the component.
-            for (const annotation of
-                this.AnnotationService.getAnnotationsByStudentWorkId(state.id)) {
+            for (const annotation of this.AnnotationService.getAnnotationsByStudentWorkId(
+              state.id
+            )) {
               if (['score', 'autoScore', 'comment', 'autoComment'].includes(annotation.type)) {
                 isRevision = true;
                 break;
@@ -144,7 +141,9 @@ const WorkgroupComponentRevisions = {
   bindings: {
     componentStates: '<',
     nodeId: '@',
-    workgroupId: '@'
+    componentId: '@',
+    workgroupId: '@',
+    fromWorkgroupId: '@'
   },
   template: `<md-list class="component-revisions">
             <div ng-repeat="item in $ctrl.data | toArray | orderBy: '-clientSaveTime'"
@@ -157,10 +156,72 @@ const WorkgroupComponentRevisions = {
                             #{{$ctrl.total - $index}}
                             <span ng-if="$first"> (Latest)</span>
                         </h3>
-                        <div>
-                            <component component-state="{{ item.componentState }}"
-                                       workgroup-id="::$ctrl.workgroupId"
-                                       mode="gradingRevision">
+                        <div style="padding: 20px;">
+                            <ng-content ng-switch="item.componentState.componentType">
+                              <div ng-switch-when="Draw|Label|Match|MultipleChoice|OpenResponse" ng-switch-when-separator="|" class="component__content" layout="row" layout-wrap>
+                                  <div flex="100" flex-gt-sm="66" layout="column" class="component--grading__response">
+                                      <draw-grading
+                                          ng-if="item.componentState.componentType === 'Draw'"
+                                          node-id="{{::$ctrl.nodeId}}"
+                                          component-id="{{::$ctrl.componentId}}"
+                                          component-state="{{ item.componentState }}"
+                                          workgroup-id="::$ctrl.workgroupId"
+                                          is-revision="true">
+                                      </draw-grading>
+                                      <label-grading
+                                          ng-if="item.componentState.componentType === 'Label'"
+                                          node-id="{{::$ctrl.nodeId}}"
+                                          component-id="{{::$ctrl.componentId}}"
+                                          component-state="{{ item.componentState }}"
+                                          workgroup-id="::$ctrl.workgroupId"
+                                          is-revision="true">
+                                      </label-grading>
+                                      <match-grading
+                                          ng-if="item.componentState.componentType === 'Match'"
+                                          node-id="{{::$ctrl.nodeId}}"
+                                          component-id="{{::$ctrl.componentId}}"
+                                          component-state="{{ item.componentState }}"
+                                          workgroup-id="::$ctrl.workgroupId">
+                                      </match-grading>
+                                      <multiple-choice-grading
+                                          ng-if="item.componentState.componentType === 'MultipleChoice'"
+                                          node-id="{{::$ctrl.nodeId}}"
+                                          component-id="{{::$ctrl.componentId}}"
+                                          component-state="{{ item.componentState }}"
+                                          workgroup-id="::$ctrl.workgroupId">
+                                      </multiple-choice-grading>
+                                      <open-response-grading
+                                          ng-if="item.componentState.componentType === 'OpenResponse'"
+                                          node-id="{{::$ctrl.nodeId}}"
+                                          component-id="{{::$ctrl.componentId}}"
+                                          component-state="{{ item.componentState }}"
+                                          workgroup-id="::$ctrl.workgroupId">
+                                      </open-response-grading>
+                                      <component-revisions-info
+                                          node-id="::$ctrl.nodeId"
+                                          component-id="::$ctrl.componentId"
+                                          to-workgroup-id="::$ctrl.workgroupId"
+                                          component-state="item.componentState"
+                                          active='false'>
+                                      </component-revisions-info>
+                                  </div>
+                                  <div flex="100" flex-gt-sm="33" class="component--grading__annotations">
+                                    <component-grading node-id="::$ctrl.nodeId"
+                                        component-id="::$ctrl.componentId"
+                                        max-score="componentContent.maxScore"
+                                        from-workgroup-id="::$ctrl.fromWorkgroupId"
+                                        to-workgroup-id="$ctrl.workgroupId"
+                                        component-state-id="item.componentState.id"
+                                        show-all-annotations="true"
+                                        is-disabled="true">
+                                    </component-grading>
+                                  </div>
+                              </div>
+                              <component ng-switch-default
+                                         component-state="{{ item.componentState }}"
+                                         workgroup-id="::$ctrl.workgroupId"
+                                         mode="gradingRevision">
+                            </ng-content>
                         </div>
                     </div>
                 </md-list-item>

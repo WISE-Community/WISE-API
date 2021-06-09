@@ -6,8 +6,8 @@ let service: UtilService;
 describe('UtilService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ UpgradeModule ],
-      providers: [ UtilService ]
+      imports: [UpgradeModule],
+      providers: [UtilService]
     });
     service = TestBed.get(UtilService);
   });
@@ -20,6 +20,7 @@ describe('UtilService', () => {
   calculateMeanTests();
   getIntersectOfArraysTests();
   isValidJSONStringTests();
+  trimToLength();
 });
 
 function generateKeyTests() {
@@ -55,7 +56,7 @@ function convertStringToNumberTests() {
       expect(service.convertStringToNumber('-100')).toEqual(-100);
     });
 
-    it('should return null for null argument', () =>  {
+    it('should return null for null argument', () => {
       expect(service.convertStringToNumber(null)).toBeNull();
     });
 
@@ -126,25 +127,25 @@ function expectArrayNameOrder(arr, nameOrder) {
 
 function moveObjectUpNotTopElement() {
   it('moveObjectUp should move an object up when the object is not the top element', () => {
-    expectMoveFunctionResult('moveObjectUp', 1, ['b','a','c']);
+    expectMoveFunctionResult('moveObjectUp', 1, ['b', 'a', 'c']);
   });
 }
 
 function moveObjectUpIsTopElement() {
   it('moveObjectUp should not move an object up when the object is the top element', () => {
-    expectMoveFunctionResult('moveObjectUp', 0, ['a','b','c']);
+    expectMoveFunctionResult('moveObjectUp', 0, ['a', 'b', 'c']);
   });
 }
 
 function moveObjectDownNotBottomElement() {
   it('moveObjectDown should move an object down when the object is not the bottom element', () => {
-    expectMoveFunctionResult('moveObjectDown', 1, ['a','c','b']);
+    expectMoveFunctionResult('moveObjectDown', 1, ['a', 'c', 'b']);
   });
 }
 
 function moveObjectDownIsBottomElement() {
   it('moveObjectDown should not move an object down when the object is the bottom element', () => {
-    expectMoveFunctionResult('moveObjectDown', 2, ['a','b','c']);
+    expectMoveFunctionResult('moveObjectDown', 2, ['a', 'b', 'c']);
   });
 }
 
@@ -207,6 +208,18 @@ function isValidJSONStringTests() {
     it('should return false for invalid json strings', () => {
       const invalidJSON = '{"a":1,"b":2';
       expect(service.isValidJSONString(invalidJSON)).toBeFalsy();
+    });
+  });
+}
+
+function trimToLength() {
+  describe('trimToLength()', () => {
+    it('should keep strings intact if its length is equal to or less than max length', () => {
+      expect(service.trimToLength('123456789', 9)).toEqual('123456789');
+      expect(service.trimToLength('123456789', 10)).toEqual('123456789');
+    });
+    it('should trim length and add ellipses if length is longer than max length', () => {
+      expect(service.trimToLength('123456789', 7)).toEqual('1234...');
     });
   });
 }

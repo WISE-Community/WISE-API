@@ -1,6 +1,12 @@
 'use strict';
 
 import * as angular from 'angular';
+import * as $ from 'jquery';
+import * as fabric from 'fabric';
+window['fabric'] = fabric.fabric;
+import * as EventEmitter2 from 'eventemitter2';
+window['EventEmitter2'] = EventEmitter2;
+import DrawingTool from '../../lib/drawingTool/drawing-tool';
 import { ComponentService } from '../componentService';
 import { StudentAssetService } from '../../services/studentAssetService';
 import { Injectable } from '@angular/core';
@@ -10,11 +16,12 @@ import { UtilService } from '../../services/utilService';
 
 @Injectable()
 export class DrawService extends ComponentService {
-
-  constructor(private upgrade: UpgradeModule,
-      private StudentAssetService: StudentAssetService,
-      protected StudentDataService: StudentDataService,
-      protected UtilService: UtilService) {
+  constructor(
+    private upgrade: UpgradeModule,
+    private StudentAssetService: StudentAssetService,
+    protected StudentDataService: StudentDataService,
+    protected UtilService: UtilService
+  ) {
     super(StudentDataService, UtilService);
   }
 
@@ -52,8 +59,13 @@ export class DrawService extends ComponentService {
     return component;
   }
 
-  isCompleted(component: any, componentStates: any[], componentEvents: any[], nodeEvents: any[],
-      node: any) {
+  isCompleted(
+    component: any,
+    componentStates: any[],
+    componentEvents: any[],
+    nodeEvents: any[],
+    node: any
+  ) {
     if (componentStates != null && componentStates.length > 0) {
       if (this.isSubmitRequired(node, component)) {
         return this.hasComponentStateWithIsSubmitTrue(componentStates);
@@ -137,7 +149,7 @@ export class DrawService extends ComponentService {
       const canvas = this.getDrawingToolCanvas(componentState.nodeId, componentState.componentId);
       const canvasBase64String = canvas.toDataURL('image/png');
       const imageObject = this.UtilService.getImageObjectFromBase64String(canvasBase64String);
-      this.StudentAssetService.uploadAsset(imageObject).then(asset => {
+      this.StudentAssetService.uploadAsset(imageObject).then((asset) => {
         resolve(asset);
       });
     });
@@ -150,5 +162,50 @@ export class DrawService extends ComponentService {
       return canvas[0];
     }
     return null;
+  }
+
+  initializeDrawingTool(
+    drawingToolId: string,
+    stamps: any = {},
+    width: number = 800,
+    height: number = 600,
+    isHideDrawingTools: boolean = false
+  ): any {
+    const drawingTool = new DrawingTool('#' + drawingToolId, {
+      stamps: stamps,
+      parseSVG: true,
+      width: width,
+      height: height
+    });
+    let state = null;
+    $('#set-background').on('click', () => {
+      drawingTool.setBackgroundImage($('#background-src').val());
+    });
+    $('#resize-background').on('click', () => {
+      drawingTool.resizeBackgroundToCanvas();
+    });
+    $('#resize-canvas').on('click', () => {
+      drawingTool.resizeCanvasToBackground();
+    });
+    $('#shrink-background').on('click', () => {
+      drawingTool.shrinkBackgroundToCanvas();
+    });
+    $('#clear').on('click', () => {
+      drawingTool.clear(true);
+    });
+    $('#save').on('click', () => {
+      state = drawingTool.save();
+      $('#load').removeAttr('disabled');
+    });
+    $('#load').on('click', () => {
+      if (state === null) return;
+      drawingTool.load(state);
+    });
+    if (isHideDrawingTools) {
+      $('#' + drawingToolId)
+        .find('.dt-tools')
+        .hide();
+    }
+    return drawingTool;
   }
 }

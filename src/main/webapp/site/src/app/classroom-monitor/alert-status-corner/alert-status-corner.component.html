@@ -1,0 +1,4 @@
+<div *ngIf="hasAlert" class="corner">
+  <div class="corner-content" [ngClass]="{'corner-warn': hasNewAlert}" matTooltip="{{message}}"
+       matTooltipPosition="above"></div>
+</div>

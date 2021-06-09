@@ -91,8 +91,14 @@
     }
   }
 
-  .mat-divider {
+  .mat-divider-horizontal {
     margin: 16px 0;
+  }
+
+  .mat-menu-content {
+    .mat-divider-horizontal {
+      margin: 8px 0;
+    }
   }
 
   .mat-card-actions {
@@ -108,7 +114,7 @@
       margin-bottom: 0;
     }
 
-    .mat-divider {
+    .mat-divider-horizontal {
       margin: 0;
     }
   }
@@ -165,6 +171,22 @@
 
   .mat-tab-label-active {
     opacity: 1;
+  }
+
+  .mat-toolbar {
+    @include mat-typography-level-to-styles($custom-typography, subheading-2);
+
+    h1, h2, h3, h4, h5 ,h6 {
+      @include mat-typography-level-to-styles($custom-typography, subheading-2);
+    }
+  }
+
+  .mat-toolbar-row, .mat-toolbar-single-row {
+    height: $toolbar-height;
+  }
+
+  .mat-toolbar-multiple-rows {
+    min-height: $toolbar-height;
   }
 
   td {

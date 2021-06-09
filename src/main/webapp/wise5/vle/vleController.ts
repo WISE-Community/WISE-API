@@ -10,6 +10,7 @@ import { StudentDataService } from '../services/studentDataService';
 import * as angular from 'angular';
 import * as $ from 'jquery';
 import { Directive } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 @Directive()
 class VLEController {
@@ -23,19 +24,24 @@ class VLEController {
   navFilters: any;
   newNotifications: any;
   noteDialog: any;
-  notebookEnabled: boolean;
+  notesEnabled: boolean = false;
   notebookConfig: any;
   notebookItemPath: string;
+  notesVisible: boolean = false;
   notifications: any;
   pauseDialog: any;
   projectName: string;
   projectStyle: string;
-  reportItem: any;
+  reportEnabled: boolean = false;
+  reportFullscreen: boolean = false;
   themePath: string;
   totalScore: any;
-  currentNodeChangedSubscription: any;
-  showSessionWarningSubscription: any;
-  notificationChangedSubscription: any;
+  currentNodeChangedSubscription: Subscription;
+  showSessionWarningSubscription: Subscription;
+  notificationChangedSubscription: Subscription;
+  notesVisibleSubscription: Subscription;
+  pauseScreenSubscription: Subscription;
+  reportFullscreenSubscription: Subscription;
 
   static $inject = [
     '$anchorScroll',
@@ -82,7 +88,9 @@ class VLEController {
     this.SessionService = SessionService;
     this.StudentDataService = StudentDataService;
     this.$translate = this.$filter('translate');
-    this.$window.onbeforeunload = () => { this.SessionService.broadcastExit() };
+    this.$window.onbeforeunload = () => {
+      this.SessionService.broadcastExit();
+    };
 
     this.workgroupId = this.ConfigService.getWorkgroupId();
     this.currentNode = null;
@@ -96,11 +104,11 @@ class VLEController {
     this.projectName = this.ProjectService.getProjectTitle();
     this.totalScore = this.StudentDataService.getTotalScore();
     this.maxScore = this.StudentDataService.maxScore;
-    this.notebookEnabled = this.NotebookService.isNotebookEnabled();
-
-    this.notebookConfig = this.NotebookService.getNotebookConfig();
-    // Get report, if enabled; assume only one report for now
-    this.reportItem = this.notebookConfig.itemTypes.report.notes[0];
+    if (this.NotebookService.isNotebookEnabled()) {
+      this.notebookConfig = this.NotebookService.getStudentNotebookConfig();
+      this.notesEnabled = this.notebookConfig.itemTypes.note.enabled;
+      this.reportEnabled = this.notebookConfig.itemTypes.report.enabled;
+    }
 
     let userType = this.ConfigService.getConfigParam('userType');
     let contextPath = this.ConfigService.getConfigParam('contextPath');
@@ -123,8 +131,7 @@ class VLEController {
       });
     }
 
-    this.showSessionWarningSubscription = 
-        this.SessionService.showSessionWarning$.subscribe(() => {
+    this.showSessionWarningSubscription = this.SessionService.showSessionWarning$.subscribe(() => {
       const confirm = $mdDialog
         .confirm()
         .parent(angular.element(document.body))
@@ -147,85 +154,99 @@ class VLEController {
       this.logOut();
     });
 
-    this.currentNodeChangedSubscription = this.StudentDataService.currentNodeChanged$
-        .subscribe(({ previousNode }) => {
-      let currentNode = this.StudentDataService.getCurrentNode();
-      let currentNodeId = currentNode.id;
+    this.currentNodeChangedSubscription = this.StudentDataService.currentNodeChanged$.subscribe(
+      ({ previousNode }) => {
+        let currentNode = this.StudentDataService.getCurrentNode();
+        let currentNodeId = currentNode.id;
 
-      this.StudentDataService.updateStackHistory(currentNodeId);
-      this.StudentDataService.updateVisitedNodesHistory(currentNodeId);
+        this.StudentDataService.updateStackHistory(currentNodeId);
+        this.StudentDataService.updateVisitedNodesHistory(currentNodeId);
 
-      let componentId, componentType, category, eventName, eventData, eventNodeId;
-      if (previousNode != null && this.ProjectService.isGroupNode(previousNode.id)) {
-        // going from group to node or group to group
-        componentId = null;
-        componentType = null;
-        category = 'Navigation';
-        eventName = 'nodeExited';
-        eventData = {
-          nodeId: previousNode.id
-        };
-        eventNodeId = previousNode.id;
-        this.StudentDataService.saveVLEEvent(
-          eventNodeId,
-          componentId,
-          componentType,
-          category,
-          eventName,
-          eventData
-        );
+        let componentId, componentType, category, eventName, eventData, eventNodeId;
+        if (previousNode != null && this.ProjectService.isGroupNode(previousNode.id)) {
+          // going from group to node or group to group
+          componentId = null;
+          componentType = null;
+          category = 'Navigation';
+          eventName = 'nodeExited';
+          eventData = {
+            nodeId: previousNode.id
+          };
+          eventNodeId = previousNode.id;
+          this.StudentDataService.saveVLEEvent(
+            eventNodeId,
+            componentId,
+            componentType,
+            category,
+            eventName,
+            eventData
+          );
+        }
+
+        if (this.ProjectService.isGroupNode(currentNodeId)) {
+          componentId = null;
+          componentType = null;
+          category = 'Navigation';
+          eventName = 'nodeEntered';
+          eventData = {
+            nodeId: currentNode.id
+          };
+          eventNodeId = currentNode.id;
+          this.StudentDataService.saveVLEEvent(
+            eventNodeId,
+            componentId,
+            componentType,
+            category,
+            eventName,
+            eventData
+          );
+        }
       }
+    );
 
-      if (this.ProjectService.isGroupNode(currentNodeId)) {
-        componentId = null;
-        componentType = null;
-        category = 'Navigation';
-        eventName = 'nodeEntered';
-        eventData = {
-          nodeId: currentNode.id
-        };
-        eventNodeId = currentNode.id;
-        this.StudentDataService.saveVLEEvent(
-          eventNodeId,
-          componentId,
-          componentType,
-          category,
-          eventName,
-          eventData
-        );
-      }
-    });
-
-    this.$transitions.onSuccess({}, $transition => {
+    this.$transitions.onSuccess({}, ($transition) => {
       this.$anchorScroll('node');
     });
 
     this.notifications = this.NotificationService.notifications;
     this.newNotifications = this.getNewNotifications();
 
-    this.notificationChangedSubscription = this.NotificationService.notificationChanged$
-        .subscribe(() => {
-      // update new notifications
-      this.notifications = this.NotificationService.notifications;
-      this.newNotifications = this.getNewNotifications();
+    this.notificationChangedSubscription = this.NotificationService.notificationChanged$.subscribe(
+      () => {
+        // update new notifications
+        this.notifications = this.NotificationService.notifications;
+        this.newNotifications = this.getNewNotifications();
+      }
+    );
+
+    this.pauseScreenSubscription = this.StudentDataService.pauseScreen$.subscribe(
+      (doPause: boolean) => {
+        if (doPause) {
+          this.pauseScreen();
+        } else {
+          this.unPauseScreen();
+        }
+      }
+    );
+
+    this.notesVisibleSubscription =
+        this.NotebookService.notesVisible$.subscribe((notesVisible: boolean) => {
+      this.notesVisible = notesVisible;
     });
 
-    this.StudentDataService.pauseScreen$.subscribe((doPause: boolean) => {
-      if (doPause) {
-        this.pauseScreen();
-      } else {
-        this.unPauseScreen();
-      }
+    this.reportFullscreenSubscription =
+        this.NotebookService.reportFullScreen$.subscribe((full: boolean) => {
+      this.reportFullscreen = full;
     });
 
     // Make sure if we drop something on the page we don't navigate away
     // https://developer.mozilla.org/En/DragDrop/Drag_Operations#drop
-    $(document.body).on('dragover', function(e) {
+    $(document.body).on('dragover', function (e) {
       e.preventDefault();
       return false;
     });
 
-    $(document.body).on('drop', function(e) {
+    $(document.body).on('drop', function (e) {
       e.preventDefault();
       return false;
     });
@@ -297,6 +318,7 @@ class VLEController {
     this.currentNodeChangedSubscription.unsubscribe();
     this.showSessionWarningSubscription.unsubscribe();
     this.notificationChangedSubscription.unsubscribe();
+    this.pauseScreenSubscription.unsubscribe();
   }
 
   goHome() {
@@ -434,7 +456,7 @@ class VLEController {
    * Returns all ambient notifications that have not been dismissed yet
    */
   getNewAmbientNotifications() {
-    return this.notifications.filter(function(notification) {
+    return this.notifications.filter(function (notification) {
       let isAmbient = notification.data ? notification.data.isAmbient : false;
       return notification.timeDismissed == null && isAmbient;
     });
@@ -642,7 +664,7 @@ class VLEController {
        * Updates the annotation locally and on the server
        * @param annotation
        */
-      updateAnnotation: annotation => {
+      updateAnnotation: (annotation) => {
         this.AnnotationService.saveAnnotation(annotation);
       },
       /**
