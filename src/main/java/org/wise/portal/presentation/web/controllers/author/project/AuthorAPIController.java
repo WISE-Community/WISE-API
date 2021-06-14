@@ -473,6 +473,7 @@ public class AuthorAPIController {
   protected String importSteps(Authentication auth, @RequestBody ObjectNode objectNode)
       throws Exception {
     String steps = objectNode.get("steps").asText();
+    steps = steps.replaceAll("%20", " ");
     Integer toProjectId = objectNode.get("toProjectId").asInt();
     Integer fromProjectId = objectNode.get("fromProjectId").asInt();
     User user = userService.retrieveUserByUsername(auth.getName());
