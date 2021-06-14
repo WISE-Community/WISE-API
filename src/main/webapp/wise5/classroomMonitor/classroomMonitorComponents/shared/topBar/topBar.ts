@@ -55,10 +55,11 @@ class TopBarController {
     }
     this.avatarColor = this.ConfigService.getAvatarColorForWorkgroupId(this.workgroupId);
     this.userInfo = this.ConfigService.getMyUserInfo();
-    this.notificationChangedSubscription = this.NotificationService.notificationChanged$
-        .subscribe(() => {
-      this.setNotifications();
-    });
+    this.notificationChangedSubscription = this.NotificationService.notificationChanged$.subscribe(
+      () => {
+        this.setNotifications();
+      }
+    );
     this.themePath = this.ProjectService.getThemePath();
     this.contextPath = this.ConfigService.getContextPath();
 
@@ -100,15 +101,15 @@ class TopBarController {
   setNotifications() {
     // get all notifications for the logged in teacher
     // TODO: take into account shared teacher users!
-    let userNotifications = this.notifications.filter(notification => {
+    let userNotifications = this.notifications.filter((notification) => {
       return notification.toWorkgroupId === this.workgroupId;
     });
 
-    this.newNotifications = userNotifications.filter(notification => {
+    this.newNotifications = userNotifications.filter((notification) => {
       return notification.timeDismissed == null;
     });
 
-    this.dismissedNotifications = userNotifications.filter(notification => {
+    this.dismissedNotifications = userNotifications.filter((notification) => {
       return notification.timeDismissed != null;
     });
   }
@@ -147,9 +148,7 @@ class TopBarController {
 
   previewProject() {
     this.saveEvent('projectPreviewed').then(() => {
-      window.open(
-        `${this.ConfigService.getConfigParam('previewProjectURL')}`
-      );
+      window.open(`${this.ConfigService.getConfigParam('previewProjectURL')}`);
     });
   }
 
@@ -210,11 +209,11 @@ const TopBar = {
                     <md-icon>info</md-icon>
                     <md-tooltip>{{ $ctrl.runInfo }}</md-tooltip>
                   </md-button>
-                  <md-button ng-if="$ctrl.canAuthorProject" aria-label="{{ ::'switchToAuthoringView' | translate }}" class="md-icon-button" ng-click="$ctrl.switchToAuthoringView()">
+                  <md-button ng-if="$ctrl.canAuthorProject" hide-xs aria-label="{{ ::'switchToAuthoringView' | translate }}" class="md-icon-button" ng-click="$ctrl.switchToAuthoringView()">
                       <md-icon md-menu-origin> edit </md-icon>
                       <md-tooltip>{{ ::'switchToAuthoringView' | translate }}</md-tooltip>
                   </md-button>
-                  <md-button aria-label="{{ ::'previewProject' | translate }}" class="md-icon-button" ng-click="$ctrl.previewProject()">
+                  <md-button aria-label="{{ ::'previewProject' | translate }}" hide-xs class="md-icon-button" ng-click="$ctrl.previewProject()">
                       <md-icon md-menu-origin> visibility </md-icon>
                       <md-tooltip>{{ ::'previewProject' | translate }}</md-tooltip>
                   </md-button>

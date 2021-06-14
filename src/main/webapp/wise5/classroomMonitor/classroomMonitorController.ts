@@ -19,10 +19,13 @@ class ClassroomMonitorController {
   enableProjectAchievements: boolean;
   logoPath: string;
   menuOpen: boolean = false;
+  notebookConfig: any;
   notifications: any;
   numberProject: boolean = true;
   projectId: number;
   projectTitle: string;
+  reportEnabled: boolean = false;
+  reportFullscreen: boolean = false;
   runId: number;
   runCode: string;
   showGradeByStepTools: boolean = false;
@@ -35,6 +38,7 @@ class ClassroomMonitorController {
   workgroupId: number;
   serverConnectionStatusSubscription: any;
   showSessionWarningSubscription: any;
+  reportFullscreenSubscription: any;
 
   static $inject = [
     '$filter',
@@ -74,6 +78,10 @@ class ClassroomMonitorController {
     this.projectId = this.ConfigService.getProjectId();
     this.runId = this.ConfigService.getRunId();
     this.runCode = this.ConfigService.getRunCode();
+    if (this.NotebookService.isNotebookEnabled()) {
+      this.notebookConfig = this.NotebookService.getTeacherNotebookConfig();
+      this.reportEnabled = this.notebookConfig.enabled;
+    }
     this.enableProjectAchievements = this.ProjectService.getAchievements().isEnabled;
     this.views = {
       'root.cm.dashboard': {
@@ -160,24 +168,31 @@ class ClassroomMonitorController {
         }
       );
     });
-    
+
     this.SessionService.logOut$.subscribe(() => {
       this.logOut();
     });
 
-    $transitions.onSuccess({}, $transition => {
+    $transitions.onSuccess({}, ($transition) => {
       this.menuOpen = false;
       this.processUI();
     });
 
-    this.serverConnectionStatusSubscription = 
-        this.NotificationService.serverConnectionStatus$.subscribe((isConnected: boolean) => {
-      if (isConnected) {
-        this.handleServerReconnect();
-      } else {
-        this.handleServerDisconnect();
+    this.serverConnectionStatusSubscription = this.NotificationService.serverConnectionStatus$.subscribe(
+      (isConnected: boolean) => {
+        if (isConnected) {
+          this.handleServerReconnect();
+        } else {
+          this.handleServerDisconnect();
+        }
       }
-    });
+    );
+
+    this.reportFullscreenSubscription = this.NotebookService.reportFullScreen$.subscribe(
+      (full: boolean) => {
+        this.reportFullscreen = full;
+      }
+    );
 
     // TODO: make dynamic, set somewhere like in config?
     this.logoPath = this.ProjectService.getThemePath() + '/images/encore-website-sm-logo.png';
@@ -226,6 +241,7 @@ class ClassroomMonitorController {
   unsubscribeAll() {
     this.serverConnectionStatusSubscription.unsubscribe();
     this.showSessionWarningSubscription.unsubscribe();
+    this.reportFullscreenSubscription.unsubscribe();
   }
 
   /**

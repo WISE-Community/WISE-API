@@ -8,48 +8,37 @@ import { Directive } from '@angular/core';
 
 @Directive()
 class StudentGradingToolsController {
-  $translate: any;
   avatarColor: string;
   icons: any;
   is_rtl: boolean;
   nextId: any;
   periodId: number;
   prevId: any;
-  selectTeamPlaceholder: string;
   workgroupId: number;
   workgroups: any;
   currentPeriodChangedSubscription: any;
 
-  static $inject = [
-    '$filter',
-    '$scope',
-    '$state',
-    'orderByFilter',
-    'ConfigService',
-    'TeacherDataService'
-  ];
+  static $inject = ['$scope', '$state', 'orderByFilter', 'ConfigService', 'TeacherDataService'];
 
   constructor(
-    $filter: any,
     private $scope: any,
     private $state: any,
     private orderBy: any,
     private ConfigService: ConfigService,
     private TeacherDataService: TeacherDataService
   ) {
-    this.$translate = $filter('translate');
-
     this.is_rtl = $('html').attr('dir') == 'rtl';
     this.icons = { prev: 'chevron_left', next: 'chevron_right' };
     if (this.is_rtl) {
       this.icons = { prev: 'chevron_right', next: 'chevron_left' };
     }
 
-    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$
-        .subscribe(({ currentPeriod }) => {
-      this.periodId = currentPeriod.periodId;
-      this.filterForPeriod();
-    });
+    this.currentPeriodChangedSubscription = this.TeacherDataService.currentPeriodChanged$.subscribe(
+      ({ currentPeriod }) => {
+        this.periodId = currentPeriod.periodId;
+        this.filterForPeriod();
+      }
+    );
     this.$scope.$on('$destroy', () => {
       this.ngOnDestroy();
     });
@@ -63,9 +52,7 @@ class StudentGradingToolsController {
     this.currentPeriodChangedSubscription.unsubscribe();
   }
 
-  $onInit() {
-    this.selectTeamPlaceholder = this.$translate('selectATeam');
-  }
+  $onInit() {}
 
   $onChanges() {
     this.avatarColor = this.ConfigService.getAvatarColorForWorkgroupId(this.workgroupId);
@@ -158,9 +145,7 @@ const StudentGradingTools = {
       </md-button>
       <md-icon class="md-30" hide-xs
                style="color: {{ $ctrl.avatarColor }};"> account_circle </md-icon>&nbsp;
-      <workgroup-select custom-class="'md-button md-no-underline
-                          toolbar__select toolbar__select--fixedwidth'"
-                        custom-placeholder="$ctrl.selectTeamPlaceholder"></workgroup-select>
+      <workgroup-select-dropdown custom-class="md-button md-no-underline toolbar__select toolbar__select--fixedwidth"></workgroup-select-dropdown>
       <md-button aria-label="{{ ::'nextTeam' | translate }}"
                  class="md-icon-button toolbar__nav"
                  ng-disabled="!$ctrl.nextId" ng-click="$ctrl.goToNextTeam()">

@@ -1,21 +1,21 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditProfileComponent } from './edit-profile.component';
-import { UserService } from "../../../services/user.service";
-import { Teacher } from "../../../domain/teacher";
-import { Observable, BehaviorSubject } from 'rxjs';
+import { UserService } from '../../../services/user.service';
+import { Teacher } from '../../../domain/teacher';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { TeacherService } from "../../teacher.service";
-import { NO_ERRORS_SCHEMA } from "@angular/core";
+import { TeacherService } from '../../teacher.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { By } from '@angular/platform-browser';
-import { User } from "../../../domain/user";
+import { User } from '../../../domain/user';
 import { configureTestSuite } from 'ng-bullet';
+import { MatDialogModule } from '@angular/material/dialog';
 
 export class MockUserService {
-
   user: User;
 
   getUser(): BehaviorSubject<Teacher> {
@@ -38,8 +38,9 @@ export class MockUserService {
     userBehaviorSubject.next(user);
     return userBehaviorSubject;
   }
+
   getLanguages() {
-    return Observable.create( observer => {
+    return Observable.create((observer) => {
       observer.next([]);
       observer.complete();
     });
@@ -60,7 +61,7 @@ export class MockUserService {
 
 export class MockTeacherService {
   updateProfile() {
-    return Observable.create(observer => {
+    return Observable.create((observer) => {
       observer.next({});
       observer.complete();
     });
@@ -86,10 +87,11 @@ describe('EditProfileComponent', () => {
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [ EditProfileComponent ],
+      declarations: [EditProfileComponent],
       imports: [
         BrowserAnimationsModule,
         ReactiveFormsModule,
+        MatDialogModule,
         MatInputModule,
         MatSelectModule,
         MatSnackBarModule
@@ -98,7 +100,7 @@ describe('EditProfileComponent', () => {
         { provide: TeacherService, useClass: MockTeacherService },
         { provide: UserService, useClass: MockUserService }
       ],
-      schemas: [ NO_ERRORS_SCHEMA ]
+      schemas: [NO_ERRORS_SCHEMA]
     });
   });
 
@@ -119,6 +121,7 @@ describe('EditProfileComponent', () => {
 
   it('should disable submit button and validate form on initial state', () => {
     const submitButton = getSubmitButton();
+    expect(component.changed).toBe(false);
     expect(component.editProfileFormGroup.valid).toBeTruthy();
     expect(submitButton.disabled).toBe(true);
   });
@@ -130,7 +133,7 @@ describe('EditProfileComponent', () => {
     expect(submitButton.disabled).toBe(false);
   });
 
-  it('should disable submit button when form is submitted', async() => {
+  it('should disable submit button when form is submitted', async () => {
     const submitButton = getSubmitButton();
     const form = getForm();
     form.triggerEventHandler('submit', null);
@@ -138,11 +141,21 @@ describe('EditProfileComponent', () => {
     expect(submitButton.disabled).toBe(true);
   });
 
-  it('should update the user', async() => {
+  it('should update the user', async () => {
     component.editProfileFormGroup.get('language').setValue('Spanish');
     submitForm();
     fixture.detectChanges();
     const testBedUserService = TestBed.get(UserService);
     expect(testBedUserService.user.language).toBe('Spanish');
+  });
+
+  it('should disable the email field if user has linked a Google account', async () => {
+    const testBedUserService = TestBed.get(UserService);
+    const user = component.user;
+    user.isGoogleUser = true;
+    spyOn(testBedUserService, 'getUser').and.returnValue(of(user))
+    component.getUser();
+    fixture.detectChanges();
+    expect(component.editProfileFormGroup.get('email').disabled).toBe(true);
   });
 });

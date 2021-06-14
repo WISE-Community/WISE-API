@@ -1,6 +1,8 @@
 'use strict';
 
 import * as angular from 'angular';
+import { fabric } from 'fabric';
+import SVG from 'svg.js';
 import { ComponentService } from '../componentService';
 import { StudentAssetService } from '../../services/studentAssetService';
 import { Injectable } from '@angular/core';
@@ -10,11 +12,17 @@ import { StudentDataService } from '../../services/studentDataService';
 
 @Injectable()
 export class LabelService extends ComponentService {
+  lineZIndex: number = 0;
+  textZIndex: number = 1;
+  circleZIndex: number = 2;
+  defaultTextBackgroundColor: string = 'blue';
 
-  constructor(private upgrade: UpgradeModule,
-      private StudentAssetService: StudentAssetService,
-      protected StudentDataService: StudentDataService,
-      protected UtilService: UtilService) {
+  constructor(
+    private upgrade: UpgradeModule,
+    private StudentAssetService: StudentAssetService,
+    protected StudentDataService: StudentDataService,
+    protected UtilService: UtilService
+  ) {
     super(StudentDataService, UtilService);
     this.StudentAssetService = StudentAssetService;
   }
@@ -40,8 +48,13 @@ export class LabelService extends ComponentService {
     return component;
   }
 
-  isCompleted(component: any, componentStates: any[], componentEvents: any[], nodeEvents: any[],
-      node: any) {
+  isCompleted(
+    component: any,
+    componentStates: any[],
+    componentEvents: any[],
+    nodeEvents: any[],
+    node: any
+  ) {
     if (!this.canEdit(component) && this.UtilService.hasNodeEnteredEvent(nodeEvents)) {
       return true;
     }
@@ -85,8 +98,10 @@ export class LabelService extends ComponentService {
       return this.componentStateHasLabel(componentState);
     } else {
       if (this.componentHasStarterLabel(componentContent)) {
-        return componentState != null &&
-            !this.labelArraysAreTheSame(componentState.studentData.labels, componentContent.labels);
+        return (
+          componentState != null &&
+          !this.labelArraysAreTheSame(componentState.studentData.labels, componentContent.labels)
+        );
       } else {
         return this.componentStateHasLabel(componentState);
       }
@@ -108,8 +123,10 @@ export class LabelService extends ComponentService {
   componentStateIsSameAsStarter(componentState: any, componentContent: any) {
     if (componentState != null) {
       if (this.componentHasStarterLabel(componentContent)) {
-        return this.labelArraysAreTheSame(componentState.studentData.labels,
-            componentContent.labels);
+        return this.labelArraysAreTheSame(
+          componentState.studentData.labels,
+          componentContent.labels
+        );
       } else {
         return !this.componentStateHasLabel(componentState);
       }
@@ -171,12 +188,14 @@ export class LabelService extends ComponentService {
   }
 
   labelFieldsAreTheSame(label1: any, label2: any) {
-    return label1.text === label2.text &&
-        label1.pointX === label2.pointX &&
-        label1.pointY === label2.pointY &&
-        label1.textX === label2.textX &&
-        label1.textY === label2.textY &&
-        label1.color === label2.color;
+    return (
+      label1.text === label2.text &&
+      label1.pointX === label2.pointX &&
+      label1.pointY === label2.pointY &&
+      label1.textX === label2.textX &&
+      label1.textY === label2.textY &&
+      label1.color === label2.color
+    );
   }
 
   /**
@@ -275,7 +294,7 @@ export class LabelService extends ComponentService {
     const image = new Image();
     const thisUtilService = this.UtilService;
     return new Promise((resolve, reject) => {
-      image.onload = event => {
+      image.onload = (event) => {
         const image: any = event.target;
         myCanvas.width = image.width;
         myCanvas.height = image.height;
@@ -284,28 +303,30 @@ export class LabelService extends ComponentService {
         const imageObject = thisUtilService.getImageObjectFromBase64String(base64Image);
 
         // create a student asset image
-        this.StudentAssetService.uploadAsset(imageObject).then(unreferencedAsset => {
+        this.StudentAssetService.uploadAsset(imageObject).then((unreferencedAsset) => {
           /*
            * make a copy of the unreferenced asset so that we
            * get a referenced asset
            */
-          this.StudentAssetService.copyAssetForReference(unreferencedAsset).then(referencedAsset => {
-            if (referencedAsset != null) {
-              /*
-               * get the asset url
-               * for example
-               * /wise/studentuploads/11261/297478/referenced/picture_1494016652542.png
-               * if we are in preview mode this url will be a base64 string instead
-               */
-              const referencedAssetUrl = referencedAsset.url;
+          this.StudentAssetService.copyAssetForReference(unreferencedAsset).then(
+            (referencedAsset) => {
+              if (referencedAsset != null) {
+                /*
+                 * get the asset url
+                 * for example
+                 * /wise/studentuploads/11261/297478/referenced/picture_1494016652542.png
+                 * if we are in preview mode this url will be a base64 string instead
+                 */
+                const referencedAssetUrl = referencedAsset.url;
 
-              // remove the unreferenced asset
-              this.StudentAssetService.deleteAsset(unreferencedAsset);
+                // remove the unreferenced asset
+                this.StudentAssetService.deleteAsset(unreferencedAsset);
 
-              // resolve the promise with the image url
-              resolve(referencedAssetUrl);
+                // resolve the promise with the image url
+                resolve(referencedAssetUrl);
+              }
             }
-          });
+          );
         });
       };
 
@@ -324,8 +345,10 @@ export class LabelService extends ComponentService {
   }
 
   getSVGTextElementString(fontSize: any, tspans: string) {
-    return `<text id="SvgjsText1008" font-family="Helvetica, Arial, sans-serif" font-size="` +
-        `${fontSize}">${tspans}</text>`;
+    return (
+      `<text id="SvgjsText1008" font-family="Helvetica, Arial, sans-serif" font-size="` +
+      `${fontSize}">${tspans}</text>`
+    );
   }
 
   /**
@@ -352,5 +375,197 @@ export class LabelService extends ComponentService {
     } else {
       return null;
     }
+  }
+
+  initializeCanvas(canvasId: string, width: number, height: number, isDisabled: boolean): any {
+    let canvas: any = null;
+    if (isDisabled) {
+      canvas = new fabric.StaticCanvas(canvasId);
+    } else {
+      canvas = new fabric.Canvas(canvasId);
+    }
+    canvas.selection = false;
+    canvas.hoverCursor = 'pointer';
+    this.setCanvasDimension(canvas, width, height);
+    $('#canvasParent_' + canvasId).css('height', height + 2);
+    return canvas;
+  }
+
+  setCanvasDimension(canvas: any, width: number, height: number): void {
+    canvas.setWidth(width);
+    canvas.setHeight(height);
+  }
+
+  isStudentDataVersion(componentState: any, studentDataVersion: number): boolean {
+    return componentState.studentData.version === studentDataVersion;
+  }
+
+  addLabelsToCanvas(
+    canvas: any,
+    labels: any[],
+    width: number,
+    height: number,
+    pointSize: number,
+    fontSize: number,
+    labelWidth: number,
+    enableCircles: boolean,
+    studentDataVersion: number
+  ): any[] {
+    const fabricLabels: any[] = [];
+    labels.forEach((label) => {
+      const fabricLabel = this.createLabel(
+        label.pointX,
+        label.pointY,
+        label.textX,
+        label.textY,
+        label.text,
+        label.color,
+        label.canEdit,
+        label.canDelete,
+        width,
+        height,
+        pointSize,
+        fontSize,
+        labelWidth,
+        studentDataVersion
+      );
+      this.addLabelToCanvas(canvas, fabricLabel, enableCircles);
+      fabricLabels.push(fabricLabel);
+    });
+    return fabricLabels;
+  }
+
+  createLabel(
+    pointX: number,
+    pointY: number,
+    textX: number,
+    textY: number,
+    textString: string,
+    color: string = this.defaultTextBackgroundColor,
+    canEdit: boolean = true,
+    canDelete: boolean = true,
+    canvasWidth: number,
+    canvasHeight: number,
+    pointSize: number = 5,
+    fontSize: number = 20,
+    labelWidth: number,
+    studentDataVersion: number = 2
+  ): any {
+    // get the position of the point
+    let x1: number = pointX;
+    let y1: number = pointY;
+    let x2: number = null;
+    let y2: number = null;
+
+    if (studentDataVersion === 1) {
+      // get the absolute position of the text
+      x2 = pointX + textX;
+      y2 = pointY + textY;
+    } else {
+      x2 = textX;
+      y2 = textY;
+    }
+
+    /*
+     * Make sure all the positions are within the bounds of the canvas. If there
+     * are any positions that are outside the bounds, we will change the
+     * position to be within the bounds.
+     */
+    x1 = this.makeSureValueIsWithinLimit(x1, canvasWidth);
+    y1 = this.makeSureValueIsWithinLimit(y1, canvasHeight);
+    x2 = this.makeSureValueIsWithinLimit(x2, canvasWidth);
+    y2 = this.makeSureValueIsWithinLimit(y2, canvasHeight);
+
+    const circle: any = new fabric.Circle({
+      radius: pointSize,
+      left: x1,
+      top: y1,
+      originX: 'center',
+      originY: 'center',
+      hasControls: false,
+      borderColor: 'red',
+      hasBorders: true,
+      selectable: true
+    });
+
+    const line: any = new fabric.Line([x1, y1, x2, y2], {
+      fill: 'black',
+      stroke: 'black',
+      strokeWidth: 3,
+      selectable: false
+    });
+
+    let wrappedTextString = textString;
+    if (labelWidth != null) {
+      wrappedTextString = this.UtilService.wordWrap(textString, labelWidth);
+    }
+
+    // create an editable text element
+    const text: any = new fabric.IText(wrappedTextString, {
+      left: x2,
+      top: y2,
+      originX: 'center',
+      originY: 'center',
+      fontSize: fontSize,
+      fill: 'white',
+      backgroundColor: color,
+      width: 100,
+      hasControls: false,
+      hasBorders: true,
+      borderColor: 'red',
+      borderDashArray: [8, 8],
+      borderScaleFactor: 3,
+      borderOpacityWhenMoving: 1,
+      selectable: true,
+      cursorWidth: 0,
+      editable: false,
+      padding: 16
+    });
+
+    // give the circle a reference to the line and text elements
+    circle.line = line;
+    circle.text = text;
+
+    // give the text element a reference to the line and circle elements
+    text.line = line;
+    text.circle = circle;
+
+    return {
+      circle: circle,
+      line: line,
+      text: text,
+      textString: textString,
+      canEdit: canEdit,
+      canDelete: canDelete
+    };
+  }
+
+  addLabelToCanvas(canvas: any, label: any, enableCircles: boolean): void {
+    const circle: any = label.circle;
+    const line: any = label.line;
+    const text: any = label.text;
+    if (enableCircles) {
+      canvas.add(circle, line, text);
+      canvas.moveTo(line, this.lineZIndex);
+      canvas.moveTo(text, this.textZIndex);
+      canvas.moveTo(circle, this.circleZIndex);
+    } else {
+      canvas.add(text);
+      canvas.moveTo(text, this.textZIndex);
+    }
+    canvas.renderAll();
+  }
+
+  makeSureValueIsWithinLimit(value: number, limit: number): number {
+    if (value < 0) {
+      value = 0;
+    } else if (value > limit) {
+      value = limit;
+    }
+    return value;
+  }
+
+  setBackgroundImage(canvas: any, backgroundPath: string): void {
+    canvas.setBackgroundImage(backgroundPath, canvas.renderAll.bind(canvas));
   }
 }

@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterEvent } from '@angular/router';
 import { ConfigService } from '../../../../site/src/app/services/config.service';
-import { TeacherService } from '../../../../site/src/app/teacher/teacher.service';
 import { TeacherRun } from '../../../../site/src/app/teacher/teacher-run';
 import { Observable } from 'rxjs';
 import { Run } from '../../../../site/src/app/domain/run';
@@ -19,7 +18,6 @@ export class AppComponent {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private teacherService: TeacherService,
         private classesStore: ClassesStore,
     ) {
         console.log(window.location.href);

@@ -1,18 +1,17 @@
-import { Injectable } from "@angular/core";
-import { Observable, Subject } from "rxjs";
-import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Project } from "../domain/project";
-import { Teacher } from "../domain/teacher";
-import { Run } from "../domain/run";
-import { Course } from "../domain/course";
-import { Workgroup } from "../domain/workgroup";
-import { Period } from "../domain/period";
+import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Project } from '../domain/project';
+import { Teacher } from '../domain/teacher';
+import { Run } from '../domain/run';
+import { Course } from '../domain/course';
+import { Workgroup } from '../domain/workgroup';
+import { Period } from '../domain/period';
 import { MatDialog } from '@angular/material/dialog';
 import { CopyProjectDialogComponent } from '../modules/library/copy-project-dialog/copy-project-dialog.component';
 
 @Injectable()
 export class TeacherService {
-
   private runsUrl = '/api/teacher/runs';
   private sharedRunsUrl = '/api/teacher/sharedruns';
   private registerUrl = '/api/teacher/register';
@@ -25,7 +24,7 @@ export class TeacherService {
   private lastRunUrl = '/api/teacher/projectlastrun';
   private addPeriodToRunUrl = '/api/teacher/run/add/period';
   private deletePeriodFromRunUrl = '/api/teacher/run/delete/period';
-  private updateRandomPeriodAssignmentUrl = "api/teacher/run/update/random-period-assignment";
+  private updateRandomPeriodAssignmentUrl = 'api/teacher/run/update/random-period-assignment';
   private updateRunStudentsPerTeamUrl = '/api/teacher/run/update/studentsperteam';
   private updateRunStartTimeUrl = '/api/teacher/run/update/starttime';
   private updateRunEndTimeUrl = '/api/teacher/run/update/endtime';
@@ -54,12 +53,12 @@ export class TeacherService {
   }
 
   getRuns(): Observable<Run[]> {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
     return this.http.get<Run[]>(this.runsUrl, { headers: headers });
   }
 
   getSharedRuns(): Observable<Run[]> {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
     return this.http.get<Run[]>(this.sharedRunsUrl, { headers: headers });
   }
 
@@ -80,49 +79,52 @@ export class TeacherService {
   }
 
   getProjectContent(project: Project) {
-    this.http
-      .get<any>(`/curriculum/${project.id}/project.json`)
-      .subscribe(content => {
-        project.setContent(content);
-      });
+    this.http.get<any>(`/curriculum/${project.id}/project.json`).subscribe((content) => {
+      project.setContent(content);
+    });
   }
 
   registerTeacherAccount(teacherUser: Teacher): Observable<any> {
     const headers = {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     };
-    return this.http.post(this.registerUrl, teacherUser,
-        { headers: headers, responseType: 'json' });
+    return this.http.post(this.registerUrl, teacherUser, {
+      headers: headers,
+      responseType: 'json'
+    });
   }
 
-  createRun(projectId: number, periods: string, isRandomPeriodAssignment: boolean,
-      maxStudentsPerTeam: number, startDate: number, endDate: number,
-      isLockedAfterEndDate: boolean): Observable<Run> {
+  createRun(
+    projectId: number,
+    periods: string,
+    isRandomPeriodAssignment: boolean,
+    maxStudentsPerTeam: number,
+    startDate: number,
+    endDate: number,
+    isLockedAfterEndDate: boolean
+  ): Observable<Run> {
     const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("projectId", projectId + "");
-    body = body.set("periods", periods);
-    body = body.set("isRandomPeriodAssignment", isRandomPeriodAssignment + "");
-    body = body.set("maxStudentsPerTeam", maxStudentsPerTeam + "");
-    body = body.set("startDate", startDate + "");
+    body = body.set('projectId', projectId + '');
+    body = body.set('periods', periods);
+    body = body.set('isRandomPeriodAssignment', isRandomPeriodAssignment + '');
+    body = body.set('maxStudentsPerTeam', maxStudentsPerTeam + '');
+    body = body.set('startDate', startDate + '');
     if (endDate) {
-      body = body.set('endDate', endDate + "");
-      body = body.set('isLockedAfterEndDate', isLockedAfterEndDate + "");
+      body = body.set('endDate', endDate + '');
+      body = body.set('isLockedAfterEndDate', isLockedAfterEndDate + '');
     }
     return this.http.post<Run>(this.createRunUrl, body, { headers: headers });
   }
 
   retrieveAllTeacherUsernames(): Observable<string[]> {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
     return this.http.get<string[]>(this.usernamesUrl, { headers: headers });
   }
 
   addSharedOwner(runId: number, teacherUsername: string) {
     const url = `${this.runPermissionUrl}/${runId}/${teacherUsername}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.put<Object>(url, null, { headers: headers });
   }
 
@@ -134,80 +136,43 @@ export class TeacherService {
 
   removeSharedOwner(runId: number, username: string) {
     const url = `${this.runPermissionUrl}/${runId}/${username}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.delete<Object>(url, { headers: headers });
   }
 
-  addSharedOwnerRunPermission(
-    runId: number,
-    userId: string,
-    permissionId: number
-  ) {
+  addSharedOwnerRunPermission(runId: number, userId: string, permissionId: number) {
     const url = `${this.runPermissionUrl}/${runId}/${userId}/${permissionId}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.put<any>(url, null, { headers: headers });
   }
 
-  removeSharedOwnerRunPermission(
-    runId: number,
-    userId: string,
-    permissionId: number
-  ) {
+  removeSharedOwnerRunPermission(runId: number, userId: string, permissionId: number) {
     const url = `${this.runPermissionUrl}/${runId}/${userId}/${permissionId}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.delete<any>(url, { headers: headers });
   }
 
-  addSharedOwnerProjectPermission(
-    projectId: number,
-    userId: string,
-    permissionId: number
-  ) {
+  addSharedOwnerProjectPermission(projectId: number, userId: string, permissionId: number) {
     const url = `${this.projectPermissionUrl}/${projectId}/${userId}/${permissionId}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.put<Object>(url, { headers: headers });
   }
 
-  removeSharedOwnerProjectPermission(
-    projectId: number,
-    userId: string,
-    permissionId: number
-  ) {
+  removeSharedOwnerProjectPermission(projectId: number, userId: string, permissionId: number) {
     const url = `${this.projectPermissionUrl}/${projectId}/${userId}/${permissionId}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.delete<Object>(url, { headers: headers });
   }
 
   addSharedProjectOwner(projectId: number, username: string) {
     const url = `${this.projectPermissionUrl}/${projectId}/${username}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.put<Object>(url, null, { headers: headers });
   }
 
   removeSharedProjectOwner(projectId: number, username: string) {
     const url = `${this.projectPermissionUrl}/${projectId}/${username}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     return this.http.delete<Object>(url, { headers: headers });
   }
 
@@ -226,19 +191,16 @@ export class TeacherService {
     schoolLevel,
     language
   ) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("displayName", displayName);
-    body = body.set("email", email);
-    body = body.set("city", city);
-    body = body.set("state", state);
-    body = body.set("country", country);
-    body = body.set("schoolName", schoolName);
-    body = body.set("schoolLevel", schoolLevel);
-    body = body.set("language", language);
+    body = body.set('displayName', displayName);
+    body = body.set('email', email);
+    body = body.set('city', city);
+    body = body.set('state', state);
+    body = body.set('country', country);
+    body = body.set('schoolName', schoolName);
+    body = body.set('schoolLevel', schoolLevel);
+    body = body.set('language', language);
     return this.http.post<any>(this.updateProfileUrl, body, {
       headers: headers
     });
@@ -246,111 +208,89 @@ export class TeacherService {
 
   addPeriodToRun(runId: number, periodName: string) {
     const url = `${this.addPeriodToRunUrl}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("periodName", periodName);
+    body = body.set('runId', runId + '');
+    body = body.set('periodName', periodName);
     return this.http.post<Object>(url, body, { headers: headers });
   }
 
   deletePeriodFromRun(runId: number, periodName: string) {
     const url = `${this.deletePeriodFromRunUrl}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("periodName", periodName);
+    body = body.set('runId', runId + '');
+    body = body.set('periodName', periodName);
     return this.http.post<Object>(url, body, { headers: headers });
   }
 
   updateRandomPeriodAssignment(runId: number, isRandomPeriodAssignment: boolean) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("isRandomPeriodAssignment", isRandomPeriodAssignment + "");
-    return this.http.post<Object>(`${this.updateRandomPeriodAssignmentUrl}`, body, { headers: headers });
+    body = body.set('runId', runId + '');
+    body = body.set('isRandomPeriodAssignment', isRandomPeriodAssignment + '');
+    return this.http.post<Object>(`${this.updateRandomPeriodAssignmentUrl}`, body, {
+      headers: headers
+    });
   }
 
   updateRunStudentsPerTeam(runId: number, maxStudentsPerTeam: number) {
     const url = `${this.updateRunStudentsPerTeamUrl}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("maxStudentsPerTeam", maxStudentsPerTeam + "");
+    body = body.set('runId', runId + '');
+    body = body.set('maxStudentsPerTeam', maxStudentsPerTeam + '');
     return this.http.post<Object>(url, body, { headers: headers });
   }
 
   updateRunStartTime(runId: number, startTime: number) {
     const url = `${this.updateRunStartTimeUrl}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
-    body = body.set("runId", runId + "");
-    body = body.set("startTime", startTime + "");
+    body = body.set('runId', runId + '');
+    body = body.set('startTime', startTime + '');
     return this.http.post<Object>(url, body, { headers: headers });
   }
 
   updateRunEndTime(runId: number, endTime: number) {
     const url = `${this.updateRunEndTimeUrl}`;
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let body = new HttpParams();
     body = body.set('runId', runId + '');
     if (endTime != null) {
       body = body.set('endTime', endTime + '');
     }
-    return this.http.post<Object>(url, body, {headers: headers});
+    return this.http.post<Object>(url, body, { headers: headers });
   }
 
   updateIsLockedAfterEndDate(runId: number, isLockedAfterEndDate: boolean) {
     const url = `${this.updateRunIsLockedAfterEndDateUrl}`;
     const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     const body = new HttpParams()
-        .set('runId', runId + '')
-        .set('isLockedAfterEndDate', isLockedAfterEndDate + '');
-    return this.http.post<Object>(url, body, {headers: headers});
+      .set('runId', runId + '')
+      .set('isLockedAfterEndDate', isLockedAfterEndDate + '');
+    return this.http.post<Object>(url, body, { headers: headers });
   }
 
   sendForgotUsernameEmail(email) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
-    const params = new HttpParams().set("email", email);
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    const params = new HttpParams().set('email', email);
     return this.http.post<any>(this.forgotUsernameUrl, params, {
       headers: headers
     });
   }
 
   sendForgotPasswordEmail(username) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
-    const params = new HttpParams().set("username", username);
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
+    const params = new HttpParams().set('username', username);
     return this.http.post<any>(this.forgotPasswordUrl, params, {
       headers: headers
     });
   }
 
   getVerificationCodeEmail(username) {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
-    const params = new HttpParams().set("username", username);
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
+    const params = new HttpParams().set('username', username);
     return this.http.get<any>(this.getVerificationCodeUrl, {
       headers: headers,
       params: params
@@ -358,37 +298,31 @@ export class TeacherService {
   }
 
   checkVerificationCode(username, verificationCode) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let params = new HttpParams();
-    params = params.set("username", username);
-    params = params.set("verificationCode", verificationCode);
+    params = params.set('username', username);
+    params = params.set('verificationCode', verificationCode);
     return this.http.post<any>(this.checkVerificationCodeUrl, params, {
       headers: headers
     });
   }
 
   changePassword(username, verificationCode, password, confirmPassword) {
-    const headers = new HttpHeaders().set(
-      "Content-Type",
-      "application/x-www-form-urlencoded"
-    );
+    const headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     let params = new HttpParams();
-    params = params.set("username", username);
-    params = params.set("verificationCode", verificationCode);
-    params = params.set("password", password);
-    params = params.set("confirmPassword", confirmPassword);
+    params = params.set('username', username);
+    params = params.set('verificationCode', verificationCode);
+    params = params.set('password', password);
+    params = params.set('confirmPassword', confirmPassword);
     return this.http.post<any>(this.changePasswordUrl, params, {
       headers: headers
     });
   }
 
   getClassroomAuthorizationUrl(username: string): Observable<any> {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
     let params = new HttpParams();
-    params = params.set("username", username);
+    params = params.set('username', username);
     return this.http.get<any>(this.classroomAuthorizationUrl, {
       headers,
       params
@@ -396,9 +330,9 @@ export class TeacherService {
   }
 
   getClassroomCourses(username: string): Observable<Course[]> {
-    const headers = new HttpHeaders({ "Cache-Control": "no-cache" });
+    const headers = new HttpHeaders({ 'Cache-Control': 'no-cache' });
     let params = new HttpParams();
-    params = params.set("username", username);
+    params = params.set('username', username);
     return this.http.get<Course[]>(this.listCoursesUrl, { headers, params });
   }
 
@@ -411,23 +345,23 @@ export class TeacherService {
     description: string
   ): Observable<any> {
     const headers = new HttpHeaders({
-      "Content-Type": "application/x-www-form-urlencoded"
+      'Content-Type': 'application/x-www-form-urlencoded'
     });
     let params = new HttpParams()
-      .set("accessCode", accessCode)
-      .set("unitTitle", unitTitle)
-      .set("username", username)
-      .set("endTime", endTime)
-      .set("description", description)
-      .set("courseIds", JSON.stringify(courseIds));
+      .set('accessCode', accessCode)
+      .set('unitTitle', unitTitle)
+      .set('username', username)
+      .set('endTime', endTime)
+      .set('description', description)
+      .set('courseIds', JSON.stringify(courseIds));
     return this.http.post<any>(this.addAssignmentUrl, params, { headers });
   }
 
   sendWorkgroupToNode(runId: number, workgroupId: number, nodeId: string) {
     const headers = new HttpHeaders({
-      "Content-Type": "application/x-www-form-urlencoded"
+      'Content-Type': 'application/x-www-form-urlencoded'
     });
-    const params = new HttpParams().set("nodeId", nodeId);
+    const params = new HttpParams().set('nodeId', nodeId);
     return this.http.post<any>(
       `/api/teacher/run/workgroup-to-node/${runId}/${workgroupId}`,
       params,

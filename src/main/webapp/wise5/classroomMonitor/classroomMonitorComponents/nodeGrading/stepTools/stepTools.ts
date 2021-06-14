@@ -32,10 +32,11 @@ class StepToolsController {
 
     this.idToOrder = this.ProjectService.idToOrder;
     this.updateModel();
-    this.currentNodeChangedSubscription = this.TeacherDataService.currentNodeChanged$
-        .subscribe(() => {
-      this.updateModel();
-    });
+    this.currentNodeChangedSubscription = this.TeacherDataService.currentNodeChanged$.subscribe(
+      () => {
+        this.updateModel();
+      }
+    );
     this.$scope.$on('$destroy', () => {
       this.ngOnDestroy();
     });
@@ -59,7 +60,7 @@ class StepToolsController {
       this.nodeId = nodeId;
       this.prevId = this.NodeService.getPrevNodeIdWithWork();
       this.nextId = null;
-      this.NodeService.getNextNodeIdWithWork().then(nextNodeId => {
+      this.NodeService.getNextNodeIdWithWork().then((nextNodeId) => {
         this.nextId = nextNodeId;
       });
       this.toNodeId = this.nodeId;
@@ -110,7 +111,7 @@ const StepTools = {
                 <md-icon> {{ ::$ctrl.icons.prev }} </md-icon>
                 <md-tooltip md-direction="bottom">{{ ::'PREVIOUS_STEP' | translate }}</md-tooltip>
             </md-button>
-            <node-icon ng-if="$ctrl.nodeId" [node-id]="$ctrl.nodeId" size="18"></node-icon>&nbsp;
+            <node-icon ng-if="$ctrl.nodeId" hide-xs [node-id]="$ctrl.nodeId" size="18"></node-icon>&nbsp;
             <md-select id="stepSelectMenu" md-theme="cm"
                        class="md-button md-no-underline toolbar__select toolbar__select--fixedwidth"
                        md-container-class="stepSelectMenuContainer"

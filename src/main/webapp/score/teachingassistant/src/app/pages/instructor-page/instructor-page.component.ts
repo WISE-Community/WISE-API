@@ -4,9 +4,10 @@ import { WebSocketService } from '../../core/services/websocket/websocket.servic
 import { ClassesStore } from '../../core/services/storage/classes-store';
 import { Run } from '../../../../../../site/src/app/domain/run';
 import { Workgroup } from '../../../../../../site/src/app/domain/workgroup';
-import { MatDialog, MatTableDataSource } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { GoToNodeSelectComponent } from '../../core/components/go-to-node-select/go-to-node-select.component';
 import { Period } from '../../../../../../site/src/app/domain/period';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
     selector: 'app-instructor-page',
@@ -31,12 +32,12 @@ export class InstructorPageComponent implements OnInit {
         this.initIoConnection();
         this.run = this.classesStore.run;
         this.teacherService.getRun(303).subscribe(
-            run => {
+            (run) => {
                 this.run = new Run(run);
                 this.getWorkgroups(this.run);
                 this.getProjectContent(this.run);
             },
-            err => console.log('Error retrieving run'),
+            (err) => console.log('Error retrieving run'),
         );
     }
 
@@ -45,14 +46,16 @@ export class InstructorPageComponent implements OnInit {
     }
 
     getWorkgroups(run: Run) {
-        this.teacherService.getWorkgroups(run).subscribe(allWorkgroupsInRun => {
-            this.allWorkgroupsInRun = allWorkgroupsInRun.filter(
-                workgroupInRun => {
-                    return workgroupInRun.isStudentWorkgroup;
-                },
-            );
-            this.putWorkgroupsInPeriod();
-        });
+        this.teacherService
+            .getWorkgroups(run)
+            .subscribe((allWorkgroupsInRun) => {
+                this.allWorkgroupsInRun = allWorkgroupsInRun.filter(
+                    (workgroupInRun) => {
+                        return workgroupInRun.isStudentWorkgroup;
+                    },
+                );
+                this.putWorkgroupsInPeriod();
+            });
     }
 
     putWorkgroupsInPeriod() {

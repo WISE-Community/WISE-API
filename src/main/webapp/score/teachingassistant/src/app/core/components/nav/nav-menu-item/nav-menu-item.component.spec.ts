@@ -1,10 +1,10 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {NavMenuItemComponent} from './nav-menu-item.component';
-import {MatIconModule} from '@angular/material/icon';
-import {RouterTestingModule} from '@angular/router/testing';
-import {sideNavPath} from '../../../../nav-routing';
-import {MatExpansionModule} from '@angular/material';
+import { NavMenuItemComponent } from './nav-menu-item.component';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterTestingModule } from '@angular/router/testing';
+import { sideNavPath } from '../../../../nav-routing';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 describe('NavMenuItemComponent', () => {
     let component: NavMenuItemComponent;

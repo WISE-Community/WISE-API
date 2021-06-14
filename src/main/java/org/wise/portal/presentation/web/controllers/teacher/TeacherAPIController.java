@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -39,7 +38,6 @@ import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
-import org.wise.portal.service.mail.IMailFacade;
 
 /**
  * Teacher REST API
@@ -55,12 +53,6 @@ public class TeacherAPIController extends UserAPIController {
 
   @Autowired
   private UserDetailsService userDetailsService;
-
-  @Autowired
-  protected IMailFacade mailService;
-
-  @Autowired
-  protected MessageSource messageSource;
 
   @Value("${google.clientId:}")
   private String googleClientId;

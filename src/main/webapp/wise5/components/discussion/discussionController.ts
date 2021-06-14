@@ -22,8 +22,8 @@ class DiscussionController extends ComponentController {
   retrievedClassmateResponses: boolean;
   componentAnnotations: any = [];
   componentStateIdReplyingTo: any;
-  sortOptions = ["newest", "oldest"];
-  sortPostsBy = "newest";
+  sortOptions = ['newest', 'oldest'];
+  sortPostsBy = 'newest';
   studentWorkReceivedSubscription: any;
 
   static $inject = [
@@ -96,7 +96,7 @@ class DiscussionController extends ComponentController {
     this.responsesMap = {};
     this.retrievedClassmateResponses = false;
     if (this.isVotingAllowed()) {
-      this.sortOptions = this.sortOptions.concat(["mostPopular", "leastPopular"]);
+      this.sortOptions = this.sortOptions.concat(['mostPopular', 'leastPopular']);
     }
     if (this.isStudentMode()) {
       if (this.ConfigService.isPreview()) {
@@ -167,16 +167,16 @@ class DiscussionController extends ComponentController {
           componentIds,
           this.workgroupId
         );
-        this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(this.nodeId);
+        this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(
+          this.nodeId
+        );
         this.setClassResponses(componentStates, this.componentAnnotations);
       }
     } else if (this.isShowAllPostsMode()) {
       this.getClassmateResponses();
       this.isDisabled = true;
     }
-    this.initializeScopeSubmitButtonClicked();
     this.initializeScopeGetComponentState();
-    this.initializeScopeStudentDataChanged();
     this.registerStudentWorkReceivedListener();
     this.registerAnnotationReceivedListener();
     this.initializeWatchMdMedia();
@@ -223,25 +223,23 @@ class DiscussionController extends ComponentController {
     return connectedComponentIds;
   }
 
-  initializeScopeSubmitButtonClicked() {
-    this.$scope.submitbuttonclicked = componentStateReplyingTo => {
-      if (componentStateReplyingTo && componentStateReplyingTo.replyText) {
-        const componentState = componentStateReplyingTo;
-        const componentStateId = componentState.id;
-        this.$scope.discussionController.studentResponse = componentState.replyText;
-        this.$scope.discussionController.componentStateIdReplyingTo = componentStateId;
-        this.$scope.discussionController.isSubmit = true;
-        this.$scope.discussionController.isDirty = true;
-        componentStateReplyingTo.replyText = null;
-      } else {
-        this.$scope.discussionController.studentResponse = this.$scope.discussionController.newResponse;
-        this.$scope.discussionController.isSubmit = true;
-      }
-      this.StudentDataService.broadcastComponentSubmitTriggered({
-        nodeId: this.$scope.discussionController.nodeId,
-        componentId: this.$scope.discussionController.componentId
-      });
-    };
+  handleSubmitButtonClicked(componentStateReplyingTo: any = null): void {
+    if (componentStateReplyingTo && componentStateReplyingTo.replyText) {
+      const componentState = componentStateReplyingTo;
+      const componentStateId = componentState.id;
+      this.studentResponse = componentState.replyText;
+      this.componentStateIdReplyingTo = componentStateId;
+      this.isSubmit = true;
+      this.isDirty = true;
+      componentStateReplyingTo.replyText = null;
+    } else {
+      this.studentResponse = this.newResponse;
+      this.isSubmit = true;
+    }
+    this.StudentDataService.broadcastComponentSubmitTriggered({
+      nodeId: this.nodeId,
+      componentId: this.componentId
+    });
   }
 
   initializeScopeGetComponentState() {
@@ -249,7 +247,7 @@ class DiscussionController extends ComponentController {
       const deferred = this.$q.defer();
       if (this.$scope.discussionController.isDirty && this.$scope.discussionController.isSubmit) {
         const action = 'submit';
-        this.$scope.discussionController.createComponentState(action).then(componentState => {
+        this.$scope.discussionController.createComponentState(action).then((componentState) => {
           this.$scope.discussionController.clearComponentValues();
           this.$scope.discussionController.isDirty = false;
           deferred.resolve(componentState);
@@ -261,27 +259,22 @@ class DiscussionController extends ComponentController {
     };
   }
 
-  initializeScopeStudentDataChanged() {
-    this.$scope.studentdatachanged = () => {
-      this.$scope.discussionController.studentDataChanged();
-    };
-  }
-
   registerStudentWorkSavedToServerListener() {
-    this.studentWorkSavedToServerSubscription =
-        this.StudentDataService.studentWorkSavedToServer$.subscribe((args: any) => {
-      const componentState = args.studentWork;
-      if (this.isWorkFromThisComponent(componentState)) {
-        if (this.isClassmateResponsesGated() && !this.retrievedClassmateResponses) {
-          this.getClassmateResponses();
-        } else {
-          this.addClassResponse(componentState);
+    this.studentWorkSavedToServerSubscription = this.StudentDataService.studentWorkSavedToServer$.subscribe(
+      (args: any) => {
+        const componentState = args.studentWork;
+        if (this.isWorkFromThisComponent(componentState)) {
+          if (this.isClassmateResponsesGated() && !this.retrievedClassmateResponses) {
+            this.getClassmateResponses();
+          } else {
+            this.addClassResponse(componentState);
+          }
+          this.disableComponentIfNecessary();
+          this.sendPostToStudentsInThread(componentState);
         }
-        this.disableComponentIfNecessary();
-        this.sendPostToStudentsInThread(componentState);
+        this.isSubmit = null;
       }
-      this.isSubmit = null;
-    });
+    );
   }
 
   sendPostToStudentsInThread(componentState) {
@@ -295,7 +288,7 @@ class DiscussionController extends ComponentController {
         const componentId = componentState.componentId;
         const usernamesArray = this.ConfigService.getUsernamesByWorkgroupId(fromWorkgroupId);
         const usernames = usernamesArray
-          .map(obj => {
+          .map((obj) => {
             return obj.name;
           })
           .join(', ');
@@ -331,9 +324,15 @@ class DiscussionController extends ComponentController {
 
   notifyClassOnNewPost() {
     const notification = this.NotificationService.createNewNotification(
-        this.ConfigService.getRunId(), this.ConfigService.getPeriodId(), 'DiscussionPost',
-        this.nodeId, this.componentId, this.ConfigService.getWorkgroupId(), null,
-        this.$translate('discussion.classmateCreatedANewPost'));
+      this.ConfigService.getRunId(),
+      this.ConfigService.getPeriodId(),
+      'DiscussionPost',
+      this.nodeId,
+      this.componentId,
+      this.ConfigService.getWorkgroupId(),
+      null,
+      this.$translate('discussion.classmateCreatedANewPost')
+    );
     if (this.componentContent.isSharedAcrossAllPeriods) {
       this.NotificationService.notifyClassmatesInAllPeriods(notification).subscribe();
     } else {
@@ -405,27 +404,29 @@ class DiscussionController extends ComponentController {
   }
 
   registerStudentWorkReceivedListener() {
-    this.studentWorkReceivedSubscription = this.StudentDataService.studentWorkReceived$
-        .subscribe((componentState) => {
-      if (
-        (this.isWorkFromThisComponent(componentState) ||
-          this.isWorkFromConnectedComponent(componentState)) &&
-        this.isWorkFromClassmate(componentState) &&
-        this.retrievedClassmateResponses
-      ) {
-        this.addClassResponse(componentState);
+    this.studentWorkReceivedSubscription = this.StudentDataService.studentWorkReceived$.subscribe(
+      (componentState) => {
+        if (
+          (this.isWorkFromThisComponent(componentState) ||
+            this.isWorkFromConnectedComponent(componentState)) &&
+          this.isWorkFromClassmate(componentState) &&
+          this.retrievedClassmateResponses
+        ) {
+          this.addClassResponse(componentState);
+        }
       }
-    });
+    );
   }
 
   registerAnnotationReceivedListener() {
-    this.annotationReceivedSubscription = this.AnnotationService.annotationReceived$
-        .subscribe(({ annotation }) => {
-          if (this.isForThisComponent(annotation)) {
-            this.addAnnotation(annotation);
-            this.topLevelResponses = this.getLevel1Responses();
-          }
-        });
+    this.annotationReceivedSubscription = this.AnnotationService.annotationReceived$.subscribe(
+      ({ annotation }) => {
+        if (this.isForThisComponent(annotation)) {
+          this.addAnnotation(annotation);
+          this.topLevelResponses = this.getLevel1Responses();
+        }
+      }
+    );
   }
 
   addAnnotation(annotation: any) {
@@ -460,7 +461,7 @@ class DiscussionController extends ComponentController {
       () => {
         return this.$mdMedia('gt-sm');
       },
-      md => {
+      (md) => {
         this.$scope.mdScreen = md;
       }
     );
@@ -469,21 +470,26 @@ class DiscussionController extends ComponentController {
   getClassmateResponses(components = [{ nodeId: this.nodeId, componentId: this.componentId }]) {
     if (this.isShowAllPostsMode()) {
       const currentPeriodId = this.DiscussionService.TeacherDataService.getCurrentPeriod().periodId;
-      const postsForPeriod = this.DiscussionService.TeacherDataService.getComponentStatesByComponentId(this.componentId).filter(
-          (componentState) => {
-            return currentPeriodId === -1 || componentState.periodId === currentPeriodId;
-          }
-      )
-      this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(this.nodeId);
+      const postsForPeriod = this.DiscussionService.TeacherDataService.getComponentStatesByComponentId(
+        this.componentId
+      ).filter((componentState) => {
+        return currentPeriodId === -1 || componentState.periodId === currentPeriodId;
+      });
+      this.componentAnnotations = this.DiscussionService.TeacherDataService.getAnnotationsByNodeId(
+        this.nodeId
+      );
       this.setClassResponses(postsForPeriod, this.componentAnnotations);
     } else {
       const runId = this.ConfigService.getRunId();
-      const periodId = this.componentContent.isSharedAcrossAllPeriods ? null : this.ConfigService.getPeriodId();
-      this.DiscussionService.getClassmateResponses(runId, periodId, components)
-          .then(({studentWorkList, annotations}) => {
-        this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
-        this.setClassResponses(studentWorkList, annotations);
-      });
+      const periodId = this.componentContent.isSharedAcrossAllPeriods
+        ? null
+        : this.ConfigService.getPeriodId();
+      this.DiscussionService.getClassmateResponses(runId, periodId, components).then(
+        ({ studentWorkList, annotations }) => {
+          this.componentAnnotations = this.filterLatestAnnotationsByWorkgroup(annotations);
+          this.setClassResponses(studentWorkList, annotations);
+        }
+      );
     }
   }
 
@@ -493,11 +499,13 @@ class DiscussionController extends ComponentController {
       const annotation = annotations[i];
       let isFound = false;
       for (const filteredAnnotation of filteredAnnotations) {
-        if (filteredAnnotation.fromWorkgroupId === annotation.fromWorkgroupId &&
-          filteredAnnotation.studentWorkId === annotation.studentWorkId) {
-            isFound = true;
-            break;
-          }
+        if (
+          filteredAnnotation.fromWorkgroupId === annotation.fromWorkgroupId &&
+          filteredAnnotation.studentWorkId === annotation.studentWorkId
+        ) {
+          isFound = true;
+          break;
+        }
       }
       if (!isFound) {
         filteredAnnotations.push(annotation);
@@ -509,7 +517,7 @@ class DiscussionController extends ComponentController {
   submitButtonClicked() {
     this.isSubmit = true;
     this.disableComponentIfNecessary();
-    this.$scope.submitbuttonclicked();
+    this.handleSubmitButtonClicked();
   }
 
   studentDataChanged() {
@@ -640,11 +648,11 @@ class DiscussionController extends ComponentController {
   }
 
   sortPostsFunction(response1, response2) {
-    if (this.sortPostsBy === "oldest") {
+    if (this.sortPostsBy === 'oldest') {
       return this.sortByOldest(response1, response2);
-    } else if (this.sortPostsBy === "mostPopular") {
+    } else if (this.sortPostsBy === 'mostPopular') {
       return this.sortByMostPopular(response1, response2);
-    } else if (this.sortPostsBy === "leastPopular") {
+    } else if (this.sortPostsBy === 'leastPopular') {
       return this.sortByLeastPopular(response1, response2);
     }
     return this.sortByNewest(response1, response2);
@@ -657,9 +665,7 @@ class DiscussionController extends ComponentController {
   sortByNewest(componentState1, componentState2) {
     if (componentState1.serverSaveTime < componentState2.serverSaveTime) {
       return -1;
-    } else if (
-      componentState1.serverSaveTime > componentState2.serverSaveTime
-    ) {
+    } else if (componentState1.serverSaveTime > componentState2.serverSaveTime) {
       return 1;
     }
     return 0;
@@ -686,7 +692,7 @@ class DiscussionController extends ComponentController {
   sumVotesForComponentState(componentState) {
     let numVotes = 0;
     for (const annotation of this.componentAnnotations) {
-      if (annotation.type === "vote" && annotation.studentWorkId === componentState.id) {
+      if (annotation.type === 'vote' && annotation.studentWorkId === componentState.id) {
         numVotes += annotation.data.value;
       }
     }
@@ -703,7 +709,8 @@ class DiscussionController extends ComponentController {
 
   getLatestInappropriateFlagAnnotationByStudentWorkId(annotations = [], studentWorkId) {
     for (const annotation of annotations.sort((annotation1, annotation2) => {
-        return this.sortByNewest(annotation1, annotation2)})) {
+      return this.sortByNewest(annotation1, annotation2);
+    })) {
       if (studentWorkId === annotation.studentWorkId && annotation.type === 'inappropriateFlag') {
         return annotation;
       }
@@ -732,7 +739,7 @@ class DiscussionController extends ComponentController {
   threadHasPostFromThisComponentAndWorkgroupId(componentState) {
     const thisComponentId = this.componentId;
     const thisWorkgroupId = this.workgroupId;
-    return componentState => {
+    return (componentState) => {
       if (
         componentState.componentId === thisComponentId &&
         componentState.workgroupId === thisWorkgroupId
@@ -756,13 +763,13 @@ class DiscussionController extends ComponentController {
     const usernames = this.ConfigService.getUsernamesByWorkgroupId(workgroupId);
     if (usernames.length > 0) {
       componentState.usernames = usernames
-        .map(function(obj) {
+        .map(function (obj) {
           return obj.name;
         })
         .join(', ');
     } else if (componentState.usernamesArray != null) {
       componentState.usernames = componentState.usernamesArray
-        .map(function(obj) {
+        .map(function (obj) {
           return obj.name;
         })
         .join(', ');
@@ -788,7 +795,9 @@ class DiscussionController extends ComponentController {
     const allResponses = [];
     const oddResponses = [];
     const evenResponses = [];
-    this.classResponses = this.classResponses.sort((response1, response2) => {return this.sortPostsFunction(response1, response2)});
+    this.classResponses = this.classResponses.sort((response1, response2) => {
+      return this.sortPostsFunction(response1, response2);
+    });
     for (const [index, classResponse] of Object.entries(this.classResponses)) {
       if (classResponse.studentData.componentStateIdReplyingTo == null) {
         if (
@@ -820,7 +829,7 @@ class DiscussionController extends ComponentController {
    * @param componentState the student component state the teacher wants to
    * delete.
    */
-  deletebuttonclicked(componentState) {
+  deleteButtonClicked(componentState: any): void {
     const toWorkgroupId = componentState.workgroupId;
     const userInfo = this.ConfigService.getUserInfoByWorkgroupId(toWorkgroupId);
     const periodId = userInfo.periodId;
@@ -874,7 +883,15 @@ class DiscussionController extends ComponentController {
       value: 1
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
-        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+      runId,
+      periodId,
+      nodeId,
+      componentId,
+      fromWorkgroupId,
+      toWorkgroupId,
+      studentWorkId,
+      data
+    );
     return this.AnnotationService.saveAnnotation(annotation).then(() => {
       this.addAnnotation(annotation);
     });
@@ -901,7 +918,15 @@ class DiscussionController extends ComponentController {
       value: -1
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
-        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+      runId,
+      periodId,
+      nodeId,
+      componentId,
+      fromWorkgroupId,
+      toWorkgroupId,
+      studentWorkId,
+      data
+    );
     return this.AnnotationService.saveAnnotation(annotation).then(() => {
       this.addAnnotation(annotation);
     });
@@ -928,7 +953,15 @@ class DiscussionController extends ComponentController {
       value: 0
     };
     const annotation = this.AnnotationService.createVoteAnnotation(
-        runId, periodId, nodeId, componentId, fromWorkgroupId, toWorkgroupId, studentWorkId, data);
+      runId,
+      periodId,
+      nodeId,
+      componentId,
+      fromWorkgroupId,
+      toWorkgroupId,
+      studentWorkId,
+      data
+    );
     return this.AnnotationService.saveAnnotation(annotation).then(() => {
       this.addAnnotation(annotation);
     });
@@ -942,7 +975,7 @@ class DiscussionController extends ComponentController {
    * @param componentState the student component state the teacher wants to
    * show again.
    */
-  undodeletebuttonclicked(componentState) {
+  undoDeleteButtonClicked(componentState: any): any {
     const toWorkgroupId = componentState.workgroupId;
     const userInfo = this.ConfigService.getUserInfoByWorkgroupId(toWorkgroupId);
     const periodId = userInfo.periodId;

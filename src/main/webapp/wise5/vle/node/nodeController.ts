@@ -112,8 +112,10 @@ class NodeController {
     this.rubric = null;
     this.mode = this.ConfigService.getMode();
 
-    if (this.StudentDataService.getCurrentNode() &&
-        this.ProjectService.isApplicationNode(this.StudentDataService.getCurrentNodeId())) {
+    if (
+      this.StudentDataService.getCurrentNode() &&
+      this.ProjectService.isApplicationNode(this.StudentDataService.getCurrentNodeId())
+    ) {
       const currentNode = this.StudentDataService.getCurrentNode();
       if (currentNode != null) {
         this.nodeId = currentNode.id;
@@ -141,7 +143,6 @@ class NodeController {
       // this.taskService.startTaskTimer(this.workgroupId, this.nodeId, runId);
       // set the previous task as inactive and the current activity active
 
-
       // set save message with last save/submission
       // for now, we'll use the latest component state (since we don't currently keep track of node-level saves)
       // TODO: use node states once we implement node state saving
@@ -165,76 +166,89 @@ class NodeController {
       const eventData = {
         nodeId: nodeId
       };
-      this.StudentDataService.saveVLEEvent(nodeId, componentId, componentType, category, event,
-        eventData);
+      this.StudentDataService.saveVLEEvent(
+        nodeId,
+        componentId,
+        componentType,
+        category,
+        event,
+        eventData
+      );
 
       if (this.nodeContent != null) {
         this.rubric = this.nodeContent.rubric;
         this.createRubricTour();
       }
 
-      if (this.$state != null &&
+      if (
+        this.$state != null &&
         this.$state.params != null &&
-        this.$state.params.componentId != null) {
+        this.$state.params.componentId != null
+      ) {
         const componentId = this.$state.params.componentId;
         this.scrollAndHighlightComponent(componentId);
       }
     }
 
-    this.componentSaveTriggeredSubscription =
-        this.StudentDataService.componentSaveTriggered$.subscribe(({ nodeId, componentId }) => {
-      if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
-        const isAutoSave = false;
-        this.createAndSaveComponentData(isAutoSave, componentId);
-      }
-    });
-
-    this.componentSubmitTriggeredSubscription =
-        this.StudentDataService.componentSubmitTriggered$.subscribe(({ nodeId, componentId }) => {
-      if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
-        const isAutoSave = false;
-        const isSubmit = true;
-        this.createAndSaveComponentData(isAutoSave, componentId, isSubmit);
-      }
-    });
-
-    this.componentStudentDataSubscription =
-        this.StudentDataService.componentStudentData$.subscribe((componentStudentData: any) => {
-      const componentId = componentStudentData.componentId;
-      const componentState = componentStudentData.componentState;
-      if (componentState.nodeId == null) {
-        if (componentStudentData.nodeId != null) {
-          componentState.nodeId = componentStudentData.nodeId;
+    this.componentSaveTriggeredSubscription = this.StudentDataService.componentSaveTriggered$.subscribe(
+      ({ nodeId, componentId }) => {
+        if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
+          const isAutoSave = false;
+          this.createAndSaveComponentData(isAutoSave, componentId);
         }
       }
-      if (componentState.componentId == null) {
-        if (componentStudentData.componentId != null) {
-          componentState.componentId = componentStudentData.componentId;
+    );
+
+    this.componentSubmitTriggeredSubscription = this.StudentDataService.componentSubmitTriggered$.subscribe(
+      ({ nodeId, componentId }) => {
+        if (this.nodeId == nodeId && this.nodeContainsComponent(componentId)) {
+          const isAutoSave = false;
+          const isSubmit = true;
+          this.createAndSaveComponentData(isAutoSave, componentId, isSubmit);
         }
       }
-      this.notifyConnectedParts(componentId, componentState);
-      this.NodeService.broadcastSiblingComponentStudentDataChanged(componentStudentData);
-    });
+    );
 
-    this.componentDirtySubscription =
-        this.StudentDataService.componentDirty$.subscribe(({ componentId, isDirty }) => {
-      const index = this.dirtyComponentIds.indexOf(componentId);
-      if (isDirty && index === -1) {
-        this.dirtyComponentIds.push(componentId);
-      } else if (!isDirty && index > -1) {
-        this.dirtyComponentIds.splice(index, 1);
+    this.componentStudentDataSubscription = this.StudentDataService.componentStudentData$.subscribe(
+      (componentStudentData: any) => {
+        const componentId = componentStudentData.componentId;
+        const componentState = componentStudentData.componentState;
+        if (componentState.nodeId == null) {
+          if (componentStudentData.nodeId != null) {
+            componentState.nodeId = componentStudentData.nodeId;
+          }
+        }
+        if (componentState.componentId == null) {
+          if (componentStudentData.componentId != null) {
+            componentState.componentId = componentStudentData.componentId;
+          }
+        }
+        this.notifyConnectedParts(componentId, componentState);
+        this.NodeService.broadcastSiblingComponentStudentDataChanged(componentStudentData);
       }
-    });
+    );
 
-    this.componentSubmitDirtySubscription =
-        this.StudentDataService.componentSubmitDirty$.subscribe(({ componentId, isDirty }) => {
-      const index = this.dirtySubmitComponentIds.indexOf(componentId);
-      if (isDirty && index === -1) {
-        this.dirtySubmitComponentIds.push(componentId);
-      } else if (!isDirty && index > -1) {
-        this.dirtySubmitComponentIds.splice(index, 1);
+    this.componentDirtySubscription = this.StudentDataService.componentDirty$.subscribe(
+      ({ componentId, isDirty }) => {
+        const index = this.dirtyComponentIds.indexOf(componentId);
+        if (isDirty && index === -1) {
+          this.dirtyComponentIds.push(componentId);
+        } else if (!isDirty && index > -1) {
+          this.dirtyComponentIds.splice(index, 1);
+        }
       }
-    });
+    );
+
+    this.componentSubmitDirtySubscription = this.StudentDataService.componentSubmitDirty$.subscribe(
+      ({ componentId, isDirty }) => {
+        const index = this.dirtySubmitComponentIds.indexOf(componentId);
+        if (isDirty && index === -1) {
+          this.dirtySubmitComponentIds.push(componentId);
+        } else if (!isDirty && index > -1) {
+          this.dirtySubmitComponentIds.splice(index, 1);
+        }
+      }
+    );
 
     this.showRubricSubscription = this.NodeService.showRubric$.subscribe((id: string) => {
       this.showRubric(id);
@@ -255,8 +269,10 @@ class NodeController {
   ngOnDestroy() {
     this.stopAutoSaveInterval();
     this.nodeUnloaded(this.nodeId);
-    if (this.NodeService.currentNodeHasTransitionLogic() &&
-        this.NodeService.evaluateTransitionLogicOn('exitNode')) {
+    if (
+      this.NodeService.currentNodeHasTransitionLogic() &&
+      this.NodeService.evaluateTransitionLogicOn('exitNode')
+    ) {
       this.NodeService.evaluateTransitionLogic();
     }
     this.unsubscribeAll();
@@ -297,8 +313,9 @@ class NodeController {
 
     if (this.rubric) {
       const thisTarget = '#nodeRubric_' + this.nodeId;
-      const content = this.UtilService.insertWISELinks(this.ProjectService.replaceAssetPaths(
-          this.rubric));
+      const content = this.UtilService.insertWISELinks(
+        this.ProjectService.replaceAssetPaths(this.rubric)
+      );
       // add a tour bubble for the node rubric
       this.rubricTour.steps.push({
         target: thisTarget,
@@ -317,8 +334,9 @@ class NodeController {
     for (let component of components) {
       if (component.rubric) {
         const thisTarget = '#rubric_' + component.id;
-        const content = this.UtilService.insertWISELinks(this.ProjectService.replaceAssetPaths(
-            component.rubric));
+        const content = this.UtilService.insertWISELinks(
+          this.ProjectService.replaceAssetPaths(component.rubric)
+        );
         this.rubricTour.steps.push({
           target: thisTarget,
           arrowOffset: 21,
@@ -398,27 +416,50 @@ class NodeController {
     const step = details.step;
     const tour = details.tour;
     const $ctrl = tour.customData.$ctrl;
-    const template =
-      `<div class="hopscotch-bubble-container help-bubble md-whiteframe-4dp" style="width: ${step.width}px; padding: ${step.padding}px;">
+    const template = `<div class="hopscotch-bubble-container help-bubble md-whiteframe-4dp" style="width: ${
+      step.width
+    }px; padding: ${step.padding}px;">
                 <md-toolbar class="md-subhead help-bubble__title md-toolbar--wise">
                     <div class="help-bubble___title__content" layout="row" layout-align="start center" flex>
-                        <span>${tour.isTour ? `${i18n.stepNum} | ` : ''}${step.title !== '' ? `${step.title}` : ''}</span>
+                        <span>${tour.isTour ? `${i18n.stepNum} | ` : ''}${
+      step.title !== '' ? `${step.title}` : ''
+    }</span>
                         <span flex></span>
-                        ${buttons.showClose ? `<md-button class="md-icon-button hopscotch-close">
+                        ${
+                          buttons.showClose
+                            ? `<md-button class="md-icon-button hopscotch-close">
                             <md-icon aria-label="${i18n.closeTooltip}"> close </md-icon>
-                        </md-button>` : ''}
+                        </md-button>`
+                            : ''
+                        }
                     </div>
                 </md-toolbar>
                 <div class="help-bubble__content">
                     ${step.content !== '' ? `${step.content}` : ''}
-                    ${buttons.showCTA ? `<md-button class="hopscotch-cta md-primary md-raised">${i18n.ctaLabel}</md-button>` : ''}
+                    ${
+                      buttons.showCTA
+                        ? `<md-button class="hopscotch-cta md-primary md-raised">${i18n.ctaLabel}</md-button>`
+                        : ''
+                    }
                 </div>
                 <md-divider></md-divider>
                 <div class="help-bubble__actions gray-lightest-bg" layout="row" layout-align="start center">
-                    ${buttons.showClose ? `<md-button class="button--small hopscotch-close">${i18n.closeTooltip}</md-button>` : ''}
+                    ${
+                      buttons.showClose
+                        ? `<md-button class="button--small hopscotch-close">${i18n.closeTooltip}</md-button>`
+                        : ''
+                    }
                     <span flex></span>
-                    ${buttons.showPrev ? `<md-button class="button--small info hopscotch-prev">${i18n.prevBtn}</md-button>` : ''}
-                    ${buttons.showNext ? `<md-button class="button--small info hopscotch-next">${i18n.nextBtn}</md-button>` : ''}
+                    ${
+                      buttons.showPrev
+                        ? `<md-button class="button--small info hopscotch-prev">${i18n.prevBtn}</md-button>`
+                        : ''
+                    }
+                    ${
+                      buttons.showNext
+                        ? `<md-button class="button--small info hopscotch-next">${i18n.nextBtn}</md-button>`
+                        : ''
+                    }
                 </md-card-actions>
             </div>`;
 
@@ -469,11 +510,15 @@ class NodeController {
   }
 
   hasHelpRequest() {
-    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('help') != -1 : false);
+    return this.nodeContent.task.buttons != null
+      ? this.nodeContent.task.buttons.indexOf('help') != -1
+      : false;
   }
 
   hasApprovalRequest() {
-    return (this.nodeContent.task.buttons != null ? this.nodeContent.task.buttons.indexOf('approval') != -1 : false);
+    return this.nodeContent.task.buttons != null
+      ? this.nodeContent.task.buttons.indexOf('approval') != -1
+      : false;
   }
 
   hasTaskDuration() {
@@ -494,13 +539,12 @@ class NodeController {
       minutes = Math.floor(this.timeLeft / 60);
       seconds = this.timeLeft % 60;
 
-      const minutesStr = minutes < 10 ? "0" + minutes : minutes;
-      const secondsStr = seconds < 10 ? "0" + seconds : seconds;
+      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      const secondsStr = seconds < 10 ? '0' + seconds : seconds;
 
-      this.timeTitle = minutesStr + ":" + secondsStr;
+      this.timeTitle = minutesStr + ':' + secondsStr;
       this.timeLeft = this.timeLeft - 1;
       if (this.timeLeft < 0) {
-
         const confirm = this.$mdDialog.alert({
           title: 'Time Expired',
           textContent: 'Time for this step has expired.',
@@ -513,15 +557,13 @@ class NodeController {
         clearInterval(this.timerTimerTaskId);
       }
     }, 1000);
-  };
+  }
 
   stopTaskDuration() {
     clearInterval(this.timerTimerTaskId);
   }
 
-
   performTaskRequest(type) {
-
     const confirm = this.$mdDialog.alert({
       title: 'Request Approval',
       textContent: 'The teaching assistant has been sent your request for approval.',
@@ -541,9 +583,9 @@ class NodeController {
     return component.rubric != null && component.rubric != '' && this.mode === 'preview';
   }
 
-  setStudentWork() { }
+  setStudentWork() {}
 
-  importWork() { }
+  importWork() {}
 
   showStudentAssets($event, componentId) {
     const childScope = this.componentToScope[componentId];
@@ -669,16 +711,19 @@ class NodeController {
    * that needs saving
    */
   createAndSaveComponentData(isAutoSave, componentId = null, isSubmit = null) {
-    return this.createComponentStates(isAutoSave, componentId, isSubmit)
-      .then(componentStatesFromComponents => {
+    return this.createComponentStates(isAutoSave, componentId, isSubmit).then(
+      (componentStatesFromComponents) => {
         if (this.UtilService.arrayHasNonNullElement(componentStatesFromComponents)) {
-          const { componentStates, componentEvents, componentAnnotations } =
-            this.getDataArraysToSaveFromComponentStates(componentStatesFromComponents);
+          const {
+            componentStates,
+            componentEvents,
+            componentAnnotations
+          } = this.getDataArraysToSaveFromComponentStates(componentStatesFromComponents);
           return this.StudentDataService.saveToServer(
             componentStates,
             componentEvents,
             componentAnnotations
-          ).then(savedStudentDataResponse => {
+          ).then((savedStudentDataResponse) => {
             if (savedStudentDataResponse) {
               if (this.NodeService.currentNodeHasTransitionLogic()) {
                 if (this.NodeService.evaluateTransitionLogicOn('studentDataChanged')) {
@@ -694,21 +739,9 @@ class NodeController {
                         }
                       }
                     }
-                  }
-                  const studentWorkList = savedStudentDataResponse.studentWorkList;
-                  if (!componentId && studentWorkList && studentWorkList.length) {
-                    const latestStudentWork = studentWorkList[studentWorkList.length - 1];
-                    const serverSaveTime = latestStudentWork.serverSaveTime;
-                    const clientSaveTime = this.ConfigService.convertToClientTimestamp(serverSaveTime);
-                    if (isAutoSave) {
-                      this.setAutoSavedMessage(clientSaveTime);
-                    } else if (isSubmit) {
-                      this.setSubmittedMessage(clientSaveTime);
-                    } else {
-                      this.setSavedMessage(clientSaveTime);
+                    if (evaluateTransitionLogic) {
+                      this.NodeService.evaluateTransitionLogic();
                     }
-                  } else {
-                    this.clearSaveText();
                   }
                 }
               }
@@ -731,7 +764,8 @@ class NodeController {
             return savedStudentDataResponse;
           });
         }
-      });
+      }
+    );
   }
 
   getDataArraysToSaveFromComponentStates(componentStates) {
@@ -786,9 +820,18 @@ class NodeController {
           const childScope = this.componentToScope[tempComponentId];
           if (childScope != null) {
             if (childScope.getComponentState) {
-              const componentStatePromise =
-                this.getComponentStateFromChildScope(childScope, runId, periodId, workgroupId,
-                  nodeId, componentId, tempComponentId, componentType, isAutoSave, isSubmit);
+              const componentStatePromise = this.getComponentStateFromChildScope(
+                childScope,
+                runId,
+                periodId,
+                workgroupId,
+                nodeId,
+                componentId,
+                tempComponentId,
+                componentType,
+                isAutoSave,
+                isSubmit
+              );
               componentStatePromises.push(componentStatePromise);
             }
           }
@@ -796,7 +839,7 @@ class NodeController {
       }
     }
     return this.$q.all(componentStatePromises).then((componentStatesFromComponents) => {
-      return componentStatesFromComponents.filter(componentState => componentState != null);
+      return componentStatesFromComponents.filter((componentState) => componentState != null);
     });
   }
 
@@ -826,7 +869,7 @@ class NodeController {
     isAutoSave,
     isSubmit
   ) {
-    return childScope.getComponentState(isSubmit).then(componentState => {
+    return childScope.getComponentState(isSubmit).then((componentState) => {
       if (componentState != null) {
         componentState.runId = runId;
         componentState.periodId = periodId;
@@ -879,10 +922,18 @@ class NodeController {
     let latestCommentAnnotation = null;
     let nodeId = this.nodeId;
     let workgroupId = this.workgroupId;
-    latestScoreAnnotation = this.AnnotationService
-      .getLatestScoreAnnotation(nodeId, componentId, workgroupId, 'any');
-    latestCommentAnnotation = this.AnnotationService
-      .getLatestCommentAnnotation(nodeId, componentId, workgroupId, 'any');
+    latestScoreAnnotation = this.AnnotationService.getLatestScoreAnnotation(
+      nodeId,
+      componentId,
+      workgroupId,
+      'any'
+    );
+    latestCommentAnnotation = this.AnnotationService.getLatestCommentAnnotation(
+      nodeId,
+      componentId,
+      workgroupId,
+      'any'
+    );
 
     return {
       score: latestScoreAnnotation,
@@ -986,16 +1037,20 @@ class NodeController {
 
   getComponentStateByComponentId(componentId) {
     if (componentId != null) {
-      return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(this.nodeId,
-        componentId);
+      return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(
+        this.nodeId,
+        componentId
+      );
     }
     return null;
   }
 
   getComponentStateByNodeIdAndComponentId(nodeId, componentId) {
     if (nodeId != null && componentId != null) {
-      return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(nodeId,
-        componentId);
+      return this.StudentDataService.getLatestComponentStateByNodeIdAndComponentId(
+        nodeId,
+        componentId
+      );
     }
     return null;
   }
@@ -1011,9 +1066,15 @@ class NodeController {
     const eventData = {
       nodeId: nodeId
     };
-    this.StudentDataService.saveVLEEvent(nodeId, componentId, componentType, category, event,
-      eventData);
-  };
+    this.StudentDataService.saveVLEEvent(
+      nodeId,
+      componentId,
+      componentType,
+      category,
+      event,
+      eventData
+    );
+  }
 
   getSubmitDirty() {
     const components = this.getComponents();

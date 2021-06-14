@@ -1,5 +1,5 @@
-import { Run } from "./run";
-import { User } from "../domain/user";
+import { Run } from './run';
+import { User } from '../domain/user';
 
 export class Project {
   id: number;
@@ -29,15 +29,15 @@ export class Project {
   constructor(jsonObject: any = {}) {
     for (const key of Object.keys(jsonObject)) {
       const value = jsonObject[key];
-      if (key === "owner") {
+      if (key === 'owner') {
         this[key] = new User(value);
-      } else if (key === "sharedOwners") {
+      } else if (key === 'sharedOwners') {
         const sharedOwners: User[] = [];
         for (const sharedOwner of value) {
           sharedOwners.push(new User(sharedOwner));
         }
         this[key] = sharedOwners;
-      } else if (key === "metadata") {
+      } else if (key === 'metadata') {
         this[key] = this.parseMetadata(value);
       } else {
         this[key] = value;
@@ -47,15 +47,13 @@ export class Project {
 
   public canView(userId) {
     return (
-      this.isOwner(userId) ||
-      this.isSharedOwnerWithPermission(userId, Project.VIEW_PERMISSION)
+      this.isOwner(userId) || this.isSharedOwnerWithPermission(userId, Project.VIEW_PERMISSION)
     );
   }
 
   public canEdit(userId) {
     return (
-      this.isOwner(userId) ||
-      this.isSharedOwnerWithPermission(userId, Project.EDIT_PERMISSION)
+      this.isOwner(userId) || this.isSharedOwnerWithPermission(userId, Project.EDIT_PERMISSION)
     );
   }
 
@@ -81,16 +79,16 @@ export class Project {
   }
 
   parseMetadata(metadata) {
-    if (typeof metadata.authors === "string") {
+    if (typeof metadata.authors === 'string') {
       metadata.authors = JSON.parse(metadata.authors);
     }
-    if (typeof metadata.grades === "string") {
+    if (typeof metadata.grades === 'string') {
       metadata.grades = JSON.parse(metadata.grades);
     }
-    if (typeof metadata.parentProjects === "string") {
+    if (typeof metadata.parentProjects === 'string') {
       metadata.parentProjects = JSON.parse(metadata.parentProjects);
     }
-    if (typeof metadata.standardsAddressed === "string") {
+    if (typeof metadata.standardsAddressed === 'string') {
       metadata.standardsAddressed = JSON.parse(metadata.standardsAddressed);
     }
     return metadata;
@@ -113,7 +111,7 @@ export class Project {
     const idToOrder = {
       nodeCount: 0
     };
-    const stepNumber = "";
+    const stepNumber = '';
     const nodes = [];
     const projectIdToOrder = this.getNodeOrderOfProjectHelper(
       this.content,
@@ -140,23 +138,17 @@ export class Project {
     idToOrder.nodeCount++;
     nodes.push(item);
 
-    if (node.type === "group") {
+    if (node.type === 'group') {
       const childIds = node.ids;
       for (let c = 0; c < childIds.length; c++) {
         const childId = childIds[c];
         const child = this.getNodeById(childId, project);
         let childStepNumber = stepNumber;
-        if (childStepNumber != "") {
-          childStepNumber += ".";
+        if (childStepNumber != '') {
+          childStepNumber += '.';
         }
         childStepNumber += c + 1;
-        this.getNodeOrderOfProjectHelper(
-          project,
-          child,
-          idToOrder,
-          childStepNumber,
-          nodes
-        );
+        this.getNodeOrderOfProjectHelper(project, child, idToOrder, childStepNumber, nodes);
       }
     }
     return idToOrder;
