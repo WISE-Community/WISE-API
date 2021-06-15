@@ -767,7 +767,7 @@ li.welcome > a {
 	display:inline-block !important;
 }
 
-/* This little trick solves a problem with Safari getting confused by a call for "c:url value="/logout"/>"
+/* This little trick solves a problem with Safari getting confused by a call for "c:url value="/api/logout"/>"
 .styleOverRideSafari1 {
 	color:#FFFF66;
 	font-size:.7em;

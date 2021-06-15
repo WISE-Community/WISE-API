@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
@@ -47,7 +48,7 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 public class UserAPIController {
 
   @Autowired
-  protected Properties appProperties;
+  protected Environment appProperties;
 
   @Autowired
   protected RunService runService;
@@ -132,14 +133,14 @@ public class UserAPIController {
     String contextPath = request.getContextPath();
     config.put("contextPath", contextPath);
     config.put("currentTime", System.currentTimeMillis());
-    config.put("googleAnalyticsId", appProperties.get("google_analytics_id"));
+    config.put("googleAnalyticsId", appProperties.getProperty("google_analytics_id"));
     config.put("googleClientId", googleClientId);
     config.put("isGoogleClassroomEnabled", isGoogleClassroomEnabled());
-    config.put("logOutURL", contextPath + "/logout");
-    config.put("recaptchaPublicKey", appProperties.get("recaptcha_public_key"));
-    config.put("wiseHostname", appProperties.get("wise.hostname"));
-    config.put("wise4Hostname", appProperties.get("wise4.hostname"));
-    config.put("discourseURL", appProperties.getOrDefault("discourse_url", null));
+    config.put("logOutURL", contextPath + "/api/logout");
+    config.put("recaptchaPublicKey", appProperties.getProperty("recaptcha_public_key"));
+    config.put("wiseHostname", appProperties.getProperty("wise.hostname"));
+    config.put("wise4Hostname", appProperties.getProperty("wise4.hostname"));
+    config.put("discourseURL", appProperties.getProperty("discourse_url"));
     return config;
   }
 

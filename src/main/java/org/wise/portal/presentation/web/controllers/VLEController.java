@@ -23,11 +23,10 @@
  */
 package org.wise.portal.presentation.web.controllers;
 
-import java.util.Properties;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,7 +37,7 @@ import org.wise.portal.service.run.RunService;
 /**
  * Controller for handling student VLE-portal interactions.
  *
- * @author Hiroki Terashima
+ * @author Hiroki Terashima!
  * @author Geoffrey Kwan
  */
 @Controller
@@ -48,7 +47,7 @@ public class VLEController {
   private RunService runService;
 
   @Autowired
-  Properties appProperties;
+  Environment appProperties;
 
   @GetMapping(value = "/student/vle/vle.html")
   protected ModelAndView launchVLEWISE4Run(HttpServletRequest request)

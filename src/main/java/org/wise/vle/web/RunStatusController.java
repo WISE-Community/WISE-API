@@ -43,7 +43,7 @@ import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.vle.domain.status.RunStatus;
 
 @Controller
-@RequestMapping("/runStatus")
+@RequestMapping("/api/runStatus")
 public class RunStatusController {
 
   @Autowired

@@ -32,7 +32,6 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -42,6 +41,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -73,7 +73,7 @@ public class ImportProjectController {
   private ProjectService projectService;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   private String getWISEProjectsURL = "http://wise5.org/wiseup/getProject.php";
 
@@ -128,6 +128,7 @@ public class ImportProjectController {
 
   private Project importProject(String zipFilename, byte[] fileBytes) throws Exception {
     String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
+    System.out.println(curriculumBaseDir);
     if (!new File(curriculumBaseDir).exists()) {
       throw new Exception("Curriculum upload directory \"" +
           curriculumBaseDir + "\" does not exist. Please verify the path you specified for curriculum_base_dir in application.properties.");

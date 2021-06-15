@@ -141,6 +141,10 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String standardsAddressed;
 
+  @Getter
+  @Setter
+  private String discourseCategoryURL;
+
   @Column(name = "keywords")
   @Getter
   @Setter
@@ -315,6 +319,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       standardsAddressed = new JSONObject();
     }
     setStandardsAddressed(standardsAddressed.toString());
+
+    setDiscourseCategoryURL(metadataJSON.optString("discourseCategoryURL", ""));
 
     String keywords = metadataJSON.optString("keywords", "");
     if (keywords.equals("null")) {

@@ -48,6 +48,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.RequestToViewNameTranslator;
 import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -64,7 +65,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = { "org.wise.portal.presentation", "org.wise.portal.service",
-    "org.wise.portal.dao", "org.wise.vle" })
+    "org.wise.portal.dao", "org.wise.vle.web", "org.wise.vle.utils" })
 public class WebConfig implements WebMvcConfigurer {
 
   @Value("${google_analytics_id:}")
@@ -82,16 +83,9 @@ public class WebConfig implements WebMvcConfigurer {
     registry.addResourceHandler("/portal/themes/**").addResourceLocations("/portal/themes/");
     registry.addResourceHandler("/portal/translate/**").addResourceLocations("/portal/translate/");
     registry.addResourceHandler("/vle/**").addResourceLocations("/vle/");
-    registry.addResourceHandler("/wise5/**").addResourceLocations("/wise5/");
-    registry.addResourceHandler("/score/**").addResourceLocations("/score/");
-    registry.addResourceHandler("/tinymce/**").addResourceLocations("/site/dist/tinymce/");
-    registry.addResourceHandler("/site/**").addResourceLocations("/site/");
     registry.addResourceHandler("/curriculum/**").addResourceLocations("/curriculum/");
     registry.addResourceHandler("/studentuploads/**").addResourceLocations("/studentuploads/");
-    registry.addResourceHandler("/curriculumWISE5/**").addResourceLocations("/curriculumWISE5/");
-    registry.addResourceHandler("/assets/**").addResourceLocations("/site/dist/assets/");
-    registry.addResourceHandler("/*.css*").addResourceLocations("/site/dist/");
-    registry.addResourceHandler("/*.js*").addResourceLocations("/site/dist/");
+    registry.addResourceHandler("/projectIcons/**").addResourceLocations("/projectIcons/");
   }
 
   @Bean
@@ -125,6 +119,11 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(localeChangeInterceptor());
+  }
+
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/**").allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE");
   }
 
   @Bean

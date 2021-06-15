@@ -48,6 +48,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +74,7 @@ import org.wise.vle.domain.statistics.VLEStatistics;
 
 /**
  * Jobs to be run daily such as creating and sending usage reports
- * 
+ *
  * @author Geoffrey Kwan
  */
 @Component
@@ -98,7 +99,7 @@ public class DailyAdminJob {
   private PortalStatisticsDao<PortalStatistics> portalStatisticsDao;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private PortalService portalService;
@@ -246,7 +247,7 @@ public class DailyAdminJob {
   /**
    * Gather the StepWork statistics. This includes the total number of StepWork rows as well as how
    * many StepWork rows for each step type.
-   * 
+   *
    * @param statement
    *                        the object to execute queries
    * @param vleStatistics
@@ -295,7 +296,7 @@ public class DailyAdminJob {
   /**
    * Gather the Annotation statistics. This includes the total number of Annotation rows as well as
    * how many Annotation nodes for each annotation type.
-   * 
+   *
    * @param statement
    *                        the object to execute queries
    * @param vleStatistics
@@ -357,7 +358,7 @@ public class DailyAdminJob {
   /**
    * Get the node statistics. This includes the total number of step nodes as well as how many step
    * nodes for each node type.
-   * 
+   *
    * @param statement
    *                        the object to execute queries
    * @param vleStatistics
@@ -406,7 +407,7 @@ public class DailyAdminJob {
 
   /**
    * Get the number of times hints were viewed by a student
-   * 
+   *
    * @param statement
    *                        the object to execute queries
    * @param vleStatistics
@@ -548,7 +549,7 @@ public class DailyAdminJob {
 
   /**
    * Outputs the string to System.out if DEBUG is true
-   * 
+   *
    * @param output
    *                 a String to output to System.out
    */

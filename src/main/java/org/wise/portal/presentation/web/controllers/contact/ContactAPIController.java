@@ -10,6 +10,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -38,7 +39,7 @@ import java.util.Properties;
 public class ContactAPIController {
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   protected UserService userService;

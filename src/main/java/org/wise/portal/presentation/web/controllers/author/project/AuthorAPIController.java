@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,7 +62,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -95,7 +94,7 @@ import org.wise.vle.utils.FileManager;
  * @author Geoffrey Kwan
  */
 @Controller
-@RequestMapping("/author")
+@RequestMapping("/api/author")
 @Secured({ "ROLE_AUTHOR" })
 public class AuthorAPIController {
 
@@ -115,7 +114,7 @@ public class AuthorAPIController {
   protected SessionService sessionService;
 
   @Autowired
-  protected Properties appProperties;
+  protected Environment appProperties;
 
   @Autowired
   protected ServletContext servletContext;
@@ -123,11 +122,11 @@ public class AuthorAPIController {
   @Autowired
   private MessagePublisher redisPublisher;
 
-  private String featuredProjectIconsFolderRelativePath = "wise5/authoringTool/projectIcons";
+  private String featuredProjectIconsFolderRelativePath;
 
-  @GetMapping
-  String authorProject() {
-    return "forward:/wise5/authoringTool/dist/index.html";
+  @Autowired
+  public AuthorAPIController(Environment appProperties) {
+    featuredProjectIconsFolderRelativePath = appProperties.getProperty("project_icons_base_dir");
   }
 
   @RequestMapping("/authorproject.html")
@@ -152,9 +151,9 @@ public class AuthorAPIController {
     if (projectIdStr != null && !projectIdStr.equals("") && !projectIdStr.equals("none")) {
       project = projectService.getById(Long.parseLong(projectIdStr));
       if (project.getWiseVersion().equals(5)) {
-        ModelAndView wise5AuthoringView = new ModelAndView(
-            new RedirectView("../teacher/edit/unit/" + projectIdStr));
-        return wise5AuthoringView;
+        return new ModelAndView(
+            new RedirectView(appProperties.getProperty("wise.hostname") +
+            "/teacher/edit/unit/" + projectIdStr));
       } else if (project.getWiseVersion().equals(4)) {
         ModelAndView wise4AuthoringView = new ModelAndView(
             new RedirectView("/legacy/author/authorproject.html?projectId=" + projectIdStr));
@@ -194,7 +193,7 @@ public class AuthorAPIController {
   @GetMapping("/project/featured/icons")
   @ResponseBody
   protected List<String> getFeaturedProjectIcons() {
-    File featuredProjectIconsDir = new File(getFeaturedProjectIconsFolderPathString());
+    File featuredProjectIconsDir = new File(featuredProjectIconsFolderRelativePath);
     List<String> featuredProjectIconPaths = new ArrayList<String>();
     for (File icon : featuredProjectIconsDir.listFiles()) {
       featuredProjectIconPaths.add(icon.getName());
@@ -213,7 +212,7 @@ public class AuthorAPIController {
     Project project = projectService.getById(projectId);
     HashMap<String, String> response = new HashMap<String, String>();
     if (projectService.canAuthorProject(project, user)) {
-      String projectAssetsFolderPathString = FileManager.getProjectAssetsFolderPath(project);
+      String projectAssetsFolderPathString = projectService.getProjectLocalPath(project) + "/assets";;
       Path fromImagePath = null;
       if (isCustom) {
         fromImagePath = Paths.get(projectAssetsFolderPathString + "/" + projectIcon);
@@ -270,15 +269,15 @@ public class AuthorAPIController {
     String contextPath = request.getContextPath();
     config.put("contextPath", contextPath);
     config.put("userType", "teacher");
-    config.put("copyProjectURL", contextPath + "/author/project/copy");
+    config.put("copyProjectURL", contextPath + "/api/author/project/copy");
     config.put("mainHomePageURL", contextPath);
-    config.put("renewSessionURL", contextPath + "/session/renew");
-    config.put("sessionLogOutURL", contextPath + "/logout");
-    config.put("registerNewProjectURL", contextPath + "/author/project/new");
+    config.put("renewSessionURL", contextPath + "/api/session/renew");
+    config.put("sessionLogOutURL", contextPath + "/api/logout");
+    config.put("registerNewProjectURL", contextPath + "/api/author/project/new");
     config.put("wiseBaseURL", contextPath);
-    config.put("notifyAuthoringBeginEndURL", contextPath + "/author/project/notify");
+    config.put("notifyAuthoringBeginEndURL", contextPath + "/api/author/project/notify");
     config.put("getLibraryProjectsURL", contextPath + "/api/project/library");
-    config.put("teacherDataURL", contextPath + "/teacher/data");
+    config.put("teacherDataURL", contextPath + "/api/teacher/data");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
 
     Portal portal = portalService.getById(new Integer(1));
@@ -292,6 +291,7 @@ public class AuthorAPIController {
       ObjectMapper mapper = new ObjectMapper();
       Map<String, Integer> map = mapper.readValue(structures, Map.class);
       config.put("automatedAssessmentProjectId", map.get("automatedAssessmentProjectId"));
+      config.put("simulationProjectId", map.get("simulationProjectId"));
     }
 
     MutableUserDetails userDetails = user.getUserDetails();
@@ -390,20 +390,20 @@ public class AuthorAPIController {
     config.put("projectId", projectId);
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/author/project/asset/" + projectId);
+    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + projectId);
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + projectId);
-    config.put("cRaterRequestURL", contextPath + "/c-rater");
-    config.put("importStepsURL", contextPath + "/author/project/importSteps/" + projectId);
-    config.put("featuredProjectIconsURL", contextPath + "/author/project/featured/icons");
-    config.put("projectIconURL", contextPath + "/author/project/icon");
+    config.put("cRaterRequestURL", contextPath + "/api/c-rater");
+    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + projectId);
+    config.put("featuredProjectIconsURL", contextPath + "/api/author/project/featured/icons");
+    config.put("projectIconURL", contextPath + "/api/author/project/icon");
     config.put("mode", "author");
 
     User user = userService.retrieveUserByUsername(auth.getName());
     boolean canEditProject = projectService.canAuthorProject(project, user);
     config.put("canEditProject", canEditProject);
     if (canEditProject) {
-      config.put("saveProjectURL", contextPath + "/author/project/save/" + projectId);
+      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + projectId);
       config.put("commitProjectURL", contextPath + "/project/commit/" + projectId);
     }
     List<Run> projectRuns = runService.getProjectRuns(projectId);
@@ -569,7 +569,7 @@ public class AuthorAPIController {
   }
 
   private File getRandomFeaturedProjectIcon() {
-    File featuredProjectIconsDir = new File(getFeaturedProjectIconsFolderPathString());
+    File featuredProjectIconsDir = new File(featuredProjectIconsFolderRelativePath);
     File[] featuredProjectIcons = featuredProjectIconsDir.listFiles();
     if (featuredProjectIcons != null && featuredProjectIcons.length > 0) {
       return featuredProjectIcons[new Random().nextInt(featuredProjectIcons.length)];
@@ -578,11 +578,7 @@ public class AuthorAPIController {
     }
   }
 
-  private String getFeaturedProjectIconsFolderPathString() {
-    return servletContext.getRealPath(File.separator) + featuredProjectIconsFolderRelativePath;
-  }
-
   private Path getFeaturedProjectIconPath(String fileName) {
-    return Paths.get(getFeaturedProjectIconsFolderPathString() + "/" + fileName);
+    return Paths.get(featuredProjectIconsFolderRelativePath + "/" + fileName);
   }
 }

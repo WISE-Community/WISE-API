@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -21,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,7 +59,7 @@ public class TeacherDataController {
   private RunService runService;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private MessagePublisher redisPublisher;
@@ -69,7 +69,7 @@ public class TeacherDataController {
    * notebook items
    */
   @ResponseBody
-  @RequestMapping(method = RequestMethod.GET, value = "/teacher/export/{runId}/{exportType}")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/{runId}/{exportType}")
   public void getWISE5TeacherExport(@PathVariable Integer runId, @PathVariable String exportType,
       @RequestParam(value = "id", required = false) Integer id,
       @RequestParam(value = "periodId", required = false) Integer periodId,
@@ -140,7 +140,7 @@ public class TeacherDataController {
     }
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/teacher/export/events")
+  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/events")
   public void getEvents(HttpServletResponse response, Authentication authentication,
       @RequestParam(value = "runId", required = false) Integer runId,
       @RequestParam(value = "includeStudentEvents", required = false) Boolean includeStudentEvents,
@@ -179,7 +179,7 @@ public class TeacherDataController {
     return eventsJSONArray;
   }
 
-  @GetMapping("/teacher/data")
+  @GetMapping("/api/teacher/data")
   @ResponseBody
   protected HashMap<String, Object> getWISE5TeacherData(
       @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
@@ -237,7 +237,7 @@ public class TeacherDataController {
     return data;
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/teacher/data")
+  @RequestMapping(method = RequestMethod.POST, value = "/api/teacher/data")
   public void postWISETeacherData(HttpServletResponse response,
       @RequestParam(value = "workgroupId", required = false) Integer workgroupId,
       @RequestParam(value = "projectId", required = false) Integer projectId,

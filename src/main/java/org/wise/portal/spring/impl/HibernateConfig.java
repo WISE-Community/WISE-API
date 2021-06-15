@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -44,7 +45,7 @@ public class HibernateConfig {
   DataSource dataSource;
 
   @Autowired
-  Properties appProperties;
+  Environment appProperties;
 
   @Value("${spring.jpa.properties.hibernate.dialect:org.hibernate.dialect.MySQL5Dialect}")
   private String hibernateDialect;

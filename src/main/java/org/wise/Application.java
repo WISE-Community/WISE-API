@@ -31,15 +31,15 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ComponentScan("org.wise.portal")
 @EnableScheduling
 public class Application extends SpringBootServletInitializer {
+
+  Environment environment;
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
@@ -48,20 +48,6 @@ public class Application extends SpringBootServletInitializer {
 
   public static void main(String[] args) {
     SpringApplication.run(Application.class, args);
-  }
-
-  @Bean
-  public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-    PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-    propertySourcesPlaceholderConfigurer.setLocations(new ClassPathResource("application.properties"));
-    return propertySourcesPlaceholderConfigurer;
-  }
-
-  @Bean
-  public PropertiesFactoryBean appProperties() {
-    PropertiesFactoryBean bean = new PropertiesFactoryBean();
-    bean.setLocation(new ClassPathResource("application.properties"));
-    return bean;
   }
 
   @Bean

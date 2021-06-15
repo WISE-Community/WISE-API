@@ -26,6 +26,7 @@ package org.wise.portal.presentation.web.filters;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,6 +49,9 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private Environment appProperties;
 
   private String authenticationFailureUrl;
 
@@ -79,8 +83,7 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         userService.updateUser(user);
       }
     } else if (request.getServletPath().contains("google-login")) {
-      String contextPath = request.getContextPath();
-      response.sendRedirect(contextPath + "/login/googleUserNotFound");
+      response.sendRedirect(appProperties.getProperty("wise.hostname") + "/login/googleUserNotFound");
       return;
     }
 
@@ -92,8 +95,8 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
       } catch (JSONException e) {
       }
     } else {
-      setDefaultFailureUrl(determineFailureUrl(request, response, exception));
-      super.onAuthenticationFailure(request, response, exception);
+      //setDefaultFailureUrl(determineFailureUrl(request, response, exception));
+      //super.onAuthenticationFailure(request, response, exception);
     }
   }
 

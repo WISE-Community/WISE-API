@@ -2,19 +2,18 @@ package org.wise.portal.presentation.web.controllers.author.project;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -40,7 +39,7 @@ import org.wise.portal.service.user.UserService;
  * @author Geoffrey Kwan
  */
 @Controller
-@RequestMapping("/author/project/asset")
+@RequestMapping("/api/author/project/asset")
 @Secured({ "ROLE_AUTHOR" })
 public class ProjectAssetAPIController {
 
@@ -51,7 +50,7 @@ public class ProjectAssetAPIController {
   protected ProjectService projectService;
 
   @Autowired
-  protected Properties appProperties;
+  protected Environment appProperties;
 
   @GetMapping("/{projectId}")
   @ResponseBody

@@ -23,6 +23,13 @@
  */
 package org.wise.portal.spring.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSessionListener;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -48,16 +55,20 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
-import org.wise.portal.presentation.web.filters.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
+import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
+import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
+import org.wise.portal.presentation.web.filters.WISEAuthenticationSuccessHandler;
+import org.wise.portal.presentation.web.filters.WISESwitchUserFilter;
 import org.wise.portal.presentation.web.listeners.WISESessionListener;
 import org.wise.portal.service.authentication.UserDetailsService;
-
-import javax.servlet.http.HttpSessionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = false)
@@ -100,9 +111,12 @@ public class WebSecurityConfig<S extends Session>
         .antMatchers("/api/**/**").permitAll()
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
-    http.sessionManagement().maximumSessions(2)
-        .sessionRegistry(sessionRegistry());
-    http.logout().addLogoutHandler(wiseLogoutHandler());
+    http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
+    http.logout().addLogoutHandler(wiseLogoutHandler())
+        .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
+    http.logout().logoutSuccessHandler((request, response, authentication) -> {
+      response.setStatus(HttpServletResponse.SC_OK);
+    });
     http.headers().frameOptions().sameOrigin();
   }
 
@@ -112,14 +126,13 @@ public class WebSecurityConfig<S extends Session>
     filter.setAuthenticationManager(authenticationManager);
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
-    filter.setFilterProcessesUrl("/j_acegi_security_check");
+    filter.setFilterProcessesUrl("/api/j_acegi_security_check");
     return filter;
   }
 
   @Bean
   public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
-    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter(
-        "/google-login");
+    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/api/google-login");
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
     return filter;
@@ -205,8 +218,8 @@ public class WebSecurityConfig<S extends Session>
   public WISESwitchUserFilter switchUserProcessingFilter() {
     WISESwitchUserFilter filter = new WISESwitchUserFilter();
     filter.setUserDetailsService(userDetailsService);
-    filter.setSwitchUserUrl("/login/impersonate");
-    filter.setExitUserUrl("/logout/impersonate");
+    filter.setSwitchUserUrl("/api/login/impersonate");
+    filter.setExitUserUrl("/api/logout/impersonate");
     filter.setSuccessHandler(authSuccessHandler());
     return filter;
   }

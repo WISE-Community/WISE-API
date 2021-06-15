@@ -50,7 +50,7 @@
 
 		<sec:authorize access="hasRole('ROLE_USER')">
 			<div id="userInfoBlock" class="userInfo">
-                <a id="signOut" class="wisebutton minibutton" href="${contextPath}/logout" title="<spring:message code="signOutTitle"/>"><spring:message code="signOut" /></a>
+                <a id="signOut" class="wisebutton minibutton" href="${contextPath}/api/logout" title="<spring:message code="signOutTitle"/>"><spring:message code="signOut" /></a>
 				<div id="username">
 					<c:set var="firstName">
 						<sec:authentication property="principal.firstname" htmlEscape="false" />
@@ -103,7 +103,7 @@
 									<li><a href="${contextPath}/legacy/teacher/management/library.html"><spring:message code="accountmenu.library" /></a></li>
 									<li><a href="${contextPath}/legacy/teacher/management/classroomruns.html"><spring:message code="accountmenu.runs" /></a></li>
 									<li><a href="${contextPath}/author"><spring:message code="accountmenu.authoring" /></a></li>
-									<li><a href="${contextPath}/author/authorproject.html"><spring:message code="accountmenu.launchLegacyAuthoringTool" /></a></li>
+									<li><a href="${contextPath}/api/author/authorproject.html"><spring:message code="accountmenu.launchLegacyAuthoringTool" /></a></li>
 								</ul>
 							</li>
 							<li class="level1 menu3"><a href="${contextPath}/legacy/teacher"><spring:message code="accountmenu.teacherHome" /></a></li>

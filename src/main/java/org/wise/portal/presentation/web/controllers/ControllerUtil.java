@@ -41,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -78,7 +79,7 @@ public class ControllerUtil {
   private static PortalService portalService;
 
   @Autowired
-  private static Properties appProperties;
+  private static Environment appProperties;
 
   @Autowired
   private static ProjectService projectService;
@@ -91,7 +92,7 @@ public class ControllerUtil {
   private static final String LICENSE_PATH = "/license.txt";
 
   @Autowired
-  public void setAppProperties(Properties appProperties){
+  public void setAppProperties(Environment appProperties){
     ControllerUtil.appProperties = appProperties;
   }
 

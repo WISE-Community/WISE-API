@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.domain.BasePermission;
@@ -95,7 +95,7 @@ import org.wise.vle.utils.FileManager;
 public class ProjectServiceImpl implements ProjectService {
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   private ProjectDao<Project> projectDao;
@@ -325,14 +325,12 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   private ModelAndView previewProjectWISE4(PreviewProjectParameters params, Project project) {
-    String contextPath = params.getHttpServletRequest().getContextPath();
-    String wise4URL = contextPath + "/legacy/previewproject.html?projectId=" + project.getId();
+    String wise4URL = appProperties.getProperty("wise.hostname") + "/legacy/previewproject.html?projectId=" + project.getId();
     return new ModelAndView(new RedirectView(wise4URL));
   }
 
   private ModelAndView previewProjectWISE5(PreviewProjectParameters params, Project project) {
-    String contextPath = params.getHttpServletRequest().getContextPath();
-    String wise5URL = contextPath + "/preview/unit/" + project.getId();
+    String wise5URL = appProperties.getProperty("wise.hostname") + "/preview/unit/" + project.getId();
     return new ModelAndView(new RedirectView(wise5URL));
   }
 
@@ -524,7 +522,7 @@ public class ProjectServiceImpl implements ProjectService {
   public Project copyProject(Long projectId, User user) throws Exception {
     Project parentProject = getById(projectId);
     long newProjectId = getNextAvailableProjectId();
-    File parentProjectDir = new File(FileManager.getProjectFolderPath(parentProject));
+    File parentProjectDir = new File(getProjectLocalPath(parentProject));
     String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
     File newProjectDir = new File(curriculumBaseDir, String.valueOf(newProjectId));
     FileManager.copy(parentProjectDir, newProjectDir);
@@ -741,7 +739,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
-  private String getProjectLocalPath(Project project) {
+  public String getProjectLocalPath(Project project) {
     String modulePath = project.getModulePath();
     int lastIndexOfSlash = modulePath.lastIndexOf("/");
     if (lastIndexOfSlash != -1) {
@@ -752,7 +750,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   public void writeProjectLicenseFile(Project project) throws JSONException {
-    String projectFolderPath = FileManager.getProjectFolderPath(project);
+    String projectFolderPath = getProjectLocalPath(project);
     ProjectMetadata metadata = project.getMetadata();
     String title = metadata.getTitle();
     JSONArray authorsArray = new JSONArray(metadata.getAuthors());

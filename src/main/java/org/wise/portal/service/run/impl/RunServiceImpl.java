@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -108,7 +109,7 @@ public class RunServiceImpl implements RunService {
   private UserDao<User> userDao;
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Autowired
   protected AclService<Persistable> aclService;
@@ -168,7 +169,7 @@ public class RunServiceImpl implements RunService {
     String language = locale.getLanguage(); // languages is two-letter ISO639 code, like en
     String runcodePrefixesStr = appProperties.getProperty("runcode_prefixes_en",
         DEFAULT_RUNCODE_PREFIXES);
-    if (appProperties.containsKey("runcode_prefixes_" + language)) {
+    if (appProperties.containsProperty("runcode_prefixes_" + language)) {
       runcodePrefixesStr = appProperties.getProperty("runcode_prefixes_" + language);
     }
     String[] runcodePrefixes = runcodePrefixesStr.split(",");

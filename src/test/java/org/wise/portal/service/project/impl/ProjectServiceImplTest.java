@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockRunner;
@@ -47,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
@@ -77,7 +77,7 @@ public class ProjectServiceImplTest {
   private ProjectDao<Project> projectDao;
 
   @Mock
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Mock
   private AclService<Project> mockAclService;
@@ -260,10 +260,14 @@ public class ProjectServiceImplTest {
       metadata.put("authors", newAuthors);
       metadata.put("title", "New Title");
       projectJSON.put("metadata", metadata);
+      expect(appProperties.getProperty("curriculum_base_dir"))
+        .andReturn("src/test/webapp/curriculum");
+      expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
+      replay(appProperties);
       projectServiceImpl.updateMetadataAndLicenseIfNecessary(project, projectJSON.toString());
       assertEquals(metadata.get("title"), project.getMetadata().getTitle());
       String licenseText = FileUtils.readFileToString(new File(licenseFilePath), "UTF-8");
-      assertTrue(licenseText.contains("licensed under CC BY-SA by\nSpongebob Squarepants"));
+      assertTrue(licenseText.contains("licensed under\nCC BY-SA by Spongebob Squarepants"));
     } catch (JSONException e) {
       fail();
     } catch (IOException e) {

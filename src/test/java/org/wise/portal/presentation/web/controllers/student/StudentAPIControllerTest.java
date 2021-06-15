@@ -17,6 +17,7 @@ import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.core.env.Environment;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.RunHasEndedException;
@@ -48,7 +49,7 @@ public class StudentAPIControllerTest extends APIControllerTest {
   private StudentAttendanceService studentAttendanceService;
 
   @Mock(fieldName = "appProperties")
-  private Properties appProperties;
+  private Environment appProperties;
 
   @Mock(fieldName = "i18nProperties")
   private Properties i18nProperties;

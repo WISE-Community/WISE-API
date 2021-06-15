@@ -31,7 +31,7 @@ import org.wise.vle.domain.work.NotebookItemAlreadyInGroupException;
  * @author Geoffrey Kwan
  */
 @Controller
-@RequestMapping(value = {"/student/notebook/run", "/teacher/notebook/run"})
+@RequestMapping(value = {"/api/student/notebook/run", "/api/teacher/notebook/run"})
 public class NotebookController {
 
   @Autowired

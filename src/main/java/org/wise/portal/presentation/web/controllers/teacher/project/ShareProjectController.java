@@ -42,6 +42,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -88,7 +89,7 @@ public class ShareProjectController {
   private IMailFacade mailService;
 
   @Autowired
-  protected Properties appProperties;
+  protected Environment appProperties;
 
   @Autowired
   private MessageSource messageSource;
@@ -328,7 +329,7 @@ public class ShareProjectController {
       String message = messageSource.getMessage("presentation.web.controllers.teacher.project.customized.ShareProjectController.shareProjectConfirmationEmailBody",
         new Object[] {sharerName,project.getName(),project.getId(),shareeDetails.getUsername(),sdf.format(date), previewProjectUrl}, defaultMessage, this.locale);
 
-      if (appProperties.containsKey("discourse_url")) {
+      if (appProperties.containsProperty("discourse_url")) {
         String discourseURL = appProperties.getProperty("discourse_url");
         if (discourseURL != null && !discourseURL.isEmpty()) {
           // if this WISE instance uses discourse for teacher community, append link to it in the P.S. section of the email

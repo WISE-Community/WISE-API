@@ -29,31 +29,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.wise.portal.domain.project.Project;
+import org.springframework.stereotype.Component;
 
 /**
  * Servlet implementation class for Servlet: FileManager
  *
  * @author Patrick Lawler
  */
+@Component
 public class FileManager {
   static final long serialVersionUID = 1L;
-
-  private static Properties appProperties = null;
-
-  static {
-    try {
-      appProperties = new Properties();
-      appProperties
-          .load(FileManager.class.getClassLoader().getResourceAsStream("application.properties"));
-    } catch (Exception e) {
-      System.err.println("FileManager could not read in appProperties file");
-      e.printStackTrace();
-    }
-  }
 
   /**
    * Copies the given <code>File</code> src to the given <code>File</code> dest. If they are
@@ -88,7 +75,7 @@ public class FileManager {
 
   /**
    * Import the asset from one project asset folder to another project asset folder
-   * 
+   *
    * @param fromAssetFileName
    *                                  the name of the file in the asset folder
    * @param fromAssetFileContent
@@ -194,36 +181,5 @@ public class FileManager {
     String fileNameEnding = fileName.substring(lastDot);
     newFileName = fileNameBeginning + "-" + counter + fileNameEnding;
     return newFileName;
-  }
-
-  /**
-   * Get the full path to the project json file
-   * 
-   * @param project
-   *                  the project object
-   * @return the full project file path e.g.
-   *         /Users/geoffreykwan/dev/apache-tomcat-5.5.27/webapps/curriculum/667/wise4.project.json
-   */
-  public static String getProjectFilePath(Project project) {
-    String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
-    String projectModulePath = project.getModulePath();
-    return curriculumBaseDir + projectModulePath;
-  }
-
-  /**
-   * Get the full project folder path given the project object
-   * 
-   * @param project
-   *                  the project object
-   * @return the full project folder path e.g.
-   *         /Users/geoffreykwan/dev/apache-tomcat-5.5.27/webapps/curriculum/667
-   */
-  public static String getProjectFolderPath(Project project) {
-    String projectFilePath = getProjectFilePath(project);
-    return projectFilePath.substring(0, projectFilePath.lastIndexOf("/"));
-  }
-
-  public static String getProjectAssetsFolderPath(Project project) {
-    return getProjectFolderPath(project) + "/assets";
   }
 }

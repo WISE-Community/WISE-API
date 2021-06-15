@@ -98,6 +98,11 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <profiles>
+            <profile>dockerdev</profile>
+          </profiles>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -256,6 +261,7 @@
           <packagingExcludes>
             WEB-INF/classes/sample/**,
             WEB-INF/classes/application.properties,
+            WEB-INF/classes/application-dockerdev.properties,
             curriculum/**,
             studentuploads/**
           </packagingExcludes>

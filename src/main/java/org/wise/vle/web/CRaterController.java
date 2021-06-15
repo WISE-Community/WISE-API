@@ -26,18 +26,18 @@ package org.wise.vle.web;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
 
-import java.util.Properties;
-
 @RestController
+@RequestMapping("/api")
 public class CRaterController {
 
   @Autowired
-  private Properties appProperties;
+  private Environment appProperties;
 
   @RequestMapping("/c-rater/score")
   protected String scoreCRaterItem(
