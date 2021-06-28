@@ -29,7 +29,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
- * Stores information about a WISE student on a particular
+ * Stores information about a SCORE student on a particular
  * <code>Run</code>:
  * * <code>User</code> student user. Must not be null
  * * <code>Run</code> which Run the student is in. Must not be null

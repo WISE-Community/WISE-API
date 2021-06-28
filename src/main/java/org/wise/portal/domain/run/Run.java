@@ -378,6 +378,10 @@ public interface Run extends Persistable {
    */
   void setSurvey(String survey);
 
+  void setRandomPeriodAssignment(boolean isRandomPeriodAssignment);
+
+  boolean isRandomPeriodAssignment();
+
   Long getStartTimeMilliseconds();
 
   Long getEndTimeMilliseconds();

@@ -288,6 +288,26 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   }
 
   @Test
+  public void updateRandomPeriodAssignment_RandomTrue_ReturnSuccess()
+      throws ObjectNotFoundException {
+    boolean isRandomPeriodAssignment = true;
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    runService.setRandomPeriodAssignment(run1, isRandomPeriodAssignment);
+    expectLastCall();
+    replay(runService);
+    expectGetRunMapToBeCalled();
+    replay(projectService);
+    HashMap<String, Object> response = teacherAPIController.updateRandomPeriodAssignment(
+      teacherAuth, runId1, isRandomPeriodAssignment);
+    assertEquals("success", response.get("status"));
+    verify(userService);
+    verify(runService);
+    verify(projectService);
+  }
+
+  @Test
   public void createRun_ThreePeriods_CreateRun() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
@@ -297,6 +317,7 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     replay(projectService);
     Long projectId = 1L;
     String periods = "1,2,free";
+    boolean isRandomPeriodAssignment = false;
     Integer maxStudentsPerTeam = 3;
     Long startDate = Calendar.getInstance().getTimeInMillis();
     Long endDate = null;
@@ -305,11 +326,11 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     periodNamesSet.add("1");
     periodNamesSet.add("2");
     periodNamesSet.add("free");
-    expect(runService.createRun(projectId, teacher1, periodNamesSet, maxStudentsPerTeam, startDate,
-        endDate, isLockedAfterEndDate, Locale.US)).andReturn(run1);
+    expect(runService.createRun(projectId, teacher1, periodNamesSet, isRandomPeriodAssignment,
+        maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, Locale.US)).andReturn(run1);
     replay(runService);
-    teacherAPIController.createRun(teacherAuth, request, projectId, periods, maxStudentsPerTeam,
-        startDate, endDate, isLockedAfterEndDate);
+    teacherAPIController.createRun(teacherAuth, request, projectId, periods,
+        isRandomPeriodAssignment, maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate);
     verify(userService);
     verify(request);
     verify(projectService);

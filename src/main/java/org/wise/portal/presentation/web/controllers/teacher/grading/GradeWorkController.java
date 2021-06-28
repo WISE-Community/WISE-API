@@ -68,8 +68,7 @@ public class GradeWorkController {
   /**
    * Handles launching classroom monitor for WISE5 runs
    *
-   * @param runId
-   *                ID of the run
+   * @param runId ID of the run
    * @throws Exception
    */
   @GetMapping(value = "/classroomMonitor/{runId}")
@@ -82,5 +81,4 @@ public class GradeWorkController {
       return new ModelAndView("errors/accessdenied");
     }
   }
-
 }

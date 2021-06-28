@@ -213,6 +213,7 @@ public class RunServiceImpl implements RunService {
       }
       run.setPeriods(periods);
     }
+    run.setRandomPeriodAssignment(runParameters.isRandomPeriodAssignment());
     run.setPostLevel(runParameters.getPostLevel());
 
     Boolean enableRealTime = runParameters.getEnableRealTime();
@@ -234,20 +235,21 @@ public class RunServiceImpl implements RunService {
     return run;
   }
 
-  public Run createRun(Long projectId, User user, Set<String> periodNames,
-      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-      Locale locale) throws Exception {
+  public Run createRun(Long projectId, User user, Set<String> periodNames, boolean isRandomPeriodAssignment,
+        Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
+        Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
     RunParameters runParameters = createRunParameters(project, user, periodNames,
-        maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
+        isRandomPeriodAssignment, maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate,
+        locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
     return run;
   }
 
   public RunParameters createRunParameters(Project project, User user, Set<String> periodNames,
-      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-      Locale locale) {
+        boolean isRandomPeriodAssignment, Integer maxStudentsPerTeam, Long startDate, Long endDate,
+        Boolean isLockedAfterEndDate, Locale locale) {
     RunParameters runParameters = new RunParameters();
     runParameters.setOwner(user);
     runParameters.setName(project.getName());
@@ -255,6 +257,7 @@ public class RunServiceImpl implements RunService {
     runParameters.setLocale(locale);
     runParameters.setPostLevel(5);
     runParameters.setPeriodNames(periodNames);
+    runParameters.setRandomPeriodAssignment(isRandomPeriodAssignment);
     runParameters.setMaxWorkgroupSize(maxStudentsPerTeam);
     runParameters.setStartTime(new Date(startDate));
     if (endDate == null || endDate <= startDate) {
@@ -796,6 +799,12 @@ public class RunServiceImpl implements RunService {
 
   public boolean isAllowedToViewStudentNames(Run run, User user) {
     return run.isOwner(user) || hasSpecificPermission(run, user, RunPermission.VIEW_STUDENT_NAMES);
+  }
+
+  @Override
+  public void setRandomPeriodAssignment(Run run, boolean isRandomPeriodAssignment) {
+    run.setRandomPeriodAssignment(isRandomPeriodAssignment);
+    runDao.save(run);
   }
 
 }

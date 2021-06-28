@@ -31,6 +31,7 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
@@ -89,15 +90,40 @@ public class TeacherAPIController extends UserAPIController {
     return getRunMap(user, run);
   }
 
+  @GetMapping("/workgroup/{runId}")
+  List<HashMap<String, Object>> getWorkgroups(Authentication auth, @PathVariable Long runId)
+      throws ObjectNotFoundException {
+    List<HashMap<String, Object>> workgroups = new ArrayList<HashMap<String, Object>> ();
+    for (Workgroup workgroupInRun : runService.getWorkgroups(runId)) {
+      HashMap<String, Object> workgroup = new HashMap<String, Object>();
+      workgroup.put("id", workgroupInRun.getId());
+      workgroup.put("name", workgroupInRun.generateWorkgroupName());
+      if (workgroupInRun.isStudentWorkgroup()) {
+        HashMap<String, Object> period = new HashMap<String, Object>();
+        period.put("id", workgroupInRun.getPeriod().getId());
+        period.put("name", workgroupInRun.getPeriod().getName());
+        workgroup.put("period", period);
+      }
+      workgroup.put("isStudentWorkgroup", workgroupInRun.isStudentWorkgroup());
+      workgroups.add(workgroup);
+    }
+    return workgroups;
+  }
+
   @Override
   protected HashMap<String, Object> getRunMap(User user, Run run) {
     HashMap<String, Object> map = super.getRunMap(user, run);
     map.put("sharedOwners", getRunSharedOwnersList(run));
-    List<String> periods = new ArrayList<String>();
-    for (Group period : run.getPeriods()) {
-      periods.add(period.getName());
+    List<HashMap<String, Object>> periods = new ArrayList<HashMap<String, Object>>();
+    for (Group runPeriod : run.getPeriods()) {
+      HashMap<String, Object> period = new HashMap<String, Object>();
+      period.put("id", runPeriod.getId());
+      period.put("name", runPeriod.getName());
+      period.put("workgroups", new ArrayList<Object>());
+      periods.add(period);
     }
     map.put("periods", periods);
+    map.put("isRandomPeriodAssignment", run.isRandomPeriodAssignment());
     map.put("lastRun", run.getLastRun());
     return map;
   }
@@ -227,8 +253,11 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/create")
-  HashMap<String, Object> createRun(Authentication auth, HttpServletRequest request,
-      @RequestParam("projectId") Long projectId, @RequestParam("periods") String periods,
+  HashMap<String, Object> createRun(Authentication auth,
+      HttpServletRequest request,
+      @RequestParam("projectId") Long projectId,
+      @RequestParam("periods") String periods,
+      @RequestParam("isRandomPeriodAssignment") boolean isRandomPeriodAssignment,
       @RequestParam("maxStudentsPerTeam") Integer maxStudentsPerTeam,
       @RequestParam("startDate") Long startDate,
       @RequestParam(value = "endDate", required = false) Long endDate,
@@ -237,8 +266,8 @@ public class TeacherAPIController extends UserAPIController {
     User user = userService.retrieveUserByUsername(auth.getName());
     Locale locale = request.getLocale();
     Set<String> periodNames = createPeriodNamesSet(periods);
-    Run run = runService.createRun(projectId, user, periodNames, maxStudentsPerTeam, startDate,
-        endDate, isLockedAfterEndDate, locale);
+    Run run = runService.createRun(projectId, user, periodNames, isRandomPeriodAssignment,
+        maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
     return getRunMap(user, run);
   }
 
@@ -386,6 +415,25 @@ public class TeacherAPIController extends UserAPIController {
     } else {
       response.put("status", "error");
       response.put("messageCode", "noPermissionToChangeDate");
+    }
+    return response;
+  }
+
+  @PostMapping("/run/update/random-period-assignment")
+  HashMap<String, Object> updateRandomPeriodAssignment(Authentication authentication,
+      @RequestParam("runId") Long runId,
+      @RequestParam("isRandomPeriodAssignment") boolean isRandomPeriodAssignment)
+      throws ObjectNotFoundException {
+    User user = userService.retrieveUserByUsername(authentication.getName());
+    Run run = runService.retrieveById(runId);
+    HashMap<String, Object> response = new HashMap<String, Object>();
+    if (run.isTeacherAssociatedToThisRun(user)) {
+      runService.setRandomPeriodAssignment(run, isRandomPeriodAssignment);
+      response.put("status", "success");
+      response.put("run", getRunMap(user, run));
+    } else {
+      response.put("status", "error");
+      response.put("messageCode", "noPermissionToChangeRandomPeriodAssignment");
     }
     return response;
   }

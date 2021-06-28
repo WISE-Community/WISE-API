@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.Set;
 
 /**
- * A WISE Project domain object
+ * A SCORE Project domain object
  *
  * To launch a project as a student, you need
  * -- to have set up a run (a teacher would do this)

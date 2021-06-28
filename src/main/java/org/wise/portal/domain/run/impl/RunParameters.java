@@ -46,6 +46,8 @@ public class RunParameters implements Serializable {
 
   private Set<String> periodNames = new TreeSet<String>();
 
+  private boolean isRandomPeriodAssignment = false;
+
   private Set<String> runIdsToArchive = new TreeSet<String>();
 
   private User owner;

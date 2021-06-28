@@ -31,7 +31,7 @@ import org.wise.portal.domain.project.ProjectMetadata;
 import org.wise.portal.domain.user.User;
 
 /**
- * Parameters required to create a WISE Project.
+ * Parameters required to create a SCORE Project.
  *
  * @author Hiroki Terashima
  */

@@ -24,6 +24,7 @@ import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.status.StudentStatus;
 
+@Secured({ "ROLE_TEACHER" })
 @RestController
 public class TeacherRunAPIController {
 
@@ -64,7 +65,8 @@ public class TeacherRunAPIController {
       throws Exception {
     JSONObject message = new JSONObject();
     message.put("type", "pause");
-    message.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+    message.put("topic",
+        String.format("/topic/classroom/%s/%s", runId, periodId));
     redisPublisher.publish(message.toString());
   }
 
@@ -73,8 +75,50 @@ public class TeacherRunAPIController {
       @DestinationVariable Integer periodId) throws Exception {
     JSONObject message = new JSONObject();
     message.put("type", "unpause");
-    message.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+    message.put("topic",
+        String.format("/topic/classroom/%s/%s", runId, periodId));
     redisPublisher.publish(message.toString());
+  }
+
+  @MessageMapping("/api/teacher/run/{runId}/workgroup-to-node/{workgroupId}/{nodeId}")
+  public void sendWorkgroupToNode(Authentication auth,
+      @DestinationVariable Long runId, @DestinationVariable String workgroupId,
+      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
+    Run run = runService.retrieveById(runId);
+    if (runService.hasReadPermission(auth, run)) {
+      JSONObject msg = new JSONObject();
+      msg.put("type", "goToNode");
+      msg.put("nodeId", nodeId);
+      msg.put("topic", String.format("/topic/workgroup/%s", workgroupId));
+      redisPublisher.publish(msg.toString());
+    }
+  }
+
+  @MessageMapping("/api/teacher/run/{runId}/workgroup-to-next-node/{workgroupId}")
+  public void sendWorkgroupToNextNode(Authentication auth,
+      @DestinationVariable Long runId, @DestinationVariable String workgroupId)
+      throws ObjectNotFoundException, JSONException {
+    Run run = runService.retrieveById(runId);
+    if (runService.hasReadPermission(auth, run)) {
+      JSONObject msg = new JSONObject();
+      msg.put("type", "goToNextNode");
+      msg.put("topic", String.format("/topic/workgroup/%s", workgroupId));
+      redisPublisher.publish(msg.toString());
+    }
+  }
+
+  @MessageMapping("/api/teacher/run/{runId}/period-to-node/{periodId}/{nodeId}")
+  public void sendPeriodToNode(Authentication auth,
+      @DestinationVariable Long runId, @DestinationVariable Long periodId,
+      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
+    Run run = runService.retrieveById(runId);
+    if (runService.hasReadPermission(auth, run)) {
+      JSONObject msg = new JSONObject();
+      msg.put("type", "goToNode");
+      msg.put("nodeId", nodeId);
+      msg.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+      redisPublisher.publish(msg.toString());
+    }
   }
 
   @MessageMapping("/api/teacher/run/{runId}/node-to-period/{periodId}")

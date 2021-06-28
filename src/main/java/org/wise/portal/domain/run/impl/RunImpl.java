@@ -242,6 +242,11 @@ public class RunImpl implements Run {
   @Column(name = RunImpl.COLUMN_NAME_IS_LOCKED_AFTER_END_DATE, nullable = true)
   protected boolean isLockedAfterEndDate;
 
+  @Column(name = "isRandomPeriodAssignment")
+  @Getter
+  @Setter
+  private boolean isRandomPeriodAssignment = false;
+
   public Group getPeriodByName(String periodName) throws PeriodNotFoundException {
     Set<Group> periods = getPeriods();
     for (Group period : periods) {

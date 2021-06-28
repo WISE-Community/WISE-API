@@ -159,6 +159,15 @@ public class StudentDataController {
     redisPublisher.publish(message.toString());
   }
 
+  public void broadcastAnnotationToClassroom(Annotation annotation) throws JSONException {
+    JSONObject message = new JSONObject();
+    message.put("type", "annotationToClassroom");
+    message.put("topic", String.format("/topic/classroom/%s/%s",
+        annotation.getRunId(), annotation.getPeriodId()));
+    message.put("annotation", annotation.toJSON());
+    redisPublisher.publish(message.toString());
+  }
+
   public void broadcastStudentWorkToClassroom(StudentWork componentState) throws JSONException {
     JSONObject message = new JSONObject();
     message.put("type", "studentWorkToClassroom");
@@ -327,25 +336,16 @@ public class StudentDataController {
                 Integer savedStudentWorkId = savedStudentWork.getId();
                 annotation = vleService.saveAnnotation(
                     annotationJSONObject.isNull("id") ? null : annotationJSONObject.getInt("id"),
-                    annotationJSONObject.isNull("runId") ? null
-                      : annotationJSONObject.getInt("runId"),
-                    annotationJSONObject.isNull("periodId") ? null
-                      : annotationJSONObject.getInt("periodId"),
-                    annotationJSONObject.isNull("fromWorkgroupId") ? null
-                      : annotationJSONObject.getInt("fromWorkgroupId"),
-                    annotationJSONObject.isNull("toWorkgroupId") ? null
-                      : annotationJSONObject.getInt("toWorkgroupId"),
-                    annotationJSONObject.isNull("nodeId") ? null
-                      : annotationJSONObject.getString("nodeId"),
-                    annotationJSONObject.isNull("componentId") ? null
-                      : annotationJSONObject.getString("componentId"),
+                    annotationJSONObject.isNull("runId") ? null : annotationJSONObject.getInt("runId"),
+                    annotationJSONObject.isNull("periodId") ? null : annotationJSONObject.getInt("periodId"),
+                    annotationJSONObject.isNull("fromWorkgroupId") ? null : annotationJSONObject.getInt("fromWorkgroupId"),
+                    annotationJSONObject.isNull("toWorkgroupId") ? null : annotationJSONObject.getInt("toWorkgroupId"),
+                    annotationJSONObject.isNull("nodeId") ? null : annotationJSONObject.getString("nodeId"),
+                    annotationJSONObject.isNull("componentId") ? null : annotationJSONObject.getString("componentId"),
                     savedStudentWorkId, localNotebookItemId, notebookItemId,
-                    annotationJSONObject.isNull("type") ? null
-                      : annotationJSONObject.getString("type"),
-                    annotationJSONObject.isNull("data") ? null
-                      : annotationJSONObject.getString("data"),
-                    annotationJSONObject.isNull("clientSaveTime") ? null
-                      : annotationJSONObject.getString("clientSaveTime"));
+                    annotationJSONObject.isNull("type") ? null : annotationJSONObject.getString("type"),
+                    annotationJSONObject.isNull("data") ? null : annotationJSONObject.getString("data"),
+                    annotationJSONObject.isNull("clientSaveTime") ? null : annotationJSONObject.getString("clientSaveTime"));
 
                 // send this annotation immediately to the teacher so the Classroom Monitor can be
                 // updated
@@ -379,6 +379,9 @@ public class StudentDataController {
                     annotationJSONObject.isNull("clientSaveTime") ? null
                       : annotationJSONObject.getString("clientSaveTime"));
               }
+              annotation.convertToClientAnnotation();
+              broadcastAnnotationToTeacher(annotation);
+              broadcastAnnotationToClassroom(annotation);
 
               // before returning saved Annotation, strip all fields except id, responseToken, and
               // serverSaveTime to minimize response size

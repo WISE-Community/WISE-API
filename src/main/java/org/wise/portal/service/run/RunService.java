@@ -43,7 +43,7 @@ import org.wise.portal.presentation.web.response.SharedOwner;
 
 /**
  * A service for working with <code>Run</code> objects
- * 
+ *
  * @author Laurel Williams
  * @author Hiroki Terashima
  */
@@ -51,20 +51,21 @@ public interface RunService {
 
   /**
    * Creates a new <code>Run</code> object in the local data store.
-   * 
+   *
    * @param runParameters
    *                        The object that encapsulate parameters for creating a run
    * @return the run created.
    */
   Run createRun(RunParameters runParameters) throws ObjectNotFoundException;
 
-  Run createRun(Long projectId, User user, Set<String> periodNames, Integer maxStudentsPerTeam,
-      Long startDate, Long endDate, Boolean isLockedAfterEndDate, Locale locale) throws Exception;
+  Run createRun(Long projectId, User user, Set<String> periodNames, boolean isRandomPeriodAssignment,
+      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
+      Locale locale) throws Exception;
 
   /**
    * Ends this run. The side effect is that the run's endtime gets set. A Run that has ended is no
    * longer eligible for classroom run. If the run is already ended, nothing happens.
-   * 
+   *
    * @param run
    *              the <code>Run</code> to end
    */
@@ -73,7 +74,7 @@ public interface RunService {
   /**
    * Restarts this run. The side effect is that the run's endtime gets set to null. The run
    * continues to be available for students to access.
-   * 
+   *
    * @param run
    *              the <code>Run</code> to restart
    */
@@ -82,7 +83,7 @@ public interface RunService {
   /**
    * Starts this run. The side effect is that the run's endtime gets set to null. A Run that has
    * started becomes eligible for classroom run. If the run is already started, nothing happens.
-   * 
+   *
    * @param run
    *              the <code>Run</code> to start
    */
@@ -90,7 +91,7 @@ public interface RunService {
 
   /**
    * Retrieves a list of <code>Run</code>
-   * 
+   *
    * @return <code>List</code> of <code>Run</code>
    */
   @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
@@ -98,7 +99,7 @@ public interface RunService {
 
   /**
    * Retrieves a list of <code>Run</code> that the specified user owns
-   * 
+   *
    * @return <code>List</code> of <code>Run</code>
    */
   @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
@@ -106,7 +107,7 @@ public interface RunService {
 
   /**
    * Retrieves a list of <code>Run</code> that the specified user is an shared-owner
-   * 
+   *
    * @return <code>List</code> of <code>Run</code>
    */
   @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
@@ -114,7 +115,7 @@ public interface RunService {
 
   /**
    * Retrieves a list of all <code>Runs</code>. Only adminstrators may invoke this method.
-   * 
+   *
    * @return <code>List</code> of <code>Run</code>
    */
   @Secured({ "ROLE_ADMINISTRATOR", "ROLE_RESEARCHER" })
@@ -122,7 +123,7 @@ public interface RunService {
 
   /**
    * Retrieves a list of <code>Run</code> that the given user is associated with
-   * 
+   *
    * @param user
    *               <code>User</code> that is associated with 0 or more runs
    * @return list of <code>Run</code> that the user is associated with
@@ -249,7 +250,7 @@ public interface RunService {
 
   /**
    * Gets all of the Workgroups that are associated with this run
-   * 
+   *
    * @return set of Workgroups for that are in this run
    * @throws ObjectNotFoundException
    *                                   when runId cannot be used to find an existing run
@@ -258,7 +259,7 @@ public interface RunService {
 
   /**
    * Gets all of the Workgroups that are associated with this run
-   * 
+   *
    * @return set of Workgroups for that are in this run
    * @throws ObjectNotFoundException
    *                                   when runId cannot be used to find an existing run
@@ -271,7 +272,7 @@ public interface RunService {
 
   /**
    * Sets whether the run is paused
-   * 
+   *
    * @param runId
    *                   the id of the run
    * @param isPaused
@@ -282,7 +283,7 @@ public interface RunService {
 
   /**
    * Sets whether idea manager is enabled for this run or not.
-   * 
+   *
    * @param runId
    * @param isEnabled
    * @throws ObjectNotFoundException
@@ -291,7 +292,7 @@ public interface RunService {
 
   /**
    * Sets whether student asset uploader is enabled for this run or not.
-   * 
+   *
    * @param runId
    * @param isEnabled
    * @throws ObjectNotFoundException
@@ -300,7 +301,7 @@ public interface RunService {
 
   /**
    * Sets whether real time is enabled for this run
-   * 
+   *
    * @param runId
    * @param isEnabled
    * @throws ObjectNotFoundException
@@ -309,7 +310,7 @@ public interface RunService {
 
   /**
    * Update private run notes for this run
-   * 
+   *
    * @param runId
    * @param privateNotes
    *                       String private notes
@@ -319,7 +320,7 @@ public interface RunService {
 
   /**
    * Update survey for the specified run
-   * 
+   *
    * @param runId
    * @param survey
    *                 String survey
@@ -329,7 +330,7 @@ public interface RunService {
 
   /**
    * Given a <code>Long</code> runId, changes the archiveReminderTime to be 30 days from today.
-   * 
+   *
    * @param runId
    * @throws <code>ObjectNotFoundException</code>
    */
@@ -338,7 +339,7 @@ public interface RunService {
   /**
    * Given a <code>Long</code> projectId, returns the <code>Integer</code> number of runs associated
    * with that id.
-   * 
+   *
    * @param id
    * @return <code>Integer</code>
    */
@@ -347,7 +348,7 @@ public interface RunService {
   /**
    * Given a <code>Long</code> projectId, returns a <code>List<Run></code> list of runs associated
    * with that id.
-   * 
+   *
    * @param projectId
    * @return <code>Integer</code>
    */
@@ -355,7 +356,7 @@ public interface RunService {
 
   /**
    * Sets run extras
-   * 
+   *
    * @param run
    * @param extras
    * @throws Exception
@@ -365,7 +366,7 @@ public interface RunService {
   /**
    * Returns <code>boolean</code> true iff the given <code>User</code> user has the read permission
    * for the given <code>Run</code> run.
-   * 
+   *
    * @param authentication
    * @param run
    * @return boolean
@@ -375,7 +376,7 @@ public interface RunService {
   /**
    * Returns <code>boolean</code> true iff the given <code>User</code> user has the write permission
    * for the given <code>Run</code> run.
-   * 
+   *
    * @param authentication
    * @param run
    * @return boolean
@@ -385,7 +386,7 @@ public interface RunService {
   /**
    * Returns <code>boolean</code> true if the given <code>User</code> user has the given
    * <code>Permission</code> permission for the given <code>Run</code> run, returns false otherwise.
-   * 
+   *
    * @param run
    * @param user
    * @param permission
@@ -396,7 +397,7 @@ public interface RunService {
   /**
    * Returns <code>boolean</code> true if the run with the given <code>runId</code> does not have
    * any student workgroups that contain more than 1 user, returns false otherwise.
-   * 
+   *
    * @param runId
    * @return boolean
    */
@@ -405,7 +406,7 @@ public interface RunService {
   /**
    * Returns a <code>List<Run></code> list of runs that were run within the given
    * <code>String</code> period. Valid periods are "today","week" and "month".
-   * 
+   *
    * @param period
    * @return List<Run> - run list
    */
@@ -413,7 +414,7 @@ public interface RunService {
 
   /**
    * Returns a <code>List<Run></code> list of runs ordered descending by how active they are.
-   * 
+   *
    * @return List<Run> - list of runs descending by activity
    */
   List<Run> getRunsByActivity();
@@ -421,7 +422,7 @@ public interface RunService {
   /**
    * Returns a <code>List<Run></code> list of runs that have a run title similar to the the
    * specified run title.
-   * 
+   *
    * @param runTitle
    * @return List<Run> - list of runs with the run title similar to the param
    */
@@ -430,7 +431,7 @@ public interface RunService {
   /**
    * Updates the given <code>Run</code> run's statistics which are currently the last time run and
    * the number of times run.
-   * 
+   *
    * @param runId
    *                - the id of the run whose statistics should be updated.
    */
@@ -439,7 +440,7 @@ public interface RunService {
   /**
    * Update the name of the run with the given <code>Long</code> to that of the given
    * <code>String</code> name.
-   * 
+   *
    * @param runId
    *                id of the run
    * @param name
@@ -450,7 +451,7 @@ public interface RunService {
   /**
    * Creates and adds a period with the given <code>String</code> name to the run with the given
    * <code>Long</code> runId.
-   * 
+   *
    * @param runId
    *                id of the run
    * @param name
@@ -476,4 +477,6 @@ public interface RunService {
 
   JSONObject transferRunOwnership(Long runId, String teacherUsername)
       throws ObjectNotFoundException;
+
+  void setRandomPeriodAssignment(Run run, boolean isRandomPeriodAssignment);
 }

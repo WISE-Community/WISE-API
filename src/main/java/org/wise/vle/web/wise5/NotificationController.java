@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.core.Authentication;
@@ -121,6 +122,50 @@ public class NotificationController {
     Notification savedNotification = notificationService.saveNotification(notification);
     broadcastNotification(savedNotification);
     return notification;
+  }
+
+  @PostMapping("/notification/{runId}/period/{periodId}")
+  protected void notifyClassmatesInPeriod(@PathVariable Long runId,
+      @PathVariable Long periodId, @RequestBody Notification notification,
+      Authentication authentication) throws Exception {
+    User user = userService.retrieveUserByUsername(authentication.getName());
+    Run run = runService.retrieveById(runId);
+    if (run.isStudentAssociatedToThisRun(user)) {
+      List<Workgroup> workgroups = runService.getWorkgroups(runId, periodId);
+      removeOwnAndTeacherWorkgroup(workgroups, notification.getFromWorkgroup());
+      notifyClassmates(notification, workgroups);
+    }
+  }
+
+  @PostMapping("/notification/{runId}/all-periods")
+  protected void notifyClassmatesInAllPeriods(@PathVariable Long runId,
+      @RequestBody Notification notification, Authentication authentication) throws Exception {
+    User user = userService.retrieveUserByUsername(authentication.getName());
+    Run run = runService.retrieveById(runId);
+    if (run.isStudentAssociatedToThisRun(user)) {
+      List<Workgroup> workgroups = runService.getWorkgroups(runId);
+      removeOwnAndTeacherWorkgroup(workgroups, notification.getFromWorkgroup());
+      notifyClassmates(notification, workgroups);
+    }
+  }
+
+  private void removeOwnAndTeacherWorkgroup(List<Workgroup> workgroups, Workgroup ownWorkgroup) {
+    workgroups.removeIf(workgroup -> workgroup.getId().equals(ownWorkgroup.getId()) ||
+        workgroup.isTeacherWorkgroup());
+  }
+
+  private void notifyClassmates(Notification notification, List<Workgroup> workgroups)
+      throws JSONException {
+    for (Workgroup workgroup : workgroups) {
+      Notification newNotification = new Notification();
+      BeanUtils.copyProperties(notification, newNotification, "id", "toWorkgroupId");
+      newNotification.setToWorkgroup(workgroup);
+      newNotification.setPeriod(workgroup.getPeriod());
+      Calendar now = Calendar.getInstance();
+      newNotification.setServerSaveTime(new Timestamp(now.getTimeInMillis()));
+      Notification savedNotification = notificationService.saveNotification(newNotification);
+      broadcastNotification(savedNotification);
+    }
   }
 
   private boolean isStudentAndNotAllowedToSaveNotification(User user, Run run,

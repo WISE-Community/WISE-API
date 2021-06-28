@@ -367,6 +367,9 @@ public class TeacherDataController {
                 savedEventJSONObject.put("id", event.getId());
                 savedEventJSONObject.put("serverSaveTime", event.getServerSaveTime().getTime());
                 eventsResultJSONArray.put(savedEventJSONObject);
+                if (event.getCategory().equals("Agent")) {
+                  broadcastEventToAgent(event);
+                }
               } catch (Exception ex) {
                 ex.printStackTrace();
               }
@@ -456,5 +459,26 @@ public class TeacherDataController {
     message.put("topic", String.format("/topic/workgroup/%s", toWorkgroupId));
     message.put("notification", notification.toJSON());
     redisPublisher.publish(message.toString());
+  }
+
+  public void broadcastEventToAgent(Event event) throws JSONException {
+    if (event.getEvent().equals("sendWorkgroupToNode")) {
+      JSONObject data = new JSONObject(event.getData());
+      String workgroupId = data.getString("workgroupId");
+      JSONObject message = new JSONObject();
+      message.put("type", "eventToAgent");
+      message.put("topic", String.format("/topic/workgroup/%s", workgroupId));
+      message.put("event", event.toJSON());
+      redisPublisher.publish(message.toString());
+    } else if (event.getEvent().equals("sendAllWorkgroupsToNode")) {
+      JSONObject data = new JSONObject(event.getData());
+      String runId = data.getString("runId");
+      String periodId = data.getString("periodId");
+      JSONObject message = new JSONObject();
+      message.put("type", "eventToAgent");
+      message.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+      message.put("event", event.toJSON());
+      redisPublisher.publish(message.toString());
+    }
   }
 }

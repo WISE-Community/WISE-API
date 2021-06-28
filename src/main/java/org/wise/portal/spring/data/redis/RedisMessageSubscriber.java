@@ -25,26 +25,50 @@ public class RedisMessageSubscriber implements MessageListener {
           messageJSON.get("type").equals("studentWorkToTeacher")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("studentWork", messageJSON.getString("studentWork"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
-      } else if (messageJSON.get("type").equals("annotationToTeacher")) {
+      } else if (messageJSON.get("type").equals("annotationToTeacher") ||
+          messageJSON.get("type").equals("annotationToClassroom")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("annotation", messageJSON.getString("annotation"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       } else if (messageJSON.get("type").equals("studentStatusToTeacher")) {
-        WebSocketMessage webSockeMessage = new WebSocketMessage("studentStatus", messageJSON.getString("studentStatus"));
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+        WebSocketMessage webSockeMessage = new WebSocketMessage("studentStatus",
+            messageJSON.getString("studentStatus"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
       } else if (messageJSON.get("type").equals("achievementToTeacher")) {
-        WebSocketMessage webSockeMessage = new WebSocketMessage("newStudentAchievement", messageJSON.getString("achievement"));
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+        WebSocketMessage webSockeMessage = new WebSocketMessage(
+            "newStudentAchievement", messageJSON.getString("achievement"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
       } else if (messageJSON.get("type").equals("annotationToStudent")) {
-        WebSocketMessage webSockeMessage = new WebSocketMessage("annotation", messageJSON.getString("annotation"));
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+        WebSocketMessage webSockeMessage = new WebSocketMessage("annotation",
+            messageJSON.getString("annotation"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
       } else if (messageJSON.get("type").equals("notification")) {
-        WebSocketMessage webSockeMessage = new WebSocketMessage("notification", messageJSON.getString("notification"));
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+        WebSocketMessage webSockeMessage = new WebSocketMessage("notification",
+            messageJSON.getString("notification"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
       } else if (messageJSON.get("type").equals("pause")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("pause", "");
-        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
       } else if (messageJSON.get("type").equals("unpause")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("unpause", "");
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
+      } else if (messageJSON.get("type").equals("goToNode")) {
+        WebSocketMessage webSockeMessage = new WebSocketMessage("goToNode",
+            messageJSON.getString("nodeId"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"),
+            webSockeMessage);
+      } else if (messageJSON.get("type").equals("goToNextNode")) {
+        WebSocketMessage webSockeMessage = new WebSocketMessage("goToNextNode",
+            "");
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+      } else if (messageJSON.get("type").equals("node")) {
+        WebSocketMessage webSockeMessage = new WebSocketMessage("node",
+            messageJSON.getString("node"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       } else if (messageJSON.get("type").equals("node")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("node",
