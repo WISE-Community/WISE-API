@@ -911,6 +911,7 @@ public class InformationController {
           userJSONObject.put("name", firstName + " " + lastName);
           userJSONObject.put("firstName", firstName);
           userJSONObject.put("lastName", lastName);
+          userJSONObject.put("username", userDetails.getUsername());
         }
         users.put(userJSONObject);
       } catch (JSONException e) {
