@@ -103,6 +103,10 @@ echo "Copying message of the day file to update-motd.d folder to display notes o
 cp $BUILD_FILES/api/99-notes /etc/update-motd.d/99-notes
 chmod 755 /etc/update-motd.d/99-notes
 
+echo "Copying backup-nginx-logs script to /etc/cron.daily folder"
+cp $BUILD_FILES/api/backup-nginx-logs /etc/cron.daily
+chmod +x /etc/cron.daily/backup-nginx-logs
+
 echo "Install mysql client"
 apt-get install mysql-client-core-8.0 -y
 
