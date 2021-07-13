@@ -31,6 +31,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.group.GroupService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
@@ -102,6 +103,9 @@ public class APIControllerTest {
 
   @Mock
   protected HttpServletRequest request;
+
+  @Mock
+  protected GroupService groupService;
 
   @Mock
   protected UserService userService;
