@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -269,5 +270,23 @@ public class AuthorAPIControllerTest extends APIControllerTest {
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
+  }
+
+  @Test
+  public void getAssetFileNames_withDuplicateReferences_shouldReturnUniqueFileNames()
+      throws Exception {
+    String stepsText = "<img src=\"carbon.png\"/><img src=\"carbon.png\"/>";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertEquals(fileNames.size(), 1);
+    assertEquals(fileNames.get(0), "carbon.png");
+  }
+
+  @Test
+  public void getAssetFileNames_withASpace_shouldReturnFileNames() throws Exception {
+    String stepsText = "<img src=\"carbon%20dioxide.png\"/><img src=\"carbon monoxide.png\"/>";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertEquals(fileNames.size(), 2);
+    assertTrue(fileNames.contains("carbon dioxide.png"));
+    assertTrue(fileNames.contains("carbon monoxide.png"));
   }
 }

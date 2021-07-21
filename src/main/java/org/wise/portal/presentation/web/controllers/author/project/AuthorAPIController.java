@@ -31,13 +31,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -151,9 +151,8 @@ public class AuthorAPIController {
     if (projectIdStr != null && !projectIdStr.equals("") && !projectIdStr.equals("none")) {
       project = projectService.getById(Long.parseLong(projectIdStr));
       if (project.getWiseVersion().equals(5)) {
-        return new ModelAndView(
-            new RedirectView(appProperties.getProperty("wise.hostname") +
-            "/teacher/edit/unit/" + projectIdStr));
+        return new ModelAndView(new RedirectView(
+            appProperties.getProperty("wise.hostname") + "/teacher/edit/unit/" + projectIdStr));
       } else if (project.getWiseVersion().equals(4)) {
         ModelAndView wise4AuthoringView = new ModelAndView(
             new RedirectView("/legacy/author/authorproject.html?projectId=" + projectIdStr));
@@ -212,7 +211,8 @@ public class AuthorAPIController {
     Project project = projectService.getById(projectId);
     HashMap<String, String> response = new HashMap<String, String>();
     if (projectService.canAuthorProject(project, user)) {
-      String projectAssetsFolderPathString = projectService.getProjectLocalPath(project) + "/assets";;
+      String projectAssetsFolderPathString = projectService.getProjectLocalPath(project)
+          + "/assets";
       Path fromImagePath = null;
       if (isCustom) {
         fromImagePath = Paths.get(projectAssetsFolderPathString + "/" + projectIcon);
@@ -481,25 +481,6 @@ public class AuthorAPIController {
       return null;
     }
 
-    /*
-     * Regex string to match asset file references in the step/component content. e.g. carbon.png
-     */
-    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
-        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
-        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
-    Pattern pattern = Pattern.compile(patternString);
-    Matcher matcher = pattern.matcher(steps);
-
-    /*
-     * this list will hold all the file names that are referenced by the steps that we are importing
-     */
-    List<String> fileNames = new ArrayList<String>();
-    while (matcher.find()) {
-      fileNames.add(matcher.group(2));
-    }
-
-    // remove duplicates from the list of file names
-    fileNames = fileNames.stream().distinct().collect(Collectors.toList());
     Project fromProject = projectService.getById(fromProjectId);
     String fromProjectUrl = fromProject.getModulePath();
     Project toProject = projectService.getById(toProjectId);
@@ -530,7 +511,7 @@ public class AuthorAPIController {
     String toProjectAssetsUrl = fullToProjectFolderUrl + "/assets";
     File toProjectAssetsFolder = new File(toProjectAssetsUrl);
 
-    for (String fileName : fileNames) {
+    for (String fileName : getAssetFileNames(steps)) {
       /*
        * Import the asset to the project we are importing to. If the project already contains a file
        * with the same file name and does not have the same file content, it will be given a new
@@ -548,6 +529,24 @@ public class AuthorAPIController {
 
     // send back the steps string which may have been modified if we needed to change a file name
     return steps;
+  }
+
+  protected List<String> getAssetFileNames(String stepsText) {
+    // Replace %20 with a space so that file names with a space will be properly found. Sometimes
+    // html content that contains a file name with a space will replace the space with %20.
+    String stepsTextModified = stepsText.replaceAll("%20", " ");
+
+    // Regex string to match asset file references in the step/component content. e.g. carbon.png
+    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
+        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
+        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
+    Pattern pattern = Pattern.compile(patternString);
+    Matcher matcher = pattern.matcher(stepsTextModified);
+    HashSet<String> fileNames = new HashSet<String>();
+    while (matcher.find()) {
+      fileNames.add(matcher.group(2));
+    }
+    return new ArrayList<String>(fileNames);
   }
 
   private void createNewProjectDirectory(String projectId) throws IOException {
