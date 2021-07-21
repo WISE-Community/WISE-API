@@ -213,7 +213,6 @@ public class AuthorAPIController {
     if (projectService.canAuthorProject(project, user)) {
       String projectAssetsFolderPathString = projectService.getProjectLocalPath(project)
           + "/assets";
-      ;
       Path fromImagePath = null;
       if (isCustom) {
         fromImagePath = Paths.get(projectAssetsFolderPathString + "/" + projectIcon);
