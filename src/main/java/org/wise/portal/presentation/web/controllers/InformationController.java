@@ -302,8 +302,8 @@ public class InformationController {
       String firstName = "";
       String lastName = "";
       JSONArray userIds = new JSONArray();
+      MutableUserDetails userDetails = loggedInUser.getUserDetails();
       if (loggedInUser.isTeacher()) {
-        MutableUserDetails userDetails = loggedInUser.getUserDetails();
         firstName = userDetails.getFirstname();
         lastName = userDetails.getLastname();
         usernames = userDetails.getUsername();
@@ -312,8 +312,9 @@ public class InformationController {
         usernames = getUsernamesFromWorkgroup(workgroup);
         userIds = getStudentIdsFromWorkgroup(workgroup);
       }
+      Boolean isGoogleUser = userDetails.isGoogleUser();
       JSONObject myUserInfo = getMyUserInfoJSONObject(periodId, periodName, userIds, workgroupId,
-          usernames, firstName, lastName);
+          usernames, firstName, lastName, isGoogleUser);
       myUserInfo.put("myClassInfo", getMyClassInfoJSONObject(run, workgroup, loggedInUser));
       JSONObject userInfo = new JSONObject();
       userInfo.put("myUserInfo", myUserInfo);
@@ -350,10 +351,8 @@ public class InformationController {
         try {
           sharedTeacherUserInfo.put("workgroupId", sharedTeacherWorkgroup.getId());
           sharedTeacherUserInfo.put("username", sharedTeacherWorkgroup.generateWorkgroupName());
-          sharedTeacherUserInfo.put(
-              "userId",
-              sharedTeacherWorkgroup.getMembers().iterator().next().getId()
-          );
+          sharedTeacherUserInfo.put("userId",
+              sharedTeacherWorkgroup.getMembers().iterator().next().getId());
 
           String sharedTeacherRole = runService.getSharedTeacherRole(run, sharedOwner);
           if (sharedTeacherRole == null) {
@@ -422,7 +421,7 @@ public class InformationController {
   }
 
   private JSONObject getMyUserInfoJSONObject(String periodId, String periodName, JSONArray userIds,
-      Long workgroupId, String usernames, String firstName, String lastName) {
+      Long workgroupId, String usernames, String firstName, String lastName, Boolean isGoogleUser) {
     JSONObject myUserInfo = new JSONObject();
     try {
       myUserInfo.put("workgroupId", workgroupId);
@@ -443,6 +442,7 @@ public class InformationController {
 
       myUserInfo.put("periodName", periodName);
       myUserInfo.put("userIds", userIds);
+      myUserInfo.put("isGoogleUser", isGoogleUser);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -655,7 +655,7 @@ public class InformationController {
     config.put("studentStatusURL", contextPath + "/api/studentStatus");
     config.put("runStatusURL", contextPath + "/api/runStatus");
     config.put("userInfo", getUserInfo(run));
-    config.put("studentDataURL", contextPath + "/api/student/data"); // the url to get/post student data
+    config.put("studentDataURL", contextPath + "/api/student/data");
     config.put("studentAssetsURL", contextPath + "/api/student/asset/" + runId);
     config.put("notebookURL", contextPath + "/api/student/notebook/run/" + runId);
     config.put("achievementURL", contextPath + "/api/achievement/" + runId);
@@ -905,6 +905,7 @@ public class InformationController {
       try {
         MutableUserDetails userDetails = user.getUserDetails();
         userJSONObject.put("id", user.getId());
+        userJSONObject.put("isGoogleUser", user.getUserDetails().isGoogleUser());
         if (canViewStudentNames) {
           String firstName = userDetails.getFirstname();
           String lastName = userDetails.getLastname();
