@@ -7,7 +7,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
@@ -25,28 +26,26 @@ public class ChangeStudentPasswordController {
   @Autowired
   private UserService userService;
 
-  @PutMapping("/api/teacher/run/{runId}/student/{studentId}/change-password")
+  @PostMapping("/api/teacher/run/{runId}/student/{studentId}/change-password")
   void changeStudentPassword(Authentication auth, @PathVariable Long runId,
-      @PathVariable Long studentId, HttpServletRequest servletRequest)
+      @PathVariable Long studentId, @RequestParam String teacherPassword,
+      @RequestParam String newStudentPassword, HttpServletRequest servletRequest)
       throws ObjectNotFoundException {
     Run run = runService.retrieveById(runId);
     User teacherUser = userService.retrieveUserByUsername(auth.getName());
     Boolean isTeacherGoogleUser = teacherUser.getUserDetails().isGoogleUser();
-    String teacherPassword = teacherUser.getUserDetails().getPassword();
-    String teacherPasswordSubmitted = servletRequest.getParameter("teacherPassword");
     if (runService.hasWritePermission(auth, run)
-        && isTeacherPasswordValid(isTeacherGoogleUser, teacherPassword, teacherPasswordSubmitted)) {
+        && isTeacherPasswordValid(isTeacherGoogleUser, teacherUser, teacherPassword)) {
       User studentUser = userService.retrieveById(studentId);
-      String newPassword = servletRequest.getParameter("newStudentPassword");
-      userService.updateUserPassword(studentUser, newPassword);
+      userService.updateUserPassword(studentUser, newStudentPassword);
     } else {
       throw new AccessDeniedException(
           "User does not have permission to change this student's password");
     }
   }
 
-  private Boolean isTeacherPasswordValid(Boolean isGoogleUser, String teacherPassword,
+  private Boolean isTeacherPasswordValid(Boolean isGoogleUser, User teacherUser,
       String teacherPasswordSubmitted) {
-    return isGoogleUser || teacherPassword.equals(teacherPasswordSubmitted);
+    return isGoogleUser || userService.isPasswordCorrect(teacherUser, teacherPasswordSubmitted);
   }
 }
