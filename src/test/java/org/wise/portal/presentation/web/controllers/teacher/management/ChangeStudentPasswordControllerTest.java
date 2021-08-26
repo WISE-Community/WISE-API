@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2007 Regents of the University of California (Regents). Created
+ * Copyright (c) 2021 Regents of the University of California (Regents). Created
  * by TELS, Graduate School of Education, University of California at Berkeley.
  *
  * This software is distributed under the GNU Lesser General Public License, v2.
@@ -22,110 +22,61 @@
  */
 package org.wise.portal.presentation.web.controllers.teacher.management;
 
-import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.fail;
 
-import javax.servlet.http.HttpSession;
+import org.wise.portal.presentation.web.controllers.APIControllerTest;
+import org.wise.portal.presentation.web.exception.InvalidPasswordException;
+import org.easymock.EasyMockRunner;
+import org.easymock.TestSubject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.security.access.AccessDeniedException;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.test.web.AbstractModelAndViewTests;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.servlet.ModelAndView;
-import org.wise.portal.domain.authentication.impl.ChangeStudentPasswordParameters;
-import org.wise.portal.domain.user.User;
-import org.wise.portal.domain.user.impl.UserImpl;
-import org.wise.portal.service.user.UserService;
+@RunWith(EasyMockRunner.class)
+public class ChangeStudentPasswordControllerTest extends APIControllerTest {
 
-/**
- * @author patricklawler
- * $Id:$
- */
-public class ChangeStudentPasswordControllerTest extends AbstractModelAndViewTests{
-	
-	private static final String PASSWORD = "a";
-	
-	private static final String SUCCESS = "SUCCESS VIEW";
+  @TestSubject
+  private ChangeStudentPasswordController controller = new ChangeStudentPasswordController();
 
-	private static final String FORM = "FORM VIEW";
-	
-	private static final String STUDENT_NAME = "z";
-
-	private ChangeUserPasswordController changeStudentPasswordController;
-	
-	private ChangeStudentPasswordParameters changeStudentPasswordParameters;
-	
-	private UserService mockUserService;
-	
-	private ApplicationContext mockApplicationContext;
-	
-	private MockHttpServletRequest request;
-
-	private MockHttpServletResponse response;
-	
-	private HttpSession mockSession;
-	
-	private BindingResult errors;
-	
-	private SessionStatus status;
-	
-	private User user;
-	
-	private User studentUser;
-	
-	public Object mockObject;
-
-	/**
-	 * @throws Exception 
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@SuppressWarnings("unchecked")
-	protected void setUp() throws Exception {
-		super.setUp();
-		mockApplicationContext = createMock(ApplicationContext.class);
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
-		studentUser = new UserImpl();
-		changeStudentPasswordParameters = new ChangeStudentPasswordParameters();
-		changeStudentPasswordParameters.setPasswd1(PASSWORD);
-		changeStudentPasswordParameters.setPasswd2(PASSWORD);
-		changeStudentPasswordParameters.setUser(studentUser);
-		errors = new BindException(changeStudentPasswordParameters, "");
-
-		mockSession = new MockHttpSession();
-		mockSession.setAttribute(User.CURRENT_USER_SESSION_KEY, this.user);
-		this.request.setSession(mockSession);
-		
-		this.mockUserService = createMock(UserService.class);
-		changeStudentPasswordController = new ChangeUserPasswordController();
-	}
-	
-	public void testOnSubmit_success() throws Exception {
-		// test submission of form with correct password info.
-		// should get ModelAndView back containing Success view
-
-		expect(mockUserService.updateUserPassword(studentUser, PASSWORD)).andReturn(user);
-		replay(mockUserService);
-		
-		String view = changeStudentPasswordController.onSubmit(changeStudentPasswordParameters, errors, status);
-		assertEquals(SUCCESS, view);
-		assertTrue(!errors.hasErrors());
-		verify(mockUserService);
+  @Test
+	public void changeStudentPassword_NoWritePermission_ThrowAccessDenied() throws Exception {
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(false);
+    replay(runService);
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, student1Id, "a", "b");
+      fail("Expected AccessDeniedException to be thrown");
+    } catch (AccessDeniedException e) {}
+		verify(runService);
 	}
 
-	
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		request = null;
-		response = null;
-	}	
+  @Test
+  public void changeStudentPassword_InvalidTeacherPassword_ThrowInvalidPassword() throws Exception {
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    expect(userService.isPasswordCorrect(teacher1, "badTeacherPass")).andReturn(false);
+    replay(runService, userService);
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, student1Id, "badTeacherPass", "newStudentPass");
+      fail("Expected InvalidPassowrdException to be thrown");
+    } catch (InvalidPasswordException e) {}
+		verify(runService, userService);
+  }
 
+  @Test
+  public void changeStudentPassword_validTeacherPassword_ChangeStudentPassword() throws Exception {
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    expect(userService.isPasswordCorrect(teacher1, "teacherPass")).andReturn(true);
+    expect(userService.retrieveById(student1Id)).andReturn(student1);
+    expect(userService.updateUserPassword(student1, "newStudentPass")).andReturn(student1);
+    replay(runService, userService);
+    controller.changeStudentPassword(teacherAuth, runId1, student1Id, "teacherPass", "newStudentPass");
+		verify(runService, userService);
+  }
 }

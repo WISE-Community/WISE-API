@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.authentication.impl.PersistentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.user.User;
-import org.wise.portal.presentation.web.exception.InvalidPasswordExcpetion;
+import org.wise.portal.presentation.web.exception.InvalidPasswordException;
 
 @RestController
 @RequestMapping("/api/google-user")
@@ -51,9 +51,9 @@ public class GoogleUserAPIController extends UserAPIController {
   @Secured("ROLE_USER")
   @PostMapping("/unlink-account")
   HashMap<String, Object> unlinkGoogleAccount(Authentication auth, @RequestParam String newPassword)
-      throws InvalidPasswordExcpetion {
+      throws InvalidPasswordException {
     if (newPassword.isEmpty()) {
-      throw new InvalidPasswordExcpetion();
+      throw new InvalidPasswordException();
     }
     String username = auth.getName();
     User user = userService.retrieveUserByUsername(username);
