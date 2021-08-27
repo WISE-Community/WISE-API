@@ -157,7 +157,6 @@
                 <exclude>**/org/wise/portal/domain/webservice/**/*.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/general/contactwise/*.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/BatchStudentChangePasswordControllerTest.java</exclude>
-                <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeStudentPasswordControllerTest.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeStudentPeriodControllerTest.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeWorkgroupControllerTest.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/StudentListControllerTest.java</exclude>
@@ -203,7 +202,6 @@
             <exclude>**/org/wise/portal/domain/webservice/**/*.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/general/contactwise/*.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/BatchStudentChangePasswordControllerTest.java</exclude>
-            <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeStudentPasswordControllerTest.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeStudentPeriodControllerTest.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/ChangeWorkgroupControllerTest.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/teacher/management/StudentListControllerTest.java</exclude>

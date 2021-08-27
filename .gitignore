@@ -15,6 +15,7 @@ target
 src/main/resources/wise.properties
 src/main/resources/application.properties
 src/main/resources/application-dockerdev.properties
+src/test/webapp/curriculum/temp
 *.bak
 .idea
 !.idea/compiler.xml
