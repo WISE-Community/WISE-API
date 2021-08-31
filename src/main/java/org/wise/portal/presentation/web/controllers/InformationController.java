@@ -398,13 +398,30 @@ public class InformationController {
    * @param loggedInUser
    * @return
    * @throws ObjectNotFoundException
+   * @throws JSONException
    */
   private JSONArray getClassmateUserInfosJSONArray(Run run, Workgroup workgroup, User loggedInUser)
-      throws ObjectNotFoundException {
+      throws ObjectNotFoundException, JSONException {
     JSONArray classmateUserInfos = new JSONArray();
     for (Workgroup classmateWorkgroup : runService.getWorkgroups(run.getId())) {
       if (isClassmateWorkgroup(workgroup, loggedInUser, classmateWorkgroup)) {
         classmateUserInfos.put(getClassmateUserInfoJSON(classmateWorkgroup, run, loggedInUser));
+      }
+    }
+    for (Group period : run.getPeriods()) {
+      JSONArray studentsNotInWorkgroup = new JSONArray();
+      for (User user : period.getMembers()) {
+        if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
+          JSONObject userJSONInfo =
+              createUserJSONInfo(user, isAllowedToViewStudentNames(run, loggedInUser));
+          studentsNotInWorkgroup.put(userJSONInfo);
+        }
+      }
+      if (studentsNotInWorkgroup.length() > 0) {
+        JSONObject studentsNotInWorkgroupInfo = new JSONObject();
+        studentsNotInWorkgroupInfo.put("periodId", period.getId());
+        studentsNotInWorkgroupInfo.put("users", studentsNotInWorkgroup);
+        classmateUserInfos.put(studentsNotInWorkgroupInfo);
       }
     }
     return classmateUserInfos;
@@ -901,24 +918,28 @@ public class InformationController {
     JSONArray users = new JSONArray();
     boolean canViewStudentNames = isAllowedToViewStudentNames(run, loggedInUser);
     for (User user : workgroup.getMembers()) {
-      JSONObject userJSONObject = new JSONObject();
-      try {
-        MutableUserDetails userDetails = user.getUserDetails();
-        userJSONObject.put("id", user.getId());
-        userJSONObject.put("isGoogleUser", user.getUserDetails().isGoogleUser());
-        if (canViewStudentNames) {
-          String firstName = userDetails.getFirstname();
-          String lastName = userDetails.getLastname();
-          userJSONObject.put("name", firstName + " " + lastName);
-          userJSONObject.put("firstName", firstName);
-          userJSONObject.put("lastName", lastName);
-          userJSONObject.put("username", userDetails.getUsername());
-        }
-        users.put(userJSONObject);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+      users.put(createUserJSONInfo(user, canViewStudentNames));
     }
     return users;
+  }
+
+  private JSONObject createUserJSONInfo(User user, boolean canViewStudentNames) {
+    JSONObject userJSONObject = new JSONObject();
+    MutableUserDetails userDetails = user.getUserDetails();
+    try {
+      userJSONObject.put("id", user.getId());
+      userJSONObject.put("isGoogleUser", user.getUserDetails().isGoogleUser());
+      if (canViewStudentNames) {
+        String firstName = userDetails.getFirstname();
+        String lastName = userDetails.getLastname();
+        userJSONObject.put("name", firstName + " " + lastName);
+        userJSONObject.put("firstName", firstName);
+        userJSONObject.put("lastName", lastName);
+        userJSONObject.put("username", userDetails.getUsername());
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return userJSONObject;
   }
 }
