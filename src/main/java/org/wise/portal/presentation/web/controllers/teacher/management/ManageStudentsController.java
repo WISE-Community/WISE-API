@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2007-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2007-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -24,18 +24,13 @@
 package org.wise.portal.presentation.web.controllers.teacher.management;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -43,40 +38,21 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
-import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.PeriodNotFoundException;
-import org.wise.portal.domain.RunHasEndedException;
-import org.wise.portal.domain.StudentUserAlreadyAssociatedWithRunException;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.group.Group;
-import org.wise.portal.domain.impl.ChangePeriodParameters;
-import org.wise.portal.domain.impl.ChangeWorkgroupParameters;
 import org.wise.portal.domain.project.Project;
-import org.wise.portal.domain.project.impl.Projectcode;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.teacher.management.ViewMyStudentsPeriod;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.presentation.validators.teacher.ChangePeriodParametersValidator;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.authentication.UserDetailsService;
-import org.wise.portal.service.group.GroupService;
 import org.wise.portal.service.run.RunService;
-import org.wise.portal.service.student.StudentService;
-import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
 /**
@@ -87,7 +63,6 @@ import org.wise.portal.service.workgroup.WorkgroupService;
  * @author Hiroki Terashima
  */
 @Controller
-@SessionAttributes("changePeriodParameters")
 @RequestMapping("/teacher/management")
 public class ManageStudentsController {
 
@@ -98,157 +73,14 @@ public class ManageStudentsController {
   private WorkgroupService workgroupService;
 
   @Autowired
-  private UserService userService;
-
-  @Autowired
-  private GroupService groupService;
-
-  @Autowired
   private AclService<Run> aclService;
 
-  @Autowired
-  private StudentService studentService;
-
-  @Autowired
-  protected ChangePeriodParametersValidator changePeriodParametersValidator;
-
-  /**
-   * Handles request for viewing students in the specified run
-   *
-   * @param runId id of the Run
-   * @param servletRequest HttpServletRequest
-   * @return modelAndView containing information needed to view students
-   * @throws Exception
-   */
-  @GetMapping("/viewmystudents")
-  protected ModelAndView viewMyStudents(@RequestParam("runId") Long runId,
-      HttpServletRequest servletRequest) throws Exception {
-    User user = ControllerUtil.getSignedInUser();
-    Run run = runService.retrieveById(runId);
-    if (userCanViewRun(user, run)) {
-      List<Workgroup> allworkgroups = runService.getWorkgroups(runId);
-      String workgroupsWithoutPeriod = "";
-      Set<ViewMyStudentsPeriod> viewmystudentsallperiods = new TreeSet<ViewMyStudentsPeriod>();
-
-      // retrieves the get parameter periodName to determine which
-      // period the link is requesting
-      String periodName = servletRequest.getParameter("periodName");
-
-      int tabIndex = 0;
-      int periodCounter = 0;
-
-      for (Group period : run.getPeriods()) {
-        ViewMyStudentsPeriod viewmystudentsperiod = new ViewMyStudentsPeriod();
-        viewmystudentsperiod.setRun(run);
-        viewmystudentsperiod.setPeriod(period);
-        Set<Workgroup> periodworkgroups = new TreeSet<Workgroup>();
-        Set<User> grouplessStudents = new HashSet<User>();
-        grouplessStudents.addAll(period.getMembers());
-        for (Workgroup workgroup : allworkgroups) {
-          grouplessStudents.removeAll(workgroup.getMembers());
-          try {
-            // don't include workgroups with no members
-            if (workgroup.getMembers().size() > 0 && !workgroup.isTeacherWorkgroup()
-                && workgroup.getPeriod().getId().equals(period.getId())) {
-              periodworkgroups.add(workgroup);
-            }
-          } catch (NullPointerException npe) {
-            // if a workgroup is not in a period, make a list of them and let teacher put them in a
-            // period...
-            // this should not be the case if the code works correctly and associates workgroups
-            // with periods when workgroups are created.
-            workgroupsWithoutPeriod += workgroup.getId().toString() + ",";
-          }
-        }
-        viewmystudentsperiod.setGrouplessStudents(grouplessStudents);
-        viewmystudentsperiod.setWorkgroups(periodworkgroups);
-        viewmystudentsallperiods.add(viewmystudentsperiod);
-
-        // determines which period tab to show in the AJAX tab object
-        if (periodName != null && periodName.equals(period.getName())) {
-          tabIndex = periodCounter;
-        }
-        periodCounter++;
-      }
-
-      if (servletRequest.getParameter("tabIndex") != null) {
-        tabIndex = Integer.valueOf(servletRequest.getParameter("tabIndex"));
-      }
-
-      ModelAndView modelAndView = new ModelAndView();
-      modelAndView.addObject("user", user);
-      modelAndView.addObject("viewmystudentsallperiods", viewmystudentsallperiods);
-      modelAndView.addObject("run", run);
-      modelAndView.addObject("tabIndex", tabIndex);
-      modelAndView.addObject("workgroupsWithoutPeriod", workgroupsWithoutPeriod);
-      return modelAndView;
-    } else {
-      return new ModelAndView("errors/accessdenied");
-    }
-  }
 
   private boolean userCanViewRun(User user, Run run) {
     return user.isAdmin()
         || user.getUserDetails().hasGrantedAuthority(UserDetailsService.RESEARCHER_ROLE)
         || aclService.hasPermission(run, BasePermission.ADMINISTRATION, user)
         || aclService.hasPermission(run, BasePermission.READ, user);
-  }
-
-  @GetMapping("/changestudentperiod")
-  public String showChangePeriodForm(ModelMap model, @RequestParam("userId") Long userId,
-      @RequestParam("runId") Long runId, @RequestParam("currentPeriod") String currentPeriod)
-      throws Exception {
-    ChangePeriodParameters params = new ChangePeriodParameters();
-    params.setStudent(userService.retrieveById(userId));
-    params.setRun(runService.retrieveById(runId));
-    params.setCurrentPeriod(currentPeriod);
-    model.addAttribute("changePeriodParameters", params);
-    return "teacher/management/changestudentperiod";
-  }
-
-  @PostMapping("/changestudentperiod")
-  protected String changeStudentPeriod(
-      @ModelAttribute("changePeriodParameters") ChangePeriodParameters params,
-      BindingResult bindingResult, Authentication authentication) throws ObjectNotFoundException,
-      PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
-    changePeriodParametersValidator.validate(params, bindingResult);
-    Run run = params.getRun();
-    if (bindingResult.hasErrors() || !runService.hasWritePermission(authentication, run)) {
-      return "errors/friendlyError";
-    } else {
-      studentService.removeStudentFromRun(params.getStudent(), params.getRun());
-      studentService.addStudentToRun(params.getStudent(),
-          new Projectcode(params.getRun().getRuncode(), params.getNewPeriod()));
-      return "teacher/management/changestudentperiodsuccess";
-    }
-  }
-
-  @GetMapping("/change-workgroup-period/{workgroupId}")
-  protected String showChangeWorkgroupPeriodForm(ModelMap model, @PathVariable Long workgroupId)
-      throws ObjectNotFoundException {
-    ChangePeriodParameters params = new ChangePeriodParameters();
-    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
-    params.setWorkgroup(workgroup);
-    params.setRun(workgroup.getRun());
-    params.setCurrentPeriod(workgroup.getPeriod().getName());
-    model.addAttribute("changePeriodParameters", params);
-    return "teacher/management/changeworkgroupperiod";
-  }
-
-  @PostMapping("/change-workgroup-period/{workgroupId}")
-  String changeWorkgroupPeriod(
-      @ModelAttribute("changePeriodParameters") ChangePeriodParameters params,
-      @PathVariable Long workgroupId, Authentication authentication)
-      throws PeriodNotFoundException, ObjectNotFoundException {
-    Run run = params.getRun();
-    if (!runService.hasWritePermission(authentication, run)) {
-      return "errors/accessdenied";
-    } else {
-      Workgroup workgroup = workgroupService.retrieveById(workgroupId);
-      Group newPeriod = run.getPeriodByName(params.getNewPeriod());
-      workgroupService.changePeriod(workgroup, newPeriod);
-      return "teacher/management/changestudentperiodsuccess";
-    }
   }
 
   /**
@@ -416,88 +248,6 @@ public class ManageStudentsController {
     if (wb != null) {
       wb.write(outputStream);
     }
-  }
-
-  /**
-   * Handle teacher's request to update workgroup membership.
-   * Possible scenarios:
-   * 0) workgroupFrom and workgroupTo are equal. -> do nothing
-   * 1) workgroupFrom and workgroupTo are both positive and exist
-   * 2) workgroupFrom is groupless and workgroupTo is positive
-   * 3) workgroupFrom is groupless and workgroupTo is negative
-   * 4) workgroupFrom is positive and workgroupTo is groupless
-   * 5) workgroupFrom is positive and workgroupTo is negative
-   *
-   * @param request
-   * @param response
-   * @throws Exception
-   */
-  @PostMapping("/submitworkgroupchanges")
-  protected void handleWorkgroupChanges(HttpServletRequest request,
-      HttpServletResponse response) throws Exception {
-    String periodId = request.getParameter("periodId");
-    String runId = request.getParameter("runId");
-    String tabIndex = request.getParameter("tabIndex");
-
-    int numChanges = Integer.parseInt(request.getParameter("numChanges"));
-    Map<Long, ArrayList<ChangeWorkgroupParameters>> newWorkgroupMap =
-      new HashMap<Long, ArrayList<ChangeWorkgroupParameters>>();
-    for (int i = 0; i < numChanges; i++) {
-      String userId = request.getParameter("userId_" + i);
-      String workgroupFromId = request.getParameter("workgroupFrom_" + i);
-      String workgroupToId = request.getParameter("workgroupTo_" + i);
-      if (workgroupFromId.equals(workgroupToId)) {
-        continue;
-      }
-      ChangeWorkgroupParameters params = new ChangeWorkgroupParameters();
-      params.setRunId(Long.valueOf(runId));
-      params.setPeriodId(Long.valueOf(periodId));
-      params.setStudent(userService.retrieveById(Long.valueOf(userId)));
-      if (!workgroupFromId.equals("groupless")) {
-        params.setWorkgroupFrom(workgroupService.retrieveById(Long.valueOf(workgroupFromId)));
-      }
-      if (!workgroupToId.equals("groupless")) {
-        Long workgroupToIdLong = Long.valueOf(workgroupToId);
-        // handle cases when workgroupTo is negative separately (see below)
-        if (workgroupToIdLong < 0) {
-          ArrayList<ChangeWorkgroupParameters> newWGParams =
-            newWorkgroupMap.get(workgroupToIdLong);
-          if (newWGParams == null) {
-            newWGParams = new ArrayList<ChangeWorkgroupParameters>();
-          }
-          newWGParams.add(params);
-          newWorkgroupMap.put(workgroupToIdLong, newWGParams);
-          continue;
-        }
-        params.setWorkgroupTo(workgroupService.retrieveById(workgroupToIdLong));
-        params.setWorkgroupToId(Long.valueOf(workgroupToId));
-      }
-      try {
-        workgroupService.updateWorkgroupMembership(params);
-      } catch (Exception e) {
-        throw e;
-      }
-    }
-
-    for (Long key : newWorkgroupMap.keySet()) {
-      ArrayList<ChangeWorkgroupParameters> newWGList =
-        newWorkgroupMap.get(key);
-      ChangeWorkgroupParameters params = newWGList.get(0);
-      Set<User> members = new HashSet<User>();
-      members.add(params.getStudent());
-      String name = "newWorkgroup";
-      Run run = runService.retrieveById(params.getRunId());
-      Group period = groupService.retrieveById(params.getPeriodId());
-      params.setWorkgroupToId(new Long(-1));  // to indicate that we want to create a new workgroup
-      Workgroup newWorkgroup = workgroupService.updateWorkgroupMembership(params);
-      for (int j = 1; j < newWGList.size(); j++) {
-        params = newWGList.get(j);
-        params.setWorkgroupTo(newWorkgroup);
-        params.setWorkgroupToId(newWorkgroup.getId());
-        workgroupService.updateWorkgroupMembership(params);
-      }
-    }
-    response.getWriter().print(tabIndex);
   }
 
   /**
