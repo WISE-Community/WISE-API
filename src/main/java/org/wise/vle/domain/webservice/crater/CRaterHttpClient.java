@@ -61,48 +61,39 @@ public class CRaterHttpClient {
    * @return CRaterScoringResponse scoring response from CRater
    */
   public static CRaterScoringResponse getScoringResponse(CRaterScoringRequest request) {
-    String bodyData = String.join("", "<crater-request includeRNS='N'>",
-        "<client id='" + appProperties.getProperty("cRater_client_id") + "'/>",
-        "<items><item id='" + request.itemId + "'><responses>",
-        "<response id='" + request.responseId + "'>",
-        "<![CDATA[" + request.responseText + "]]></response>",
-        "</responses></item></items>",
-        "</crater-request>");
-    return new CRaterScoringResponse(
-        post(appProperties.getProperty("cRater_scoring_url"), bodyData));
+    request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
+    request.setCRaterUrl(appProperties.getProperty("cRater_scoring_url"));
+    return new CRaterScoringResponse(post(request));
   }
 
   /**
-   * Sends item id to the CRater server for verification
+   * Sends item id verification request to the CRater server
    *
-   * @param itemId the item id e.g. Photo_Sun
+   * @param CRaterVerificationRequest request with item id to verify
    * @return CRaterVerificationResponse verify response from CRater
    */
-  public static CRaterVerificationResponse getVerificationResponse(String itemId) {
-    String bodyData = String.join("", "<crater-verify>",
-        "<client id='" + appProperties.getProperty("cRater_client_id") + "'/>",
-        "<items><item id='" + itemId + "'/></items>",
-        "</crater-verify>");
-    return new CRaterVerificationResponse(
-        post(appProperties.getProperty("cRater_verification_url"), bodyData));
+  public static CRaterVerificationResponse getVerificationResponse(
+      CRaterVerificationRequest request) {
+    request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
+    request.setCRaterUrl(appProperties.getProperty("cRater_verification_url"));
+    return new CRaterVerificationResponse(post(request));
   }
 
   /**
    * POSTs a CRater Request to the CRater Servlet and returns the CRater response string
    *
-   * @param url CRater url
-   * @param bodyData the xml body data to be sent to the CRater server
+   * @param CRaterRequest request to send to CRater
    * @return the response string from the CRater server
    */
-  private static String post(String url, String bodyData) {
-    String cRaterPassword = appProperties.getProperty("cRater_password");
+  private static String post(CRaterRequest request) {
     HttpClient client = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(url);
+    HttpPost post = new HttpPost(request.getCRaterUrl());
     try {
       String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
-          .printBase64Binary(("extsyscrtr02dev:" + cRaterPassword).getBytes());
+          .printBase64Binary(("extsyscrtr02dev:" + appProperties.getProperty("cRater_password"))
+          .getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-      post.setEntity(new StringEntity(bodyData, ContentType.TEXT_XML));
+      post.setEntity(new StringEntity(request.generateBodyData(), ContentType.TEXT_XML));
       HttpResponse response = client.execute(post);
       if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
         System.err.println("Method failed: " + response.getStatusLine());

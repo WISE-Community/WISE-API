@@ -1,6 +1,7 @@
 package org.wise.vle.web;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,6 +23,7 @@ import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringResponse;
 import org.wise.vle.domain.webservice.crater.CRaterSubScore;
+import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
 import org.wise.vle.domain.webservice.crater.CRaterVerificationResponse;
 
 @RunWith(PowerMockRunner.class)
@@ -40,36 +42,37 @@ public class CRaterControllerTest {
   @Test
   public void verifyItemId_ValidId_ReturnTrue() {
     CRaterVerificationResponse verifiedResponse = new CRaterVerificationResponse(
-        String.join("", "<crater-verification>",
-        "<tracking id=\"1767877\" /><client id=\"WISETEST2\" verified=\"Y\" />",
-        "<items><item id=\"VALID_ID\" avail=\"Y\" ></item></items></crater-verification>"));
-    expect(CRaterHttpClient.getVerificationResponse("VALID_ID")).andReturn(verifiedResponse);
+        "<crater-verification>" +
+        "<tracking id=\"1767877\" /><client id=\"WISETEST2\" verified=\"Y\" />" +
+        "<items><item id=\"VALID_ID\" avail=\"Y\" ></item></items></crater-verification>");
+    expect(CRaterHttpClient.getVerificationResponse(isA(CRaterVerificationRequest.class)))
+        .andReturn(verifiedResponse);
     replayAll();
-    assertTrue(controller.verifyItemId("VALID_ID"));
+    assertTrue(controller.verifyItemId(new CRaterVerificationRequest()));
     verifyAll();
   }
 
   @Test
   public void verifyItemId_InvalidId_ReturnFalse() {
     CRaterVerificationResponse unverifiedResponse = new CRaterVerificationResponse(
-        String.join("", "<crater-verification>",
-        "<tracking id=\"1767877\" /><client id=\"WISETEST2\" verified=\"N\" />",
-        "<items><item id=\"INVALID_ID\" avail=\"N\" ></item></items></crater-verification>"));
-    expect(CRaterHttpClient.getVerificationResponse("INVALID_ID")).andReturn(unverifiedResponse);
+        "<crater-verification>" +
+        "<tracking id=\"1767877\" /><client id=\"WISETEST2\" verified=\"N\" />" +
+        "<items><item id=\"INVALID_ID\" avail=\"N\" ></item></items></crater-verification>");
+    expect(CRaterHttpClient.getVerificationResponse(isA(CRaterVerificationRequest.class)))
+        .andReturn(unverifiedResponse);
     replayAll();
-    assertFalse(controller.verifyItemId("INVALID_ID"));
+    assertFalse(controller.verifyItemId(new CRaterVerificationRequest()));
     verifyAll();
   }
 
   @Test
   public void scoreItem_SingleScoreItem_ReturnScore() {
     CRaterScoringRequest request = new CRaterScoringRequest();
-    String cRaterXMLResponse = String.join("", "<crater-results><tracking id=\"1767940\" />",
-        "<client id=\"WISETEST2\"/><items><item id=\"GREENROOF-II\" >",
-        "<responses>",
-        "<response id=\"12345\" score=\"1\" realNumberScore=\"1.1138\" confidenceMeasure=\"0.99\" >",
-        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response></responses>",
-        "</item></items></crater-results>");
+    String cRaterXMLResponse = "<crater-results><tracking id=\"1767940\" />" +
+        "<client id=\"WISETEST2\"/><items><item id=\"GREENROOF-II\" ><responses>" +
+        "<response id=\"12345\" score=\"1\" realNumberScore=\"1.1138\" confidenceMeasure=\"0.99\" >" +
+        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response>" +
+        "</responses></item></items></crater-results>";
     CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXMLResponse);
     expect(CRaterHttpClient.getScoringResponse(request)).andReturn(cRaterResponse);
     replayAll();
@@ -84,15 +87,14 @@ public class CRaterControllerTest {
   @SuppressWarnings("unchecked")
   public void scoreItem_MultipleScoresItem_ReturnScores() {
     CRaterScoringRequest request = new CRaterScoringRequest();
-    String cRaterXMLResponse = String.join("", "<crater-results><tracking id=\"1767886\" />",
-        "<client id=\"WISETEST2\"/><items><item id=\"ColdBeverage1Sub\" >",
-        "<responses>",
-        "<response id=\"12345\" score=\"\" realNumberScore=\"\" confidenceMeasure=\"0.99\" >",
-        "<scores><score id=\"experimentation\" score=\"1\" realNumberScore=\"1.0302\" />",
-        "<score id=\"science\" score=\"1\" realNumberScore=\"1.0487\" />",
-        "<score id=\"ki\" score=\"2\" realNumberScore=\"1.5486\" /></scores>",
-        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response></responses>",
-        "</item></items></crater-results>");
+    String cRaterXMLResponse = "<crater-results><tracking id=\"1767886\" />" +
+        "<client id=\"WISETEST2\"/><items><item id=\"ColdBeverage1Sub\" ><responses>" +
+        "<response id=\"12345\" score=\"\" realNumberScore=\"\" confidenceMeasure=\"0.99\" >" +
+        "<scores><score id=\"experimentation\" score=\"1\" realNumberScore=\"1.0302\" />" +
+        "<score id=\"science\" score=\"1\" realNumberScore=\"1.0487\" />" +
+        "<score id=\"ki\" score=\"2\" realNumberScore=\"1.5486\" /></scores>" +
+        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response></responses>" +
+        "</item></items></crater-results>";
     CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXMLResponse);
     expect(CRaterHttpClient.getScoringResponse(request)).andReturn(cRaterResponse);
     replayAll();

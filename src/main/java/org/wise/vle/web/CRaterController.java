@@ -29,10 +29,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
 import org.wise.vle.domain.webservice.crater.CRaterScoringResponse;
+import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterVerificationResponse;
 
@@ -41,8 +41,8 @@ import org.wise.vle.domain.webservice.crater.CRaterVerificationResponse;
 public class CRaterController {
 
   @GetMapping("/verify")
-  boolean verifyItemId(@RequestParam String itemId) {
-    CRaterVerificationResponse cRaterResponse = CRaterHttpClient.getVerificationResponse(itemId);
+  boolean verifyItemId(CRaterVerificationRequest request) {
+    CRaterVerificationResponse cRaterResponse = CRaterHttpClient.getVerificationResponse(request);
     return cRaterResponse.isVerified();
   }
 
