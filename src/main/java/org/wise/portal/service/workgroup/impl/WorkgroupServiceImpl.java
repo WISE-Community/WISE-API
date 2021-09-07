@@ -71,39 +71,10 @@ public class WorkgroupServiceImpl implements WorkgroupService {
 
   @Transactional()
   public Workgroup createWorkgroup(String name, Set<User> members, Run run, Group period) {
-    Workgroup workgroup = createWorkgroup(members, run, period);
+    Workgroup workgroup = new WorkgroupImpl(name, members, run, period);
     groupDao.save(workgroup.getGroup());
     workgroupDao.save(workgroup);
     aclService.addPermission(workgroup, BasePermission.ADMINISTRATION);
-    return workgroup;
-  }
-
-  /**
-   * A helper method to create a <code>Workgroup</code> given parameters.
-   *
-   * A teacher can be in a Workgroup. In this case, the members provided as a parameter in this
-   * method must match the owners of the run.
-   *
-   * @param members
-   *                  set of users in this workgroup
-   * @param run
-   *                  the <code>Run</code> that this workgroup belongs in
-   * @param period
-   *                  <code>Group</code> that this workgroup belongs in
-   * @return the created <code>Workgroup</code>
-   */
-  private Workgroup createWorkgroup(Set<User> members, Run run, Group period) {
-    Workgroup workgroup = new WorkgroupImpl();
-    for (User member : members) {
-      workgroup.addMember(member);
-    }
-    workgroup.setRun(run);
-    workgroup.setPeriod(period);
-    if ((run.getOwner() != null && members.size() == 1
-        && run.getOwner().equals(members.iterator().next()))
-        || (run.getSharedowners() != null && run.getSharedowners().containsAll(members))) {
-      workgroup.setTeacherWorkgroup(true);
-    }
     return workgroup;
   }
 

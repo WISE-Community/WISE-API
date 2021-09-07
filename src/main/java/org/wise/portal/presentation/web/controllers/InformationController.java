@@ -302,8 +302,8 @@ public class InformationController {
       String firstName = "";
       String lastName = "";
       JSONArray userIds = new JSONArray();
+      MutableUserDetails userDetails = loggedInUser.getUserDetails();
       if (loggedInUser.isTeacher()) {
-        MutableUserDetails userDetails = loggedInUser.getUserDetails();
         firstName = userDetails.getFirstname();
         lastName = userDetails.getLastname();
         usernames = userDetails.getUsername();
@@ -312,8 +312,9 @@ public class InformationController {
         usernames = getUsernamesFromWorkgroup(workgroup);
         userIds = getStudentIdsFromWorkgroup(workgroup);
       }
+      Boolean isGoogleUser = userDetails.isGoogleUser();
       JSONObject myUserInfo = getMyUserInfoJSONObject(periodId, periodName, userIds, workgroupId,
-          usernames, firstName, lastName);
+          usernames, firstName, lastName, isGoogleUser);
       myUserInfo.put("myClassInfo", getMyClassInfoJSONObject(run, workgroup, loggedInUser));
       JSONObject userInfo = new JSONObject();
       userInfo.put("myUserInfo", myUserInfo);
@@ -350,10 +351,8 @@ public class InformationController {
         try {
           sharedTeacherUserInfo.put("workgroupId", sharedTeacherWorkgroup.getId());
           sharedTeacherUserInfo.put("username", sharedTeacherWorkgroup.generateWorkgroupName());
-          sharedTeacherUserInfo.put(
-              "userId",
-              sharedTeacherWorkgroup.getMembers().iterator().next().getId()
-          );
+          sharedTeacherUserInfo.put("userId",
+              sharedTeacherWorkgroup.getMembers().iterator().next().getId());
 
           String sharedTeacherRole = runService.getSharedTeacherRole(run, sharedOwner);
           if (sharedTeacherRole == null) {
@@ -399,13 +398,30 @@ public class InformationController {
    * @param loggedInUser
    * @return
    * @throws ObjectNotFoundException
+   * @throws JSONException
    */
   private JSONArray getClassmateUserInfosJSONArray(Run run, Workgroup workgroup, User loggedInUser)
-      throws ObjectNotFoundException {
+      throws ObjectNotFoundException, JSONException {
     JSONArray classmateUserInfos = new JSONArray();
     for (Workgroup classmateWorkgroup : runService.getWorkgroups(run.getId())) {
       if (isClassmateWorkgroup(workgroup, loggedInUser, classmateWorkgroup)) {
         classmateUserInfos.put(getClassmateUserInfoJSON(classmateWorkgroup, run, loggedInUser));
+      }
+    }
+    for (Group period : run.getPeriods()) {
+      JSONArray studentsNotInWorkgroup = new JSONArray();
+      for (User user : period.getMembers()) {
+        if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
+          JSONObject userJSONInfo =
+              createUserJSONInfo(user, isAllowedToViewStudentNames(run, loggedInUser));
+          studentsNotInWorkgroup.put(userJSONInfo);
+        }
+      }
+      if (studentsNotInWorkgroup.length() > 0) {
+        JSONObject studentsNotInWorkgroupInfo = new JSONObject();
+        studentsNotInWorkgroupInfo.put("periodId", period.getId());
+        studentsNotInWorkgroupInfo.put("users", studentsNotInWorkgroup);
+        classmateUserInfos.put(studentsNotInWorkgroupInfo);
       }
     }
     return classmateUserInfos;
@@ -422,7 +438,7 @@ public class InformationController {
   }
 
   private JSONObject getMyUserInfoJSONObject(String periodId, String periodName, JSONArray userIds,
-      Long workgroupId, String usernames, String firstName, String lastName) {
+      Long workgroupId, String usernames, String firstName, String lastName, Boolean isGoogleUser) {
     JSONObject myUserInfo = new JSONObject();
     try {
       myUserInfo.put("workgroupId", workgroupId);
@@ -443,6 +459,7 @@ public class InformationController {
 
       myUserInfo.put("periodName", periodName);
       myUserInfo.put("userIds", userIds);
+      myUserInfo.put("isGoogleUser", isGoogleUser);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -655,7 +672,7 @@ public class InformationController {
     config.put("studentStatusURL", contextPath + "/api/studentStatus");
     config.put("runStatusURL", contextPath + "/api/runStatus");
     config.put("userInfo", getUserInfo(run));
-    config.put("studentDataURL", contextPath + "/api/student/data"); // the url to get/post student data
+    config.put("studentDataURL", contextPath + "/api/student/data");
     config.put("studentAssetsURL", contextPath + "/api/student/asset/" + runId);
     config.put("notebookURL", contextPath + "/api/student/notebook/run/" + runId);
     config.put("achievementURL", contextPath + "/api/achievement/" + runId);
@@ -901,23 +918,28 @@ public class InformationController {
     JSONArray users = new JSONArray();
     boolean canViewStudentNames = isAllowedToViewStudentNames(run, loggedInUser);
     for (User user : workgroup.getMembers()) {
-      JSONObject userJSONObject = new JSONObject();
-      try {
-        MutableUserDetails userDetails = user.getUserDetails();
-        userJSONObject.put("id", user.getId());
-        if (canViewStudentNames) {
-          String firstName = userDetails.getFirstname();
-          String lastName = userDetails.getLastname();
-          userJSONObject.put("name", firstName + " " + lastName);
-          userJSONObject.put("firstName", firstName);
-          userJSONObject.put("lastName", lastName);
-          userJSONObject.put("username", userDetails.getUsername());
-        }
-        users.put(userJSONObject);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+      users.put(createUserJSONInfo(user, canViewStudentNames));
     }
     return users;
+  }
+
+  private JSONObject createUserJSONInfo(User user, boolean canViewStudentNames) {
+    JSONObject userJSONObject = new JSONObject();
+    MutableUserDetails userDetails = user.getUserDetails();
+    try {
+      userJSONObject.put("id", user.getId());
+      userJSONObject.put("isGoogleUser", user.getUserDetails().isGoogleUser());
+      if (canViewStudentNames) {
+        String firstName = userDetails.getFirstname();
+        String lastName = userDetails.getLastname();
+        userJSONObject.put("name", firstName + " " + lastName);
+        userJSONObject.put("firstName", firstName);
+        userJSONObject.put("lastName", lastName);
+        userJSONObject.put("username", userDetails.getUsername());
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return userJSONObject;
   }
 }
