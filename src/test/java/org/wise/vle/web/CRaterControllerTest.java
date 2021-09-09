@@ -3,6 +3,7 @@ package org.wise.vle.web;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.isA;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.powermock.api.easymock.PowerMock.replayAll;
@@ -20,6 +21,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
+import org.wise.vle.domain.webservice.crater.CRaterIdea;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringResponse;
 import org.wise.vle.domain.webservice.crater.CRaterSubScore;
@@ -68,43 +70,56 @@ public class CRaterControllerTest {
   @Test
   public void scoreItem_SingleScoreItem_ReturnScore() {
     CRaterScoringRequest request = new CRaterScoringRequest();
-    String cRaterXMLResponse = "<crater-results><tracking id=\"1767940\" />" +
+    String cRaterXmlResponse = "<crater-results><tracking id=\"1767940\" />" +
         "<client id=\"WISETEST2\"/><items><item id=\"GREENROOF-II\" ><responses>" +
         "<response id=\"12345\" score=\"1\" realNumberScore=\"1.1138\" confidenceMeasure=\"0.99\" >" +
         "<advisorylist><advisorycode>0</advisorycode></advisorylist></response>" +
         "</responses></item></items></crater-results>";
-    CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXMLResponse);
+    CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXmlResponse);
     expect(CRaterHttpClient.getScoringResponse(request)).andReturn(cRaterResponse);
     replayAll();
     HashMap<String, Object> scoreItemResponse = controller.scoreItem(request);
     assertFalse(scoreItemResponse.containsKey("scores"));
     assertTrue(scoreItemResponse.containsKey("score"));
     assertEquals(1, scoreItemResponse.get("score"));
-    assertEquals(cRaterXMLResponse, scoreItemResponse.get("cRaterResponse"));
+    assertEquals(cRaterXmlResponse, scoreItemResponse.get("cRaterResponse"));
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void scoreItem_MultipleScoresItem_ReturnScores() {
+  public void scoreItem_MultipleScoresItem_ReturnScoresAndIdeas() {
     CRaterScoringRequest request = new CRaterScoringRequest();
-    String cRaterXMLResponse = "<crater-results><tracking id=\"1767886\" />" +
-        "<client id=\"WISETEST2\"/><items><item id=\"ColdBeverage1Sub\" ><responses>" +
+    String cRaterXmlResponse = "<crater-results>" +
+        "<items><item id=\"ColdBeverage1Sub\" ><responses>" +
         "<response id=\"12345\" score=\"\" realNumberScore=\"\" confidenceMeasure=\"0.99\" >" +
         "<scores><score id=\"experimentation\" score=\"1\" realNumberScore=\"1.0302\" />" +
-        "<score id=\"science\" score=\"1\" realNumberScore=\"1.0487\" />" +
+        "<score id=\"science\" score=\"1\" realNumberScore=\"1.0487\" score_range_min=\"0\" />" +
         "<score id=\"ki\" score=\"2\" realNumberScore=\"1.5486\" /></scores>" +
-        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response></responses>" +
+        "<feedback><ideas>" +
+        "<idea name=\"idea1\" detected=\"1\" character_offsets=\"[]\" />" +
+        "<idea name=\"idea2\" detected=\"0\" character_offsets=\"[]\" />" +
+        "</ideas></feedback>" +
+        "</response></responses>" +
         "</item></items></crater-results>";
-    CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXMLResponse);
+    CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXmlResponse);
     expect(CRaterHttpClient.getScoringResponse(request)).andReturn(cRaterResponse);
     replayAll();
     HashMap<String, Object> scoreItemResponse = controller.scoreItem(request);
     assertFalse(scoreItemResponse.containsKey("score"));
     assertTrue(scoreItemResponse.containsKey("scores"));
-    assertEquals(3, ((List<CRaterSubScore>) scoreItemResponse.get("scores")).size());
-    assertEquals(1, ((List<CRaterSubScore>) scoreItemResponse.get("scores")).get(0).getScore());
-    assertEquals(1, ((List<CRaterSubScore>) scoreItemResponse.get("scores")).get(1).getScore());
-    assertEquals(2, ((List<CRaterSubScore>) scoreItemResponse.get("scores")).get(2).getScore());
-    assertEquals(cRaterXMLResponse, scoreItemResponse.get("cRaterResponse"));
+    List<CRaterSubScore> subScores = (List<CRaterSubScore>) scoreItemResponse.get("scores");
+    assertEquals(3, subScores.size());
+    assertEquals(1, subScores.get(0).getScore());
+    assertEquals(1, subScores.get(1).getScore());
+    assertEquals(2, subScores.get(2).getScore());
+    assertNull(subScores.get(0).getScoreRangeMin());
+    assertNull(subScores.get(0).getScoreRangeMax());
+    assertEquals(0, subScores.get(1).getScoreRangeMin());
+    assertEquals(cRaterXmlResponse, scoreItemResponse.get("cRaterResponse"));
+    assertTrue(scoreItemResponse.containsKey("ideas"));
+    List<CRaterIdea> ideas = (List<CRaterIdea>) scoreItemResponse.get("ideas");
+    assertEquals(2, ideas.size());
+    assertTrue(ideas.get(0).isDetected());
+    assertFalse(ideas.get(1).isDetected());
   }
 }

@@ -4,21 +4,18 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.easymock.EasyMockRunner;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(EasyMockRunner.class)
 public class CRaterScoringResponseTest {
 
-  String singleScoreXML = "<crater-results><tracking id=\"1013701\"/><client id=\"WISETEST\"/>" +
+  String singleScoreXml = "<crater-results><tracking id=\"1013701\"/><client id=\"WISETEST\"/>" +
       "<items><item id=\"Photo_Sun\">" +
       "<responses><response id=\"testID\" score=\"4\" concepts=\"1,2,3,4,5\"/></responses>" +
       "</item></items></crater-results>";
 
-  CRaterScoringResponse singleScoreResponse = new CRaterScoringResponse(singleScoreXML);
+  CRaterScoringResponse singleScoreResponse = new CRaterScoringResponse(singleScoreXml);
 
-  String subScoresXML = "<crater-results><tracking id=\"1367459\" /><client id=\"WISETEST\" />" +
+  String subScoresXml = "<crater-results><tracking id=\"1367459\" /><client id=\"WISETEST\" />" +
       "<items><item id=\"STRIDES_EX1\"><responses>" +
       "<response id=\"1547591618656\" score=\"\" realNumberScore=\"\" confidenceMeasure=\"0.99\">" +
       "<scores><score id=\"science\" score=\"1\" realNumberScore=\"0.2919\" />" +
@@ -27,7 +24,7 @@ public class CRaterScoringResponseTest {
       "<advisorylist><advisorycode>0</advisorycode></advisorylist>" +
       "</response></responses></item></items></crater-results>";
 
-  CRaterScoringResponse subScoresResponse = new CRaterScoringResponse(subScoresXML);
+  CRaterScoringResponse subScoresResponse = new CRaterScoringResponse(subScoresXml);
 
   @Test
   public void isSingleScore() {
