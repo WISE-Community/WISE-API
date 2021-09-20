@@ -68,12 +68,15 @@ public class CRaterControllerTest {
   }
 
   @Test
-  public void scoreItem_SingleScoreItem_ReturnScore() {
+  @SuppressWarnings("unchecked")
+  public void scoreItem_SingleScoreItem_ReturnScoreAndIdeas() {
     CRaterScoringRequest request = new CRaterScoringRequest();
     String cRaterXmlResponse = "<crater-results><tracking id=\"1767940\" />" +
         "<client id=\"WISETEST2\"/><items><item id=\"GREENROOF-II\" ><responses>" +
         "<response id=\"12345\" score=\"1\" realNumberScore=\"1.1138\" confidenceMeasure=\"0.99\" >" +
-        "<advisorylist><advisorycode>0</advisorycode></advisorylist></response>" +
+        "<advisorylist><advisorycode>0</advisorycode></advisorylist><feedback><ideas>" +
+        "<idea name=\"idea1\" detected=\"1\" character_offsets=\"[]\" />" +
+        "</ideas></feedback></response>" +
         "</responses></item></items></crater-results>";
     CRaterScoringResponse cRaterResponse = new CRaterScoringResponse(cRaterXmlResponse);
     expect(CRaterHttpClient.getScoringResponse(request)).andReturn(cRaterResponse);
@@ -83,6 +86,10 @@ public class CRaterControllerTest {
     assertTrue(scoreItemResponse.containsKey("score"));
     assertEquals(1, scoreItemResponse.get("score"));
     assertEquals(cRaterXmlResponse, scoreItemResponse.get("cRaterResponse"));
+    assertTrue(scoreItemResponse.containsKey("ideas"));
+    List<CRaterIdea> ideas = (List<CRaterIdea>) scoreItemResponse.get("ideas");
+    assertEquals(1, ideas.size());
+    assertTrue(ideas.get(0).isDetected());
   }
 
   @Test
