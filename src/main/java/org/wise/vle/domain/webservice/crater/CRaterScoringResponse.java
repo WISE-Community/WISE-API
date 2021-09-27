@@ -81,14 +81,30 @@ public class CRaterScoringResponse {
   public List<CRaterSubScore> getScores() {
     List<CRaterSubScore> scores = new ArrayList<CRaterSubScore>();
     NodeList scoreNodes = getScoreNodes();
-    for (int s = 0; s < scoreNodes.getLength(); s++) {
-      scores.add(new CRaterSubScore(scoreNodes.item(s)));
+    for (int i = 0; i < scoreNodes.getLength(); i++) {
+      scores.add(new CRaterSubScore(scoreNodes.item(i)));
     }
     return scores;
   }
 
+ /**
+   * @return A List of CRaterIdea objects in the response
+   */
+  public List<CRaterIdea> getIdeas() {
+    List<CRaterIdea> ideas = new ArrayList<CRaterIdea>();
+    NodeList ideaNodes = getIdeaNodes();
+    for (int i = 0; i < ideaNodes.getLength(); i++) {
+      ideas.add(new CRaterIdea(ideaNodes.item(i)));
+    }
+    return ideas;
+  }
+
   private NodeList getScoreNodes() {
     return getXMLDocument().getElementsByTagName("score");
+  }
+
+  private NodeList getIdeaNodes() {
+    return getXMLDocument().getElementsByTagName("idea");
   }
 
   private Node getResponseNode() {

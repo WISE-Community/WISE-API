@@ -55,6 +55,7 @@ public class CRaterController {
     } else {
       response.put("scores", cRaterResponse.getScores());
     }
+    response.put("ideas", cRaterResponse.getIdeas());
     response.put("cRaterResponse", cRaterResponse.getResponse());
     return response;
   }
