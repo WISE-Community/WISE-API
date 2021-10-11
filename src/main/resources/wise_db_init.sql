@@ -209,6 +209,37 @@ create table notification (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table peer_group_activities (
+    id bigint not null auto_increment,
+    runId bigint not null,
+    logic text,
+    logicThresholdCount integer,
+    logicThresholdPercent integer,
+    maxMembershipCount integer,
+    nodeId varchar(30),
+    componentId varchar(30),
+    OPTLOCK integer,
+    index peer_group_activities_run_id_index (runId),
+    constraint peerGroupActivitiesRunIdFK foreign key (runId) references runs (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table peer_groups (
+    id bigint not null auto_increment,
+    peerGroupActivityId bigint not null,
+    OPTLOCK integer,
+    constraint peerGroupActivityIdFK foreign key (peerGroupActivityId) references peer_group_activities (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table peer_groups_related_to_workgroups (
+    peer_group_fk bigint not null,
+    workgroup_fk bigint not null,
+    constraint peer_groups_related_to_workgroups_workgroup_fk foreign key (workgroup_fk) references workgroups (id),
+    constraint peer_groups_related_to_workgroups_peer_group_fk foreign key (peer_group_fk) references peer_groups (id),
+    primary key (peer_group_fk, workgroup_fk)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 create table portal (
     id tinyint not null auto_increment,
     address varchar(255),
