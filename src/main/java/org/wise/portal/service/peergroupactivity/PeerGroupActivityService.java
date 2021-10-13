@@ -21,19 +21,26 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity;
+package org.wise.portal.service.peergroupactivity;
+
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.run.Run;
 
 /**
- * A class that defines location of peer group activities and how to group workgroups together
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public interface PeerGroupActivityService {
 
-  String getLogic();
-
-  int getLogicThresholdCount();
-
-  int getLogicThresholdPercent();
-
-  int getMaxMembershipCount();
+  /**
+   * Retrieves PeerGroupActivity from the database or curriculum unit for the specified component
+   *
+   * @param run
+   * @param nodeId
+   * @param componentId
+   * @return PeerGroupActivity
+   * @throws PeerGroupActivityNotFoundException if PeerGroupActivity is not found in the
+   *   database or curriculum unit for the specified component
+   */
+  PeerGroupActivity getByComponent(Run run, String nodeId, String componentId) throws
+      PeerGroupActivityNotFoundException;
 }

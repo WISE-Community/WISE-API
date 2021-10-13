@@ -21,19 +21,39 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity;
+package org.wise.portal.domain.project.impl;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
- * A class that defines location of peer group activities and how to group workgroups together
+ * A class that stores the entire content for a project.
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public class ProjectContent {
 
-  String getLogic();
+  JSONObject projectJSON;
 
-  int getLogicThresholdCount();
+  public ProjectContent(JSONObject projectJSON) {
+    this.projectJSON = projectJSON;
+  }
 
-  int getLogicThresholdPercent();
+  public ProjectNode getNode(String nodeId) throws JSONException {
+    JSONArray nodes = this.projectJSON.getJSONArray("nodes");
+    for (int i = 0; i < nodes.length(); i++) {
+      JSONObject node = nodes.getJSONObject(i);
+      if (node.getString("id").equals(nodeId)) {
+        return new ProjectNode(node);
+      }
+    }
+    return null;
+  }
 
-  int getMaxMembershipCount();
+  public ProjectComponent getComponent(String nodeId, String componentId) throws JSONException {
+    ProjectNode node = getNode(nodeId);
+    return node != null ? node.getComponent(componentId) : null;
+  }
 }
+
+

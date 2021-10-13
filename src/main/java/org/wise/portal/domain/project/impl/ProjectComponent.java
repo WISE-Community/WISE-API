@@ -21,19 +21,36 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity;
+package org.wise.portal.domain.project.impl;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import lombok.Getter;
 
 /**
- * A class that defines location of peer group activities and how to group workgroups together
+ * ProjectComponent defines activities that students work on,
+ * like MultipleChoice, OpenResponse, etc.
+ *
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public class ProjectComponent {
 
-  String getLogic();
+  JSONObject componentJSON;
 
-  int getLogicThresholdCount();
+  @Getter
+  String id;
 
-  int getLogicThresholdPercent();
+  public ProjectComponent(JSONObject componentJSON) throws JSONException {
+    this.componentJSON = componentJSON;
+    this.id = componentJSON.getString("id");
+  }
 
-  int getMaxMembershipCount();
+  public String getString(String key) throws JSONException {
+    return this.componentJSON.getString(key);
+  }
+
+  public int getInt(String key) throws JSONException {
+    return this.componentJSON.getInt(key);
+  }
 }

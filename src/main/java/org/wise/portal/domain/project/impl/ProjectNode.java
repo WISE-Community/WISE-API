@@ -21,19 +21,34 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity;
+package org.wise.portal.domain.project.impl;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
- * A class that defines location of peer group activities and how to group workgroups together
+ * ProjectNode stores a list of <code>ProjectComponent</code> and is used to organize
+ * the structure of a Project's content.
+ *
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public class ProjectNode {
 
-  String getLogic();
+  JSONObject nodeJSON;
 
-  int getLogicThresholdCount();
+  public ProjectNode(JSONObject nodeJSON) {
+    this.nodeJSON = nodeJSON;
+  }
 
-  int getLogicThresholdPercent();
-
-  int getMaxMembershipCount();
+  public ProjectComponent getComponent(String componentId) throws JSONException {
+    JSONArray components = nodeJSON.getJSONArray("components");
+    for (int c = 0; c < components.length(); c++) {
+      JSONObject component = components.getJSONObject(c);
+      if (component.getString("id").equals(componentId)) {
+        return new ProjectComponent(component);
+      }
+    }
+    return null;
+  }
 }
