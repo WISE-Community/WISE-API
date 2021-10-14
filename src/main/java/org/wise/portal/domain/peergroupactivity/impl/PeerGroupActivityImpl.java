@@ -37,13 +37,18 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.json.JSONException;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Hiroki Terashima
+ */
 @Entity
 @Table(name = "peer_group_activities", indexes = {
   @Index(columnList = "runId", name = "peer_group_activities_run_id_index")
@@ -72,11 +77,25 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   private String logic;
 
   @Column
-  private Integer logicThresholdCount = 0;
+  private int logicThresholdCount = 0;
 
   @Column
-  private Integer logicThresholdPercent = 0;
+  private int logicThresholdPercent = 0;
 
   @Column
-  private Integer maxMembershipCount = 2;
+  private int maxMembershipCount = 2;
+
+  public PeerGroupActivityImpl() {
+  }
+
+  public PeerGroupActivityImpl(Run run, String nodeId, ProjectComponent component)
+      throws JSONException {
+    this.run = run;
+    this.nodeId = nodeId;
+    this.componentId = component.getId();
+    this.logic = component.getString("logic");
+    this.logicThresholdCount = component.getInt("logicThresholdCount");
+    this.logicThresholdPercent = component.getInt("logicThresholdPercent");
+    this.maxMembershipCount = component.getInt("maxMembershipCount");
+  }
 }

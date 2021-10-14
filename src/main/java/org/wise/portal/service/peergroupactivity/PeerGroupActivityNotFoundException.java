@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2007-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -21,19 +21,16 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity;
+package org.wise.portal.service.peergroupactivity;
 
 /**
- * A class that defines location of peer group activities and how to group workgroups together
+ * A checked exception that is thrown when the PeerGroupActivity does not exist in
+ * the data store and the curriculum content
+ *
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public class PeerGroupActivityNotFoundException extends Exception {
 
-  String getLogic();
+  private static final long serialVersionUID = 1L;
 
-  int getLogicThresholdCount();
-
-  int getLogicThresholdPercent();
-
-  int getMaxMembershipCount();
 }
