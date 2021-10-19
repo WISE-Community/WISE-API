@@ -41,6 +41,7 @@ import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -67,6 +68,22 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
   }
 
   @Override
+  public PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<PeerGroupImpl> cq = cb.createQuery(PeerGroupImpl.class);
+    Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
+    Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), activity.getId()));
+    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
+        peerGroupImplRoot.<Set<Workgroup>>get("members")));
+    cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
+    return (PeerGroup) query.getResultStream().findFirst().orElse(null);
+  }
+
+  @Override
   public List<PeerGroup> getListByRun(Run run) {
     return getListByComponent(run, null, null);
   }
@@ -86,7 +103,8 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     if (componentId != null) {
       predicates.add(cb.equal(peerGroupActivityImplRoot.get("componentId"), componentId));
     }
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), peerGroupActivityImplRoot.get("id")));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"),
+        peerGroupActivityImplRoot.get("id")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
@@ -102,11 +120,29 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
-    predicates.add(cb.isMember(workgroupImplRoot.get("id"), peerGroupImplRoot.<Set<Workgroup>>get("members")));
+    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
+        peerGroupImplRoot.<Set<Workgroup>>get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
     return (List<PeerGroup>) (Object) resultList;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
+    Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
+    Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), activity.getId()));
+    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
+        peerGroupImplRoot.<Set<Workgroup>>get("members")));
+    cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
+    List<WorkgroupImpl> resultList = query.getResultList();
+    return (List<Workgroup>) (Object) resultList;
   }
 
   private CriteriaBuilder getCriteriaBuilder() {

@@ -86,6 +86,39 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     return (List<StudentWork>) query.getResultList();
   }
 
+  @Override
+  public List<StudentWork> getWorkForComponentByPeriod(Run run, Group period, String nodeId,
+      String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.equal(studentWorkRoot.get("run"), run));
+    predicates.add(cb.equal(studentWorkRoot.get("period"), period));
+    predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return (List<StudentWork>) query.getResultList();
+  }
+
+  @Override
+  public List<StudentWork> getWorkForComponentByWorkgroup(Workgroup workgroup, String nodeId,
+      String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.equal(studentWorkRoot.get("workgroup"), workgroup));
+    predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return (List<StudentWork>) query.getResultList();
+  }
+
   private List<Predicate> getStudentWorkListByParamsPredicates(CriteriaBuilder cb,
       Root<StudentWork> studentWorkRoot, Integer id, Run run, Group period, Workgroup workgroup,
       Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId, String componentType,

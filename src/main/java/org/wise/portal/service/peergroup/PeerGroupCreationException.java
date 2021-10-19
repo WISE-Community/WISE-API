@@ -21,27 +21,15 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.dao.peergroup;
-
-import java.util.List;
-import org.wise.portal.dao.SimpleDao;
-import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.workgroup.Workgroup;
+package org.wise.portal.service.peergroup;
 
 /**
+ * A checked exception that is thrown while creating a PeerGroup, for example not being able to
+ * find the members to group together
+ *
  * @author Hiroki Terashima
  */
-public interface PeerGroupDao<T extends PeerGroup> extends SimpleDao<T> {
+public class PeerGroupCreationException extends Exception {
 
-  PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity);
-
-  List<PeerGroup> getListByRun(Run run);
-
-  List<PeerGroup> getListByComponent(Run run, String nodeId, String componentId);
-
-  List<PeerGroup> getListByWorkgroup(Workgroup workgroup);
-
-  List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity);
+  private static final long serialVersionUID = 1L;
 }

@@ -21,27 +21,29 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.dao.peergroup;
+package org.wise.portal.service.peergroup;
 
-import java.util.List;
-import org.wise.portal.dao.SimpleDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
  * @author Hiroki Terashima
  */
-public interface PeerGroupDao<T extends PeerGroup> extends SimpleDao<T> {
+public interface PeerGroupService {
 
-  PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity);
-
-  List<PeerGroup> getListByRun(Run run);
-
-  List<PeerGroup> getListByComponent(Run run, String nodeId, String componentId);
-
-  List<PeerGroup> getListByWorkgroup(Workgroup workgroup);
-
-  List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity);
+  /**
+   * Gets a PeerGroup for the specified workgroup and PeerGroupActivity if a PeerGroup
+   * does not exist, create one.
+   *
+   * @param workgroup Workgroup to get/create the PeerGroup for
+   * @param activity PeerGroupActivity to get/create the PeerGroup for
+   * @return PeerGroup for the specified workgroup and PeerGroupActivity
+   * @throws PeerGroupActivityThresholdNotSatisfiedException the PeerGroup cannot be created due to
+   * threshold not being met
+   * @throws PeerGroupCreationException the PeerGroup cannot be created for other reasons
+   * like an error occurred while grouping members
+   */
+  PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
+      throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException;
 }
