@@ -23,9 +23,13 @@
  */
 package org.wise.portal.domain.peergroup;
 
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+
 /**
  * An interface that defines a group of workgroups
  * @author Hiroki Terashima
  */
 public interface PeerGroup {
+
+  PeerGroupActivity getPeerGroupActivity();
 }

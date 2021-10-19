@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.wise.portal.domain.authentication.Gender;
@@ -37,6 +38,10 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 
+/**
+ * @author Geoffrey Kwan
+ * @author Hiroki Terashima
+ */
 public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
 
   protected User student1, student2;
@@ -49,9 +54,9 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
 
   protected Workgroup workgroup1, workgroup2, workgroup3;
 
-  protected Run run1, run2;
+  protected Run run1, run2, run3;
 
-  protected Group period1;
+  protected Group run1Period1, run1Period2, run2Period1;
 
   protected Component component1, component2, componentNotExists;
 
@@ -72,10 +77,17 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
         Schoollevel.COLLEGE, "1234567890");
     run1 = createProjectAndRun(getNextAvailableProjectId(), projectName, teacher, startTime, "Panda123");
     run2 = createProjectAndRun(getNextAvailableProjectId(), projectName, teacher, startTime, "Rhino456");
-    period1 = createPeriod("Run 1 Period 1");
-    workgroup1 = createWorkgroup(workgroup1Members, run1, period1);
-    workgroup2 = createWorkgroup(workgroup2Members, run1, period1);
-    workgroup3 = createWorkgroup(workgroup3Members, run2, createPeriod("Run 2 Period 1"));
+    run3 = createProjectAndRun(getNextAvailableProjectId(), projectName, teacher, startTime, "Rhino789");
+    run1Period1 = createPeriod("Run 1 Period 1");
+    run1Period2 = createPeriod("Run 1 Period 2");
+    run2Period1 = createPeriod("Run 2 Period 1");
+    Set<Group> periods = new TreeSet<Group>();
+    periods.add(run1Period1);
+    periods.add(run1Period2);
+    run1.setPeriods(periods);
+    workgroup1 = createWorkgroup(workgroup1Members, run1, run1Period1);
+    workgroup2 = createWorkgroup(workgroup2Members, run1, run1Period1);
+    workgroup3 = createWorkgroup(workgroup3Members, run2, run2Period1);
     component1 = new Component(run1, "node1", "component1");
     component2 = new Component(run1, "node2", "component2");
     componentNotExists = new Component(run1, "nodeX", "componentX");

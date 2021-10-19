@@ -37,7 +37,9 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
@@ -77,10 +79,10 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   private String logic;
 
   @Column
-  private int logicThresholdCount = 0;
+  private int logicThresholdCount;
 
   @Column
-  private int logicThresholdPercent = 0;
+  private int logicThresholdPercent;
 
   @Column
   private int maxMembershipCount = 2;
@@ -97,5 +99,17 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
     this.logicThresholdCount = component.getInt("logicThresholdCount");
     this.logicThresholdPercent = component.getInt("logicThresholdPercent");
     this.maxMembershipCount = component.getInt("maxMembershipCount");
+  }
+
+  public String getLogicNodeId() throws JSONException {
+    return getFirstLogicJSON().getString("nodeId");
+  }
+
+  public String getLogicComponentId() throws JSONException {
+    return getFirstLogicJSON().getString("componentId");
+  }
+
+  private JSONObject getFirstLogicJSON() throws JSONException {
+    return new JSONArray(this.logic).getJSONObject(0);
   }
 }

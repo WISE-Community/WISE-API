@@ -23,13 +23,26 @@
  */
 package org.wise.portal.domain.peergroupactivity;
 
+import org.json.JSONException;
+import org.wise.portal.domain.run.Run;
+
 /**
  * A class that defines location of peer group activities and how to group workgroups together
  * @author Hiroki Terashima
  */
 public interface PeerGroupActivity {
 
+  void setRun(Run run);
+
+  Long getId();
+
+  Run getRun();
+
   String getLogic();
+
+  String getLogicNodeId() throws JSONException;
+
+  String getLogicComponentId() throws JSONException;
 
   int getLogicThresholdCount();
 

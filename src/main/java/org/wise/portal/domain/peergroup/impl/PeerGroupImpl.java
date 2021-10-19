@@ -71,4 +71,11 @@ public class PeerGroupImpl implements PeerGroup {
       joinColumns = { @JoinColumn(name = "peer_group_fk", nullable = false)},
       inverseJoinColumns = @JoinColumn(name = "workgroup_fk", nullable = false))
   private Set<Workgroup> members = new HashSet<Workgroup>();
+
+  public PeerGroupImpl() {}
+
+  public PeerGroupImpl(PeerGroupActivity activity, Set<Workgroup> members) {
+    this.peerGroupActivity = activity;
+    this.members = members;
+  }
 }
