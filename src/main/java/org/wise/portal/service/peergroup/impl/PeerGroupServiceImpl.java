@@ -23,12 +23,15 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
@@ -45,6 +48,7 @@ import org.wise.vle.domain.work.StudentWork;
 /**
  * @author Hiroki Terashima
  */
+@Service
 public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Autowired
@@ -122,8 +126,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     int logicComponentCompletionCount = getLogicComponentCompletionCount(activity, period);
     int logicComponentCompletionPercent =
         (logicComponentCompletionCount / numWorkgroupsInPeriod) * 100;
-    return logicComponentCompletionCount >= activity.getLogicThresholdCount() ||
-        logicComponentCompletionPercent >= activity.getLogicThresholdPercent();
+    return logicComponentCompletionCount >= 2 &&
+        (logicComponentCompletionCount >= activity.getLogicThresholdCount() ||
+        logicComponentCompletionPercent >= activity.getLogicThresholdPercent());
   }
 
   private int getLogicComponentCompletionCount(PeerGroupActivity activity, Group period) {
@@ -139,7 +144,15 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     List<StudentWork> logicComponentStudentWorkForPeriod = studentWorkDao
         .getWorkForComponentByPeriod(activity.getRun(), period,
         activity.getLogicNodeId(), activity.getLogicComponentId());
-    logicComponentStudentWorkForPeriod.removeIf(work -> !work.getIsSubmit());
-    return logicComponentStudentWorkForPeriod;
+    Collections.reverse(logicComponentStudentWorkForPeriod);
+    List<Workgroup> workgroups = new ArrayList<Workgroup>();
+    List<StudentWork> studentWorkUniqueWorkgroups = new ArrayList<StudentWork>();
+    for (StudentWork studentWork : logicComponentStudentWorkForPeriod) {
+      if (studentWork.getIsSubmit() && !workgroups.contains(studentWork.getWorkgroup())) {
+        studentWorkUniqueWorkgroups.add(studentWork);
+        workgroups.add(studentWork.getWorkgroup());
+      }
+    }
+    return studentWorkUniqueWorkgroups;
   }
 }

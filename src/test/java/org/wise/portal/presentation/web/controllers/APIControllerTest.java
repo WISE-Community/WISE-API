@@ -103,6 +103,8 @@ public class APIControllerTest {
 
   protected List<Tag> run1Tags;
 
+  protected Long workgroup1Id = 1L;
+
   protected Workgroup workgroup1, workgroup2, teacher1Run1Workgroup;
 
   protected Project project1, project2, project3;
@@ -210,6 +212,7 @@ public class APIControllerTest {
     run1.setProject(project1);
     run1.setLastRun(new Date());
     workgroup1 = new WorkgroupImpl();
+    workgroup1.setId(workgroup1Id);
     workgroup1.addMember(student1);
     workgroup1.setPeriod(run1Period1);
     workgroup1.setRun(run1);
