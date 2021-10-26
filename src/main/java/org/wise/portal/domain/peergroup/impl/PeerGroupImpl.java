@@ -78,4 +78,8 @@ public class PeerGroupImpl implements PeerGroup {
     this.peerGroupActivity = activity;
     this.members = members;
   }
+
+  public void addMember(Workgroup workgroup) {
+    this.members.add(workgroup);
+  }
 }

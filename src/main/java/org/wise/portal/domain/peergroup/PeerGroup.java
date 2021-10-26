@@ -23,7 +23,10 @@
  */
 package org.wise.portal.domain.peergroup;
 
+import java.util.Set;
+
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
  * An interface that defines a group of workgroups
@@ -32,4 +35,10 @@ import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 public interface PeerGroup {
 
   PeerGroupActivity getPeerGroupActivity();
+
+  Set<Workgroup> getMembers();
+
+  void setMembers(Set<Workgroup> members);
+
+  public void addMember(Workgroup workgroup);
 }

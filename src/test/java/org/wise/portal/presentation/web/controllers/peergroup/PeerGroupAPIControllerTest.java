@@ -1,9 +1,7 @@
 package org.wise.portal.presentation.web.controllers.peergroup;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -76,12 +74,15 @@ public class PeerGroupAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void getPeerGroup_PeerGroupThresholdNotMet_ReturnNull() throws Exception {
+  public void getPeerGroup_PeerGroupThresholdNotMet_ThrowException() throws Exception {
     expectWorkgroupAssociatedWithRunAndActivityFound();
     expectPeerGroupThresholdNotSatisifed();
     replayAll();
-    assertNull(controller.getPeerGroup(runId1, workgroup1Id, run1Node1Id, run1Component1Id,
-        studentAuth));
+    try {
+      controller.getPeerGroup(runId1, workgroup1Id, run1Node1Id, run1Component1Id, studentAuth);
+      fail("Expected PeerGroupCreationException, but was not thrown");
+    } catch (PeerGroupActivityThresholdNotSatisfiedException e) {
+    }
     verifyAll();
   }
 

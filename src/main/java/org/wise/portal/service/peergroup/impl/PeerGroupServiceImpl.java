@@ -42,7 +42,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupService;
-import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.vle.domain.work.StudentWork;
 
 /**
@@ -55,7 +55,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
   @Autowired
-  private RunService runService;
+  private PeerGroupThresholdService peerGroupThresholdService;
 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
@@ -69,21 +69,25 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
       throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
-    if (canCreatePeerGroup(workgroup, activity)) {
+    if (!isCompletionThresholdSatisfied(activity, workgroup)) {
+      throw new PeerGroupActivityThresholdNotSatisfiedException();
+    } else if (!peerGroupThresholdService.isWorkgroupCountThresholdSatisfied(activity,
+        workgroup.getPeriod())) {
+      throw new PeerGroupCreationException();
+    } else {
       PeerGroup peerGroup = new PeerGroupImpl(activity, getPeerGroupMembers(workgroup, activity));
       this.peerGroupDao.save(peerGroup);
       return peerGroup;
-    } else {
-      throw new PeerGroupActivityThresholdNotSatisfiedException();
     }
   }
 
-  private boolean canCreatePeerGroup(Workgroup workgroup, PeerGroupActivity activity) {
-    return hasWorkForPeerGroupLogicActivity(workgroup, activity) && thresholdSatisfied(activity,
-        workgroup.getPeriod());
+  private boolean isCompletionThresholdSatisfied(PeerGroupActivity activity, Workgroup workgroup) {
+    return hasWorkForPeerGroupLogicActivity(workgroup, activity) &&
+        peerGroupThresholdService.isCompletionThresholdSatisfied(activity, workgroup.getPeriod());
   }
 
-  private boolean hasWorkForPeerGroupLogicActivity(Workgroup workgroup, PeerGroupActivity activity) {
+  private boolean hasWorkForPeerGroupLogicActivity(Workgroup workgroup,
+      PeerGroupActivity activity) {
     try {
       return studentWorkDao.getWorkForComponentByWorkgroup(workgroup, activity.getLogicNodeId(),
           activity.getLogicComponentId()).size() > 0;
@@ -118,25 +122,6 @@ public class PeerGroupServiceImpl implements PeerGroupService {
         workgroup.getPeriod());
     logicComponentStudentWork.removeIf(work -> workgroupsInPeerGroup.contains(work.getWorkgroup()));
     return logicComponentStudentWork;
-  }
-
-  private boolean thresholdSatisfied(PeerGroupActivity activity, Group period) {
-    int numWorkgroupsInPeriod = runService.getWorkgroups(activity.getRun().getId(), period.getId())
-        .size();
-    int logicComponentCompletionCount = getLogicComponentCompletionCount(activity, period);
-    int logicComponentCompletionPercent =
-        (logicComponentCompletionCount / numWorkgroupsInPeriod) * 100;
-    return logicComponentCompletionCount >= 2 &&
-        (logicComponentCompletionCount >= activity.getLogicThresholdCount() ||
-        logicComponentCompletionPercent >= activity.getLogicThresholdPercent());
-  }
-
-  private int getLogicComponentCompletionCount(PeerGroupActivity activity, Group period) {
-    try {
-      return getLogicComponentStudentWorkForPeriod(activity, period).size();
-    } catch (JSONException e) {
-    }
-    return 0;
   }
 
   private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGroupActivity activity,
