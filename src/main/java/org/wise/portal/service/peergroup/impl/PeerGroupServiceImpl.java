@@ -71,8 +71,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
       throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
     if (!isCompletionThresholdSatisfied(activity, workgroup)) {
       throw new PeerGroupActivityThresholdNotSatisfiedException();
-    } else if (!peerGroupThresholdService.isWorkgroupCountThresholdSatisfied(activity,
-        workgroup.getPeriod())) {
+    } else if (!peerGroupThresholdService.canCreatePeerGroup(activity, workgroup.getPeriod())) {
       throw new PeerGroupCreationException();
     } else {
       PeerGroup peerGroup = new PeerGroupImpl(activity, getPeerGroupMembers(workgroup, activity));

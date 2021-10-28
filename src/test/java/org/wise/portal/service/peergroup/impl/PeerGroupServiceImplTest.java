@@ -160,7 +160,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   private void expectWorkgroupCountThresholdSatisfied(boolean isSatisfied) {
-    expect(peerGroupThresholdService.isWorkgroupCountThresholdSatisfied(activity, run1Period1))
+    expect(peerGroupThresholdService.canCreatePeerGroup(activity, run1Period1))
         .andReturn(isSatisfied);
   }
 

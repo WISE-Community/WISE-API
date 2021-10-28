@@ -47,5 +47,5 @@ public interface PeerGroupThresholdService {
    * @param period Group subset of workgroups in the run to test for PeerGroup members
    * @return boolean
    */
-  public boolean isWorkgroupCountThresholdSatisfied(PeerGroupActivity activity, Group period);
+  public boolean canCreatePeerGroup(PeerGroupActivity activity, Group period);
 }

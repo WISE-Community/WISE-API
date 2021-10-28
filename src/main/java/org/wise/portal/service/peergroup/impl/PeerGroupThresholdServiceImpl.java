@@ -64,7 +64,7 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
         logicComponentCompletionPercent >= activity.getLogicThresholdPercent());
   }
 
-  public boolean isWorkgroupCountThresholdSatisfied(PeerGroupActivity activity, Group period) {
+  public boolean canCreatePeerGroup(PeerGroupActivity activity, Group period) {
     int numWorkgroupsInPeerGroup = getNumWorkgroupsInPeerGroup(activity, period);
     int numWorkgroupsNotInPeerGroup = getNumWorkgroupsInPeriod(activity, period) -
         numWorkgroupsInPeerGroup;
@@ -105,17 +105,14 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
 
   private int getNumWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period) {
     int numWorkgroupsInPeerGroup = 0;
-    try {
-      List<PeerGroup> peerGroups = peerGroupDao.getListByComponent(activity.getRun(),
-          activity.getLogicNodeId(), activity.getLogicComponentId());
-      for (PeerGroup peerGroup : peerGroups) {
-        for (Workgroup workgroup : peerGroup.getMembers()) {
-          if (workgroup.getPeriod().equals(period)) {
-            numWorkgroupsInPeerGroup++;
-          }
+    List<PeerGroup> peerGroups = peerGroupDao.getListByComponent(activity.getRun(),
+        activity.getNodeId(), activity.getComponentId());
+    for (PeerGroup peerGroup : peerGroups) {
+      for (Workgroup workgroup : peerGroup.getMembers()) {
+        if (workgroup.getPeriod().equals(period)) {
+          numWorkgroupsInPeerGroup++;
         }
       }
-    } catch (JSONException e) {
     }
     return numWorkgroupsInPeerGroup;
   }

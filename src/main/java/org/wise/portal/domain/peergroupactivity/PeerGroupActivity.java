@@ -32,21 +32,25 @@ import org.wise.portal.domain.run.Run;
  */
 public interface PeerGroupActivity {
 
-  void setRun(Run run);
+  String getComponentId();
 
   Long getId();
 
-  Run getRun();
-
   String getLogic();
 
-  String getLogicNodeId() throws JSONException;
-
   String getLogicComponentId() throws JSONException;
+
+  String getLogicNodeId() throws JSONException;
 
   int getLogicThresholdCount();
 
   int getLogicThresholdPercent();
 
   int getMaxMembershipCount();
+
+  String getNodeId();
+
+  Run getRun();
+
+  void setRun(Run run);
 }

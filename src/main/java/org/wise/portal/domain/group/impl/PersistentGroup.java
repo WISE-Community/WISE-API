@@ -41,6 +41,7 @@ import javax.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.proxy.HibernateProxy;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
@@ -132,9 +133,16 @@ public class PersistentGroup implements Group {
       return true;
     if (obj == null)
       return false;
-    if (getClass() != obj.getClass())
+    if (obj instanceof HibernateProxy) {
+      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+        return false;
+      }
+    } else if (getClass() != obj.getClass())
       return false;
     final PersistentGroup other = (PersistentGroup) obj;
+    if (this.getId() != null && this.getId().equals(other.getId())) {
+      return true;
+    }
     if (name == null) {
       if (other.name != null)
         return false;

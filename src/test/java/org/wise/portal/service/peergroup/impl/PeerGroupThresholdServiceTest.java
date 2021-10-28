@@ -31,7 +31,6 @@ import java.util.List;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,49 +99,43 @@ public class PeerGroupThresholdServiceTest extends WISEServiceTest {
   }
 
   @Test
-  public void isWorkgroupCountThresholdSatisfied_OneWorkgroupNotInPeerGroup_ReturnTrue() {
+  public void canCreatePeerGroup_OneWorkgroupNotInPeerGroup_ReturnTrue() {
     expectTwoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
     expectTwoWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertTrue(service.isWorkgroupCountThresholdSatisfied(activity, run1Period1));
+    assertTrue(service.canCreatePeerGroup(activity, run1Period1));
     verifyAll();
   }
 
   @Test
-  public void isWorkgroupCountThresholdSatisfied_TwoCompletedWorkgroupsButNotInPeerGroup_ReturnTrue() {
+  public void canCreatePeerGroup_TwoCompletedWorkgroupsButNotInPeerGroup_ReturnTrue() {
     expectNoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
     expectTwoWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertTrue(service.isWorkgroupCountThresholdSatisfied(activity, run1Period1));
+    assertTrue(service.canCreatePeerGroup(activity, run1Period1));
     verifyAll();
   }
 
   @Test
-  public void isWorkgroupCountThresholdSatisfied_NoThresholdMet_ReturnFalse() {
+  public void canCreatePeerGroup_NoThresholdMet_ReturnFalse() {
     expectNoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
     expectOneWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertFalse(service.isWorkgroupCountThresholdSatisfied(activity, run1Period1));
+    assertFalse(service.canCreatePeerGroup(activity, run1Period1));
     verifyAll();
   }
 
   private void expectNoWorkgroupsInPeerGroup() {
-    try {
-      expect(peerGroupDao.getListByComponent(run1, activity.getLogicNodeId(),
-          activity.getLogicComponentId())).andReturn(Arrays.asList());
-    } catch (JSONException e) {
-    }
+    expect(peerGroupDao.getListByComponent(run1, activity.getNodeId(), activity.getComponentId()))
+        .andReturn(Arrays.asList());
   }
 
   private void expectTwoWorkgroupsInPeerGroup() {
-    try {
-      expect(peerGroupDao.getListByComponent(run1, activity.getLogicNodeId(),
-          activity.getLogicComponentId())).andReturn(Arrays.asList(testHelper.peerGroup1));
-    } catch (JSONException e) {
-    }
+    expect(peerGroupDao.getListByComponent(run1, activity.getNodeId(), activity.getComponentId()))
+        .andReturn(Arrays.asList(testHelper.peerGroup1));
   }
 
   private void expectOneWorkgroupsCompletedLogicComponent() {
@@ -154,9 +147,9 @@ public class PeerGroupThresholdServiceTest extends WISEServiceTest {
         componentWorkNonSubmit1));
   }
 
-  private void expectWorkForLogicComponent(List<StudentWork> workForLogicComponent) {
+  private void expectWorkForLogicComponent(List<StudentWork> expectedWork) {
     expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(workForLogicComponent);
+        run1Component1Id)).andReturn(expectedWork);
   }
 
   private void expectThreeWorkgroupsInPeriod() {
