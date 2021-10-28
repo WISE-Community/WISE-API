@@ -23,13 +23,21 @@
  */
 package org.wise.portal.service.peergroup;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 /**
  * A checked exception that is thrown when the PeerGroup is not ready to be formed yet
  * because a threshold has not been met
  *
  * @author Hiroki Terashima
  */
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class PeerGroupActivityThresholdNotSatisfiedException extends Exception {
 
   private static final long serialVersionUID = 1L;
+
+  public PeerGroupActivityThresholdNotSatisfiedException() {
+    super("PeerGroupActivityThresholdNotSatisfied");
+  }
 }

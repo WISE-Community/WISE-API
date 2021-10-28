@@ -44,6 +44,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.hibernate.proxy.HibernateProxy;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.impl.TagImpl;
 import org.wise.portal.domain.run.Run;
@@ -179,9 +180,16 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
       return true;
     if (obj == null)
       return false;
-    if (getClass() != obj.getClass())
+    if (obj instanceof HibernateProxy) {
+      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+        return false;
+      }
+    } else if (getClass() != obj.getClass())
       return false;
     final WorkgroupImpl other = (WorkgroupImpl) obj;
+    if (this.getId() != null && this.getId().equals(other.getId())) {
+      return true;
+    }
     if (group == null) {
       if (other.group != null)
         return false;

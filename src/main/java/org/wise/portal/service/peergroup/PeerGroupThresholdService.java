@@ -23,21 +23,29 @@
  */
 package org.wise.portal.service.peergroup;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.wise.portal.domain.group.Group;
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 
 /**
- * A checked exception that is thrown while creating a PeerGroup, for example not being able to
- * find the members to group together
- *
  * @author Hiroki Terashima
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class PeerGroupCreationException extends Exception {
+public interface PeerGroupThresholdService {
 
-  private static final long serialVersionUID = 1L;
+  /**
+   * Returns true iff the completion threshold has been satisfied to start creating PeerGroup.
+   * Completion threshold includes minimum workgroups completed count and percentage
+   * @param activity PeerGroupActivity for which to test for PeerGroup members
+   * @param period Group subset of workgroups in the run to test for PeerGroup members
+   * @return boolean
+   */
+  public boolean isCompletionThresholdSatisfied(PeerGroupActivity activity, Group period);
 
-  public PeerGroupCreationException() {
-    super("PeerGroupWaitingForClassmates");
-  }
+  /**
+   * Returns true iff this workgroup is the last workgroup to be in a PeerGroup (last one left), or
+   * there are at least two workgroups who have completed the logic step but are not in a PeerGroup
+   * @param activity PeerGroupActivity for which to test for PeerGroup members
+   * @param period Group subset of workgroups in the run to test for PeerGroup members
+   * @return boolean
+   */
+  public boolean canCreatePeerGroup(PeerGroupActivity activity, Group period);
 }

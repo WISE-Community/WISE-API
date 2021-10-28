@@ -23,7 +23,7 @@
  */
 package org.wise.portal.service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -50,9 +50,8 @@ public class WISEServiceTest {
 
   protected Group run1Period1;
 
-  protected List<Workgroup> period1Workgroups;
-
-  protected Workgroup run1Workgroup1, run1Workgroup2, run1Workgroup3;
+  protected Workgroup run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4,
+      run1Workgroup5;
 
   protected Component run1Component1, run1Component2;
 
@@ -64,7 +63,7 @@ public class WISEServiceTest {
 
   protected String run1Component2Id = "run1Component2";
 
-  protected User student1, student2, student3;
+  protected User student1, student2, student3, student4, student5;
 
   protected StudentWork componentWorkSubmit1, componentWorkSubmit2, componentWorkNonSubmit1;
 
@@ -75,11 +74,12 @@ public class WISEServiceTest {
     run1Workgroup1 = createWorkgroupInPeriod(1L, run1Period1, student1);
     run1Workgroup2 = createWorkgroupInPeriod(2L, run1Period1, student2);
     run1Workgroup3 = createWorkgroupInPeriod(3L, run1Period1, student3);
+    run1Workgroup4 = createWorkgroupInPeriod(4L, run1Period1, student4);
+    run1Workgroup5 = createWorkgroupInPeriod(5L, run1Period1, student5);
     run1 = new RunImpl();
     run1.setId(run1Id);
     run1Component1 = new Component(run1, run1Node1Id, run1Component1Id);
     run1Component2 = new Component(run1, run1Node2Id, run1Component2Id);
-    period1Workgroups = Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3);
     componentWorkSubmit1 = createComponentWork(run1Workgroup1, true);
     componentWorkSubmit2 = createComponentWork(run1Workgroup2, true);
     componentWorkNonSubmit1 = createComponentWork(run1Workgroup1, false);
@@ -101,5 +101,13 @@ public class WISEServiceTest {
     work.setWorkgroup(workgroup);
     work.setIsSubmit(isSubmit);
     return work;
+  }
+
+  protected List<StudentWork> createStudentWorkList(StudentWork... componentWorks) {
+    List<StudentWork> list = new ArrayList<StudentWork>();
+    for (StudentWork work : componentWorks) {
+      list.add(work);
+    }
+    return list;
   }
 }

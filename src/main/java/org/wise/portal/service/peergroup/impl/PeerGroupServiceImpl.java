@@ -23,12 +23,15 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
@@ -39,19 +42,20 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupService;
-import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.vle.domain.work.StudentWork;
 
 /**
  * @author Hiroki Terashima
  */
+@Service
 public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Autowired
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
   @Autowired
-  private RunService runService;
+  private PeerGroupThresholdService peerGroupThresholdService;
 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
@@ -65,21 +69,24 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
       throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
-    if (canCreatePeerGroup(workgroup, activity)) {
+    if (!isCompletionThresholdSatisfied(activity, workgroup)) {
+      throw new PeerGroupActivityThresholdNotSatisfiedException();
+    } else if (!peerGroupThresholdService.canCreatePeerGroup(activity, workgroup.getPeriod())) {
+      throw new PeerGroupCreationException();
+    } else {
       PeerGroup peerGroup = new PeerGroupImpl(activity, getPeerGroupMembers(workgroup, activity));
       this.peerGroupDao.save(peerGroup);
       return peerGroup;
-    } else {
-      throw new PeerGroupActivityThresholdNotSatisfiedException();
     }
   }
 
-  private boolean canCreatePeerGroup(Workgroup workgroup, PeerGroupActivity activity) {
-    return hasWorkForPeerGroupLogicActivity(workgroup, activity) && thresholdSatisfied(activity,
-        workgroup.getPeriod());
+  private boolean isCompletionThresholdSatisfied(PeerGroupActivity activity, Workgroup workgroup) {
+    return hasWorkForPeerGroupLogicActivity(workgroup, activity) &&
+        peerGroupThresholdService.isCompletionThresholdSatisfied(activity, workgroup.getPeriod());
   }
 
-  private boolean hasWorkForPeerGroupLogicActivity(Workgroup workgroup, PeerGroupActivity activity) {
+  private boolean hasWorkForPeerGroupLogicActivity(Workgroup workgroup,
+      PeerGroupActivity activity) {
     try {
       return studentWorkDao.getWorkForComponentByWorkgroup(workgroup, activity.getLogicNodeId(),
           activity.getLogicComponentId()).size() > 0;
@@ -116,30 +123,20 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     return logicComponentStudentWork;
   }
 
-  private boolean thresholdSatisfied(PeerGroupActivity activity, Group period) {
-    int numWorkgroupsInPeriod = runService.getWorkgroups(activity.getRun().getId(), period.getId())
-        .size();
-    int logicComponentCompletionCount = getLogicComponentCompletionCount(activity, period);
-    int logicComponentCompletionPercent =
-        (logicComponentCompletionCount / numWorkgroupsInPeriod) * 100;
-    return logicComponentCompletionCount >= activity.getLogicThresholdCount() ||
-        logicComponentCompletionPercent >= activity.getLogicThresholdPercent();
-  }
-
-  private int getLogicComponentCompletionCount(PeerGroupActivity activity, Group period) {
-    try {
-      return getLogicComponentStudentWorkForPeriod(activity, period).size();
-    } catch (JSONException e) {
-    }
-    return 0;
-  }
-
   private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGroupActivity activity,
       Group period) throws JSONException {
     List<StudentWork> logicComponentStudentWorkForPeriod = studentWorkDao
         .getWorkForComponentByPeriod(activity.getRun(), period,
         activity.getLogicNodeId(), activity.getLogicComponentId());
-    logicComponentStudentWorkForPeriod.removeIf(work -> !work.getIsSubmit());
-    return logicComponentStudentWorkForPeriod;
+    Collections.reverse(logicComponentStudentWorkForPeriod);
+    List<Workgroup> workgroups = new ArrayList<Workgroup>();
+    List<StudentWork> studentWorkUniqueWorkgroups = new ArrayList<StudentWork>();
+    for (StudentWork studentWork : logicComponentStudentWorkForPeriod) {
+      if (studentWork.getIsSubmit() && !workgroups.contains(studentWork.getWorkgroup())) {
+        studentWorkUniqueWorkgroups.add(studentWork);
+        workgroups.add(studentWork.getWorkgroup());
+      }
+    }
+    return studentWorkUniqueWorkgroups;
   }
 }

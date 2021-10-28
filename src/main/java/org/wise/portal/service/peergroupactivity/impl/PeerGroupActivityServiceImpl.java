@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
@@ -41,6 +42,7 @@ import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 /**
  * @author Hiroki Terashima
  */
+@Service
 public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
 
   @Autowired
