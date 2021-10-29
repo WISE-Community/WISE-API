@@ -82,7 +82,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     super.setUp();
     PeerGroupServiceTestHelper testHelper = new PeerGroupServiceTestHelper(run1, run1Component2);
     activity = testHelper.activity;
-    peerGroup = new PeerGroupImpl();
+    peerGroup = testHelper.peerGroup1;
   }
 
   @Test
@@ -153,6 +153,22 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     replayAll();
     assertNotNull(service.getPeerGroup(run1Workgroup1, activity));
     verifyAll();
+  }
+
+  @Test
+  public void getStudentWork_PeerGroupExist_ReturnStudentWorkList() {
+    expectGetWorkForComponentByWorkgroups();
+    replayAll();
+    assertEquals(service.getStudentWork(peerGroup).size(), 3);
+    verifyAll();
+  }
+
+  private void expectGetWorkForComponentByWorkgroups() {
+    expect(studentWorkDao.getWorkForComponentByWorkgroups(peerGroup.getMembers(),
+        peerGroup.getPeerGroupActivity().getNodeId(),
+        peerGroup.getPeerGroupActivity().getComponentId())).andReturn(
+        createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
+        componentWorkNonSubmit1));
   }
 
   private void expectWorkgroupsInPeerGroup(List<Object> asList) {

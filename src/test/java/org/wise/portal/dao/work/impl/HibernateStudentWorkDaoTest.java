@@ -27,7 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +105,18 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
         "node1", "component1");
     assertEquals(1, studentWorkList.size());
     assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
+  }
+
+  @Test
+  public void getWorkForComponentByWorkgroups_ShouldReturnStudentWork() {
+    Set<Workgroup> workgroups = new HashSet<Workgroup>();
+    workgroups.add(workgroup1);
+    workgroups.add(workgroup2);
+    List<StudentWork> studentWorkList = studentWorkDao.getWorkForComponentByWorkgroups(workgroups,
+        "node1", "component1");
+    assertEquals(2, studentWorkList.size());
+    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
+    assertEquals("studentWork3", studentWorkList.get(1).getStudentData());
   }
 
   private StudentWork createStudentWork(Workgroup workgroup, String nodeId, String componentId,

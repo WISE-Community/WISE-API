@@ -23,14 +23,26 @@
  */
 package org.wise.portal.service.peergroup;
 
+import java.util.List;
+
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.vle.domain.work.StudentWork;
 
 /**
  * @author Hiroki Terashima
  */
 public interface PeerGroupService {
+
+  /**
+   * Gets the PeerGroup with the specified id
+   * @param id Long PeerGroup's id
+   * @return matched PeerGroup
+   * @throws ObjectNotFoundException when PeerGroup with the given id is not found
+   */
+  public PeerGroup getById(Long id) throws ObjectNotFoundException;
 
   /**
    * Gets a PeerGroup for the specified workgroup and PeerGroupActivity if a PeerGroup
@@ -46,4 +58,11 @@ public interface PeerGroupService {
    */
   PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
       throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException;
+
+  /**
+   * Gets StudentWork for the PeerGroup's activity from all the members in the PeerGroup
+   * @param peerGroup group of workgroups in the PeerGroup
+   * @return List of StudentWork by members in the PeerGroup for the activity
+   */
+  public List<StudentWork> getStudentWork(PeerGroup peerGroup);
 }

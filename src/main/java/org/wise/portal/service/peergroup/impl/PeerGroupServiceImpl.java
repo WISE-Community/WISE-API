@@ -32,6 +32,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
@@ -59,6 +60,10 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
+
+  public PeerGroup getById(Long id) throws ObjectNotFoundException {
+    return peerGroupDao.getById(id);
+  }
 
   @Override
   public PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
@@ -138,5 +143,12 @@ public class PeerGroupServiceImpl implements PeerGroupService {
       }
     }
     return studentWorkUniqueWorkgroups;
+  }
+
+  @Override
+  public List<StudentWork> getStudentWork(PeerGroup peerGroup) {
+    return studentWorkDao.getWorkForComponentByWorkgroups(peerGroup.getMembers(),
+        peerGroup.getPeerGroupActivity().getNodeId(),
+        peerGroup.getPeerGroupActivity().getComponentId());
   }
 }

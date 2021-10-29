@@ -31,6 +31,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.work.StudentWork;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Domain Access Object for StudentWork
@@ -43,6 +44,9 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
       String componentType, List<JSONObject> components);
 
   List<StudentWork> getWorkForComponentByWorkgroup(Workgroup workgroup, String nodeId,
+      String componentId);
+
+  List<StudentWork> getWorkForComponentByWorkgroups(Set<Workgroup> workgroups, String nodeId,
       String componentId);
 
   List<StudentWork> getWorkForComponentByPeriod(Run run, Group period, String nodeId,
