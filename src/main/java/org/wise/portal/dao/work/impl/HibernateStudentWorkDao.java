@@ -25,6 +25,7 @@ package org.wise.portal.dao.work.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -111,6 +112,22 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
     List<Predicate> predicates = new ArrayList<Predicate>();
     predicates.add(cb.equal(studentWorkRoot.get("workgroup"), workgroup));
+    predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return (List<StudentWork>) query.getResultList();
+  }
+
+  @Override
+  public List<StudentWork> getWorkForComponentByWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.in(studentWorkRoot.get("workgroup")).value(workgroups));
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))

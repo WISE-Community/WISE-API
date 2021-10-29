@@ -41,6 +41,7 @@ import javax.persistence.Table;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 
@@ -81,5 +82,15 @@ public class PeerGroupImpl implements PeerGroup {
 
   public void addMember(Workgroup workgroup) {
     this.members.add(workgroup);
+  }
+
+  @Override
+  public boolean isMember(User user) {
+    for (Workgroup workgroup : members) {
+      if (workgroup.getMembers().contains(user)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

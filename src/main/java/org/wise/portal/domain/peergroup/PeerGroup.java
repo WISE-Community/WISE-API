@@ -26,6 +26,7 @@ package org.wise.portal.domain.peergroup;
 import java.util.Set;
 
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
@@ -41,4 +42,6 @@ public interface PeerGroup {
   void setMembers(Set<Workgroup> members);
 
   public void addMember(Workgroup workgroup);
+
+  boolean isMember(User user);
 }
