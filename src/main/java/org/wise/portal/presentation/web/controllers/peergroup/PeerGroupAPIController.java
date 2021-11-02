@@ -23,8 +23,6 @@
  */
 package org.wise.portal.presentation.web.controllers.peergroup;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -47,7 +45,6 @@ import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
-import org.wise.vle.domain.work.StudentWork;
 
 @RestController
 @Secured("ROLE_USER")
@@ -89,21 +86,5 @@ public class PeerGroupAPIController {
       PeerGroupActivityThresholdNotSatisfiedException {
     PeerGroupActivity activity = peerGroupActivityService.getByComponent(run, nodeId, componentId);
     return peerGroupService.getPeerGroup(workgroup, activity);
-  }
-
-  @GetMapping("/{peerGroupId}/student-work")
-  List<StudentWork> getPeerGroupWork(@PathVariable Long peerGroupId, Authentication auth)
-      throws ObjectNotFoundException {
-    PeerGroup peerGroup = peerGroupService.getById(peerGroupId);
-    if (isUserInPeerGroup(peerGroup, auth)) {
-      return peerGroupService.getStudentWork(peerGroup);
-    } else {
-      throw new AccessDeniedException("Not permitted");
-    }
-  }
-
-  private boolean isUserInPeerGroup(PeerGroup peerGroup, Authentication auth) {
-    User user = userService.retrieveUserByUsername(auth.getName());
-    return peerGroup.isMember(user);
   }
 }
