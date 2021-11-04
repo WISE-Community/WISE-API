@@ -325,12 +325,14 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   private ModelAndView previewProjectWISE4(PreviewProjectParameters params, Project project) {
-    String wise4URL = appProperties.getProperty("wise.hostname") + "/legacy/previewproject.html?projectId=" + project.getId();
+    String wise4URL = appProperties.getProperty("wise.hostname")
+        + "/legacy/previewproject.html?projectId=" + project.getId();
     return new ModelAndView(new RedirectView(wise4URL));
   }
 
   private ModelAndView previewProjectWISE5(PreviewProjectParameters params, Project project) {
-    String wise5URL = appProperties.getProperty("wise.hostname") + "/preview/unit/" + project.getId();
+    String wise5URL = appProperties.getProperty("wise.hostname") + "/preview/unit/"
+        + project.getId();
     return new ModelAndView(new RedirectView(wise5URL));
   }
 
@@ -916,5 +918,11 @@ public class ProjectServiceImpl implements ProjectService {
 
   public void updateProjectNameIfNecessary(Project project, JSONObject projectMetadataJSON) {
     project.setName(projectMetadataJSON.optString("title", project.getName()));
+  }
+
+  public String getProjectContent(Project project) throws IOException {
+    String projectFilePath = appProperties.getProperty("curriculum_base_dir")
+        + project.getModulePath();
+    return FileUtils.readFileToString(new File(projectFilePath));
   }
 }

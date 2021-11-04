@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -21,27 +21,38 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.dao.work;
+package org.wise.portal.domain.project.impl;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.wise.portal.dao.SimpleDao;
-import org.wise.portal.domain.group.Group;
-import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.vle.domain.work.StudentWork;
-
-import java.util.List;
 
 /**
- * Domain Access Object for StudentWork
+ * A class that stores the entire content for a project.
  * 
  * @author Hiroki Terashima
  */
-public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
+public class ProjectContent {
 
-  List<StudentWork> getStudentWorkListByParams(Integer id, Run run, Group period,
-      Workgroup workgroup, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
-      String componentType, List<JSONObject> components);
+  JSONObject projectJSON;
 
-  List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
+  public ProjectContent(JSONObject projectJSON) {
+    this.projectJSON = projectJSON;
+  }
+
+  public ProjectNode getNode(String nodeId) throws JSONException {
+    JSONArray nodes = this.projectJSON.getJSONArray("nodes");
+    for (int i = 0; i < nodes.length(); i++) {
+      JSONObject node = nodes.getJSONObject(i);
+      if (node.getString("id").equals(nodeId)) {
+        return new ProjectNode(node);
+      }
+    }
+    return null;
+  }
+
+  public ProjectComponent getComponent(String nodeId, String componentId) throws JSONException {
+    ProjectNode node = getNode(nodeId);
+    return node != null ? node.getComponent(componentId) : null;
+  }
 }

@@ -109,6 +109,10 @@ public class APIControllerTest {
 
   protected Group run1Period1, run1Period2;
 
+  protected Long run1Period1Id = 1L;
+
+  protected Long run1Period2Id = 2L;
+
   @Mock
   protected HttpServletRequest request;
 
@@ -194,10 +198,12 @@ public class APIControllerTest {
     run1.setRuncode(RUN1_RUNCODE);
     HashSet<Group> run1Periods = new HashSet<Group>();
     run1Period1 = new PersistentGroup();
+    run1Period1.setId(run1Period1Id);
     run1Period1.setName(RUN1_PERIOD1_NAME);
     run1Period1.addMember(student1);
     run1Periods.add(run1Period1);
     run1Period2 = new PersistentGroup();
+    run1Period2.setId(run1Period2Id);
     run1Period2.setName(RUN1_PERIOD2_NAME);
     run1Periods.add(run1Period2);
     run1.setPeriods(run1Periods);

@@ -157,14 +157,18 @@ public class VLEServiceImpl implements VLEService {
     }
   }
 
-  private List<StudentWork> filterLatestWorkForEachWorkgroup(
-      List<StudentWork> allStudentWork) {
+  public List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
+      String componentId) {
+    return studentWorkDao.getStudentWork(run, period, nodeId, componentId);
+  }
+
+  private List<StudentWork> filterLatestWorkForEachWorkgroup(List<StudentWork> allStudentWork) {
     HashMap<Long, StudentWork> latestWorkPerWorkgroup = new HashMap<Long, StudentWork>();
     for (StudentWork studentWork : allStudentWork) {
       Long key = studentWork.getWorkgroup().getId();
       if (latestWorkPerWorkgroup.containsKey(key)) {
-        if (studentWork.getServerSaveTime().after(
-            latestWorkPerWorkgroup.get(key).getServerSaveTime())) {
+        if (studentWork.getServerSaveTime()
+            .after(latestWorkPerWorkgroup.get(key).getServerSaveTime())) {
           latestWorkPerWorkgroup.put(key, studentWork);
         }
       } else {
@@ -530,6 +534,10 @@ public class VLEServiceImpl implements VLEService {
         componentId, studentWork, localNotebookItemId, notebookItem, type);
   }
 
+  public List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId) {
+    return annotationDao.getAnnotations(run, period, nodeId, componentId);
+  }
+
   @Override
   public Annotation saveAnnotation(Integer id, Integer runId, Integer periodId,
       Integer fromWorkgroupId, Integer toWorkgroupId, String nodeId, String componentId,
@@ -622,8 +630,8 @@ public class VLEServiceImpl implements VLEService {
   @Override
   public List<StudentAsset> getWorkgroupAssets(Long workgroupId) throws ObjectNotFoundException {
     Workgroup workgroup = workgroupService.retrieveById(workgroupId);
-    return studentAssetDao.getStudentAssetListByParams(null, null, null, workgroup, null,
-        null, null, null);
+    return studentAssetDao.getStudentAssetListByParams(null, null, null, workgroup, null, null,
+        null, null);
   }
 
   @Override
