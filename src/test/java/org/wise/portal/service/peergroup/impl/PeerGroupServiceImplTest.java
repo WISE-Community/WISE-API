@@ -38,10 +38,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
+import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.WISEServiceTest;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
@@ -68,10 +70,13 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   private PeerGroupActivityDao<PeerGroupActivity> peerGroupActivityDao;
 
   @Mock
-  private StudentWorkDao<StudentWork> studentWorkDao;
+  private RunDao<RunImpl> runDao;
 
   @Mock
   private RunService runService;
+
+  @Mock
+  private StudentWorkDao<StudentWork> studentWorkDao;
 
   PeerGroupActivity activity;
 
@@ -94,7 +99,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_PeerGroupNotInDBAndNoWorkForLogicComponent_ThrowException()
+  public void getPeerGroup_NoWorkForLogicComponent_ThrowException()
       throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList());
@@ -108,7 +113,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_PeerGroupNotInDBAndCompletionThresholdNotSatisfied_ThrowException()
+  public void getPeerGroup_CompletionThresholdNotSatisfied_ThrowException()
       throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
@@ -123,7 +128,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_PeerGroupNotInDBAndWorkgroupCountThresholdNotSatisfied_ThrowException()
+  public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ThrowException()
       throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
@@ -139,19 +144,32 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test(timeout = 250)
-  public void getPeerGroup_PeerGroupNotInDBAndAllThresholdsSatisfied_CreateAndReturnPeerGroup()
+  public void getPeerGroup_AllThresholdsSatisfied3WorkgroupsLeft_Create3WorkgroupPeerGroup()
       throws Exception {
-    expectPeerGroupFromDB(null);
-    expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
-    expectCompletionThresholdSatisfied(true);
-    expectWorkgroupCountThresholdSatisfied(true);
+    expectAllThresholdsSatisfied();
     expectWorkgroupsInPeerGroup(Arrays.asList());
     expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-        componentWorkNonSubmit1));
+        componentWorkSubmit3, componentWorkNonSubmit1));
+    expectIsLastOnesLeftToPair();
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
     replayAll();
-    assertNotNull(service.getPeerGroup(run1Workgroup1, activity));
+    assertEquals(3, service.getPeerGroup(run1Workgroup1, activity).getMembers().size());
+    verifyAll();
+  }
+
+  @Test(timeout = 250)
+  public void getPeerGroup_AllThresholdsSatisfiedMoreThan3WorkgroupsLeft_Create2WorkgroupPeerGroup()
+      throws Exception {
+    expectAllThresholdsSatisfied();
+    expectWorkgroupsInPeerGroup(Arrays.asList());
+    expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
+        componentWorkSubmit3, componentWorkSubmit4, componentWorkNonSubmit1));
+    expectIsMultiplePairingsLeft();
+    peerGroupDao.save(isA(PeerGroupImpl.class));
+    expectLastCall();
+    replayAll();
+    assertEquals(2, service.getPeerGroup(run1Workgroup1, activity).getMembers().size());
     verifyAll();
   }
 
@@ -163,6 +181,13 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     verifyAll();
   }
 
+  private void expectAllThresholdsSatisfied() throws JSONException {
+    expectPeerGroupFromDB(null);
+    expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
+    expectCompletionThresholdSatisfied(true);
+    expectWorkgroupCountThresholdSatisfied(true);
+  }
+
   private void expectGetWorkForComponentByWorkgroups() {
     expect(studentWorkDao.getWorkForComponentByWorkgroups(peerGroup.getMembers(),
         peerGroup.getPeerGroupActivity().getNodeId(),
@@ -172,7 +197,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   private void expectWorkgroupsInPeerGroup(List<Object> asList) {
-    expect(peerGroupDao.getWorkgroupsInPeerGroup(activity)).andReturn(Arrays.asList());
+    expect(peerGroupDao.getWorkgroupsInPeerGroup(activity, run1Period1)).andReturn(Arrays.asList());
   }
 
   private void expectWorkgroupCountThresholdSatisfied(boolean isSatisfied) {
@@ -200,11 +225,21 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
         activity.getLogicComponentId())).andReturn(expectedWork);
   }
 
+  private void expectIsLastOnesLeftToPair() {
+    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId())).andReturn(
+        Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3));
+  }
+
+  private void expectIsMultiplePairingsLeft() {
+    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId())).andReturn(
+        Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4));
+  }
+
   private void verifyAll() {
-    verify(peerGroupDao, peerGroupThresholdService, runService, studentWorkDao);
+    verify(peerGroupDao, peerGroupThresholdService, runDao, runService, studentWorkDao);
   }
 
   private void replayAll() {
-    replay(peerGroupDao, peerGroupThresholdService, runService, studentWorkDao);
+    replay(peerGroupDao, peerGroupThresholdService, runDao, runService, studentWorkDao);
   }
 }

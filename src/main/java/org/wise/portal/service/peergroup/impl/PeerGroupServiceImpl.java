@@ -34,11 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
+import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
@@ -60,6 +62,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
+
+  @Autowired
+  private RunDao<Run> runDao;
 
   public PeerGroup getById(Long id) throws ObjectNotFoundException {
     return peerGroupDao.getById(id);
@@ -102,30 +107,61 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   private Set<Workgroup> getPeerGroupMembers(Workgroup workgroup, PeerGroupActivity activity)
       throws PeerGroupCreationException {
-    Set<Workgroup> members = new HashSet<Workgroup>();
-    members.add(workgroup);
     try {
-      List<StudentWork> logicComponentStudentWorkByWorkgroupNotInPeerGroup =
-          getLogicComponentStudentWorkByWorkgroupNotInPeerGroup(workgroup, activity);
-      for (StudentWork work : logicComponentStudentWorkByWorkgroupNotInPeerGroup) {
-        members.add(work.getWorkgroup());
-        if (members.size() == activity.getMaxMembershipCount()) {
-          break;
-        }
+      List<Workgroup> workgroupsInPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(activity,
+          workgroup.getPeriod());
+      Set<Workgroup> workgroupsNotInPeerGroupAndCompletedLogicActivity =
+          getWorkgroupsNotInPeerGroupAndCompletedLogicActivity(activity, workgroup.getPeriod(),
+          workgroupsInPeerGroup);
+      if (isLastOnesLeftToPair(workgroup.getRun(), workgroup.getPeriod(), workgroupsInPeerGroup,
+          workgroupsNotInPeerGroupAndCompletedLogicActivity, activity.getMaxMembershipCount())) {
+        return workgroupsNotInPeerGroupAndCompletedLogicActivity;
+      } else {
+        return getWorkgroupsInPeerGroupUpToMaxMembership(workgroup, activity,
+            workgroupsNotInPeerGroupAndCompletedLogicActivity);
       }
     } catch (JSONException e) {
       throw new PeerGroupCreationException();
     }
+  }
+
+  private boolean isLastOnesLeftToPair(Run run, Group period, List<Workgroup> workgroupsInPeerGroup,
+      Set<Workgroup> workgroupsNotInPeerGroupAndCompletedLogicActivity, int maxMembershipCount) {
+    List<Workgroup> workgroupsInPeriod = runDao.getWorkgroupsForRunAndPeriod(run.getId(),
+        period.getId());
+    workgroupsInPeriod.removeIf(workgroup -> workgroup.getMembers().size() == 0);
+    int numWorkgroupsNotInPeerGroup = workgroupsInPeriod.size() - workgroupsInPeerGroup.size();
+    int numWorkgroupsNotInPeerGroupAndCompletedLogicActivity =
+        workgroupsNotInPeerGroupAndCompletedLogicActivity.size();
+    return numWorkgroupsNotInPeerGroup == numWorkgroupsNotInPeerGroupAndCompletedLogicActivity &&
+        (numWorkgroupsNotInPeerGroupAndCompletedLogicActivity - maxMembershipCount) <= 1;
+  }
+
+  private Set<Workgroup> getWorkgroupsInPeerGroupUpToMaxMembership(Workgroup workgroup,
+      PeerGroupActivity activity, Set<Workgroup> possibleMembers) {
+    Set<Workgroup> members = new HashSet<Workgroup>();
+    members.add(workgroup);
+    for (Workgroup possibleMember : possibleMembers) {
+      members.add(possibleMember);
+      if (members.size() == activity.getMaxMembershipCount()) {
+        break;
+      }
+    }
     return members;
   }
 
-  private List<StudentWork> getLogicComponentStudentWorkByWorkgroupNotInPeerGroup(
-      Workgroup workgroup, PeerGroupActivity activity) throws JSONException {
-    List<Workgroup> workgroupsInPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(activity);
+  private Set<Workgroup> getWorkgroupsNotInPeerGroupAndCompletedLogicActivity(
+      PeerGroupActivity activity, Group period, List<Workgroup> workgroupsInPeerGroup)
+      throws JSONException {
     List<StudentWork> logicComponentStudentWork = getLogicComponentStudentWorkForPeriod(activity,
-        workgroup.getPeriod());
-    logicComponentStudentWork.removeIf(work -> workgroupsInPeerGroup.contains(work.getWorkgroup()));
-    return logicComponentStudentWork;
+        period);
+    Set<Workgroup> workgroupsNotInPeerGroup = new HashSet<Workgroup>();
+    for (StudentWork work : logicComponentStudentWork) {
+      if (!workgroupsInPeerGroup.contains(work.getWorkgroup())) {
+        workgroupsNotInPeerGroup.add(work.getWorkgroup());
+      }
+    }
+    return workgroupsNotInPeerGroup;
   }
 
   private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGroupActivity activity,
