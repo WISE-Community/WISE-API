@@ -121,7 +121,7 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
 
   @Test
   public void getWorkgroupsInPeerGroup_ActivityWithPeerGroups_ReturnWorkgroupList() {
-    assertEquals(1, peerGroupDao.getWorkgroupsInPeerGroup(activity1).size());
-    assertEquals(2, peerGroupDao.getWorkgroupsInPeerGroup(activity2).size());
+    assertEquals(1, peerGroupDao.getWorkgroupsInPeerGroup(activity1, run1Period1).size());
+    assertEquals(2, peerGroupDao.getWorkgroupsInPeerGroup(activity2, run1Period1).size());
   }
 }

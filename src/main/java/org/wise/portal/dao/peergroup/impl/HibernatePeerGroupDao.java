@@ -39,6 +39,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
@@ -130,13 +131,14 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity) {
+  public List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), activity.getId()));
+    predicates.add(cb.equal(workgroupImplRoot.get("period"), period.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
         peerGroupImplRoot.<Set<Workgroup>>get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));

@@ -25,6 +25,7 @@ package org.wise.portal.dao.peergroup;
 
 import java.util.List;
 import org.wise.portal.dao.SimpleDao;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.Run;
@@ -43,5 +44,5 @@ public interface PeerGroupDao<T extends PeerGroup> extends SimpleDao<T> {
 
   List<PeerGroup> getListByWorkgroup(Workgroup workgroup);
 
-  List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity);
+  List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period);
 }

@@ -65,29 +65,33 @@ public class WISEServiceTest {
 
   protected User student1, student2, student3, student4, student5;
 
-  protected StudentWork componentWorkSubmit1, componentWorkSubmit2, componentWorkNonSubmit1;
+  protected StudentWork componentWorkSubmit1, componentWorkSubmit2, componentWorkSubmit3,
+      componentWorkSubmit4, componentWorkNonSubmit1;
 
   @Before
   public void setUp() throws Exception {
-    run1Period1 = new PersistentGroup();
-    run1Period1.setId(run1Id);
-    run1Workgroup1 = createWorkgroupInPeriod(1L, run1Period1, student1);
-    run1Workgroup2 = createWorkgroupInPeriod(2L, run1Period1, student2);
-    run1Workgroup3 = createWorkgroupInPeriod(3L, run1Period1, student3);
-    run1Workgroup4 = createWorkgroupInPeriod(4L, run1Period1, student4);
-    run1Workgroup5 = createWorkgroupInPeriod(5L, run1Period1, student5);
     run1 = new RunImpl();
     run1.setId(run1Id);
+    run1Period1 = new PersistentGroup();
+    run1Period1.setId(run1Id);
+    run1Workgroup1 = createWorkgroupInPeriod(run1, 1L, run1Period1, student1);
+    run1Workgroup2 = createWorkgroupInPeriod(run1, 2L, run1Period1, student2);
+    run1Workgroup3 = createWorkgroupInPeriod(run1, 3L, run1Period1, student3);
+    run1Workgroup4 = createWorkgroupInPeriod(run1, 4L, run1Period1, student4);
+    run1Workgroup5 = createWorkgroupInPeriod(run1, 5L, run1Period1, student5);
     run1Component1 = new Component(run1, run1Node1Id, run1Component1Id);
     run1Component2 = new Component(run1, run1Node2Id, run1Component2Id);
     componentWorkSubmit1 = createComponentWork(run1Workgroup1, true);
     componentWorkSubmit2 = createComponentWork(run1Workgroup2, true);
+    componentWorkSubmit3 = createComponentWork(run1Workgroup3, true);
+    componentWorkSubmit4 = createComponentWork(run1Workgroup4, true);
     componentWorkNonSubmit1 = createComponentWork(run1Workgroup1, false);
   }
 
-  private Workgroup createWorkgroupInPeriod(Long id, Group period, User member) {
+  private Workgroup createWorkgroupInPeriod(Run run, Long id, Group period, User member) {
     Workgroup workgroup = new WorkgroupImpl();
     workgroup.setId(id);
+    workgroup.setRun(run);
     workgroup.setPeriod(period);
     Set<User> members = new HashSet<User>();
     members.add(member);
