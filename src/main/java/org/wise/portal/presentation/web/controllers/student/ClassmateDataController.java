@@ -1,4 +1,4 @@
-package org.wise.vle.web.wise5;
+package org.wise.portal.presentation.web.controllers.student;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
@@ -23,7 +22,7 @@ import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
-public class ClassmateDataController {
+public abstract class ClassmateDataController {
 
   @Autowired
   protected GroupService groupService;
@@ -40,8 +39,7 @@ public class ClassmateDataController {
   @Autowired
   protected VLEService vleService;
 
-  protected boolean isUserInRunAndPeriod(Authentication auth, Run run, Group period)
-      throws ObjectNotFoundException {
+  protected boolean isUserInRunAndPeriod(Authentication auth, Run run, Group period) {
     User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
     return runService.isUserInRunAndPeriod(user, run, period);
   }

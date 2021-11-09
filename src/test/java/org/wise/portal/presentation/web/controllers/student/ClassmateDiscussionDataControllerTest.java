@@ -18,7 +18,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
-import org.wise.vle.web.wise5.ClassmateDiscussionDataController;
 
 @RunWith(EasyMockRunner.class)
 public class ClassmateDiscussionDataControllerTest extends APIControllerTest {

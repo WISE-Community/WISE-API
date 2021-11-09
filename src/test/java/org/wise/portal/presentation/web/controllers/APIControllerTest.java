@@ -39,7 +39,7 @@ import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
-public class APIControllerTest {
+public abstract class APIControllerTest {
 
   protected final String STUDENT_FIRSTNAME = "SpongeBob";
 
@@ -107,7 +107,7 @@ public class APIControllerTest {
 
   protected Project project1, project2, project3;
 
-  protected Group run1Period1, run1Period2;
+  protected Group run1Period1, run1Period2, run2Period2, run3Period4;
 
   protected Long run1Period1Id = 1L;
 
@@ -236,7 +236,7 @@ public class APIControllerTest {
     run2.setOwner(teacher1);
     run2.setStarttime(new Date());
     HashSet<Group> run2Periods = new HashSet<Group>();
-    Group run2Period2 = new PersistentGroup();
+    run2Period2 = new PersistentGroup();
     run2Period2.setName("2");
     run2Period2.addMember(student1);
     run2Periods.add(run2Period2);
@@ -250,7 +250,7 @@ public class APIControllerTest {
     run3.setOwner(teacher2);
     run3.setStarttime(new Date());
     HashSet<Group> run3Periods = new HashSet<Group>();
-    Group run3Period4 = new PersistentGroup();
+    run3Period4 = new PersistentGroup();
     run3Period4.setName("4");
     run3Period4.addMember(student1);
     run3Periods.add(run3Period4);

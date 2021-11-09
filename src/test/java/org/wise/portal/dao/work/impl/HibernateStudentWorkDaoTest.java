@@ -27,26 +27,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.dao.work.StudentWorkDao;
-import org.wise.portal.domain.authentication.Gender;
-import org.wise.portal.domain.authentication.Schoollevel;
-import org.wise.portal.domain.group.Group;
-import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.junit.AbstractTransactionalDbTests;
 import org.wise.vle.domain.work.StudentWork;
 
 /**
@@ -54,94 +44,88 @@ import org.wise.vle.domain.work.StudentWork;
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class HibernateStudentWorkDaoTest extends AbstractTransactionalDbTests {
+public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
 
-  Run run;
-  Group period1;
-  Workgroup workgroup1, workgroup2;
+  private final String DUMMY_STUDENT_WORK1 = "Dummy Student Work 1";
+  private final String DUMMY_STUDENT_WORK2 = "Dummy Student Work 2";
+  private final String DUMMY_STUDENT_WORK3 = "Dummy Student Work 3";
 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  @Before
-  public void setUp() throws Exception {
-    super.setUp();
-    Long id = getNextAvailableProjectId();
-    String projectName = "How to be a Fry Cook";
-    Date startTime = Calendar.getInstance().getTime();
-    String runCode = "Panda123";
-    User teacher = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
-        "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
-        Schoollevel.COLLEGE, "1234567890");
-    run = createProjectAndRun(id, projectName, teacher, startTime, runCode);
-    period1 = createPeriod("Period 1");
-    Set<Group> periods = new TreeSet<Group>();
-    periods.add(period1);
-    run.setPeriods(periods);
-    User student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
-        Gender.MALE);
-    Set<User> members1 = new HashSet<User>();
-    members1.add(student1);
-    workgroup1 = createWorkgroup(members1, run, period1);
-    User student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
-    Set<User> members2 = new HashSet<User>();
-    members2.add(student2);
-    workgroup2 = createWorkgroup(members2, run, period1);
-  }
-
   @Test
   public void getStudentWorkListByParams_WithRunThatHasNoStudentWork_ShouldReturnNoStudentWork() {
-    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run, null,
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
         null, null, null, null, null, null, null);
     assertEquals(0, studentWorkList.size());
   }
 
   @Test
   public void getStudentWorkListByParams_WithRunThatHasStudentWork_ShouldReturnStudentWork() {
-    createStudentWork(workgroup1, "node1", "studentWork1");
-    createStudentWork(workgroup1, "node2", "studentWork2");
-    createStudentWork(workgroup2, "node1", "studentWork3");
-    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run, null,
+    createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
+    createStudentWork(workgroup1, NODE_ID2, COMPONENT_ID2, DUMMY_STUDENT_WORK2);
+    createStudentWork(workgroup2, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK3);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
         null, null, null, null, null, null, null);
     assertEquals(3, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork2", studentWorkList.get(1).getStudentData());
-    assertEquals("studentWork3", studentWorkList.get(2).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, studentWorkList.get(0).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK2, studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK3, studentWorkList.get(2).getStudentData());
   }
 
   @Test
   public void getStudentWorkListByParams_ByWorkgroup_ShouldReturnStudentWork() {
-    createStudentWork(workgroup1, "node1", "studentWork1");
-    createStudentWork(workgroup1, "node2", "studentWork2");
-    createStudentWork(workgroup2, "node1", "studentWork3");
-    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run, null,
+    createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
+    createStudentWork(workgroup1, NODE_ID2, COMPONENT_ID2, DUMMY_STUDENT_WORK2);
+    createStudentWork(workgroup2, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK3);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
         workgroup1, null, null, null, null, null, null);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork2", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, studentWorkList.get(0).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK2, studentWorkList.get(1).getStudentData());
   }
 
   @Test
   public void getStudentWorkListByParams_ByNodeId_ShouldReturnStudentWork() {
-    createStudentWork(workgroup1, "node1", "studentWork1");
-    createStudentWork(workgroup1, "node2", "studentWork2");
-    createStudentWork(workgroup2, "node1", "studentWork3");
-    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run, null,
-        null, null, null, "node1", null, null, null);
+    createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
+    createStudentWork(workgroup1, NODE_ID2, COMPONENT_ID2, DUMMY_STUDENT_WORK2);
+    createStudentWork(workgroup2, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK3);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
+        null, null, null, NODE_ID1, null, null, null);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork3", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, studentWorkList.get(0).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK3, studentWorkList.get(1).getStudentData());
   }
 
-  private StudentWork createStudentWork(Workgroup workgroup, String nodeId, String studentData) {
+  @Test
+  public void getStudentWork_WorkExists_ShouldReturnWork() {
+    StudentWork studentWork = createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1,
+        DUMMY_STUDENT_WORK1);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, run1Period1, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(studentWorkList.size(), 1);
+    assertEquals(studentWorkList.get(0), studentWork);
+  }
+
+  @Test
+  public void getStudentWork_WorkDoesNotExist_ShouldReturnEmptyList() {
+    createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, run1Period1, NODE_ID2,
+        COMPONENT_ID2);
+    assertEquals(studentWorkList.size(), 0);
+  }
+
+  private StudentWork createStudentWork(Workgroup workgroup, String nodeId, String componentId,
+      String studentData) {
     StudentWork studentWork = new StudentWork();
     Calendar now = Calendar.getInstance();
     Timestamp timestamp = new Timestamp(now.getTimeInMillis());
     studentWork.setClientSaveTime(timestamp);
     studentWork.setServerSaveTime(timestamp);
-    studentWork.setRun(run);
-    studentWork.setPeriod(period1);
+    studentWork.setRun(run1);
+    studentWork.setPeriod(run1Period1);
     studentWork.setNodeId(nodeId);
+    studentWork.setComponentId(componentId);
     studentWork.setWorkgroup(workgroup);
     studentWork.setIsAutoSave(false);
     studentWork.setIsSubmit(false);
@@ -149,4 +133,5 @@ public class HibernateStudentWorkDaoTest extends AbstractTransactionalDbTests {
     studentWorkDao.save(studentWork);
     return studentWork;
   }
+
 }

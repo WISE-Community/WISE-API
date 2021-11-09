@@ -1,4 +1,4 @@
-package org.wise.vle.web.wise5;
+package org.wise.portal.presentation.web.controllers.student;
 
 import java.io.IOException;
 import java.util.List;

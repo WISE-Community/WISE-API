@@ -40,11 +40,9 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   /**
    * Given an input string retrieve a corresponding record from data store.
    *
-   * @param runcode
-   *                  <code>String</code> representing the runcode of the data in the data store.
+   * @param runcode <code>String</code> representing the runcode of the data in the data store.
    * @return A new instance of a data object.
-   * @throws ObjectNotFoundException
-   *                                   if Run is not found.
+   * @throws ObjectNotFoundException if Run is not found.
    */
   Run retrieveByRunCode(String runcode) throws ObjectNotFoundException;
 
@@ -52,10 +50,8 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
    * Given a field, search type, search term retrieves a list of Runs from data store.
    *
    * @param field
-   * @param type
-   *                 comparator, ie like, =, <, >, etc
-   * @param search
-   *                 term what to compare against ie '%john%' (if type is 'like'), 'john'
+   * @param type comparator, ie like, =, <, >, etc
+   * @param search term what to compare against ie '%john%' (if type is 'like'), 'john'
    */
   List<T> retrieveByField(String field, String type, Object term);
 
@@ -63,8 +59,7 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
    * Retrieves a list of runs from the data store given a <code>User</code> who is the owner of the
    * runs.
    *
-   * @param owner
-   *                <code>User</code>
+   * @param owner <code>User</code>
    * @return a list of runs that the specified user owns
    */
   List<T> getRunListByOwner(User owner);
@@ -73,8 +68,7 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
    * Retrieves a list of runs from the data store given a <code>User</code> who is the shared-owner
    * of the runs.
    *
-   * @param owner
-   *                <code>User</code>
+   * @param owner <code>User</code>
    * @return a list of runs that the specified user owns
    */
   List<Run> getRunListBySharedOwner(User owner);

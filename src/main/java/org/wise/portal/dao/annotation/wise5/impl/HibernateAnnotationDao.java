@@ -102,6 +102,7 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
     predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+    predicates.add(cb.equal(annotationRoot.get("period"), periodRoot));
     predicates.add(cb.equal(annotationRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(annotationRoot.get("componentId"), componentId));
     cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]));
