@@ -42,6 +42,7 @@ import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.run.RunDao;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -60,7 +61,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
 
   @PersistenceContext
   private EntityManager entityManager;
-  
+
   private static final String FIND_ALL_QUERY = "from RunImpl";
 
   @Override
@@ -75,13 +76,13 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
 
   private CriteriaBuilder getCriteriaBuilder() {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
+    return session.getCriteriaBuilder();
   }
 
   public Run retrieveByRunCode(String runcode) throws ObjectNotFoundException {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class); 
-    Root<RunImpl> runRoot = cq.from(RunImpl.class); 
+    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
+    Root<RunImpl> runRoot = cq.from(RunImpl.class);
     cq.select(runRoot).where(cb.equal(runRoot.get("runcode"), runcode))
         .orderBy(cb.desc(runRoot.get("id")));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
@@ -96,7 +97,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
   @SuppressWarnings("unchecked")
   public List<Workgroup> getWorkgroupsForRun(Long runId) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class); 
+    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
     Root<WorkgroupImpl> workgroupRoot = cq.from(WorkgroupImpl.class);
     cq.select(workgroupRoot).where(cb.equal(workgroupRoot.get("run").get("id"), runId));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
@@ -107,7 +108,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
   @SuppressWarnings("unchecked")
   public List<Workgroup> getWorkgroupsForRunAndPeriod(Long runId, Long periodId) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class); 
+    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
     Root<WorkgroupImpl> workgroupRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupRoot.get("run").get("id"), runId));
@@ -122,29 +123,29 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
   @SuppressWarnings("unchecked")
   public List<Run> retrieveByField(String field, String type, Object term) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class); 
+    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
     if (type.equals(">")) {
-      cq.select(runRoot).where(cb.greaterThan(runRoot.get(field), (Date)term));
+      cq.select(runRoot).where(cb.greaterThan(runRoot.get(field), (Date) term));
     } else if (type.equals("like")) {
-      cq.select(runRoot).where(cb.like(runRoot.get(field), (String)term));
+      cq.select(runRoot).where(cb.like(runRoot.get(field), (String) term));
     }
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
     List<RunImpl> runResultList = query.getResultList();
-    return (List<Run>) (Object) runResultList; 
+    return (List<Run>) (Object) runResultList;
   }
 
   @SuppressWarnings("unchecked")
   public List<Run> getRunListByUser(User user) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class); 
+    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<PersistentGroup> periodGroupRoot = cq.from(PersistentGroup.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.isMember(userRoot.get("id"), periodGroupRoot.<Set<User>>get("members")));
-    predicates.add(cb.isMember(periodGroupRoot, runRoot.<Set<PersistentGroup>>get("periods")));
+    predicates.add(cb.isMember(userRoot.get("id"), periodGroupRoot.<Set<User>> get("members")));
+    predicates.add(cb.isMember(periodGroupRoot, runRoot.<Set<PersistentGroup>> get("periods")));
     cq.select(runRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
     List<RunImpl> runResultList = query.getResultList();
@@ -154,7 +155,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
   @SuppressWarnings("unchecked")
   public List<Run> getRunsOfProject(Long projectId) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class); 
+    CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
     cq.select(runRoot).where(cb.equal(runRoot.get("project").get("id"), projectId));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
@@ -180,9 +181,9 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
     CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    cq.select(runRoot).where(cb.and(
-        cb.equal(userRoot.get("id"), owner.getId()),
-        cb.isMember(userRoot.get("id"), runRoot.<Set<User>>get("sharedowners"))))
+    cq.select(runRoot)
+        .where(cb.and(cb.equal(userRoot.get("id"), owner.getId()),
+            cb.isMember(userRoot.get("id"), runRoot.<Set<User>> get("sharedowners"))))
         .orderBy(cb.desc(runRoot.get("id")));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
     List<RunImpl> runResultList = query.getResultList();
@@ -228,12 +229,35 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Long> cq = cb.createQuery(Long.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
-    cq.select(cb.max(runRoot.<Long>get("id")));
+    cq.select(cb.max(runRoot.<Long> get("id")));
     TypedQuery<Long> query = entityManager.createQuery(cq);
     try {
       return query.getSingleResult();
     } catch (NullPointerException e) {
       return 0;
     }
+  }
+
+  public boolean isUserInRunAndPeriod(User user, Run run, Group period) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
+    Root<UserImpl> userImplRoot = cq.from(UserImpl.class);
+    Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
+    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
+    Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
+    Root<PersistentGroup> persistentGroupRoot = cq.from(PersistentGroup.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(userImplRoot.get("id"), user.getId()));
+    predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
+    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+    predicates.add(cb.equal(runImplRoot.get("id"), workgroupImplRoot.get("run")));
+    predicates.add(cb.equal(workgroupImplRoot.get("period"), periodRoot.get("id")));
+    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
+    predicates
+        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
+    cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
+    List<WorkgroupImpl> runResultList = query.getResultList();
+    return runResultList.size() > 0;
   }
 }

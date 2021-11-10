@@ -166,7 +166,7 @@
                 <exclude>**/org/wise/portal/presentation/web/controllers/LoginControllerTest.java</exclude>
                 <exclude>**/org/wise/portal/presentation/web/controllers/RegisterStudentControllerTest.java</exclude>
                 <exclude>**/org/wise/portal/presentation/validators/teacher/*.java</exclude>
-                <exclude>**/org/wise/portal/dao/*.java</exclude>
+                <exclude>**/org/wise/portal/dao/AbstractTransactionalDaoTests.java</exclude>
                 <exclude>**/org/wise/portal/dao/authentication/impl/AllTests.java</exclude>
                 <exclude>**/org/wise/portal/dao/authentication/impl/HibernateAclEntryDaoTest.java</exclude>
                 <exclude>**/org/wise/portal/dao/authentication/impl/HibernateAclSidDaoTest.java</exclude>
@@ -208,7 +208,7 @@
             <exclude>**/org/wise/portal/presentation/web/controllers/LoginControllerTest.java</exclude>
             <exclude>**/org/wise/portal/presentation/web/controllers/RegisterStudentControllerTest.java</exclude>
             <exclude>**/org/wise/portal/presentation/validators/teacher/*.java</exclude>
-            <exclude>**/org/wise/portal/dao/*.java</exclude>
+            <exclude>**/org/wise/portal/dao/AbstractTransactionalDaoTests.java</exclude>
             <exclude>**/org/wise/portal/dao/authentication/impl/AllTests.java</exclude>
             <exclude>**/org/wise/portal/dao/authentication/impl/HibernateAclEntryDaoTest.java</exclude>
             <exclude>**/org/wise/portal/dao/authentication/impl/HibernateAclSidDaoTest.java</exclude>

@@ -41,7 +41,9 @@ import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
+import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -77,9 +79,8 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
     Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
-    List<Predicate> predicates = getStudentWorkListByParamsPredicates(cb, studentWorkRoot,
-        id, run, period, workgroup, isAutoSave, isSubmit, nodeId, componentId, componentType,
-        components);
+    List<Predicate> predicates = getStudentWorkListByParamsPredicates(cb, studentWorkRoot, id, run,
+        period, workgroup, isAutoSave, isSubmit, nodeId, componentId, componentType, components);
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
         .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
@@ -130,9 +131,29 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
           e.printStackTrace();
         }
       }
-      predicates.add(cb.or(
-          componentsPredicates.toArray(new Predicate[componentsPredicates.size()])));
+      predicates
+          .add(cb.or(componentsPredicates.toArray(new Predicate[componentsPredicates.size()])));
     }
     return predicates;
+  }
+
+  public List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
+      String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    List<Predicate> predicates = new ArrayList<>();
+    Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
+    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
+    predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
+    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+    predicates.add(cb.equal(studentWorkRoot.get("run"), runImplRoot));
+    predicates.add(cb.equal(studentWorkRoot.get("period"), periodRoot));
+    predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return (List<StudentWork>) query.getResultList();
   }
 }

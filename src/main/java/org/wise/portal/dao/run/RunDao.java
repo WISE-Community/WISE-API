@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.SimpleDao;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -39,27 +40,24 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   /**
    * Given an input string retrieve a corresponding record from data store.
    *
-   * @param runcode
-   *            <code>String</code> representing the runcode of the data in
-   *            the data store.
+   * @param runcode <code>String</code> representing the runcode of the data in the data store.
    * @return A new instance of a data object.
    * @throws ObjectNotFoundException if Run is not found.
    */
   Run retrieveByRunCode(String runcode) throws ObjectNotFoundException;
 
   /**
-   * Given a field, search type, search term
-   *  retrieves a list of Runs from data store.
+   * Given a field, search type, search term retrieves a list of Runs from data store.
    *
-   *  @param field
-   *  @param type comparator, ie like, =, <, >, etc
-   *  @param search term what to compare against ie '%john%' (if type is 'like'), 'john'
+   * @param field
+   * @param type comparator, ie like, =, <, >, etc
+   * @param search term what to compare against ie '%john%' (if type is 'like'), 'john'
    */
   List<T> retrieveByField(String field, String type, Object term);
 
   /**
-   * Retrieves a list of runs from the data store given a <code>User</code>
-   * who is the owner of the runs.
+   * Retrieves a list of runs from the data store given a <code>User</code> who is the owner of the
+   * runs.
    *
    * @param owner <code>User</code>
    * @return a list of runs that the specified user owns
@@ -67,8 +65,8 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<T> getRunListByOwner(User owner);
 
   /**
-   * Retrieves a list of runs from the data store given a <code>User</code>
-   * who is the shared-owner of the runs.
+   * Retrieves a list of runs from the data store given a <code>User</code> who is the shared-owner
+   * of the runs.
    *
    * @param owner <code>User</code>
    * @return a list of runs that the specified user owns
@@ -76,8 +74,8 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<Run> getRunListBySharedOwner(User owner);
 
   /**
-   * Retrieves a <code>List<Run></code> list of runs from the data store given a
-   * <code>User</code> who is attached to a period that is attached to the run.
+   * Retrieves a <code>List<Run></code> list of runs from the data store given a <code>User</code>
+   * who is attached to a period that is attached to the run.
    *
    * @param user
    * @return <code>List<Run></code>
@@ -85,8 +83,8 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<Run> getRunListByUser(User user);
 
   /**
-   * Retrieves a <code>List</code> of <code>Run</code> that are associated with the
-   * given <code>Long</code> project id.
+   * Retrieves a <code>List</code> of <code>Run</code> that are associated with the given
+   * <code>Long</code> project id.
    *
    * @param id
    * @return <code>List<Run></code>
@@ -94,8 +92,8 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<Run> getRunsOfProject(Long id);
 
   /**
-   * Returns a <code>List<Run></code> list of runs that were run within the
-   * given <code>String</code> period. Valid periods are "today","week" and "month".
+   * Returns a <code>List<Run></code> list of runs that were run within the given
+   * <code>String</code> period. Valid periods are "today","week" and "month".
    *
    * @param period
    * @return List<Run> - run list
@@ -103,15 +101,17 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<Run> getRunsRunWithinTimePeriod(String period);
 
   /**
-   * Returns a <code>List<Run></code> list of runs ordered descending by how
-   * active they are.
+   * Returns a <code>List<Run></code> list of runs ordered descending by how active they are.
    *
    * @return List<Run> - list of runs descending by activity
    */
   List<Run> getRunsByActivity();
 
   List<Workgroup> getWorkgroupsForRun(Long runId);
+
   List<Workgroup> getWorkgroupsForRunAndPeriod(Long runId, Long periodId);
 
   long getMaxRunId();
+
+  boolean isUserInRunAndPeriod(User user, Run run, Group period);
 }

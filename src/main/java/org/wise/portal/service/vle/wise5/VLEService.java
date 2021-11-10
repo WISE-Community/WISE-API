@@ -29,6 +29,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.achievement.Achievement;
@@ -56,6 +57,8 @@ public interface VLEService {
   List<StudentWork> getStudentWorkList(Integer id, Integer runId, Integer periodId,
       Integer workgroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
       String componentType, List<JSONObject> components, Boolean onlyGetLatest);
+
+  List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 
   List<NotebookItem> getNotebookItemsExport(Run run);
 
@@ -113,6 +116,8 @@ public interface VLEService {
   List<Annotation> getAnnotations(Integer id, Integer runId, Integer periodId,
       Integer fromWorkgroupId, Integer toWorkgroupId, String nodeId, String componentId,
       Integer studentWorkId, String localNotebookItemId, Integer notebookItemId, String type);
+
+  List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId);
 
   /**
    * Saves Annotation in the data store
@@ -200,8 +205,8 @@ public interface VLEService {
    */
   List<Notification> getNotificationsByGroupId(String groupId) throws ObjectNotFoundException;
 
-  List<Notification> getNotifications(Integer id, Long runId, Integer periodId,
-      Long toWorkgroupId, String groupId, String nodeId, String componentId);
+  List<Notification> getNotifications(Integer id, Long runId, Integer periodId, Long toWorkgroupId,
+      String groupId, String nodeId, String componentId);
 
   /**
    * Save Notification in the data store

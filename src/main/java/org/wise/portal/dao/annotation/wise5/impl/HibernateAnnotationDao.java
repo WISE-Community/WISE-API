@@ -16,7 +16,9 @@ import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.domain.group.Group;
+import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.NotebookItem;
@@ -44,10 +46,9 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<Annotation> getAnnotationsByParams(
-      Integer id, Run run, Group period, Workgroup fromWorkgroup, Workgroup toWorkgroup,
-      String nodeId, String componentId, StudentWork studentWork, String localNotebookItemId,
-      NotebookItem notebookItem, String type) {
+  public List<Annotation> getAnnotationsByParams(Integer id, Run run, Group period,
+      Workgroup fromWorkgroup, Workgroup toWorkgroup, String nodeId, String componentId,
+      StudentWork studentWork, String localNotebookItemId, NotebookItem notebookItem, String type) {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     CriteriaBuilder cb = session.getCriteriaBuilder();
     CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
@@ -86,6 +87,24 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     if (type != null) {
       predicates.add(cb.equal(annotationRoot.get("type"), type));
     }
+    cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<Annotation> query = entityManager.createQuery(cq);
+    return (List<Annotation>) (Object) query.getResultList();
+  }
+
+  public List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId) {
+    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
+    Root<Annotation> annotationRoot = cq.from(Annotation.class);
+    Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
+    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
+    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+    predicates.add(cb.equal(annotationRoot.get("period"), periodRoot));
+    predicates.add(cb.equal(annotationRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(annotationRoot.get("componentId"), componentId));
     cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<Annotation> query = entityManager.createQuery(cq);
     return (List<Annotation>) (Object) query.getResultList();
