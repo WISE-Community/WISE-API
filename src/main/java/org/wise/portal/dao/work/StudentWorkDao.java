@@ -43,5 +43,7 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
       Workgroup workgroup, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
       String componentType, List<JSONObject> components);
 
+  List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
+
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 }

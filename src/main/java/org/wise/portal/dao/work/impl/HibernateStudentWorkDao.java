@@ -137,6 +137,10 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     return predicates;
   }
 
+  public List<StudentWork> getStudentWork(Run run, String nodeId, String componentId) {
+    return getStudentWork(run, null, nodeId, componentId);
+  }
+
   public List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
       String componentId) {
     CriteriaBuilder cb = getCriteriaBuilder();
@@ -144,13 +148,15 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
     List<Predicate> predicates = new ArrayList<>();
     Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
-    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
     predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
-    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
     predicates.add(cb.equal(studentWorkRoot.get("run"), runImplRoot));
-    predicates.add(cb.equal(studentWorkRoot.get("period"), periodRoot));
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    if (period != null) {
+      Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
+      predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+      predicates.add(cb.equal(studentWorkRoot.get("period"), periodRoot));
+    }
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
         .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);

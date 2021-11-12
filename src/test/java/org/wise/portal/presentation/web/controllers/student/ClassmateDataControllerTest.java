@@ -16,17 +16,13 @@ import org.junit.runner.RunWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.presentation.web.controllers.APIControllerTest;
 
 @RunWith(EasyMockRunner.class)
-public class ClassmateDataControllerTest extends APIControllerTest {
+public class ClassmateDataControllerTest extends AbstractClassmateDataControllerTest {
 
+  private final String COMPONENT_ID2 = "component2";
   private final String DISCUSSION_TYPE = "Discussion";
   private final String OPEN_RESPONSE_TYPE = "OpenResponse";
-
-  private String componentId1 = "component1";
-  private String componentId2 = "component2";
-  private String nodeId1 = "node1";
 
   private class ClassmateDataControllerImpl extends ClassmateDataController {
   }
@@ -64,36 +60,36 @@ public class ClassmateDataControllerTest extends APIControllerTest {
   @Test
   public void isComponentType_IsNotExpectedType_ShouldReturnFalse()
       throws IOException, JSONException, ObjectNotFoundException {
-    expectComponentType(DISCUSSION_TYPE);
+    expectComponentType(NODE_ID1, COMPONENT_ID1, DISCUSSION_TYPE);
     replayAll();
-    assertFalse(controller.isComponentType(run1, nodeId1, componentId1, OPEN_RESPONSE_TYPE));
+    assertFalse(controller.isComponentType(run1, NODE_ID1, COMPONENT_ID1, OPEN_RESPONSE_TYPE));
     verifyAll();
   }
 
   @Test
   public void isComponentType_IsExpectedType_ShouldReturnTrue()
       throws IOException, JSONException, ObjectNotFoundException {
-    expectComponentType(DISCUSSION_TYPE);
+    expectComponentType(NODE_ID1, COMPONENT_ID1, DISCUSSION_TYPE);
     replayAll();
-    assertTrue(controller.isComponentType(run1, nodeId1, componentId1, DISCUSSION_TYPE));
+    assertTrue(controller.isComponentType(run1, NODE_ID1, COMPONENT_ID1, DISCUSSION_TYPE));
     verifyAll();
   }
 
   @Test
   public void getProjectComponent_InvalidComponent_ShouldReturnNull()
       throws IOException, JSONException, ObjectNotFoundException {
-    expectGetProjectContent(nodeId1, componentId1, DISCUSSION_TYPE);
+    expectGetProjectContent(NODE_ID1, COMPONENT_ID1, DISCUSSION_TYPE);
     replayAll();
-    assertNull(controller.getProjectComponent(run1, nodeId1, componentId2));
+    assertNull(controller.getProjectComponent(run1, NODE_ID1, COMPONENT_ID2));
     verifyAll();
   }
 
   @Test
   public void getProjectComponent_ValidComponent_ShouldReturnNotNull()
       throws IOException, JSONException, ObjectNotFoundException {
-    expectGetProjectContent(nodeId1, componentId1, DISCUSSION_TYPE);
+    expectGetProjectContent(NODE_ID1, COMPONENT_ID1, DISCUSSION_TYPE);
     replayAll();
-    assertNotNull(controller.getProjectComponent(run1, nodeId1, componentId1));
+    assertNotNull(controller.getProjectComponent(run1, NODE_ID1, COMPONENT_ID1));
     verifyAll();
   }
 
@@ -103,25 +99,23 @@ public class ClassmateDataControllerTest extends APIControllerTest {
     expect(runService.isUserInRunAndPeriod(student1, run, period)).andReturn(isInRun);
   }
 
-  private void expectComponentType(String componentType)
-      throws IOException, ObjectNotFoundException {
-    expect(projectService.getProjectContent(project1)).andReturn(
-        "{ \"nodes\": [ { \"id\": \"node1\", \"components\": [ { \"id\": \"component1\", \"type\": \""
-            + componentType + "\" } ] } ] }");
-  }
-
   private void expectGetProjectContent(String nodeId, String componentId, String componentType)
       throws IOException {
-    expect(projectService.getProjectContent(project1))
-        .andReturn("{ \"nodes\": [ { \"id\": \"" + nodeId + "\", \"components\": [ { \"id\": \""
-            + componentId + "\", \"type\": \"" + componentType + "\" } ] } ] }");
-  }
-
-  private void replayAll() {
-    replay(groupService, projectService, runService, userService, vleService);
-  }
-
-  private void verifyAll() {
-    verify(groupService, projectService, runService, userService, vleService);
+    String projectJSONString = new StringBuilder()
+        .append("{")
+        .append("  \"nodes\": [")
+        .append("    {")
+        .append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"components\": [")
+        .append("        {")
+        .append("          \"id\": \"" + componentId + "\",")
+        .append("          \"type\": \"" + componentType + "\"")
+        .append("        }")
+        .append("      ]")
+        .append("    }")
+        .append("  ]")
+        .append("}")
+        .toString();
+    expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 }

@@ -384,4 +384,6 @@ public interface ProjectService {
       throws JSONException;
 
   String getProjectContent(Project project) throws IOException;
+
+  void evictProjectContentCache(Long projectId);
 }

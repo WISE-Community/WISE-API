@@ -216,6 +216,8 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     Long projectId = 1L;
     expect(projectService.getById(projectId)).andReturn(project);
     expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId);
+    expectLastCall();
     String projectJSONString = "{}";
     projectService.saveProjectContentToDisk(projectJSONString, project);
     expectLastCall().andThrow(new IOException());
@@ -235,6 +237,8 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     Long projectId = 1L;
     expect(projectService.getById(projectId)).andReturn(project);
     expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId);
+    expectLastCall();
     String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
     projectService.saveProjectContentToDisk(projectJSONString, project);
     expectLastCall();
@@ -258,6 +262,8 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     project.setMetadata("{\"title\":\"Old Title\"}");
     expect(projectService.getById(projectId)).andReturn(project);
     expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId);
+    expectLastCall();
     String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
     projectService.saveProjectContentToDisk(projectJSONString, project);
     expectLastCall();
