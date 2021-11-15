@@ -157,6 +157,10 @@ public class VLEServiceImpl implements VLEService {
     }
   }
 
+  public List<StudentWork> getStudentWork(Run run, String nodeId, String componentId) {
+    return studentWorkDao.getStudentWork(run, nodeId, componentId);
+  }
+
   public List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
       String componentId) {
     return studentWorkDao.getStudentWork(run, period, nodeId, componentId);
@@ -532,6 +536,10 @@ public class VLEServiceImpl implements VLEService {
     }
     return annotationDao.getAnnotationsByParams(id, run, period, fromWorkgroup, toWorkgroup, nodeId,
         componentId, studentWork, localNotebookItemId, notebookItem, type);
+  }
+
+  public List<Annotation> getAnnotations(Run run, String nodeId, String componentId) {
+    return annotationDao.getAnnotations(run, nodeId, componentId);
   }
 
   public List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId) {

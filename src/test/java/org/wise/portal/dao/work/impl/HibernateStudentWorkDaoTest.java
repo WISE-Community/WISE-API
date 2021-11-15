@@ -24,6 +24,7 @@
 package org.wise.portal.dao.work.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -113,6 +114,21 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, run1Period1, NODE_ID2,
         COMPONENT_ID2);
     assertEquals(studentWorkList.size(), 0);
+  }
+
+  @Test
+  public void getStudentWork_FromAllPeriods_ShouldReturnWork() {
+    StudentWork studentWork1 = createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1,
+        DUMMY_STUDENT_WORK1);
+    addUserToRun(student4, run1, run1Period2);
+    Workgroup workgroup4 = addUserToRun(student4, run1, run1Period2);
+    StudentWork studentWork2 = createStudentWork(workgroup4, NODE_ID1, COMPONENT_ID1,
+        DUMMY_STUDENT_WORK1);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, null, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(studentWorkList.size(), 2);
+    assertTrue(studentWorkList.contains(studentWork1));
+    assertTrue(studentWorkList.contains(studentWork2));
   }
 
   private StudentWork createStudentWork(Workgroup workgroup, String nodeId, String componentId,

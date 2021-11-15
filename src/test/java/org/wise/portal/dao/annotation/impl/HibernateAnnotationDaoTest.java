@@ -1,6 +1,7 @@
 package org.wise.portal.dao.annotation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -36,6 +37,21 @@ public class HibernateAnnotationDaoTest extends WISEHibernateTest {
   @Test
   public void getAnnotations_AnnotationsExist_ShouldReturnAnnotations() {
     createAndRetrieveAnnotations(NODE_ID1, COMPONENT_ID1, NODE_ID1, COMPONENT_ID1, 1);
+  }
+
+  @Test
+  public void getAnnotations_FromAllPeriods_ShouldReturnAnnotations() {
+    Annotation annotation1 = createAnnotation(run1, run1Period1, teacherWorkgroup1, workgroup1,
+        COMMENT_TYPE, NODE_ID1, COMPONENT_ID1, DUMMY_ANNOTATION_DATA);
+    addUserToRun(student4, run1, run1Period2);
+    Workgroup workgroup4 = addUserToRun(student4, run1, run1Period2);
+    Annotation annotation2 = createAnnotation(run1, run1Period2, teacherWorkgroup1, workgroup4,
+        COMMENT_TYPE, NODE_ID1, COMPONENT_ID1, DUMMY_ANNOTATION_DATA);
+    List<Annotation> annotations = annotationDao.getAnnotations(run1, null, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(2, annotations.size());
+    assertTrue(annotations.contains(annotation1));
+    assertTrue(annotations.contains(annotation2));
   }
 
   private void createAndRetrieveAnnotations(String createAnnotationNodeId,

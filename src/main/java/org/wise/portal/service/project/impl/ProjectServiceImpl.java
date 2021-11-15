@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.management.timer.Timer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -48,8 +50,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.AlreadyExistsException;
@@ -920,9 +925,19 @@ public class ProjectServiceImpl implements ProjectService {
     project.setName(projectMetadataJSON.optString("title", project.getName()));
   }
 
+  @Cacheable(value = "projectContent", key = "#project.getId()")
   public String getProjectContent(Project project) throws IOException {
     String projectFilePath = appProperties.getProperty("curriculum_base_dir")
         + project.getModulePath();
     return FileUtils.readFileToString(new File(projectFilePath));
+  }
+
+  @CacheEvict(value = "projectContent", key = "#projectId", beforeInvocation = true)
+  public void evictProjectContentCache(Long projectId) {
+  }
+
+  @Scheduled(fixedRate = Timer.ONE_DAY)
+  @CacheEvict(value = "projectContent", allEntries = true)
+  public void evictAllProjectContentCache() {
   }
 }

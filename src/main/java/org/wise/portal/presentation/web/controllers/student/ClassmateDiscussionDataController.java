@@ -22,6 +22,8 @@ import org.wise.vle.domain.work.StudentWork;
 @RequestMapping("/api/classmate/discussion")
 public class ClassmateDiscussionDataController extends ClassmateDataController {
 
+  String DISCUSSION_TYPE = "Discussion";
+
   @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}")
   public List<StudentWork> getClassmateDiscussionWork(Authentication auth, @PathVariable Long runId,
       @PathVariable Long periodId, @PathVariable String nodeId, @PathVariable String componentId)
@@ -31,7 +33,7 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
       return getStudentWork(run, period, nodeId, componentId);
     } else {
-      throw new AccessDeniedException("Not permitted");
+      throw new AccessDeniedException(NOT_PERMITTED);
     }
   }
 
@@ -44,7 +46,7 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
       return getAnnotations(run, period, nodeId, componentId);
     } else {
-      throw new AccessDeniedException("Not permitted");
+      throw new AccessDeniedException(NOT_PERMITTED);
     }
   }
 
@@ -56,6 +58,6 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
 
   private boolean isDiscussionComponent(Run run, String nodeId, String componentId)
       throws IOException, JSONException, ObjectNotFoundException {
-    return isComponentType(run, nodeId, componentId, "Discussion");
+    return isComponentType(run, nodeId, componentId, DISCUSSION_TYPE);
   }
 }

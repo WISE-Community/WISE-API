@@ -22,5 +22,7 @@ public interface AnnotationDao<T extends Annotation> extends SimpleDao<T> {
       Workgroup fromWorkgroup, Workgroup toWorkgroup, String nodeId, String componentId,
       StudentWork studentWork, String localNotebookItemId, NotebookItem notebookItem, String type);
 
+  List<Annotation> getAnnotations(Run run, String nodeId, String componentId);
+
   List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId);
 }

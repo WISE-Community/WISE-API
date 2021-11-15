@@ -92,19 +92,26 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     return (List<Annotation>) (Object) query.getResultList();
   }
 
+  public List<Annotation> getAnnotations(Run run, String nodeId, String componentId) {
+    return getAnnotations(run, null, nodeId, componentId);
+  }
+
   public List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId) {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     CriteriaBuilder cb = session.getCriteriaBuilder();
     CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
     Root<Annotation> annotationRoot = cq.from(Annotation.class);
     Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
-    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
-    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
-    predicates.add(cb.equal(annotationRoot.get("period"), periodRoot));
+    predicates.add(cb.equal(annotationRoot.get("run"), runImplRoot));
     predicates.add(cb.equal(annotationRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(annotationRoot.get("componentId"), componentId));
+    if (period != null) {
+      Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
+      predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
+      predicates.add(cb.equal(annotationRoot.get("period"), periodRoot));
+    }
     cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<Annotation> query = entityManager.createQuery(cq);
     return (List<Annotation>) (Object) query.getResultList();

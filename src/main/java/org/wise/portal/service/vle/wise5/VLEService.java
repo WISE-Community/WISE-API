@@ -58,6 +58,8 @@ public interface VLEService {
       Integer workgroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
       String componentType, List<JSONObject> components, Boolean onlyGetLatest);
 
+  List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
+
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 
   List<NotebookItem> getNotebookItemsExport(Run run);
@@ -116,6 +118,8 @@ public interface VLEService {
   List<Annotation> getAnnotations(Integer id, Integer runId, Integer periodId,
       Integer fromWorkgroupId, Integer toWorkgroupId, String nodeId, String componentId,
       Integer studentWorkId, String localNotebookItemId, Integer notebookItemId, String type);
+
+  List<Annotation> getAnnotations(Run run, String nodeId, String componentId);
 
   List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId);
 

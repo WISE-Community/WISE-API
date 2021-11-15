@@ -24,6 +24,8 @@ import org.wise.vle.domain.work.StudentWork;
 
 public abstract class ClassmateDataController {
 
+  final String NOT_PERMITTED = "Not permitted";
+
   @Autowired
   protected GroupService groupService;
 
@@ -58,9 +60,17 @@ public abstract class ClassmateDataController {
     return projectContent.getComponent(nodeId, componentId);
   }
 
+  protected List<StudentWork> getStudentWork(Run run, String nodeId, String componentId) {
+    return vleService.getStudentWork(run, nodeId, componentId);
+  }
+
   protected List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
       String componentId) {
     return vleService.getStudentWork(run, period, nodeId, componentId);
+  }
+
+  protected List<Annotation> getAnnotations(Run run, String nodeId, String componentId) {
+    return vleService.getAnnotations(run, nodeId, componentId);
   }
 
   protected List<Annotation> getAnnotations(Run run, Group period, String nodeId,
