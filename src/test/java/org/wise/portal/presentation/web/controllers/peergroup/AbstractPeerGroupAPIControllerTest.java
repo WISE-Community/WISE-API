@@ -2,6 +2,9 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 
 import static org.easymock.EasyMock.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.easymock.Mock;
 import org.junit.Before;
 import org.wise.portal.domain.peergroup.PeerGroup;
@@ -22,15 +25,15 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   @Mock
   protected PeerGroupActivityService peerGroupActivityService;
 
-  protected String run1Node1Id = "run1Node1";
-
-  protected String run1Component1Id = "run1Component1";
-
   protected PeerGroupActivity peerGroupActivity;
 
-  protected PeerGroup peerGroup1;
+  protected PeerGroup peerGroup1, peerGroup2;
 
   protected Long peerGroup1Id = 1L;
+
+  protected Long peerGroup2Id = 2L;
+
+  protected List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
 
   @Before
   public void setUp() {
@@ -38,6 +41,10 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
     peerGroupActivity = new PeerGroupActivityImpl();
     peerGroup1 = new PeerGroupImpl();
     peerGroup1.addMember(workgroup1);
+    peerGroups.add(peerGroup1);
+    peerGroup2 = new PeerGroupImpl();
+    peerGroup2.addMember(workgroup2);
+    peerGroups.add(peerGroup2);
   }
 
   protected void expectPeerGroupActivityFound() throws PeerGroupActivityNotFoundException {

@@ -23,7 +23,9 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
@@ -62,6 +64,8 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
 
   PeerGroup peerGroup1, peerGroup2, peerGroup3;
 
+  List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
+
   public PeerGroupServiceTestHelper(Run run, Component component) throws Exception {
     super.setUp();
     activity = new PeerGroupActivityImpl(run, component.nodeId,
@@ -69,6 +73,7 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
     Set<Workgroup> members = new HashSet<Workgroup>();
     members.add(run1Workgroup1);
     members.add(run1Workgroup2);
-    peerGroup1 = new PeerGroupImpl(activity, members);
+    peerGroup1 = new PeerGroupImpl(activity, run1Period1, members);
+    peerGroups.add(peerGroup1);
   }
 }

@@ -97,6 +97,12 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
   }
 
   @Test
+  public void getListByActivity_ReturnListByActivity() {
+    assertEquals(1, peerGroupDao.getListByActivity(activity1).size());
+    assertEquals(1, peerGroupDao.getListByActivity(activity2).size());
+  }
+
+  @Test
   public void getListByRun_ReturnListByRun() {
     assertEquals(2, peerGroupDao.getListByRun(run1).size());
     assertEquals(0, peerGroupDao.getListByRun(run2).size());

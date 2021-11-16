@@ -227,6 +227,7 @@ create table peer_group_activities (
 create table peer_groups (
     id bigint not null auto_increment,
     peerGroupActivityId bigint not null,
+    periodId bigint,
     OPTLOCK integer,
     constraint peerGroupActivityIdFK foreign key (peerGroupActivityId) references peer_group_activities (id),
     primary key (id)

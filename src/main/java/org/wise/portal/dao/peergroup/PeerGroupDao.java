@@ -38,6 +38,8 @@ public interface PeerGroupDao<T extends PeerGroup> extends SimpleDao<T> {
 
   PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity);
 
+  List<PeerGroup> getListByActivity(PeerGroupActivity activity);
+
   List<PeerGroup> getListByRun(Run run);
 
   List<PeerGroup> getListByComponent(Run run, String nodeId, String componentId);

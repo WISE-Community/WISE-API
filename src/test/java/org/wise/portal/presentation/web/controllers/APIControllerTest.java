@@ -111,6 +111,10 @@ public class APIControllerTest {
 
   protected Group run1Period1, run1Period2;
 
+  protected String run1Node1Id = "run1Node1";
+
+  protected String run1Component1Id = "run1Component1";
+
   @Mock
   protected HttpServletRequest request;
 
