@@ -3,7 +3,9 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.TestSubject;
@@ -19,10 +21,10 @@ import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundExcept
  * @author Hiroki Terashima
  */
 @RunWith(EasyMockRunner.class)
-public class TeacherPeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTest {
+public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIControllerTest {
 
   @TestSubject
-  private TeacherPeerGroupAPIController controller = new TeacherPeerGroupAPIController();
+  private TeacherPeerGroupInfoAPIController controller = new TeacherPeerGroupInfoAPIController();
 
   @Before
   public void setUp() {
@@ -31,11 +33,11 @@ public class TeacherPeerGroupAPIControllerTest extends AbstractPeerGroupAPIContr
   }
 
   @Test
-  public void getPeerGroups_NoPermissions_AccessDenied() throws Exception {
+  public void getPeerGroupsInfo_NoPermissions_AccessDenied() throws Exception {
     expectTeacherHasAccessToRun(false);
     replayAll();
     try {
-      controller.getPeerGroups(runId1, run1Node1Id, run1Component1Id, teacherAuth);
+      controller.getPeerGroupsInfo(runId1, run1Node1Id, run1Component1Id, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -43,32 +45,38 @@ public class TeacherPeerGroupAPIControllerTest extends AbstractPeerGroupAPIContr
   }
 
   @Test
-  public void getPeerGroups_PeerGroupActivityNotFound_ThrowException() throws Exception {
+  public void getPeerGroupsInfo_PeerGroupActivityNotFound_ThrowException() throws Exception {
     expectTeacherHasAccessToRun(true);
     expectPeerGroupActivityNotFound();
     replayAll();
     try {
-      controller.getPeerGroups(runId1, run1Node1Id, run1Component1Id, teacherAuth);
+      controller.getPeerGroupsInfo(runId1, run1Node1Id, run1Component1Id, teacherAuth);
       fail("Expected PeerGroupActivityNotFoundException, but was not thrown");
     } catch (PeerGroupActivityNotFoundException e) {
     }
     verifyAll();
   }
 
+  @SuppressWarnings("unchecked")
   @Test
-  public void getPeerGroups_ActivityFound_ReturnList() throws Exception {
+  public void getPeerGroupsInfo_ActivityFound_ReturnInfo() throws Exception {
     expectTeacherHasAccessToRun(true);
     expectPeerGroupActivityFound();
-    expectPeerGroups();
+    expectPeerGroupInfo();
     replayAll();
-    List<PeerGroup> peerGroups =
-        controller.getPeerGroups(runId1, run1Node1Id, run1Component1Id, teacherAuth);
-    assertEquals(2, peerGroups.size());
+    Map<String, Object> peerGroupsInfo = controller.getPeerGroupsInfo(runId1, run1Node1Id,
+        run1Component1Id, teacherAuth);
+    assertEquals(2, peerGroupsInfo.size());
+    assertEquals(2, ((List<PeerGroup>) peerGroupsInfo.get("peerGroups")).size());
+    assertEquals(0, ((List<PeerGroup>) peerGroupsInfo.get("workgroupsNotInPeerGroups")).size());
     verifyAll();
   }
 
-  private void expectPeerGroups() {
-    expect(peerGroupService.getPeerGroups(peerGroupActivity)).andReturn(peerGroups);
+  private void expectPeerGroupInfo() {
+    Map<String, Object> peerGroupInfo = new HashMap<String, Object>();
+    peerGroupInfo.put("peerGroups", peerGroups);
+    peerGroupInfo.put("workgroupsNotInPeerGroups", workgroupsNotInPeerGroups);
+    expect(peerGroupInfoService.getPeerGroupInfo(peerGroupActivity)).andReturn(peerGroupInfo);
   }
 
   private void expectRunExists() {

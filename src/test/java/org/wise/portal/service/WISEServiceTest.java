@@ -53,6 +53,8 @@ public class WISEServiceTest {
   protected Workgroup run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4,
       run1Workgroup5;
 
+  protected List<Workgroup> run1Workgroups = new ArrayList<Workgroup>();
+
   protected Component run1Component1, run1Component2;
 
   protected String run1Node1Id = "run1Node1";
@@ -97,6 +99,7 @@ public class WISEServiceTest {
     members.add(member);
     workgroup.setMembers(members);
     workgroup.getGroup().setName("Group " + id);
+    run1Workgroups.add(workgroup);
     return workgroup;
   }
 

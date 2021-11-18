@@ -11,8 +11,10 @@ import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
+import org.wise.portal.service.peergroup.PeerGroupInfoService;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
@@ -25,6 +27,9 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   @Mock
   protected PeerGroupActivityService peerGroupActivityService;
 
+  @Mock
+  protected PeerGroupInfoService peerGroupInfoService;
+
   protected PeerGroupActivity peerGroupActivity;
 
   protected PeerGroup peerGroup1, peerGroup2;
@@ -34,6 +39,8 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   protected Long peerGroup2Id = 2L;
 
   protected List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
+
+  protected List<Workgroup> workgroupsNotInPeerGroups = new ArrayList<Workgroup>();
 
   @Before
   public void setUp() {
@@ -63,10 +70,12 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   }
 
   protected void verifyAll() {
-    verify(peerGroupActivityService, peerGroupService, runService, userService, workgroupService);
+    verify(peerGroupActivityService, peerGroupInfoService, peerGroupService, runService,
+       userService, workgroupService);
   }
 
   protected void replayAll() {
-    replay(peerGroupActivityService, peerGroupService, runService, userService, workgroupService);
+    replay(peerGroupActivityService, peerGroupInfoService, peerGroupService, runService,
+        userService, workgroupService);
   }
 }
