@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,26 +50,37 @@ import org.wise.vle.domain.work.StudentWork;
 @RunWith(SpringRunner.class)
 public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
 
+  private final String DUMMY_STUDENT_WORK1 = "Dummy Student Work 1";
+  private final String DUMMY_STUDENT_WORK2 = "Dummy Student Work 2";
+  private final String DUMMY_STUDENT_WORK3 = "Dummy Student Work 3";
+  private final String DUMMY_STUDENT_WORK4 = "Dummy Student Work 4";
+
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
-    createStudentWork(workgroup1, "node1", "component1", "studentWork1");
-    createStudentWork(workgroup1, "node2", "component2", "studentWork2");
-    createStudentWork(workgroup2, "node1", "component1", "studentWork3");
-    createStudentWork(workgroup3, "node1", "component1", "studentWork4");
+    createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
+    createStudentWork(workgroup1, NODE_ID2, COMPONENT_ID2, DUMMY_STUDENT_WORK2);
+    createStudentWork(workgroup2, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK3);
+    createStudentWork(workgroup3, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK4);
   }
 
   @Test
   public void getStudentWorkListByParams_ByRun_ShouldReturnStudentWorkByRun() {
-    assertEquals(3, studentWorkDao.getStudentWorkListByParams(null, run1, null, null, null, null,
-        null, null, null, null).size());
-    assertEquals(1, studentWorkDao.getStudentWorkListByParams(null, run2, null, null, null, null,
-        null, null, null, null).size());
-    assertEquals(0, studentWorkDao.getStudentWorkListByParams(null, run3, null, null, null, null,
-        null, null, null, null).size());
+    assertEquals(3,
+        studentWorkDao
+            .getStudentWorkListByParams(null, run1, null, null, null, null, null, null, null, null)
+            .size());
+    assertEquals(1,
+        studentWorkDao
+            .getStudentWorkListByParams(null, run2, null, null, null, null, null, null, null, null)
+            .size());
+    assertEquals(0,
+        studentWorkDao
+            .getStudentWorkListByParams(null, run3, null, null, null, null, null, null, null, null)
+            .size());
   }
 
   @Test
@@ -77,34 +88,51 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
         workgroup1, null, null, null, null, null, null);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork2", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK2, getStudentData(studentWorkList, 1));
   }
 
   @Test
   public void getStudentWorkListByParams_ByNodeId_ShouldReturnStudentWork() {
     List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
-        null, null, null, "node1", null, null, null);
+        null, null, null, NODE_ID1, null, null, null);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork3", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
+  }
+
+  @Test
+  public void getStudentWorkListByParams_WithRunThatHasNoStudentWork_ShouldReturnNoStudentWork() {
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run3, null,
+        null, null, null, null, null, null, null);
+    assertEquals(0, studentWorkList.size());
+  }
+
+  @Test
+  public void getStudentWorkListByParams_WithRunThatHasStudentWork_ShouldReturnStudentWork() {
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWorkListByParams(null, run1, null,
+        null, null, null, null, null, null, null);
+    assertEquals(3, studentWorkList.size());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK2, getStudentData(studentWorkList, 1));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 2));
   }
 
   @Test
   public void getWorkForComponentByPeriod_ShouldReturnStudentWork() {
     List<StudentWork> studentWorkList = studentWorkDao.getWorkForComponentByPeriod(run1,
-        run1Period1, "node1", "component1");
+        run1Period1, NODE_ID1, COMPONENT_ID1);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork3", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
   }
 
   @Test
   public void getWorkForComponentByWorkgroup_ShouldReturnStudentWork() {
     List<StudentWork> studentWorkList = studentWorkDao.getWorkForComponentByWorkgroup(workgroup1,
-        "node1", "component1");
+        NODE_ID1, COMPONENT_ID1);
     assertEquals(1, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
   }
 
   @Test
@@ -113,10 +141,35 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     workgroups.add(workgroup1);
     workgroups.add(workgroup2);
     List<StudentWork> studentWorkList = studentWorkDao.getWorkForComponentByWorkgroups(workgroups,
-        "node1", "component1");
+        NODE_ID1, COMPONENT_ID1);
     assertEquals(2, studentWorkList.size());
-    assertEquals("studentWork1", studentWorkList.get(0).getStudentData());
-    assertEquals("studentWork3", studentWorkList.get(1).getStudentData());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
+  }
+
+  @Test
+  public void getStudentWork_WorkExists_ShouldReturnWork() {
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, run1Period1, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(2, studentWorkList.size());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
+  }
+
+  @Test
+  public void getStudentWork_WorkDoesNotExist_ShouldReturnEmptyList() {
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, run1Period1, NODE_ID1,
+        COMPONENT_ID2);
+    assertEquals(0, studentWorkList.size());
+  }
+
+  @Test
+  public void getStudentWork_FromAllPeriods_ShouldReturnWork() {
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(run1, null, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(2, studentWorkList.size());
+    assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
+    assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
   }
 
   private StudentWork createStudentWork(Workgroup workgroup, String nodeId, String componentId,
@@ -136,5 +189,9 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     studentWork.setStudentData(studentData);
     studentWorkDao.save(studentWork);
     return studentWork;
+  }
+
+  private String getStudentData(List<StudentWork> studentWorkList, Integer index) {
+    return studentWorkList.get(index).getStudentData();
   }
 }

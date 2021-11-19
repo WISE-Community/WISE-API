@@ -55,5 +55,3 @@ public class ProjectContent {
     return node != null ? node.getComponent(componentId) : null;
   }
 }
-
-

@@ -29,9 +29,8 @@ import org.json.JSONObject;
 import lombok.Getter;
 
 /**
- * ProjectComponent defines activities that students work on,
- * like MultipleChoice, OpenResponse, etc.
- *
+ * ProjectComponent defines activities that students work on, like MultipleChoice, OpenResponse,
+ * etc.
  * @author Hiroki Terashima
  */
 public class ProjectComponent {

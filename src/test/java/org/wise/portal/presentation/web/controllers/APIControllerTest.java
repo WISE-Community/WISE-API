@@ -39,7 +39,7 @@ import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
-public class APIControllerTest {
+public abstract class APIControllerTest {
 
   protected final String STUDENT_FIRSTNAME = "SpongeBob";
 
@@ -109,7 +109,11 @@ public class APIControllerTest {
 
   protected Project project1, project2, project3;
 
-  protected Group run1Period1, run1Period2;
+  protected Group run1Period1, run1Period2, run2Period2, run3Period4;
+
+  protected Long run1Period1Id = 1L;
+
+  protected Long run1Period2Id = 2L;
 
   @Mock
   protected HttpServletRequest request;
@@ -196,10 +200,12 @@ public class APIControllerTest {
     run1.setRuncode(RUN1_RUNCODE);
     HashSet<Group> run1Periods = new HashSet<Group>();
     run1Period1 = new PersistentGroup();
+    run1Period1.setId(run1Period1Id);
     run1Period1.setName(RUN1_PERIOD1_NAME);
     run1Period1.addMember(student1);
     run1Periods.add(run1Period1);
     run1Period2 = new PersistentGroup();
+    run1Period2.setId(run1Period2Id);
     run1Period2.setName(RUN1_PERIOD2_NAME);
     run1Periods.add(run1Period2);
     run1.setPeriods(run1Periods);
@@ -233,7 +239,7 @@ public class APIControllerTest {
     run2.setOwner(teacher1);
     run2.setStarttime(new Date());
     HashSet<Group> run2Periods = new HashSet<Group>();
-    Group run2Period2 = new PersistentGroup();
+    run2Period2 = new PersistentGroup();
     run2Period2.setName("2");
     run2Period2.addMember(student1);
     run2Periods.add(run2Period2);
@@ -247,7 +253,7 @@ public class APIControllerTest {
     run3.setOwner(teacher2);
     run3.setStarttime(new Date());
     HashSet<Group> run3Periods = new HashSet<Group>();
-    Group run3Period4 = new PersistentGroup();
+    run3Period4 = new PersistentGroup();
     run3Period4.setName("4");
     run3Period4.addMember(student1);
     run3Periods.add(run3Period4);

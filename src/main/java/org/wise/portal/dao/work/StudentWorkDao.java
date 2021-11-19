@@ -35,6 +35,7 @@ import java.util.Set;
 
 /**
  * Domain Access Object for StudentWork
+ * 
  * @author Hiroki Terashima
  */
 public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
@@ -52,4 +53,7 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
   List<StudentWork> getWorkForComponentByPeriod(Run run, Group period, String nodeId,
       String componentId);
 
+  List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
+
+  List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 }
