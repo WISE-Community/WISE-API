@@ -59,7 +59,7 @@ public class HibernateConfig {
   @Value("${spring.jpa.hibernate.ddl-auto:none}")
   private String hibernateDDLAuto;
 
-  @Bean
+  @Bean(name = {"sessionFactory", "entityManagerFactory"})
   public LocalSessionFactoryBean sessionFactory() {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
     sessionFactory.setDataSource(dataSource);
@@ -68,7 +68,7 @@ public class HibernateConfig {
     return sessionFactory;
   }
 
-  @Bean
+  @Bean(name = {"hibernateTransactionManager", "transactionManager"})
   public PlatformTransactionManager hibernateTransactionManager() {
     HibernateTransactionManager transactionManager = new HibernateTransactionManager();
     transactionManager.setSessionFactory(sessionFactory().getObject());
