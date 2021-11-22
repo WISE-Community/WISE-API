@@ -71,6 +71,7 @@ public class PeerGroupImpl implements PeerGroup {
   @ManyToOne(targetEntity = PeerGroupActivityImpl.class, cascade = { CascadeType.PERSIST },
       fetch = FetchType.LAZY)
   @JoinColumn(name = "peerGroupActivityId", nullable = false)
+  @JsonIgnore
   private PeerGroupActivity peerGroupActivity;
 
   @ManyToMany(targetEntity = WorkgroupImpl.class)
