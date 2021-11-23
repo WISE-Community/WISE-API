@@ -22,6 +22,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
@@ -46,6 +47,7 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
   protected PeerGroup peerGroup2;
   protected PeerGroupActivity peerGroupActivity;
   protected StudentUserDetails student3UserDetails;
+  protected Group period1;
   protected User student3;
   protected Workgroup workgroup3;
 
@@ -70,7 +72,7 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
   private void setUpPeerGroup1(PeerGroupActivity peerGroupActivity) {
     Set<Workgroup> peerGroup1Members = new HashSet<Workgroup>(
         Arrays.asList(workgroup1, workgroup2));
-    peerGroup1 = new PeerGroupImpl(peerGroupActivity, peerGroup1Members);
+    peerGroup1 = new PeerGroupImpl(peerGroupActivity, period1, peerGroup1Members);
   }
 
   private void createWorkgroup3() {
@@ -85,7 +87,7 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
 
   private void setUpPeerGroup2(PeerGroupActivity peerGroupActivity) {
     Set<Workgroup> peerGroup2Members = new HashSet<Workgroup>(Arrays.asList(workgroup3));
-    peerGroup2 = new PeerGroupImpl(peerGroupActivity, peerGroup2Members);
+    peerGroup2 = new PeerGroupImpl(peerGroupActivity, period1, peerGroup2Members);
   }
 
   private JSONObject createComponentJSONObject(String componentId, String componentType,

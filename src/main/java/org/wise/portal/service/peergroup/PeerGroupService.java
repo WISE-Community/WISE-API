@@ -60,6 +60,13 @@ public interface PeerGroupService {
       throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException;
 
   /**
+   * Gets all the PeerGroups for the specified PeerGroupActivity
+   * @param activity PeerGroupActivity the PeerGroups works on
+   * @return PeerGroups that work on the specified activity
+   */
+  List<PeerGroup> getPeerGroups(PeerGroupActivity activity);
+
+  /**
    * Gets StudentWork for the PeerGroup's activity from all the members in the PeerGroup
    * @param peerGroup group of workgroups in the PeerGroup
    * @return List of StudentWork by members in the PeerGroup for the activity

@@ -84,12 +84,15 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
 
   PeerGroup peerGroup;
 
+  List<PeerGroup> peerGroups;
+
   @Before
   public void setUp() throws Exception {
     super.setUp();
     PeerGroupServiceTestHelper testHelper = new PeerGroupServiceTestHelper(run1, run1Component2);
     activity = testHelper.activity;
     peerGroup = testHelper.peerGroup1;
+    peerGroups = testHelper.peerGroups;
   }
 
   @Test
@@ -176,7 +179,15 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   public void getStudentWork_PeerGroupExist_ReturnStudentWorkList() {
     expectGetWorkForComponentByWorkgroups();
     replayAll();
-    assertEquals(service.getStudentWork(peerGroup).size(), 3);
+    assertEquals(3, service.getStudentWork(peerGroup).size());
+    verifyAll();
+  }
+
+  @Test
+  public void getPeerGroups_ReturnPeerGroupList() {
+    expectGetPeerGroupsByActivity();
+    replayAll();
+    assertEquals(1, service.getPeerGroups(activity).size());
     verifyAll();
   }
 
@@ -194,6 +205,10 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     assertEquals(service.getStudentWork(peerGroup, run1Node1Id, run1Component1Id).size(), 2);
     assertEquals(service.getStudentWork(peerGroup, run1Node2Id, run1Component2Id).size(), 0);
     verifyAll();
+  }
+
+  private void expectGetPeerGroupsByActivity() {
+    expect(peerGroupDao.getListByActivity(activity)).andReturn(peerGroups);
   }
 
   private void expectAllThresholdsSatisfied() throws JSONException {

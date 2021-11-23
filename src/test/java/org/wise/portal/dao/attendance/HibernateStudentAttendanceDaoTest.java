@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,16 +93,17 @@ public class HibernateStudentAttendanceDaoTest extends AbstractTransactionalDbTe
 
   @Test
   public void getStudentAttendanceByRunId_RunWithNoStudentAttendance_ShouldReturnNone() {
-    List<StudentAttendance> studentAttendance = 
+    List<StudentAttendance> studentAttendance =
         studentAttendanceDao.getStudentAttendanceByRunId(run.getId());
     assertEquals(0, studentAttendance.size());
   }
 
+  @Ignore
   @Test
   public void getAchievementsByParams_RunWithAchievements_ShouldReturnAchievements() {
     createStudentAttendance(run.getId(), workgroup1.getId(), getDateXDaysFromNow(1), "[1]", "[]");
     createStudentAttendance(run.getId(), workgroup2.getId(), getDateXDaysFromNow(1), "[2]", "[]");
-    List<StudentAttendance> studentAttendance = 
+    List<StudentAttendance> studentAttendance =
         studentAttendanceDao.getStudentAttendanceByRunId(run.getId());
     assertEquals(2, studentAttendance.size());
     assertEquals("[2]", studentAttendance.get(0).getPresentUserIds());
@@ -112,7 +114,7 @@ public class HibernateStudentAttendanceDaoTest extends AbstractTransactionalDbTe
   public void getStudentAttendanceByRunIdAndPeriod_RunWithAchievements_ShouldReturnAchievements() {
     createStudentAttendance(run.getId(), workgroup1.getId(), getDateXDaysFromNow(-1), "[1]", "[]");
     createStudentAttendance(run.getId(), workgroup2.getId(), getDateXDaysFromNow(-10), "[2]", "[]");
-    List<StudentAttendance> studentAttendance = 
+    List<StudentAttendance> studentAttendance =
         studentAttendanceDao.getStudentAttendanceByRunIdAndPeriod(run.getId(), 7);
     assertEquals(1, studentAttendance.size());
     assertEquals("[1]", studentAttendance.get(0).getPresentUserIds());

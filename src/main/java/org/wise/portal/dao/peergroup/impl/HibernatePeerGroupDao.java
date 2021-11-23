@@ -84,6 +84,12 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     return (PeerGroup) query.getResultStream().findFirst().orElse(null);
   }
 
+
+  @Override
+  public List<PeerGroup> getListByActivity(PeerGroupActivity activity) {
+    return getListByComponent(activity.getRun(), activity.getNodeId(), activity.getComponentId());
+  }
+
   @Override
   public List<PeerGroup> getListByRun(Run run) {
     return getListByComponent(run, null, null);

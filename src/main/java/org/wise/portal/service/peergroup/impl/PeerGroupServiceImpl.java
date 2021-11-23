@@ -84,7 +84,8 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     } else if (!peerGroupThresholdService.canCreatePeerGroup(activity, workgroup.getPeriod())) {
       throw new PeerGroupCreationException();
     } else {
-      PeerGroup peerGroup = new PeerGroupImpl(activity, getPeerGroupMembers(workgroup, activity));
+      PeerGroup peerGroup = new PeerGroupImpl(activity, workgroup.getPeriod(),
+          getPeerGroupMembers(workgroup, activity));
       this.peerGroupDao.save(peerGroup);
       return peerGroup;
     }
@@ -178,6 +179,11 @@ public class PeerGroupServiceImpl implements PeerGroupService {
       }
     }
     return studentWorkUniqueWorkgroups;
+  }
+
+  @Override
+  public List<PeerGroup> getPeerGroups(PeerGroupActivity activity) {
+    return peerGroupDao.getListByActivity(activity);
   }
 
   @Override
