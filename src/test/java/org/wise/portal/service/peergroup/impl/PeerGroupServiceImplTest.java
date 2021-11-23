@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -44,6 +45,7 @@ import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.WISEServiceTest;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
@@ -99,8 +101,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_NoWorkForLogicComponent_ThrowException()
-      throws Exception {
+  public void getPeerGroup_NoWorkForLogicComponent_ThrowException() throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList());
     replayAll();
@@ -113,8 +114,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_CompletionThresholdNotSatisfied_ThrowException()
-      throws Exception {
+  public void getPeerGroup_CompletionThresholdNotSatisfied_ThrowException() throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
     expectCompletionThresholdSatisfied(false);
@@ -128,8 +128,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   @Test
-  public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ThrowException()
-      throws Exception {
+  public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ThrowException() throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
     expectCompletionThresholdSatisfied(true);
@@ -181,6 +180,22 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     verifyAll();
   }
 
+  @Test
+  public void getStudentWork_SpecificNodeIdComponentId_ReturnStudentWorkList() {
+    StudentWork studentWork1 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
+        true);
+    StudentWork studentWork2 = createComponentWork(run1Workgroup2, run1Node1Id, run1Component1Id,
+        true);
+    expectGetWorkForComponentByWorkgroups(peerGroup.getMembers(), run1Node1Id, run1Component1Id,
+        createStudentWorkList(studentWork1, studentWork2));
+    expectGetWorkForComponentByWorkgroups(peerGroup.getMembers(), run1Node2Id, run1Component2Id,
+        createStudentWorkList());
+    replayAll();
+    assertEquals(service.getStudentWork(peerGroup, run1Node1Id, run1Component1Id).size(), 2);
+    assertEquals(service.getStudentWork(peerGroup, run1Node2Id, run1Component2Id).size(), 0);
+    verifyAll();
+  }
+
   private void expectAllThresholdsSatisfied() throws JSONException {
     expectPeerGroupFromDB(null);
     expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
@@ -191,9 +206,15 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   private void expectGetWorkForComponentByWorkgroups() {
     expect(studentWorkDao.getWorkForComponentByWorkgroups(peerGroup.getMembers(),
         peerGroup.getPeerGroupActivity().getNodeId(),
-        peerGroup.getPeerGroupActivity().getComponentId())).andReturn(
-        createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-        componentWorkNonSubmit1));
+        peerGroup.getPeerGroupActivity().getComponentId()))
+            .andReturn(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
+                componentWorkNonSubmit1));
+  }
+
+  private void expectGetWorkForComponentByWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId, List<StudentWork> studentWorkList) {
+    expect(studentWorkDao.getWorkForComponentByWorkgroups(workgroups, nodeId, componentId))
+        .andReturn(studentWorkList);
   }
 
   private void expectWorkgroupsInPeerGroup(List<Object> asList) {
@@ -226,13 +247,13 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   private void expectIsLastOnesLeftToPair() {
-    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId())).andReturn(
-        Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3));
+    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId()))
+        .andReturn(Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3));
   }
 
   private void expectIsMultiplePairingsLeft() {
-    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId())).andReturn(
-        Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4));
+    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId()))
+        .andReturn(Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4));
   }
 
   private void verifyAll() {

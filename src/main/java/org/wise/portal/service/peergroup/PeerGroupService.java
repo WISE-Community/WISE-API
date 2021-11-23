@@ -65,4 +65,6 @@ public interface PeerGroupService {
    * @return List of StudentWork by members in the PeerGroup for the activity
    */
   public List<StudentWork> getStudentWork(PeerGroup peerGroup);
+
+  public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
 }
