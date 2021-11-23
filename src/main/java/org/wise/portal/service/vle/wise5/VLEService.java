@@ -102,13 +102,13 @@ public interface VLEService {
   /**
    * @return List of Achievements with specified fields. If none matches, return an empty list
    */
-  List<Achievement> getAchievements(Integer id, Integer runId, Integer workgroupId,
-      String achievementId, String type);
+  List<Achievement> getAchievements(Integer id, Run run, Workgroup workgroup, String achievementId,
+      String type);
 
   /**
    * Saves the specified achievements with specified fields and returns the saved result
    */
-  Achievement saveAchievement(Integer id, Integer runId, Integer workgroupId, String achievementId,
+  Achievement saveAchievement(Integer id, Run run, Workgroup workgroup, String achievementId,
       String type, String data);
 
   /**
@@ -152,18 +152,16 @@ public interface VLEService {
   /**
    * Returns a list of notebook items that belong in a specified group.
    *
-   * @param runId
-   *                    id of run
-   * @param groupName
-   *                    name of group
+   * @param run Run containing the group
+   * @param groupName name of group
    * @return list of notebook items that belong in the group
    */
-  List<NotebookItem> getNotebookItemsByGroup(Integer runId, String groupName);
+  List<NotebookItem> getNotebookItemsByGroup(Run run, String groupName);
 
   /**
    * Saves NotebookItem in the data store
    */
-  NotebookItem saveNotebookItem(Integer id, Integer runId, Integer periodId, Integer workgroupId,
+  NotebookItem saveNotebookItem(Integer id, Run run, Integer periodId, Workgroup workgroup,
       String nodeId, String componentId, Integer studentWorkId, Integer studentAssetId,
       String localNotebookItemId, String type, String title, String content, String groups,
       String clientSaveTime, String clientDeleteTime);
@@ -193,12 +191,12 @@ public interface VLEService {
   /**
    * Copies NotebookItem in the data store
    *
-   * @param workgroupId
+   * @param workgroup Workgroup that requests to copy the item
    * @param parentNotebookItemId
    * @param clientSaveTime
    * @return
    */
-  NotebookItem copyNotebookItem(Integer workgroupId, Integer parentNotebookItemId,
+  NotebookItem copyNotebookItem(Workgroup workgroup, Integer parentNotebookItemId,
       String clientSaveTime);
 
   /**
@@ -209,7 +207,7 @@ public interface VLEService {
    */
   List<Notification> getNotificationsByGroupId(String groupId) throws ObjectNotFoundException;
 
-  List<Notification> getNotifications(Integer id, Long runId, Integer periodId, Long toWorkgroupId,
+  List<Notification> getNotifications(Integer id, Run run, Integer periodId, Workgroup toWorkgroup,
       String groupId, String nodeId, String componentId);
 
   /**

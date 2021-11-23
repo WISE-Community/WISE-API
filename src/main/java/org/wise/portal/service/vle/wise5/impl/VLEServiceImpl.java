@@ -413,29 +413,13 @@ public class VLEServiceImpl implements VLEService {
     return event;
   }
 
-  public List<Achievement> getAchievements(Integer id, Integer runId, Integer workgroupId,
+  public List<Achievement> getAchievements(Integer id, Run run, Workgroup workgroup,
       String achievementId, String type) {
-    Run run = null;
-    if (runId != null) {
-      try {
-        run = runService.retrieveById(new Long(runId));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-    Workgroup workgroup = null;
-    if (workgroupId != null) {
-      try {
-        workgroup = workgroupService.retrieveById(new Long(workgroupId));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
     return achievementDao.getAchievementsByParams(id, run, workgroup, achievementId, type);
   }
 
-  public Achievement saveAchievement(Integer id, Integer runId, Integer workgroupId,
-      String achievementId, String type, String data) {
+  public Achievement saveAchievement(Integer id, Run run, Workgroup workgroup, String achievementId,
+      String type, String data) {
     Achievement achievement;
     if (id != null) {
       // if the id is passed in, the client is requesting an update, so fetch the Achievement from
@@ -451,20 +435,8 @@ public class VLEServiceImpl implements VLEService {
       // the id was not passed in, so we're creating a new Achievement from scratch
       achievement = new Achievement();
     }
-    if (runId != null) {
-      try {
-        achievement.setRun(runService.retrieveById(new Long(runId)));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-    if (workgroupId != null) {
-      try {
-        achievement.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
+    achievement.setRun(run);
+    achievement.setWorkgroup(workgroup);
     if (achievementId != null) {
       achievement.setAchievementId(achievementId);
     }
@@ -756,13 +728,13 @@ public class VLEServiceImpl implements VLEService {
     return notebookItemDao.getNotebookItemListByParams(null, run, null, workgroup, null, null);
   }
 
-  public List<NotebookItem> getNotebookItemsByGroup(Integer runId, String groupName) {
-    return notebookItemDao.getNotebookItemByGroup(runId, groupName);
+  public List<NotebookItem> getNotebookItemsByGroup(Run run, String groupName) {
+    return notebookItemDao.getNotebookItemByGroup(run.getId().intValue(), groupName);
   }
 
   @Override
-  public NotebookItem saveNotebookItem(Integer id, Integer runId, Integer periodId,
-      Integer workgroupId, String nodeId, String componentId, Integer studentWorkId,
+  public NotebookItem saveNotebookItem(Integer id, Run run, Integer periodId,
+      Workgroup workgroup, String nodeId, String componentId, Integer studentWorkId,
       Integer studentAssetId, String localNotebookItemId, String type, String title, String content,
       String groups, String clientSaveTime, String clientDeleteTime) {
     NotebookItem notebookItem;
@@ -779,13 +751,7 @@ public class VLEServiceImpl implements VLEService {
       // the id was not passed in, so we're creating a new NotebookItem from scratch
       notebookItem = new NotebookItem();
     }
-    if (runId != null) {
-      try {
-        notebookItem.setRun(runService.retrieveById(new Long(runId)));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
+    notebookItem.setRun(run);
     if (periodId != null) {
       try {
         notebookItem.setPeriod(groupService.retrieveById(new Long(periodId)));
@@ -793,13 +759,7 @@ public class VLEServiceImpl implements VLEService {
         e.printStackTrace();
       }
     }
-    if (workgroupId != null) {
-      try {
-        notebookItem.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
+    notebookItem.setWorkgroup(workgroup);
     if (nodeId != null) {
       notebookItem.setNodeId(nodeId);
     }
@@ -926,11 +886,10 @@ public class VLEServiceImpl implements VLEService {
     }
   }
 
-  public NotebookItem copyNotebookItem(Integer workgroupId, Integer parentNotebookItemId,
+  public NotebookItem copyNotebookItem(Workgroup workgroup, Integer parentNotebookItemId,
       String clientSaveTime) {
     try {
       NotebookItem notebookItem = (NotebookItem) notebookItemDao.getById(parentNotebookItemId);
-      Workgroup workgroup = workgroupService.retrieveById(new Long(workgroupId));
       NotebookItem copiedNotebookItem = notebookItem.copy();
       copiedNotebookItem.setWorkgroup(workgroup);
       copiedNotebookItem.setClientSaveTime(new Timestamp(new Long(clientSaveTime)));
@@ -952,16 +911,8 @@ public class VLEServiceImpl implements VLEService {
   }
 
   @Override
-  public List<Notification> getNotifications(Integer id, Long runId, Integer periodId,
-      Long toWorkgroupId, String groupId, String nodeId, String componentId) {
-    Run run = null;
-    if (runId != null) {
-      try {
-        run = runService.retrieveById(runId);
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
+  public List<Notification> getNotifications(Integer id, Run run, Integer periodId,
+      Workgroup toWorkgroup, String groupId, String nodeId, String componentId) {
     Group period = null;
     if (periodId != null) {
       try {
@@ -970,16 +921,8 @@ public class VLEServiceImpl implements VLEService {
         e.printStackTrace();
       }
     }
-    Workgroup workgroup = null;
-    if (toWorkgroupId != null) {
-      try {
-        workgroup = workgroupService.retrieveById(toWorkgroupId);
-      } catch (ObjectNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-    return notificationDao.getNotificationListByParams(id, run, period, workgroup, groupId, nodeId,
-        componentId);
+    return notificationDao.getNotificationListByParams(id, run, period, toWorkgroup, groupId,
+        nodeId, componentId);
   }
 
   @Override

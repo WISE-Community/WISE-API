@@ -27,11 +27,10 @@ public class NotificationControllerTest extends APIControllerTest {
   public void getNotifications_NotTeacherOfRun_ReturnEmptyNotifications()
       throws ObjectNotFoundException {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasRunPermission(run1, teacher1, BasePermission.READ)).andReturn(false);
     List<Notification> notifications = new ArrayList<Notification>();
     replay(userService, runService, vleService);
-    controller.getNotifications(teacherAuth, runId1, null, null, teacher1Run1Workgroup.getId(),
+    controller.getNotifications(teacherAuth, run1, null, null, teacher1Run1Workgroup,
         null, null, null);
     assertEquals(0, notifications.size());
     verify(userService, runService, vleService);
@@ -41,14 +40,13 @@ public class NotificationControllerTest extends APIControllerTest {
   public void getNotifications_TeacherOfRun_ReturnNotificationsForTeacher()
       throws ObjectNotFoundException {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasRunPermission(run1, teacher1, BasePermission.READ)).andReturn(true);
     List<Notification> notifications = new ArrayList<Notification>();
     notifications.add(new Notification());
-    expect(vleService.getNotifications(null, runId1, null, teacher1Run1Workgroup.getId(), null,
+    expect(vleService.getNotifications(null, run1, null, teacher1Run1Workgroup, null,
         null, null)).andReturn(notifications);
     replay(userService, runService, vleService);
-    controller.getNotifications(teacherAuth, runId1, null, null, teacher1Run1Workgroup.getId(),
+    controller.getNotifications(teacherAuth, run1, null, null, teacher1Run1Workgroup,
         null, null, null);
     assertEquals(1, notifications.size());
     verify(userService, runService, vleService);

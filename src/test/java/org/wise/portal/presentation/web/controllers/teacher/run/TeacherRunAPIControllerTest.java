@@ -26,9 +26,8 @@ public class TeacherRunAPIControllerTest extends APIControllerTest {
   public void getStudentStatus_TeacherNotAssociatedWithRun_ReturnEmptyList()
       throws ObjectNotFoundException {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    expect(runService.retrieveById(runId3)).andReturn(run3);
     replay(userService, runService);
-    List<StudentStatus> studentStatuses = controller.getStudentStatus(teacherAuth, runId3);
+    List<StudentStatus> studentStatuses = controller.getStudentStatus(teacherAuth, run3);
     assertEquals(0, studentStatuses.size());
     verify(userService, runService);
   }
@@ -37,11 +36,10 @@ public class TeacherRunAPIControllerTest extends APIControllerTest {
   public void getStudentStatus_TeacherIsAssociatedWithRun_ReturnStatuses()
       throws ObjectNotFoundException {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    expect(runService.retrieveById(runId1)).andReturn(run1);
     List<StudentStatus> studentStatuses = new ArrayList<StudentStatus>();
     expect(vleService.getStudentStatusesByRunId(runId1)).andReturn(studentStatuses);
     replay(userService, runService, vleService);
-    List<StudentStatus> studentStatusesResponse = controller.getStudentStatus(teacherAuth, runId1);
+    List<StudentStatus> studentStatusesResponse = controller.getStudentStatus(teacherAuth, run1);
     assertEquals(studentStatuses, studentStatusesResponse);
     verify(userService, runService, vleService);
   }
