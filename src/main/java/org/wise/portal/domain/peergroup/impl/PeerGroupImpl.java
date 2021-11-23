@@ -36,8 +36,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.wise.portal.domain.group.Group;
+import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
@@ -65,6 +71,7 @@ public class PeerGroupImpl implements PeerGroup {
   @ManyToOne(targetEntity = PeerGroupActivityImpl.class, cascade = { CascadeType.PERSIST },
       fetch = FetchType.LAZY)
   @JoinColumn(name = "peerGroupActivityId", nullable = false)
+  @JsonIgnore
   private PeerGroupActivity peerGroupActivity;
 
   @ManyToMany(targetEntity = WorkgroupImpl.class)
@@ -73,10 +80,16 @@ public class PeerGroupImpl implements PeerGroup {
       inverseJoinColumns = @JoinColumn(name = "workgroup_fk", nullable = false))
   private Set<Workgroup> members = new HashSet<Workgroup>();
 
+  @OneToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "periodId")
+  @JsonIgnore
+  private Group period;
+
   public PeerGroupImpl() {}
 
-  public PeerGroupImpl(PeerGroupActivity activity, Set<Workgroup> members) {
+  public PeerGroupImpl(PeerGroupActivity activity, Group period, Set<Workgroup> members) {
     this.peerGroupActivity = activity;
+    this.period = period;
     this.members = members;
   }
 
@@ -92,5 +105,10 @@ public class PeerGroupImpl implements PeerGroup {
       }
     }
     return false;
+  }
+
+  @JsonProperty
+  public Long getPeriodId() {
+    return period.getId();
   }
 }

@@ -2,14 +2,19 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 
 import static org.easymock.EasyMock.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.easymock.Mock;
 import org.junit.Before;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
+import org.wise.portal.service.peergroup.PeerGroupInfoService;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
@@ -22,15 +27,20 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   @Mock
   protected PeerGroupActivityService peerGroupActivityService;
 
-  protected String run1Node1Id = "run1Node1";
-
-  protected String run1Component1Id = "run1Component1";
+  @Mock
+  protected PeerGroupInfoService peerGroupInfoService;
 
   protected PeerGroupActivity peerGroupActivity;
 
-  protected PeerGroup peerGroup1;
+  protected PeerGroup peerGroup1, peerGroup2;
 
   protected Long peerGroup1Id = 1L;
+
+  protected Long peerGroup2Id = 2L;
+
+  protected List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
+
+  protected List<Workgroup> workgroupsNotInPeerGroups = new ArrayList<Workgroup>();
 
   @Before
   public void setUp() {
@@ -38,6 +48,10 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
     peerGroupActivity = new PeerGroupActivityImpl();
     peerGroup1 = new PeerGroupImpl();
     peerGroup1.addMember(workgroup1);
+    peerGroups.add(peerGroup1);
+    peerGroup2 = new PeerGroupImpl();
+    peerGroup2.addMember(workgroup2);
+    peerGroups.add(peerGroup2);
   }
 
   protected void expectPeerGroupActivityFound() throws PeerGroupActivityNotFoundException {
@@ -56,10 +70,12 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   }
 
   protected void verifyAll() {
-    verify(peerGroupActivityService, peerGroupService, runService, userService, workgroupService);
+    verify(peerGroupActivityService, peerGroupInfoService, peerGroupService, runService,
+       userService, workgroupService);
   }
 
   protected void replayAll() {
-    replay(peerGroupActivityService, peerGroupService, runService, userService, workgroupService);
+    replay(peerGroupActivityService, peerGroupInfoService, peerGroupService, runService,
+        userService, workgroupService);
   }
 }
