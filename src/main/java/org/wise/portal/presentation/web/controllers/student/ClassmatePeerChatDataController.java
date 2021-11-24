@@ -31,16 +31,16 @@ public class ClassmatePeerChatDataController extends ClassmateDataController {
   @Autowired
   protected PeerGroupService peerGroupService;
 
-  @GetMapping("/student-work/{peerGroupId}/{nodeId}/{componentId}/{otherNodeId}/{otherComponentId}")
+  @GetMapping("/student-work/{peerGroupId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}")
   public List<StudentWork> getClassmatePeerChatWork(Authentication auth,
       @PathVariable Long peerGroupId, @PathVariable String nodeId, @PathVariable String componentId,
-      @PathVariable String otherNodeId, @PathVariable String otherComponentId)
+      @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId)
       throws IOException, JSONException, ObjectNotFoundException {
     PeerGroup peerGroup = peerGroupService.getById(peerGroupId);
     if (isAllowedToGetData(auth, peerGroup)) {
       Run run = peerGroup.getPeerGroupActivity().getRun();
-      if (isValidPeerChatComponent(run, nodeId, componentId, otherNodeId, otherComponentId)) {
-        return getStudentWork(peerGroup, otherNodeId, otherComponentId);
+      if (isValidPeerChatComponent(run, nodeId, componentId, showWorkNodeId, showWorkComponentId)) {
+        return getStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);
@@ -53,12 +53,12 @@ public class ClassmatePeerChatDataController extends ClassmateDataController {
   }
 
   private boolean isValidPeerChatComponent(Run run, String nodeId, String componentId,
-      String otherNodeId, String otherComponentId)
+      String showWorkNodeId, String showWorkComponentId)
       throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
     return PEER_CHAT_TYPE.equals(projectComponent.getString("type"))
-        && otherNodeId.equals(projectComponent.getString("showWorkNodeId"))
-        && otherComponentId.equals(projectComponent.getString("showWorkComponentId"));
+        && showWorkNodeId.equals(projectComponent.getString("showWorkNodeId"))
+        && showWorkComponentId.equals(projectComponent.getString("showWorkComponentId"));
   }
 
   private List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
