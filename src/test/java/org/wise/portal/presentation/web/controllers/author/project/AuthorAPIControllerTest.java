@@ -152,22 +152,26 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   public void copyProject_CanReadProject_ReturnCopiedProject() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
+    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canReadProject(project1, teacher1)).andReturn(true);
     expect(projectService.copyProject(projectId1, teacher1)).andReturn(new ProjectImpl());
     replay(projectService);
-    authorAPIController.copyProject(teacherAuth, project1);
-    verify(userService, projectService);
+    authorAPIController.copyProject(teacherAuth, projectId1);
+    verify(userService);
+    verify(projectService);
   }
 
   @Test
   public void copyProject_CanNotReadProject_ReturnNull() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
+    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canReadProject(project1, teacher1)).andReturn(false);
     replay(projectService);
-    Project copiedProject = authorAPIController.copyProject(teacherAuth, project1);
+    Project copiedProject = authorAPIController.copyProject(teacherAuth, projectId1);
     assertNull(copiedProject);
-    verify(userService, projectService);
+    verify(userService);
+    verify(projectService);
   }
 
   @Test

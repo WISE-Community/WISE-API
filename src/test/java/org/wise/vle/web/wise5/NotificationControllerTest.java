@@ -30,8 +30,7 @@ public class NotificationControllerTest extends APIControllerTest {
     expect(runService.hasRunPermission(run1, teacher1, BasePermission.READ)).andReturn(false);
     List<Notification> notifications = new ArrayList<Notification>();
     replay(userService, runService, vleService);
-    controller.getNotifications(teacherAuth, run1, null, null, teacher1Run1Workgroup,
-        null, null, null);
+    controller.getNotifications(teacherAuth, run1, null, null, null, null, null, null);
     assertEquals(0, notifications.size());
     verify(userService, runService, vleService);
   }
@@ -43,11 +42,10 @@ public class NotificationControllerTest extends APIControllerTest {
     expect(runService.hasRunPermission(run1, teacher1, BasePermission.READ)).andReturn(true);
     List<Notification> notifications = new ArrayList<Notification>();
     notifications.add(new Notification());
-    expect(vleService.getNotifications(null, run1, null, teacher1Run1Workgroup, null,
-        null, null)).andReturn(notifications);
+    expect(vleService.getNotifications(null, run1, null, null, null, null, null))
+        .andReturn(notifications);
     replay(userService, runService, vleService);
-    controller.getNotifications(teacherAuth, run1, null, null, teacher1Run1Workgroup,
-        null, null, null);
+    controller.getNotifications(teacherAuth, run1, null, null, null, null, null, null);
     assertEquals(1, notifications.size());
     verify(userService, runService, vleService);
   }
