@@ -81,8 +81,7 @@ public class NotificationController {
       if (isStudentAndNotAllowedToSaveNotification(user, run, toWorkgroup)) {
         return new ArrayList<Notification>();
       }
-    }
-    if (!user.isAdmin() && !runService.hasRunPermission(run, user, BasePermission.READ)) {
+    } else if (!user.isAdmin() && !runService.hasRunPermission(run, user, BasePermission.READ)) {
       return new ArrayList<Notification>();
     }
     return vleService.getNotifications(id, run, periodId, toWorkgroup, groupId, nodeId,

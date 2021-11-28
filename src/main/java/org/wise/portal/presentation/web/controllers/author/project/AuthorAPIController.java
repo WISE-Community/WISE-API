@@ -229,11 +229,12 @@ public class AuthorAPIController {
 
   @PostMapping("/project/copy/{projectId}")
   @ResponseBody
-  protected Project copyProject(Authentication auth,
-      @PathVariable("projectId") ProjectImpl projectToCopy) throws Exception {
+  protected Project copyProject(Authentication auth, @PathVariable Long projectId)
+      throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
+    Project projectToCopy = projectService.getById(projectId);
     if (projectService.canReadProject(projectToCopy, user)) {
-      return projectService.copyProject(projectToCopy.getId(), user);
+      return projectService.copyProject(projectId, user);
     }
     return null;
   }
