@@ -40,7 +40,7 @@ public class ClassmatePeerChatDataController extends ClassmateDataController {
     if (isAllowedToGetData(auth, peerGroup)) {
       Run run = peerGroup.getPeerGroupActivity().getRun();
       if (isValidPeerChatComponent(run, nodeId, componentId, showWorkNodeId, showWorkComponentId)) {
-        return getStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
+        return peerGroupService.getStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);
@@ -56,12 +56,8 @@ public class ClassmatePeerChatDataController extends ClassmateDataController {
       String showWorkNodeId, String showWorkComponentId)
       throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return PEER_CHAT_TYPE.equals(projectComponent.getString("type"))
-        && showWorkNodeId.equals(projectComponent.getString("showWorkNodeId"))
-        && showWorkComponentId.equals(projectComponent.getString("showWorkComponentId"));
-  }
-
-  private List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
-    return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
+    return projectComponent.getString("type").equals(PEER_CHAT_TYPE)
+        && projectComponent.getString("showWorkNodeId").equals(showWorkNodeId)
+        && projectComponent.getString("showWorkComponentId").equals(showWorkComponentId);
   }
 }
