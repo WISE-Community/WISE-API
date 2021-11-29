@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -49,10 +51,9 @@ public class NotebookController {
   @Secured("ROLE_TEACHER")
   @ResponseBody
   @GetMapping("/{runId}")
-  protected List<NotebookItem> getNotebookItems(@PathVariable Long runId, Authentication auth,
-      @RequestParam(required = false) String exportType) throws ObjectNotFoundException,
-      AccessDeniedException {
-    Run run = runService.retrieveById(runId);
+  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") RunImpl run,
+      Authentication auth, @RequestParam(required = false) String exportType)
+      throws ObjectNotFoundException, AccessDeniedException {
     if (runService.hasReadPermission(auth, run)) {
       if ("allNotebookItems".equals(exportType)) {
         return vleService.getNotebookItemsExport(run);
@@ -68,23 +69,21 @@ public class NotebookController {
   @Secured("ROLE_STUDENT")
   @ResponseBody
   @GetMapping("/{runId}/workgroup/{workgroupId}")
-  protected List<NotebookItem> getNotebookItems(@PathVariable Long runId,
-      @PathVariable Long workgroupId, Authentication auth) throws ObjectNotFoundException,
-      AccessDeniedException {
-    if (!isUserInRunAndWorkgroup(auth, runId, workgroupId)) {
+  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") RunImpl run,
+      @PathVariable("workgroupId") WorkgroupImpl workgroup, Authentication auth)
+      throws ObjectNotFoundException, AccessDeniedException {
+    if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to view notebook items");
     }
-    Run run = runService.retrieveById(runId);
-    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
     return vleService.getNotebookItems(run, workgroup);
   }
 
   @ResponseBody
   @PostMapping("/{runId}")
   protected NotebookItem saveNotebookItem(
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "workgroupId", required = true) Long workgroupId,
+      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
       @RequestParam(value = "notebookItemId", required = false) Integer notebookItemId,
       @RequestParam(value = "nodeId", required = false) String nodeId,
       @RequestParam(value = "componentId", required = false) String componentId,
@@ -98,11 +97,11 @@ public class NotebookController {
       @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
       @RequestParam(value = "clientDeleteTime", required = false) String clientDeleteTime,
       Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
-    if (!isUserInRunAndWorkgroup(auth, runId, workgroupId)) {
+    if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to save notebook items");
     }
-    NotebookItem notebookItem = vleService.saveNotebookItem(notebookItemId, runId.intValue(),
-        periodId, workgroupId.intValue(), nodeId, componentId, studentWorkId, studentAssetId,
+    NotebookItem notebookItem = vleService.saveNotebookItem(notebookItemId, run,
+        periodId, workgroup, nodeId, componentId, studentWorkId, studentAssetId,
         localNotebookItemId, type, title, content, groups, clientSaveTime, clientDeleteTime);
     return notebookItem;
   }
@@ -110,14 +109,14 @@ public class NotebookController {
   @ResponseBody
   @PostMapping("/{runId}/group/{group}")
   protected NotebookItem addNotebookItemToGroup(
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @PathVariable String group,
-      @RequestParam(value = "workgroupId", required = true) Long workgroupId,
+      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
       @RequestParam(value = "notebookItemId", required = true) Integer notebookItemId,
       @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
       Authentication auth) throws ObjectNotFoundException, NotebookItemAlreadyInGroupException,
       AccessDeniedException {
-    if (!isUserInRunAndWorkgroup(auth, runId, workgroupId)) {
+    if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to add notebook item to group");
     }
     return vleService.addNotebookItemToGroup(notebookItemId, group, clientSaveTime);
@@ -126,13 +125,13 @@ public class NotebookController {
   @ResponseBody
   @DeleteMapping("/{runId}/group/{group}")
   protected NotebookItem removeNotebookItemFromGroup(
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @PathVariable String group,
-      @RequestParam(value = "workgroupId", required = true) Long workgroupId,
+      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
       @RequestParam(value = "notebookItemId", required = true) Integer notebookItemId,
       @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
       Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
-    if (!isUserInRunAndWorkgroup(auth, runId, workgroupId)) {
+    if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to remove notebook item from group");
     }
     return vleService.removeNotebookItemFromGroup(notebookItemId, group, clientSaveTime);
@@ -141,34 +140,33 @@ public class NotebookController {
   @ResponseBody
   @GetMapping("/{runId}/group/{group}")
   protected List<NotebookItem> getNotebookItemsInGroup(
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @PathVariable String group,
       @RequestParam(value = "periodId", required = false) Integer periodId,
       Authentication auth) throws AccessDeniedException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
-    if (!isUserAssociatedWithRun(user, runId)) {
+    if (!isUserAssociatedWithRun(user, run)) {
       throw new AccessDeniedException("Not allowed to get notebook items in group");
     }
-    return vleService.getNotebookItemsByGroup(runId.intValue(), group);
+    return vleService.getNotebookItemsByGroup(run, group);
   }
 
   @ResponseBody
   @PostMapping("/{runId}/parent/{parentNotebookItemId}")
   protected NotebookItem copyNotebookItem(
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @PathVariable Integer parentNotebookItemId,
-      @RequestParam(value = "workgroupId", required = true) Long workgroupId,
+      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
       @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
       Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
-    if (!isUserInRunAndWorkgroup(auth, runId, workgroupId)) {
+    if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to copy notebook items");
     }
-    return vleService.copyNotebookItem(workgroupId.intValue(), parentNotebookItemId,
+    return vleService.copyNotebookItem(workgroup, parentNotebookItemId,
         clientSaveTime);
   }
 
-  private boolean isUserAssociatedWithRun(User user, Long runId) throws ObjectNotFoundException {
-    Run run = runService.retrieveById(runId);
+  private boolean isUserAssociatedWithRun(User user, Run run) throws ObjectNotFoundException {
     if (user.isStudent() && run.isStudentAssociatedToThisRun(user)) {
       return true;
     } else if (user.isTeacher() && run.isTeacherAssociatedToThisRun(user)) {
@@ -177,12 +175,10 @@ public class NotebookController {
     return false;
   }
 
-  private boolean isUserInRunAndWorkgroup(Authentication auth, Long runId, Long workgroupId)
+  private boolean isUserInRunAndWorkgroup(Authentication auth, Run run, Workgroup workgroup)
       throws ObjectNotFoundException {
     User signedInUser = userService.retrieveUserByUsername(auth.getName());
-    Run run = runService.retrieveById(runId);
-    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
-    return isUserAssociatedWithRun(signedInUser, runId) &&
+    return isUserAssociatedWithRun(signedInUser, run) &&
         workgroupService.isUserInWorkgroupForRun(signedInUser, run, workgroup);
   }
 }

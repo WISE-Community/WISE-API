@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +46,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
+import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.authentication.UserDetailsService;
@@ -55,6 +57,7 @@ import org.wise.portal.service.project.ProjectService;
  *
  * @author Hiroki Terashima
  */
+@Secured("ROLE_TEACHER")
 @Controller
 @RequestMapping("/api/project/export/{projectId}")
 public class ExportProjectController {
@@ -74,11 +77,9 @@ public class ExportProjectController {
    * @throws Exception when there was an error while exporting the project
    */
   @GetMapping
-  protected void exportProject(@PathVariable String projectId, HttpServletResponse response)
-      throws Exception {
+  protected void exportProject(@PathVariable("projectId") ProjectImpl project,
+      HttpServletResponse response) throws Exception {
     User signedInUser = ControllerUtil.getSignedInUser();
-    Project project = projectService.getById(projectId);
-
     if (authorize(signedInUser, project)) {
     } else if (projectService.projectContainsTag(project, "public")) {
     } else {

@@ -52,7 +52,6 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   public void getAuthorProjectConfig_HasProjectRun_ReturnCanGradeStudentWork() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1).times(2);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.getProjectList(teacher1)).andReturn(new ArrayList<Project>());
     expect(projectService.getSharedProjectList(teacher1)).andReturn(new ArrayList<Project>());
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
@@ -76,31 +75,27 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expect(request.getServerPort()).andReturn(8080);
     replay(request);
     Map<String, Object> config = authorAPIController.getAuthorProjectConfig(teacherAuth, request,
-        projectId1);
+        project1);
     assertTrue((boolean) config.get("canEditProject"));
     assertTrue((boolean) config.get("canGradeStudentWork"));
     assertEquals(runId1, config.get("runId"));
-    verify(userService);
-    verify(projectService);
+    verify(userService, projectService);
   }
 
   @Test
   public void authorProjectBegin_CanNotAuthor_NotifyAuthors() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(false);
     replay(projectService);
-    authorAPIController.notifyAuthorBeginEnd(teacherAuth, projectId1, true);
-    verify(userService);
-    verify(projectService);
+    authorAPIController.notifyAuthorBeginEnd(teacherAuth, project1, true);
+    verify(userService, projectService);
   }
 
   @Test
   public void authorProjectBegin_CanAuthor_NotifyAuthors() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
     replay(projectService);
     sessionService.addCurrentAuthor(projectId1, TEACHER_USERNAME);
@@ -111,30 +106,24 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     redisPublisher.publish(isA(String.class));
     expectLastCall();
     replay(redisPublisher);
-    authorAPIController.notifyAuthorBeginEnd(teacherAuth, projectId1, true);
-    verify(userService);
-    verify(projectService);
-    verify(sessionService);
-    verify(redisPublisher);
+    authorAPIController.notifyAuthorBeginEnd(teacherAuth, project1, true);
+    verify(userService, projectService, sessionService, redisPublisher);
   }
 
   @Test
   public void authorProjectEnd_CanNotAuthor_NotifyAuthors() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(false);
     replay(projectService);
-    authorAPIController.notifyAuthorBeginEnd(teacherAuth, projectId1, false);
-    verify(userService);
-    verify(projectService);
+    authorAPIController.notifyAuthorBeginEnd(teacherAuth, project1, false);
+    verify(userService, projectService);
   }
 
   @Test
   public void authorProjectEnd_CanAuthor_NotifyAuthors() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
     replay(projectService);
     sessionService.removeCurrentAuthor(projectId1, TEACHER_USERNAME);
@@ -145,23 +134,18 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     redisPublisher.publish(isA(String.class));
     expectLastCall();
     replay(redisPublisher);
-    authorAPIController.notifyAuthorBeginEnd(teacherAuth, projectId1, false);
-    verify(userService);
-    verify(projectService);
-    verify(sessionService);
-    verify(redisPublisher);
+    authorAPIController.notifyAuthorBeginEnd(teacherAuth, project1, false);
+    verify(userService, projectService, sessionService, redisPublisher);
   }
 
   @Test
   public void saveProject_CanNotAuthor_Return() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    expect(projectService.getById(projectId1)).andReturn(project1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(false);
     replay(projectService);
-    authorAPIController.saveProject(teacherAuth, projectId1, projectJSONString);
-    verify(userService);
-    verify(projectService);
+    authorAPIController.saveProject(teacherAuth, project1, projectJSONString);
+    verify(userService, projectService);
   }
 
   @Test
@@ -195,16 +179,15 @@ public class AuthorAPIControllerTest extends APIControllerTest {
       throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    Project project = new ProjectImpl();
-    Long projectId = 1L;
-    expect(projectService.getById(projectId)).andReturn(project);
+    ProjectImpl project = new ProjectImpl();
     expect(projectService.canAuthorProject(project, teacher1)).andReturn(false);
     replay(projectService);
     String projectJSONString = "{}";
-    SimpleResponse response = authorAPIController.saveProject(teacherAuth, projectId,
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project,
         projectJSONString);
     assertEquals("error", response.getStatus());
     assertEquals("notAllowedToEditThisProject", response.getMessageCode());
+    verify(userService, projectService);
   }
 
   @Test
@@ -212,20 +195,18 @@ public class AuthorAPIControllerTest extends APIControllerTest {
       throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    Project project = new ProjectImpl();
-    Long projectId = 1L;
-    expect(projectService.getById(projectId)).andReturn(project);
-    expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
-    projectService.evictProjectContentCache(projectId);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId1);
     expectLastCall();
     String projectJSONString = "{}";
-    projectService.saveProjectContentToDisk(projectJSONString, project);
+    projectService.saveProjectContentToDisk(projectJSONString, project1);
     expectLastCall().andThrow(new IOException());
     replay(projectService);
-    SimpleResponse response = authorAPIController.saveProject(teacherAuth, projectId,
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("error", response.getStatus());
     assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
   }
 
   @Test
@@ -233,49 +214,45 @@ public class AuthorAPIControllerTest extends APIControllerTest {
       throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    Project project = new ProjectImpl();
-    Long projectId = 1L;
-    expect(projectService.getById(projectId)).andReturn(project);
-    expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
-    projectService.evictProjectContentCache(projectId);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId1);
     expectLastCall();
     String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
-    projectService.saveProjectContentToDisk(projectJSONString, project);
+    projectService.saveProjectContentToDisk(projectJSONString, project1);
     expectLastCall();
     projectService.updateMetadataAndLicenseIfNecessary(anyObject(), anyObject());
     expectLastCall();
-    projectService.saveProjectToDatabase(project, teacher1, projectJSONString);
+    projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
     expectLastCall().andThrow(new JSONException(""));
     replay(projectService);
-    SimpleResponse response = authorAPIController.saveProject(teacherAuth, projectId,
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("error", response.getStatus());
     assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
   }
 
   @Test
   public void saveProject_NoErrors_shouldReturnProjectSaved() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    Project project = new ProjectImpl();
-    Long projectId = 1L;
-    project.setMetadata("{\"title\":\"Old Title\"}");
-    expect(projectService.getById(projectId)).andReturn(project);
-    expect(projectService.canAuthorProject(project, teacher1)).andReturn(true);
-    projectService.evictProjectContentCache(projectId);
+    project1.setMetadata("{\"title\":\"Old Title\"}");
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId1);
     expectLastCall();
     String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
-    projectService.saveProjectContentToDisk(projectJSONString, project);
+    projectService.saveProjectContentToDisk(projectJSONString, project1);
     expectLastCall();
     projectService.updateMetadataAndLicenseIfNecessary(anyObject(), anyObject());
     expectLastCall();
-    projectService.saveProjectToDatabase(project, teacher1, projectJSONString);
+    projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
     expectLastCall();
     replay(projectService);
-    SimpleResponse response = authorAPIController.saveProject(teacherAuth, projectId,
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
+    verify(userService, projectService);
   }
 
   @Test

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
@@ -24,6 +24,7 @@ import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.status.StudentStatus;
 
+@Secured({ "ROLE_TEACHER" })
 @RestController
 public class TeacherRunAPIController {
 
@@ -47,14 +48,12 @@ public class TeacherRunAPIController {
    * @throws ObjectNotFoundException
    * @throws IOException
    */
-  @Secured({ "ROLE_TEACHER" })
   @GetMapping("/api/teacher/run/{runId}/student-status")
-  public List<StudentStatus> getStudentStatus(Authentication auth, @PathVariable Long runId)
-      throws ObjectNotFoundException {
+  public List<StudentStatus> getStudentStatus(Authentication auth,
+      @PathVariable("runId") RunImpl run) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
-    Run run = runService.retrieveById(runId);
     if (run.isTeacherAssociatedToThisRun(user) || user.isAdmin()) {
-      return vleService.getStudentStatusesByRunId(runId);
+      return vleService.getStudentStatusesByRunId(run.getId());
     }
     return new ArrayList<StudentStatus>();
   }
@@ -78,15 +77,14 @@ public class TeacherRunAPIController {
   }
 
   @MessageMapping("/api/teacher/run/{runId}/node-to-period/{periodId}")
-  public void sendNodeToPeriod(Authentication auth,
-      @DestinationVariable Long runId, @DestinationVariable Long periodId, @Payload String node)
+  public void sendNodeToPeriod(Authentication auth, @DestinationVariable("runId") RunImpl run,
+      @DestinationVariable Long periodId, @Payload String node)
       throws ObjectNotFoundException, JSONException {
-    Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();
       msg.put("type", "node");
       msg.put("node", new JSONObject(node));
-      msg.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+      msg.put("topic", String.format("/topic/classroom/%s/%s", run.getId(), periodId));
       redisPublisher.publish(msg.toString());
     }
   }

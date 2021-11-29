@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2019 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -70,6 +70,7 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
+import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.project.impl.ProjectMetadataImpl;
 import org.wise.portal.domain.project.impl.ProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectType;
@@ -240,13 +241,13 @@ public class AuthorAPIController {
 
   @PostMapping("/project/save/{projectId}")
   @ResponseBody
-  protected SimpleResponse saveProject(Authentication auth, @PathVariable Long projectId,
-      @RequestBody String projectJSONString) throws JSONException, ObjectNotFoundException {
-    Project project = projectService.getById(projectId);
+  protected SimpleResponse saveProject(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project, @RequestBody String projectJSONString)
+      throws JSONException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       try {
-        projectService.evictProjectContentCache(projectId);
+        projectService.evictProjectContentCache(project.getId());
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
@@ -263,8 +264,8 @@ public class AuthorAPIController {
   @ResponseBody
   @SuppressWarnings("unchecked")
   protected HashMap<String, Object> getDefaultAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request)
-      throws ObjectNotFoundException, JsonMappingException, JsonProcessingException {
+      HttpServletRequest request) throws ObjectNotFoundException, JsonMappingException,
+      JsonProcessingException {
     HashMap<String, Object> config = new HashMap<String, Object>();
     User user = userService.retrieveUserByUsername(auth.getName());
     String contextPath = request.getContextPath();
@@ -373,9 +374,8 @@ public class AuthorAPIController {
   @GetMapping("/config/{projectId}")
   @ResponseBody
   protected HashMap<String, Object> getAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request, @PathVariable Long projectId)
+      HttpServletRequest request, @PathVariable("projectId") ProjectImpl project)
       throws IOException, ObjectNotFoundException {
-    Project project = projectService.getById(projectId);
     HashMap<String, Object> config = getDefaultAuthorProjectConfig(auth, request);
     String contextPath = request.getContextPath();
     String curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
@@ -388,14 +388,14 @@ public class AuthorAPIController {
           appProperties.getProperty("project_max_total_assets_size", "15728640"));
     }
 
-    config.put("projectId", projectId);
+    config.put("projectId", project.getId());
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + projectId);
+    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
     config.put("projectBaseURL", projectBaseURL);
-    config.put("previewProjectURL", contextPath + "/preview/unit/" + projectId);
+    config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
-    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + projectId);
+    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + project.getId());
     config.put("featuredProjectIconsURL", contextPath + "/api/author/project/featured/icons");
     config.put("projectIconURL", contextPath + "/api/author/project/icon");
     config.put("mode", "author");
@@ -404,10 +404,10 @@ public class AuthorAPIController {
     boolean canEditProject = projectService.canAuthorProject(project, user);
     config.put("canEditProject", canEditProject);
     if (canEditProject) {
-      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + projectId);
-      config.put("commitProjectURL", contextPath + "/project/commit/" + projectId);
+      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + project.getId());
+      config.put("commitProjectURL", contextPath + "/project/commit/" + project.getId());
     }
-    List<Run> projectRuns = runService.getProjectRuns(projectId);
+    List<Run> projectRuns = runService.getProjectRuns(project.getId());
     if (projectRuns.size() > 0) {
       Run projectRun = projectRuns.get(0);
       config.put("canGradeStudentWork", runService.isAllowedToGradeStudentWork(projectRun, user));
@@ -420,10 +420,8 @@ public class AuthorAPIController {
   /**
    * Get the run that uses the project id
    *
-   * @param projectId
-   *                    the project id
-   * @param runs
-   *                    list of runs to look in
+   * @param projectId the project id
+   * @param runs list of runs to look in
    * @returns the run that uses the project if the project is used in a run
    */
   private Run getRun(Long projectId, List<Run> runs) {
@@ -437,17 +435,17 @@ public class AuthorAPIController {
 
   @PostMapping("/project/notify/{projectId}/{isBegin}")
   @ResponseBody
-  protected void notifyAuthorBeginEnd(Authentication auth, @PathVariable Long projectId,
-      @PathVariable boolean isBegin) throws Exception {
+  protected void notifyAuthorBeginEnd(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project, @PathVariable boolean isBegin)
+      throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
-    Project project = projectService.getById(projectId);
     if (projectService.canAuthorProject(project, user)) {
       if (isBegin) {
-        sessionService.addCurrentAuthor(projectId, auth.getName());
+        sessionService.addCurrentAuthor(project.getId(), auth.getName());
       } else {
-        sessionService.removeCurrentAuthor(projectId, auth.getName());
+        sessionService.removeCurrentAuthor(project.getId(), auth.getName());
       }
-      notifyCurrentAuthors(projectId);
+      notifyCurrentAuthors(project.getId());
     }
   }
 
@@ -462,12 +460,9 @@ public class AuthorAPIController {
   /**
    * Import steps and copy assets if necessary
    *
-   * @param steps
-   *                        a string containing a JSONArray of steps
-   * @param toProjectId
-   *                        the project id we are importing into
-   * @param fromProjectId
-   *                        the project id we are importing from
+   * @param steps a string containing a JSONArray of steps
+   * @param toProjectId the project id we are importing into
+   * @param fromProjectId the project id we are importing from
    */
   @PostMapping("/project/importSteps/{projectId}")
   @ResponseBody

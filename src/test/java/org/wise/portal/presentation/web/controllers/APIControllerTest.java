@@ -22,13 +22,11 @@ import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
-import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
-import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.group.GroupService;
@@ -97,15 +95,15 @@ public abstract class APIControllerTest {
 
   protected String RUN1_PERIOD2_NAME = "2";
 
-  protected Run run1, run2, run3;
+  protected RunImpl run1, run2, run3;
 
   protected List<Run> runs;
 
   protected List<Tag> run1Tags;
 
-  protected Workgroup workgroup1, workgroup2, teacher1Run1Workgroup;
+  protected WorkgroupImpl workgroup1, workgroup2, teacher1Run1Workgroup;
 
-  protected Project project1, project2, project3;
+  protected ProjectImpl project1, project2, project3;
 
   protected Group run1Period1, run1Period2, run2Period2, run3Period4;
 
