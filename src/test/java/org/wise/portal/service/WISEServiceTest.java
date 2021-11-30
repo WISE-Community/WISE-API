@@ -110,6 +110,16 @@ public class WISEServiceTest {
     return work;
   }
 
+  protected StudentWork createComponentWork(Workgroup workgroup, String nodeId, String componentId,
+      boolean isSubmit) {
+    StudentWork work = new StudentWork();
+    work.setWorkgroup(workgroup);
+    work.setNodeId(nodeId);
+    work.setComponentId(componentId);
+    work.setIsSubmit(isSubmit);
+    return work;
+  }
+
   protected List<StudentWork> createStudentWorkList(StudentWork... componentWorks) {
     List<StudentWork> list = new ArrayList<StudentWork>();
     for (StudentWork work : componentWorks) {

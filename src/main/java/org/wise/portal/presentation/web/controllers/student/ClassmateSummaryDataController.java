@@ -35,9 +35,9 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
     Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
-      if (PERIOD_SOURCE.equals(source)) {
+      if (source.equals(PERIOD_SOURCE)) {
         return getStudentWork(run, period, otherNodeId, otherComponentId);
-      } else if (ALL_PERIODS_SOURCE.equals(source)) {
+      } else if (source.equals(ALL_PERIODS_SOURCE)) {
         return getStudentWork(run, otherNodeId, otherComponentId);
       }
     }
@@ -53,9 +53,9 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
     Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
-      if (PERIOD_SOURCE.equals(source)) {
+      if (source.equals(PERIOD_SOURCE)) {
         return getAnnotations(run, period, otherNodeId, otherComponentId);
-      } else if (ALL_PERIODS_SOURCE.equals(source)) {
+      } else if (source.equals(ALL_PERIODS_SOURCE)) {
         return getAnnotations(run, otherNodeId, otherComponentId);
       }
     }
@@ -73,8 +73,8 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
       String otherNodeId, String otherComponentId)
       throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return SUMMARY_TYPE.equals(projectComponent.getString("type"))
-        && otherNodeId.equals(projectComponent.getString("summaryNodeId"))
-        && otherComponentId.equals(projectComponent.getString("summaryComponentId"));
+    return projectComponent.getString("type").equals(SUMMARY_TYPE)
+        && projectComponent.getString("summaryNodeId").equals(otherNodeId)
+        && projectComponent.getString("summaryComponentId").equals(otherComponentId);
   }
 }

@@ -49,7 +49,7 @@ public abstract class ClassmateDataController {
   protected boolean isComponentType(Run run, String nodeId, String componentId,
       String expectedComponentType) throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return expectedComponentType.equals(projectComponent.getString("type"));
+    return projectComponent.getString("type").equals(expectedComponentType);
   }
 
   protected ProjectComponent getProjectComponent(Run run, String nodeId, String componentId)

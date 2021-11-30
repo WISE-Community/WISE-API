@@ -31,8 +31,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,7 +58,7 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  @BeforeEach
+  @Before
   public void setUp() throws Exception {
     super.setUp();
     createStudentWork(workgroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
