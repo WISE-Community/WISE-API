@@ -202,8 +202,23 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     expectGetWorkForComponentByWorkgroups(peerGroup.getMembers(), run1Node2Id, run1Component2Id,
         createStudentWorkList());
     replayAll();
-    assertEquals(service.getStudentWork(peerGroup, run1Node1Id, run1Component1Id).size(), 2);
-    assertEquals(service.getStudentWork(peerGroup, run1Node2Id, run1Component2Id).size(), 0);
+    assertEquals(2, service.getStudentWork(peerGroup, run1Node1Id, run1Component1Id).size());
+    assertEquals(0, service.getStudentWork(peerGroup, run1Node2Id, run1Component2Id).size());
+    verifyAll();
+  }
+
+  @Test
+  public void getLatestStudentWork_SpecificNodeIdComponentId_ReturnLatestStudentWorkList() {
+    StudentWork studentWork1 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
+        true);
+    StudentWork studentWork2 = createComponentWork(run1Workgroup2, run1Node1Id, run1Component1Id,
+        true);
+    StudentWork studentWork3 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
+        true);
+    expectGetWorkForComponentByWorkgroups(peerGroup.getMembers(), run1Node1Id, run1Component1Id,
+        createStudentWorkList(studentWork1, studentWork2, studentWork3));
+    replayAll();
+    assertEquals(2, service.getLatestStudentWork(peerGroup, run1Node1Id, run1Component1Id).size());
     verifyAll();
   }
 

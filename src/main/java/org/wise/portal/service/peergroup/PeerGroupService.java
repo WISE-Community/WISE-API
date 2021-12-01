@@ -74,4 +74,6 @@ public interface PeerGroupService {
   public List<StudentWork> getStudentWork(PeerGroup peerGroup);
 
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
+
+  public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
 }

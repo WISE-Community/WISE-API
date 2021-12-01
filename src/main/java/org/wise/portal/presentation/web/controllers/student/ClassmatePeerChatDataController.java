@@ -40,7 +40,7 @@ public class ClassmatePeerChatDataController extends ClassmateDataController {
     if (isAllowedToGetData(auth, peerGroup)) {
       Run run = peerGroup.getPeerGroupActivity().getRun();
       if (isValidPeerChatComponent(run, nodeId, componentId, showWorkNodeId, showWorkComponentId)) {
-        return peerGroupService.getStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
+        return peerGroupService.getLatestStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);
