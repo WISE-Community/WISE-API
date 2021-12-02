@@ -70,7 +70,7 @@ public abstract class APIControllerTest {
   protected Long projectId3 = 3L;
   protected RunImpl run1, run2, run3;
   protected List<Tag> run1Tags;
-  protected Group run1Period1, run1Period2, run2Period2, run3Period4;
+  protected PersistentGroup run1Period1, run1Period2, run2Period2, run3Period4;
   protected Long run1Period1Id = 1L;
   protected Long run1Period2Id = 2L;
   protected Long run2Period2Id = 3L;
@@ -308,15 +308,15 @@ public abstract class APIControllerTest {
     return project;
   }
 
-  protected Group createPeriod(Long id, String name) {
-    Group period = new PersistentGroup();
+  protected PersistentGroup createPeriod(Long id, String name) {
+    PersistentGroup period = new PersistentGroup();
     period.setId(id);
     period.setName(name);
     return period;
   }
 
-  protected Group createPeriod(Long id, String name, User student) {
-    Group period = createPeriod(id, name);
+  protected PersistentGroup createPeriod(Long id, String name, User student) {
+    PersistentGroup period = createPeriod(id, name);
     period.addMember(student);
     return period;
   }
