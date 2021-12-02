@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
+import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.portal.PortalService;
@@ -103,9 +104,8 @@ public class ProjectAPIController {
   }
 
   @GetMapping("/info/{projectId}")
-  protected String getProjectInfo(@PathVariable Long projectId) throws ObjectNotFoundException,
-      JSONException {
-    Project project = projectService.getById(projectId);
+  protected String getProjectInfo(@PathVariable("projectId") ProjectImpl project)
+      throws ObjectNotFoundException, JSONException {
     JSONObject projectJSON = ControllerUtil.getProjectJSON(project);
     return projectJSON.toString();
   }
@@ -144,12 +144,11 @@ public class ProjectAPIController {
   }
 
   @PostMapping("/copy")
-  protected String copyProject(@RequestParam("projectId") Long projectId) throws Exception {
+  protected String copyProject(@RequestParam("projectId") ProjectImpl project) throws Exception {
     User user = ControllerUtil.getSignedInUser();
     if (SecurityUtils.isTeacher(user)) {
-      Project project = projectService.getById(projectId);
       if (this.projectService.canReadProject(project, user)) {
-        Project newProject = projectService.copyProject(projectId, user);
+        Project newProject = projectService.copyProject(project.getId(), user);
         return ControllerUtil.getProjectJSON(newProject).toString();
       }
     }

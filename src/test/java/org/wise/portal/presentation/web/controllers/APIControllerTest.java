@@ -29,7 +29,6 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
-import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.group.GroupService;
@@ -65,11 +64,11 @@ public abstract class APIControllerTest {
   protected final String USERNAME_NOT_IN_DB = "usernameNotInDB";
 
   protected Authentication adminAuth, studentAuth, teacherAuth;
-  protected Project project1, project2, project3;
+  protected ProjectImpl project1, project2, project3;
   protected Long projectId1 = 1L;
   protected Long projectId2 = 2L;
   protected Long projectId3 = 3L;
-  protected Run run1, run2, run3;
+  protected RunImpl run1, run2, run3;
   protected List<Tag> run1Tags;
   protected Group run1Period1, run1Period2, run2Period2, run3Period4;
   protected Long run1Period1Id = 1L;
@@ -87,7 +86,7 @@ public abstract class APIControllerTest {
   protected Long teacher1Id = 94210L;
   protected Long teacher2Id = 94211L;
   protected TeacherUserDetails teacher1UserDetails, teacher2UserDetails, admin1UserDetails;
-  protected Workgroup workgroup1, workgroup2, teacher1Run1Workgroup;
+  protected WorkgroupImpl workgroup1, workgroup2, teacher1Run1Workgroup;
   protected Long workgroup1Id = 1L;
   protected Long workgroup2Id = 2L;
 
@@ -209,22 +208,22 @@ public abstract class APIControllerTest {
     return student;
   }
 
-  protected Workgroup createWorkgroup(Long id, Run run, Group period) {
-    Workgroup workgroup = new WorkgroupImpl();
+  protected WorkgroupImpl createWorkgroup(Long id, Run run, Group period) {
+    WorkgroupImpl workgroup = new WorkgroupImpl();
     workgroup.setId(id);
     workgroup.setRun(run);
     workgroup.setPeriod(period);
     return workgroup;
   }
 
-  protected Workgroup createWorkgroup(Long id, Run run, Group period, User student) {
-    Workgroup workgroup = createWorkgroup(id, run, period);
+  protected WorkgroupImpl createWorkgroup(Long id, Run run, Group period, User student) {
+    WorkgroupImpl workgroup = createWorkgroup(id, run, period);
     workgroup.addMember(student);
     return workgroup;
   }
 
-  protected Workgroup createTeacherWorkgroup(Run run, User teacher) {
-    Workgroup workgroup = new WorkgroupImpl();
+  protected WorkgroupImpl createTeacherWorkgroup(Run run, User teacher) {
+    WorkgroupImpl workgroup = new WorkgroupImpl();
     workgroup.setRun(run);
     workgroup.addMember(teacher);
     return workgroup;
@@ -285,9 +284,9 @@ public abstract class APIControllerTest {
     return new TestingAuthenticationToken(userDetails, null);
   }
 
-  protected Run createRun(Long id, User owner, Date startTime, Date lastRunTime,
+  protected RunImpl createRun(Long id, User owner, Date startTime, Date lastRunTime,
       Integer maxWorkgroupSize, String runCode, Project project, HashSet<Group> periods) {
-    Run run = new RunImpl();
+    RunImpl run = new RunImpl();
     run.setId(id);
     run.setOwner(owner);
     run.setStarttime(startTime);
@@ -299,8 +298,8 @@ public abstract class APIControllerTest {
     return run;
   }
 
-  protected Project createProject(Long id, String modulePath, User teacher, Integer wiseVersion) {
-    Project project = new ProjectImpl();
+  protected ProjectImpl createProject(Long id, String modulePath, User teacher, Integer wiseVersion) {
+    ProjectImpl project = new ProjectImpl();
     project.setId(id);
     project.setModulePath(modulePath);
     project.setOwner(teacher);
