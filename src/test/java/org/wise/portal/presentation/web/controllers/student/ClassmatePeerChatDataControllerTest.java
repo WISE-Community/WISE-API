@@ -154,7 +154,7 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.PEER_CHAT_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID);
     List<StudentWork> expectedStudentWork = Arrays.asList(new StudentWork(), new StudentWork());
-    expectGetStudentWork(peerGroup1, OTHER_NODE_ID, OTHER_COMPONENT_ID, expectedStudentWork);
+    expectGetLatestStudentWork(peerGroup1, OTHER_NODE_ID, OTHER_COMPONENT_ID, expectedStudentWork);
     replayAll();
     List<StudentWork> actualStudentWork = controller.getClassmatePeerChatWork(studentAuth,
         PEER_GROUP_ID1, NODE_ID1, COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
@@ -193,9 +193,10 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 
-  private void expectGetStudentWork(PeerGroup peerGroup, String nodeId, String componentId,
+  private void expectGetLatestStudentWork(PeerGroup peerGroup, String nodeId, String componentId,
       List<StudentWork> studentWork) {
-    expect(peerGroupService.getStudentWork(peerGroup, nodeId, componentId)).andReturn(studentWork);
+    expect(peerGroupService.getLatestStudentWork(peerGroup, nodeId, componentId))
+        .andReturn(studentWork);
   }
 
   protected void replayAll() {
