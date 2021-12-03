@@ -57,10 +57,6 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
     verifyAll();
   }
 
-  private void expectUserHasRunWritePermission(boolean hasPermission) {
-    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(hasPermission);
-  }
-
   private void expectCreatePeerGroup() {
     expect(peerGroupCreateService.create(peerGroupActivity, run1Period1)).andReturn(
         new PeerGroupImpl());

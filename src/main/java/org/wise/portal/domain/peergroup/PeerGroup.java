@@ -43,5 +43,7 @@ public interface PeerGroup {
 
   public void addMember(Workgroup workgroup);
 
+  public void removeMember(Workgroup workgroup);
+
   boolean isMember(User user);
 }

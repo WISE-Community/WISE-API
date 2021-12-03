@@ -97,6 +97,10 @@ public class PeerGroupImpl implements PeerGroup {
     this.members.add(workgroup);
   }
 
+  public void removeMember(Workgroup workgroup) {
+    this.members.remove(workgroup);
+  }
+
   @Override
   public boolean isMember(User user) {
     for (Workgroup workgroup : members) {

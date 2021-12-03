@@ -32,7 +32,7 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
 
   protected PeerGroupActivity peerGroupActivity;
 
-  protected PeerGroup peerGroup1, peerGroup2;
+  protected PeerGroupImpl peerGroup1, peerGroup2;
 
   protected Long peerGroup1Id = 1L;
 
@@ -46,7 +46,9 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   public void setUp() {
     super.setUp();
     peerGroupActivity = new PeerGroupActivityImpl();
+    peerGroupActivity.setRun(run1);
     peerGroup1 = new PeerGroupImpl();
+    peerGroup1.setPeerGroupActivity(peerGroupActivity);
     peerGroup1.addMember(workgroup1);
     peerGroups.add(peerGroup1);
     peerGroup2 = new PeerGroupImpl();
@@ -67,6 +69,10 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   protected void expectPeerGroupCreationException() throws Exception {
     expect(peerGroupService.getPeerGroup(workgroup1, peerGroupActivity))
         .andThrow(new PeerGroupCreationException());
+  }
+
+  protected void expectUserHasRunWritePermission(boolean hasPermission) {
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(hasPermission);
   }
 
   protected void verifyAll() {
