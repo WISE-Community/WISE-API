@@ -36,11 +36,15 @@ public class PeerGroupCreateController {
       @PathVariable("periodId") PersistentGroup period, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth)
       throws PeerGroupActivityNotFoundException {
-    if (runService.hasWritePermission(auth, run)) {
+    if (canCreatePeerGroup(run, period, auth)) {
       PeerGroupActivity activity =
           peerGroupActivityService.getByComponent(run, nodeId, componentId);
       return peerGroupCreateService.create(activity, period);
     }
     throw new AccessDeniedException("Not permitted");
+  }
+
+  private boolean canCreatePeerGroup(RunImpl run, PersistentGroup period, Authentication auth) {
+    return runService.hasWritePermission(auth, run) && run.getPeriods().contains(period);
   }
 }
