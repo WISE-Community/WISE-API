@@ -35,6 +35,18 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
   }
 
   @Test
+  public void create_PeriodNotInRun_ThrowException() throws Exception {
+    expectUserHasRunWritePermission(true);
+    replayAll();
+    try {
+      controller.create(run1, run2Period2, run1Node1Id, run1Component1Id, teacherAuth);
+      fail("Expected AccessDeniedException, but was not thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyAll();
+  }
+
+  @Test
   public void create_PeerGroupActivityNotFound_ThrowException() throws Exception {
     expectUserHasRunWritePermission(true);
     expectPeerGroupActivityNotFound();
