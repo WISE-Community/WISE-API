@@ -70,7 +70,7 @@ public abstract class APIControllerTest {
   protected Long projectId3 = 3L;
   protected RunImpl run1, run2, run3;
   protected List<Tag> run1Tags;
-  protected Group run1Period1, run1Period2, run2Period2, run3Period4;
+  protected PersistentGroup run1Period1, run1Period2, run2Period2, run3Period4;
   protected Long run1Period1Id = 1L;
   protected Long run1Period2Id = 2L;
   protected Long run2Period2Id = 3L;
@@ -169,11 +169,11 @@ public abstract class APIControllerTest {
     HashSet<Group> run1Periods = new HashSet<Group>(Arrays.asList(run1Period1, run1Period2));
     run1 = createRun(runId1, teacher1, new Date(), new Date(), 3, RUN1_RUNCODE, project1,
         run1Periods);
-    run2Period2 = createPeriod(run2Period2Id, "2", student1);
+    run2Period2 = createPeriod(run2Period2Id, "Run2Period2", student1);
     HashSet<Group> run2Periods = new HashSet<Group>(Arrays.asList(run2Period2));
     run2 = createRun(runId2, teacher1, new Date(), new Date(), 3, RUN2_RUNCODE, project2,
         run2Periods);
-    run3Period4 = createPeriod(run3Period4Id, "4", student1);
+    run3Period4 = createPeriod(run3Period4Id, "Run3Period4", student1);
     HashSet<Group> run3Periods = new HashSet<Group>(Arrays.asList(run3Period4));
     run3 = createRun(runId3, teacher2, new Date(), new Date(), 3, RUN3_RUNCODE, project3,
         run3Periods);
@@ -308,15 +308,15 @@ public abstract class APIControllerTest {
     return project;
   }
 
-  protected Group createPeriod(Long id, String name) {
-    Group period = new PersistentGroup();
+  protected PersistentGroup createPeriod(Long id, String name) {
+    PersistentGroup period = new PersistentGroup();
     period.setId(id);
     period.setName(name);
     return period;
   }
 
-  protected Group createPeriod(Long id, String name, User student) {
-    Group period = createPeriod(id, name);
+  protected PersistentGroup createPeriod(Long id, String name, User student) {
+    PersistentGroup period = createPeriod(id, name);
     period.addMember(student);
     return period;
   }
