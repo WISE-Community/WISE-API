@@ -33,6 +33,18 @@ public class PeerGroupMembershipControllerTest extends AbstractPeerGroupAPIContr
   }
 
   @Test
+  public void addMember_WorkgroupNotInRun_ThrowAccessDenied() {
+    expectUserHasRunWritePermission(true);
+    replayAll();
+    try {
+      controller.addMember(peerGroup1, workgroup3, teacherAuth);
+      fail("Expected AccessDeniedException, but was not thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyAll();
+  }
+
+  @Test
   public void addMember_ReturnModifiedGroup() {
     expectUserHasRunWritePermission(true);
     expectAddMember();
