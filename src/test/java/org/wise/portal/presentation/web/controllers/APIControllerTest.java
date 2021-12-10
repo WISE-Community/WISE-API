@@ -86,9 +86,10 @@ public abstract class APIControllerTest {
   protected Long teacher1Id = 94210L;
   protected Long teacher2Id = 94211L;
   protected TeacherUserDetails teacher1UserDetails, teacher2UserDetails, admin1UserDetails;
-  protected WorkgroupImpl workgroup1, workgroup2, teacher1Run1Workgroup;
+  protected WorkgroupImpl workgroup1, workgroup2, workgroup3, teacher1Run1Workgroup;
   protected Long workgroup1Id = 1L;
   protected Long workgroup2Id = 2L;
+  protected Long workgroup3Id = 3L;
 
   protected String run1Node1Id = "run1Node1";
 
@@ -183,6 +184,7 @@ public abstract class APIControllerTest {
   private void createWorkgroups() {
     workgroup1 = createWorkgroup(workgroup1Id, run1, run1Period1, student1);
     workgroup2 = createWorkgroup(workgroup2Id, run1, run1Period1, student2);
+    workgroup3 = createWorkgroup(workgroup3Id, run2, run2Period2, student1);
     teacher1Run1Workgroup = createTeacherWorkgroup(run1, teacher1);
   }
 

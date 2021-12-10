@@ -75,5 +75,6 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
     members.add(run1Workgroup2);
     peerGroup1 = new PeerGroupImpl(activity, run1Period1, members);
     peerGroups.add(peerGroup1);
+    peerGroup2 = new PeerGroupImpl(activity, run1Period1, new HashSet<Workgroup>());
   }
 }
