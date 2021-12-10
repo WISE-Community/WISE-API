@@ -25,6 +25,7 @@ package org.wise.portal.service.peergroup;
 
 import java.util.List;
 
+import org.json.JSONException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
@@ -56,8 +57,8 @@ public interface PeerGroupService {
    * @throws PeerGroupCreationException the PeerGroup cannot be created for other reasons
    * like an error occurred while grouping members
    */
-  PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
-      throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException;
+  PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity) throws JSONException,
+      PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException;
 
   /**
    * Gets all the PeerGroups for the specified PeerGroupActivity
@@ -75,5 +76,6 @@ public interface PeerGroupService {
 
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
 
-  public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
+  public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId,
+      String componentId);
 }

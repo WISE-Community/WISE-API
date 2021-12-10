@@ -23,6 +23,7 @@
  */
 package org.wise.portal.presentation.web.controllers.peergroup;
 
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -69,7 +70,7 @@ public class PeerGroupAPIController {
   @GetMapping("/{runId}/{workgroupId}/{nodeId}/{componentId}")
   PeerGroup getPeerGroup(@PathVariable Long runId, @PathVariable Long workgroupId,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
-      throws ObjectNotFoundException, PeerGroupActivityNotFoundException,
+      throws JSONException, ObjectNotFoundException, PeerGroupActivityNotFoundException,
       PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
     Run run = runService.retrieveById(runId);
     Workgroup workgroup = workgroupService.retrieveById(workgroupId);
@@ -82,7 +83,7 @@ public class PeerGroupAPIController {
   }
 
   private PeerGroup getPeerGroup(Run run, String nodeId, String componentId, Workgroup workgroup)
-      throws PeerGroupActivityNotFoundException, PeerGroupCreationException,
+      throws JSONException, PeerGroupActivityNotFoundException, PeerGroupCreationException,
       PeerGroupActivityThresholdNotSatisfiedException {
     PeerGroupActivity activity = peerGroupActivityService.getByComponent(run, nodeId, componentId);
     return peerGroupService.getPeerGroup(workgroup, activity);
