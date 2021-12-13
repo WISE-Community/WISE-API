@@ -42,6 +42,7 @@ import org.wise.portal.service.WISEServiceTest;
 
 /**
  * @author Hiroki Terashima
+ * @author Geoffrey Kwan
  */
 public class PeerGroupServiceTestHelper extends WISEServiceTest {
 
@@ -63,7 +64,7 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
         run1Node1Id, run1Component1Id, 2, 50, 2);
   }
 
-  public PeerGroupActivity createPeerGroupActivity(Run run, Component component, String componentId,
+  private PeerGroupActivity createPeerGroupActivity(Run run, Component component, String componentId,
       String logicName, String logicNodeId, String logicComponentId, Integer logicThresholdCount,
       Integer logicThresholdPercent, Integer maxMembershipCount) throws JSONException {
     String peerGroupActivityComponentString = createPeerGroupActivityComponentString(componentId,
@@ -73,7 +74,7 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
         new ProjectComponent(new JSONObject(peerGroupActivityComponentString)));
   }
 
-  public String createPeerGroupActivityComponentString(String componentId, String logicName,
+  private String createPeerGroupActivityComponentString(String componentId, String logicName,
       String logicNodeId, String logicComponentId, Integer logicThresholdCount,
       Integer logicThresholdPercent, Integer maxMembershipCount) {
     String logic = createLogicString(logicName, logicNodeId, logicComponentId);
@@ -81,7 +82,7 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
         logicThresholdPercent, maxMembershipCount);
   }
 
-  public String createPeerGroupActivityComponentString(String componentId, String logic,
+  private String createPeerGroupActivityComponentString(String componentId, String logic,
       Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount) {
     return new StringBuilder()
         .append("{")
@@ -94,7 +95,7 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
         .toString();
   }
 
-  public String createLogicString(String name, String nodeId, String componentId) {
+  private String createLogicString(String name, String nodeId, String componentId) {
     return new StringBuilder()
         .append("[")
         .append("  {")
