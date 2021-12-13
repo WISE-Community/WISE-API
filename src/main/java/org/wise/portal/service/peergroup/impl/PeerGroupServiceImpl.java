@@ -73,9 +73,14 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Override
   public PeerGroup getPeerGroup(Workgroup workgroup, PeerGroupActivity activity)
-      throws PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
+      throws JSONException, PeerGroupActivityThresholdNotSatisfiedException,
+      PeerGroupCreationException {
     PeerGroup peerGroup = peerGroupDao.getByWorkgroupAndActivity(workgroup, activity);
-    return peerGroup != null ? peerGroup : this.createPeerGroup(workgroup, activity);
+    if (activity.getLogicName().equals("manual")) {
+      return peerGroup;
+    } else {
+      return peerGroup != null ? peerGroup : this.createPeerGroup(workgroup, activity);
+    }
   }
 
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGroupActivity activity)

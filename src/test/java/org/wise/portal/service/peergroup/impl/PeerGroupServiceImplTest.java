@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -80,7 +81,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   @Mock
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  PeerGroupActivity activity;
+  PeerGroupActivity activity, manualActivity;
 
   PeerGroup peerGroup;
 
@@ -91,6 +92,7 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     super.setUp();
     PeerGroupServiceTestHelper testHelper = new PeerGroupServiceTestHelper(run1, run1Component2);
     activity = testHelper.activity;
+    manualActivity = testHelper.manualActivity;
     peerGroup = testHelper.peerGroup1;
     peerGroups = testHelper.peerGroups;
   }
@@ -172,6 +174,24 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
     expectLastCall();
     replayAll();
     assertEquals(2, service.getPeerGroup(run1Workgroup1, activity).getMembers().size());
+    verifyAll();
+  }
+
+  @Test
+  public void getPeerGroup_ManualLogicPeerGroupNotExist_ReturnNull() throws Exception {
+    expectPeerGroupFromDB(null, manualActivity);
+    replayAll();
+    assertNull(service.getPeerGroup(run1Workgroup1, manualActivity));
+    verifyAll();
+  }
+
+  @Test
+  public void getPeerGroup_ManualLogicPeerGroupExists_ReturnPeerGroup() throws Exception {
+    PeerGroup peerGroup = new PeerGroupImpl(manualActivity, run1Period1,
+        new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
+    expectPeerGroupFromDB(peerGroup, manualActivity);
+    replayAll();
+    assertEquals(peerGroup, service.getPeerGroup(run1Workgroup1, manualActivity));
     verifyAll();
   }
 
@@ -267,6 +287,10 @@ public class PeerGroupServiceImplTest extends WISEServiceTest {
   }
 
   private void expectPeerGroupFromDB(PeerGroup peerGroup) {
+    expectPeerGroupFromDB(peerGroup, activity);
+  }
+
+  private void expectPeerGroupFromDB(PeerGroup peerGroup, PeerGroupActivity activity) {
     expect(peerGroupDao.getByWorkgroupAndActivity(run1Workgroup1, activity)).andReturn(peerGroup);
   }
 

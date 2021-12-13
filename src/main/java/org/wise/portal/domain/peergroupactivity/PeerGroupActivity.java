@@ -40,6 +40,8 @@ public interface PeerGroupActivity {
 
   String getLogicComponentId() throws JSONException;
 
+  String getLogicName() throws JSONException;
+
   String getLogicNodeId() throws JSONException;
 
   int getLogicThresholdCount();

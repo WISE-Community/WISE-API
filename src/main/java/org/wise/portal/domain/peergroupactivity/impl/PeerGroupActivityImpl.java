@@ -53,8 +53,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "peer_group_activities", indexes = {
-  @Index(columnList = "runId", name = "peer_group_activities_run_id_index")
-})
+    @Index(columnList = "runId", name = "peer_group_activities_run_id_index") })
 @Getter
 @Setter
 public class PeerGroupActivityImpl implements PeerGroupActivity {
@@ -63,8 +62,8 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id = null;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = { CascadeType.PERSIST },
-      fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId", nullable = false)
   @JsonIgnore
   private Run run;
@@ -111,5 +110,10 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
 
   private JSONObject getFirstLogicJSON() throws JSONException {
     return new JSONArray(this.logic).getJSONObject(0);
+  }
+
+  public String getLogicName() throws JSONException {
+    JSONObject logic = getFirstLogicJSON();
+    return logic.getString("name");
   }
 }

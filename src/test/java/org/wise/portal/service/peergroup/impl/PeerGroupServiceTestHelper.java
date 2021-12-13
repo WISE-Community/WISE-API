@@ -24,10 +24,11 @@
 package org.wise.portal.service.peergroup.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.wise.portal.dao.Component;
 import org.wise.portal.domain.peergroup.PeerGroup;
@@ -41,26 +42,11 @@ import org.wise.portal.service.WISEServiceTest;
 
 /**
  * @author Hiroki Terashima
+ * @author Geoffrey Kwan
  */
 public class PeerGroupServiceTestHelper extends WISEServiceTest {
 
-  String logic = "[{\"name\": \"maximizeDifferentIdeas\"," +
-      "\"nodeId\": \"" + run1Node1Id + "\", \"componentId\": \"" + run1Component1Id + "\"}]";
-
-  int logicThresholdCount = 3;
-
-  int logicThresholdPercent = 50;
-
-  int maxMembershipCount = 2;
-
-  String peerGroupActivityComponentString =
-      "{\"id\":\"" + run1Component2Id + "\"," +
-      "\"logic\":" + logic + "," +
-      "\"logicThresholdCount\":" + logicThresholdCount + "," +
-      "\"logicThresholdPercent\":" + logicThresholdPercent + "," +
-      "\"maxMembershipCount\":" + maxMembershipCount + "}";
-
-  PeerGroupActivity activity;
+  PeerGroupActivity activity, manualActivity;
 
   PeerGroup peerGroup1, peerGroup2, peerGroup3;
 
@@ -68,13 +54,56 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
 
   public PeerGroupServiceTestHelper(Run run, Component component) throws Exception {
     super.setUp();
-    activity = new PeerGroupActivityImpl(run, component.nodeId,
-        new ProjectComponent(new JSONObject(peerGroupActivityComponentString)));
-    Set<Workgroup> members = new HashSet<Workgroup>();
-    members.add(run1Workgroup1);
-    members.add(run1Workgroup2);
-    peerGroup1 = new PeerGroupImpl(activity, run1Period1, members);
+    activity = createPeerGroupActivity(run, component, run1Component2Id, "maximizeDifferentIdeas",
+        run1Node1Id, run1Component1Id, 3, 50, 2);
+    peerGroup1 = new PeerGroupImpl(activity, run1Period1,
+        new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
     peerGroup2 = new PeerGroupImpl(activity, run1Period1, new HashSet<Workgroup>());
+    manualActivity = createPeerGroupActivity(run, component, run1Component2Id, "manual",
+        run1Node1Id, run1Component1Id, 2, 50, 2);
+  }
+
+  private PeerGroupActivity createPeerGroupActivity(Run run, Component component, String componentId,
+      String logicName, String logicNodeId, String logicComponentId, Integer logicThresholdCount,
+      Integer logicThresholdPercent, Integer maxMembershipCount) throws JSONException {
+    String peerGroupActivityComponentString = createPeerGroupActivityComponentString(componentId,
+        logicName, logicNodeId, logicComponentId, logicThresholdCount, logicThresholdPercent,
+        maxMembershipCount);
+    return new PeerGroupActivityImpl(run, component.nodeId,
+        new ProjectComponent(new JSONObject(peerGroupActivityComponentString)));
+  }
+
+  private String createPeerGroupActivityComponentString(String componentId, String logicName,
+      String logicNodeId, String logicComponentId, Integer logicThresholdCount,
+      Integer logicThresholdPercent, Integer maxMembershipCount) {
+    String logic = createLogicString(logicName, logicNodeId, logicComponentId);
+    return createPeerGroupActivityComponentString(componentId, logic, logicThresholdCount,
+        logicThresholdPercent, maxMembershipCount);
+  }
+
+  private String createPeerGroupActivityComponentString(String componentId, String logic,
+      Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount) {
+    return new StringBuilder()
+        .append("{")
+        .append("  \"id\": \"" + componentId + "\",")
+        .append("  \"logic\": " + logic + ",")
+        .append("  \"logicThresholdCount\": \"" + logicThresholdCount + "\",")
+        .append("  \"logicThresholdPercent\": \"" + logicThresholdPercent + "\",")
+        .append("  \"maxMembershipCount\": \"" + maxMembershipCount + "\"")
+        .append("}")
+        .toString();
+  }
+
+  private String createLogicString(String name, String nodeId, String componentId) {
+    return new StringBuilder()
+        .append("[")
+        .append("  {")
+        .append("    \"name\": \"" + name + "\",")
+        .append("    \"nodeId\": \"" + nodeId + "\",")
+        .append("    \"componentId\": \"" + componentId + "\"")
+        .append("  }")
+        .append("]")
+        .toString();
   }
 }

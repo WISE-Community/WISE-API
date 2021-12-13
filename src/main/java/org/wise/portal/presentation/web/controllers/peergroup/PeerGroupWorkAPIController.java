@@ -2,6 +2,7 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 
 import java.util.List;
 
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
@@ -66,7 +67,7 @@ public class PeerGroupWorkAPIController {
   @GetMapping("/{runId}/{workgroupId}/{nodeId}/{componentId}/student-work")
   List<StudentWork> getPeerGroupWork(@PathVariable Long runId, @PathVariable Long workgroupId,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
-      throws ObjectNotFoundException, PeerGroupActivityNotFoundException,
+      throws JSONException, ObjectNotFoundException, PeerGroupActivityNotFoundException,
       PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
     Run run = runService.retrieveById(runId);
     User user = userService.retrieveUserByUsername(auth.getName());
