@@ -23,22 +23,23 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
-import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.service.WISEServiceTest;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -46,7 +47,7 @@ import org.wise.vle.domain.work.StudentWork;
  * @author Hiroki Terashima
  */
 @RunWith(EasyMockRunner.class)
-public class PeerGroupThresholdServiceTest extends WISEServiceTest {
+public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
 
   @TestSubject
   private PeerGroupThresholdServiceImpl service = new PeerGroupThresholdServiceImpl();
@@ -59,17 +60,6 @@ public class PeerGroupThresholdServiceTest extends WISEServiceTest {
 
   @Mock
   private StudentWorkDao<StudentWork> studentWorkDao;
-
-  PeerGroupActivity activity;
-
-  PeerGroupServiceTestHelper testHelper;
-
-  @Before
-  public void setUp() throws Exception {
-    super.setUp();
-    testHelper = new PeerGroupServiceTestHelper(run1, run1Component2);
-    activity = testHelper.activity;
-  }
 
   @Test
   public void isCompletionThresholdSatisfied_LessThan2Complete_ReturnFalse() {
@@ -135,7 +125,7 @@ public class PeerGroupThresholdServiceTest extends WISEServiceTest {
 
   private void expectTwoWorkgroupsInPeerGroup() {
     expect(peerGroupDao.getListByComponent(run1, activity.getNodeId(), activity.getComponentId()))
-        .andReturn(Arrays.asList(testHelper.peerGroup1));
+        .andReturn(Arrays.asList(peerGroup1));
   }
 
   private void expectOneWorkgroupsCompletedLogicComponent() {

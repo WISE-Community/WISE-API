@@ -23,8 +23,10 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
-import static org.junit.Assert.*;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 import java.util.Map;
@@ -32,14 +34,11 @@ import java.util.Map;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.service.WISEServiceTest;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.run.RunService;
 
@@ -48,7 +47,7 @@ import org.wise.portal.service.run.RunService;
  */
 @SuppressWarnings("unchecked")
 @RunWith(EasyMockRunner.class)
-public class PeerGroupInfoServiceImplTest extends WISEServiceTest {
+public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
 
   @TestSubject
   private PeerGroupInfoServiceImpl service = new PeerGroupInfoServiceImpl();
@@ -59,21 +58,6 @@ public class PeerGroupInfoServiceImplTest extends WISEServiceTest {
   @Mock
   private RunService runService;
 
-  PeerGroupActivity activity;
-
-  PeerGroup peerGroup;
-
-  List<PeerGroup> peerGroups;
-
-  @Before
-  public void setUp() throws Exception {
-    super.setUp();
-    PeerGroupServiceTestHelper testHelper = new PeerGroupServiceTestHelper(run1, run1Component2);
-    activity = testHelper.activity;
-    peerGroup = testHelper.peerGroup1;
-    peerGroups = testHelper.peerGroups;
-  }
-
   @Test
   public void getPeerGroupInfo_ReturnPeerGroupInfo() {
     expectGetPeerGroups();
@@ -81,7 +65,7 @@ public class PeerGroupInfoServiceImplTest extends WISEServiceTest {
     replay(peerGroupService, runService);
     Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(activity);
     assertEquals(1, ((List<PeerGroup>) peerGroupInfo.get("peerGroups")).size());
-    assertEquals(5, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
+    assertEquals(3, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
     verify(peerGroupService, runService);
   }
 
