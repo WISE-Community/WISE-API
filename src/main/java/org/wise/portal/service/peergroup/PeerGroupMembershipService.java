@@ -16,4 +16,13 @@ public interface PeerGroupMembershipService {
    * @return PeerGroup updated PeerGroup
    */
   PeerGroup addMember(PeerGroup peerGroup, Workgroup workgroup);
+
+  /**
+   * Remove a workgroup from the PeerGroup. If the workgroup is not a member of the PeerGroup,
+   * do nothing.
+   * @param peerGroup PeerGroup to remove workgroup from membership
+   * @param workgroup Workgroup to remove from PeerGroup
+   * @return PeerGroup updated PeerGroup
+   */
+  PeerGroup removeMember(PeerGroup peerGroup, Workgroup workgroup);
 }

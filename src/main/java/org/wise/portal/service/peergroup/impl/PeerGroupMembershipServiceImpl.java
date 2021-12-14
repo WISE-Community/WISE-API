@@ -27,8 +27,9 @@ public class PeerGroupMembershipServiceImpl implements PeerGroupMembershipServic
     return peerGroup;
   }
 
-  private void removeMember(PeerGroup peerGroup, Workgroup workgroup) {
+  public PeerGroup removeMember(PeerGroup peerGroup, Workgroup workgroup) {
     peerGroup.removeMember(workgroup);
     peerGroupDao.save(peerGroup);
+    return peerGroup;
   }
 }

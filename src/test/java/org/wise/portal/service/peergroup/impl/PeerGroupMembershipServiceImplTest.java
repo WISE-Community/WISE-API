@@ -56,6 +56,15 @@ public class PeerGroupMembershipServiceImplTest extends WISEServiceTest {
     verify(peerGroupDao);
   }
 
+  @Test
+  public void removeMember_ReturnUpdatedGroup() {
+    expectSavePeerGroup(1);
+    replay(peerGroupDao);
+    PeerGroup peerGroup = service.removeMember(testHelper.peerGroup1, run1Workgroup1);
+    assertEquals(2, peerGroup.getMembers().size());
+    verify(peerGroupDao);
+  }
+
   private void expectSavePeerGroup(int times) {
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall().times(times);
