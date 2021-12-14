@@ -53,8 +53,10 @@ public class PeerGroupMembershipServiceImplTest extends PeerGroupServiceTest {
   public void removeMember_ReturnUpdatedGroup() {
     expectSavePeerGroup(1);
     replay(peerGroupDao);
-    PeerGroup peerGroup = service.removeMember(testHelper.peerGroup1, run1Workgroup1);
-    assertEquals(2, peerGroup.getMembers().size());
+    assertEquals(2, peerGroup1.getMembers().size());
+    PeerGroup peerGroup = service.removeMember(peerGroup1, run1Workgroup1);
+    assertEquals(1, peerGroup.getMembers().size());
+    assertEquals(1, peerGroup1.getMembers().size());
     verify(peerGroupDao);
   }
 
