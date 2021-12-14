@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Before;
 import org.wise.portal.dao.Component;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
@@ -44,7 +45,7 @@ import org.wise.portal.service.WISEServiceTest;
  * @author Hiroki Terashima
  * @author Geoffrey Kwan
  */
-public class PeerGroupServiceTestHelper extends WISEServiceTest {
+public class PeerGroupServiceTest extends WISEServiceTest {
 
   PeerGroupActivity activity, manualActivity;
 
@@ -52,15 +53,16 @@ public class PeerGroupServiceTestHelper extends WISEServiceTest {
 
   List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
 
-  public PeerGroupServiceTestHelper(Run run, Component component) throws Exception {
+  @Before
+  public void setUp() throws Exception {
     super.setUp();
-    activity = createPeerGroupActivity(run, component, run1Component2Id, "maximizeDifferentIdeas",
-        run1Node1Id, run1Component1Id, 3, 50, 2);
+    activity = createPeerGroupActivity(run1, run1Component2, run1Component2Id,
+        "maximizeDifferentIdeas", run1Node1Id, run1Component1Id, 3, 50, 2);
     peerGroup1 = new PeerGroupImpl(activity, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
     peerGroup2 = new PeerGroupImpl(activity, run1Period1, new HashSet<Workgroup>());
-    manualActivity = createPeerGroupActivity(run, component, run1Component2Id, "manual",
+    manualActivity = createPeerGroupActivity(run1, run1Component2, run1Component2Id, "manual",
         run1Node1Id, run1Component1Id, 2, 50, 2);
   }
 
