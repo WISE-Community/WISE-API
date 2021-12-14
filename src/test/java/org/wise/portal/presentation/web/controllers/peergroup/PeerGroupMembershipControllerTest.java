@@ -53,9 +53,45 @@ public class PeerGroupMembershipControllerTest extends AbstractPeerGroupAPIContr
     verifyAll();
   }
 
+  @Test
+  public void removeMember_UserHasNoWritePermission_ThrowAccessDenied() {
+    expectUserHasRunWritePermission(false);
+    replayAll();
+    try {
+      controller.removeMember(peerGroup1, workgroup1, teacherAuth);
+      fail("Expected AccessDeniedException, but was not thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyAll();
+  }
+
+  @Test
+  public void removeMember_WorkgroupNotInRun_ThrowAccessDenied() {
+    expectUserHasRunWritePermission(true);
+    replayAll();
+    try {
+      controller.removeMember(peerGroup1, workgroup3, teacherAuth);
+      fail("Expected AccessDeniedException, but was not thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyAll();
+  }
+
+  @Test
+  public void removeMember_ReturnModifiedGroup() {
+    expectUserHasRunWritePermission(true);
+    expectRemoveMember();
+    replayAll();
+    controller.removeMember(peerGroup1, workgroup1, teacherAuth);
+    verifyAll();
+  }
 
   private void expectAddMember() {
     expect(peerGroupMembershipService.addMember(peerGroup1, workgroup1)).andReturn(peerGroup1);
+  }
+
+  private void expectRemoveMember() {
+    expect(peerGroupMembershipService.removeMember(peerGroup1, workgroup1)).andReturn(peerGroup1);
   }
 
   @Override
