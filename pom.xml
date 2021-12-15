@@ -537,5 +537,6 @@
     <startup.listeners>
     </startup.listeners>
     <m2e.apt.activation>disabled</m2e.apt.activation>
+    <log4j2.version>2.16.0</log4j2.version>
   </properties>
 </project>
