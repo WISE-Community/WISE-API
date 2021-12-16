@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.run.RunService;
@@ -77,14 +78,15 @@ public class TeacherRunAPIController {
   }
 
   @MessageMapping("/api/teacher/run/{runId}/node-to-period/{periodId}")
-  public void sendNodeToPeriod(Authentication auth, @DestinationVariable("runId") RunImpl run,
+  public void sendNodeToPeriod(Authentication auth, @DestinationVariable Long runId,
       @DestinationVariable Long periodId, @Payload String node)
       throws ObjectNotFoundException, JSONException {
+    Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();
       msg.put("type", "node");
       msg.put("node", new JSONObject(node));
-      msg.put("topic", String.format("/topic/classroom/%s/%s", run.getId(), periodId));
+      msg.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
       redisPublisher.publish(msg.toString());
     }
   }
