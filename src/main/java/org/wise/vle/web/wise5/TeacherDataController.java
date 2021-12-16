@@ -1,32 +1,22 @@
 package org.wise.vle.web.wise5;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -46,6 +36,7 @@ import org.wise.vle.domain.work.StudentWork;
 /**
  * Controller for handling GET and POST of WISE5 Teacher related data like annotations.
  */
+@Secured("ROLE_TEACHER")
 @Controller("wise5TeacherDataController")
 public class TeacherDataController {
 
@@ -59,125 +50,7 @@ public class TeacherDataController {
   private RunService runService;
 
   @Autowired
-  private Environment appProperties;
-
-  @Autowired
   private MessagePublisher redisPublisher;
-
-  /**
-   * Handles requests for exporting of data for teachers/researchers like student work, events,
-   * notebook items
-   */
-  @ResponseBody
-  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/{runId}/{exportType}")
-  public void getWISE5TeacherExport(@PathVariable Integer runId, @PathVariable String exportType,
-      @RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "workgroupId", required = false) Integer workgroupId,
-      @RequestParam(value = "isAutoSave", required = false) Boolean isAutoSave,
-      @RequestParam(value = "isSubmit", required = false) Boolean isSubmit,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
-      @RequestParam(value = "componentId", required = false) String componentId,
-      @RequestParam(value = "componentType", required = false) String componentType,
-      @RequestParam(value = "components", required = false) String[] components,
-      HttpServletResponse response) {
-    try {
-      User signedInUser = ControllerUtil.getSignedInUser();
-      Run run = runService.retrieveById(new Long(runId));
-      User owner = run.getOwner();
-      Set<User> sharedOwners = run.getSharedowners();
-
-      if (owner.equals(signedInUser) || sharedOwners.contains(signedInUser)
-          || signedInUser.isAdmin()) {
-        if ("notifications".equals(exportType)) {
-          JSONArray resultArray = vleService.getNotificationsExport(runId);
-          PrintWriter writer = response.getWriter();
-          writer.write(resultArray.toString());
-          writer.close();
-        } else if ("studentAssets".equals(exportType)) {
-          String studentUploadsBaseDir = appProperties.getProperty("studentuploads_base_dir");
-          String sep = System.getProperty("file.separator");
-          String runStudentAssetsDir = studentUploadsBaseDir + sep + runId.toString() + sep;
-          String zipFileName = runId.toString() + "_student_uploads.zip";
-          response.setContentType("application/zip");
-          response.addHeader("Content-Disposition", "attachment;filename=\"" + zipFileName + "\"");
-          ServletOutputStream outputStream = response.getOutputStream();
-          ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(outputStream));
-          File zipFolder = new File(runStudentAssetsDir);
-          addFolderToZip(zipFolder, out, runStudentAssetsDir);
-          out.close();
-        }
-      } else {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-            "You are not authorized to access this page");
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (ObjectNotFoundException onfe) {
-      onfe.printStackTrace();
-    }
-  }
-
-  private void addFolderToZip(File folder, ZipOutputStream zip, String baseName)
-      throws IOException {
-    File[] files = folder.listFiles();
-    if (files != null) {
-      for (File file : files) {
-        if (file.isDirectory()) {
-          String name = file.getAbsolutePath().substring(baseName.length());
-          ZipEntry zipEntry = new ZipEntry(name + "/");
-          zip.putNextEntry(zipEntry);
-          zip.closeEntry();
-          addFolderToZip(file, zip, baseName);
-        } else {
-          String fileName = file.getAbsolutePath().substring(baseName.length());
-          ZipEntry zipEntry = new ZipEntry(fileName);
-          zip.putNextEntry(zipEntry);
-          IOUtils.copy(new FileInputStream(file), zip);
-          zip.closeEntry();
-        }
-      }
-    }
-  }
-
-  @RequestMapping(method = RequestMethod.GET, value = "/api/teacher/export/events")
-  public void getEvents(HttpServletResponse response, Authentication authentication,
-      @RequestParam(value = "runId", required = false) Integer runId,
-      @RequestParam(value = "includeStudentEvents", required = false) Boolean includeStudentEvents,
-      @RequestParam(value = "includeTeacherEvents", required = false) Boolean includeTeacherEvents)
-      throws JSONException, ObjectNotFoundException, IOException {
-    JSONObject result = new JSONObject();
-    Run run = runService.retrieveById(new Long(runId));
-    if (runService.hasReadPermission(authentication, run)) {
-      List<Event> events = getEvents(run, includeStudentEvents, includeTeacherEvents);
-      JSONArray eventsJSONArray = convertEventsToJSON(events);
-      result.put("events", eventsJSONArray);
-    }
-    PrintWriter writer = response.getWriter();
-    writer.write(result.toString());
-    writer.close();
-  }
-
-  List<Event> getEvents(Run run, Boolean includeStudentEvents, Boolean includeTeacherEvents) {
-    List<Event> events = vleService.getAllEvents(run);
-    if (includeStudentEvents && includeTeacherEvents) {
-      events = vleService.getAllEvents(run);
-    } else if (includeStudentEvents) {
-      events = vleService.getStudentEvents(run);
-    } else if (includeTeacherEvents) {
-      events = vleService.getTeacherEvents(run);
-    }
-    return events;
-  }
-
-  JSONArray convertEventsToJSON(List<Event> events) {
-    JSONArray eventsJSONArray = new JSONArray();
-    for (int e = 0; e < events.size(); e++) {
-      Event eventObject = events.get(e);
-      eventsJSONArray.put(eventObject.toJSON());
-    }
-    return eventsJSONArray;
-  }
 
   @GetMapping("/api/teacher/data")
   @ResponseBody
@@ -237,7 +110,7 @@ public class TeacherDataController {
     return data;
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/api/teacher/data")
+  @PostMapping("/api/teacher/data")
   public void postWISETeacherData(HttpServletResponse response,
       @RequestParam(value = "workgroupId", required = false) Integer workgroupId,
       @RequestParam(value = "projectId", required = false) Integer projectId,
