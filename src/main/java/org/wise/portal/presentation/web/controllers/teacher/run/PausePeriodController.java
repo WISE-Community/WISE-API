@@ -4,9 +4,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
+@Secured({ "ROLE_TEACHER" })
 @Controller
 public class PausePeriodController {
 

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -13,6 +14,7 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
+@Secured({ "ROLE_TEACHER" })
 @Controller
 public class SendNodeToPeriodController {
 
