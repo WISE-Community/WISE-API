@@ -365,6 +365,10 @@
       <artifactId>spring-boot-starter-websocket</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-messaging</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
@@ -530,5 +534,6 @@
     <startup.listeners>
     </startup.listeners>
     <m2e.apt.activation>disabled</m2e.apt.activation>
+    <log4j2.version>2.16.0</log4j2.version>
   </properties>
 </project>
