@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,5 +53,9 @@ public class ProjectComponent {
 
   public int getInt(String key) throws JSONException {
     return this.componentJSON.getInt(key);
+  }
+
+  public JSONArray getJSONArray(String key) throws JSONException {
+    return this.componentJSON.getJSONArray(key);
   }
 }

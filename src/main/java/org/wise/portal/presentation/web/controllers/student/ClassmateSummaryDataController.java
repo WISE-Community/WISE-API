@@ -15,6 +15,7 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -28,11 +29,11 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
   final String SUMMARY_TYPE = "Summary";
 
   @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}/{otherNodeId}/{otherComponentId}/{source}")
-  public List<StudentWork> getClassmateSummaryWork(Authentication auth, @PathVariable Long runId,
-      @PathVariable Long periodId, @PathVariable String nodeId, @PathVariable String componentId,
-      @PathVariable String otherNodeId, @PathVariable String otherComponentId,
-      @PathVariable String source) throws IOException, JSONException, ObjectNotFoundException {
-    Run run = runService.retrieveById(runId);
+  public List<StudentWork> getClassmateSummaryWork(Authentication auth,
+      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable String componentId, @PathVariable String otherNodeId,
+      @PathVariable String otherComponentId, @PathVariable String source)
+      throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
       if (PERIOD_SOURCE.equals(source)) {
@@ -46,11 +47,10 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
 
   @GetMapping("/annotations/{runId}/{periodId}/{nodeId}/{componentId}/{otherNodeId}/{otherComponentId}/{source}")
   public List<Annotation> getClassmateSummaryAnnotations(Authentication auth,
-      @PathVariable Long runId, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
       @PathVariable String componentId, @PathVariable String otherNodeId,
       @PathVariable String otherComponentId, @PathVariable String source)
       throws IOException, JSONException, ObjectNotFoundException {
-    Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
       if (PERIOD_SOURCE.equals(source)) {

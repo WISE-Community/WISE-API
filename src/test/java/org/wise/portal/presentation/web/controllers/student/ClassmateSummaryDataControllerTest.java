@@ -35,7 +35,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     expectIsUserInRun(false);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateSummaryWork(studentAuth, runId1, run1Period1Id, NODE_ID1,
+        () -> controller.getClassmateSummaryWork(studentAuth, run1, run1Period1Id, NODE_ID1,
             COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID, controller.PERIOD_SOURCE));
     verifyAll();
   }
@@ -47,7 +47,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateSummaryWork(studentAuth, runId1, run1Period1Id, NODE_ID1,
+        () -> controller.getClassmateSummaryWork(studentAuth, run1, run1Period1Id, NODE_ID1,
             COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID, controller.PERIOD_SOURCE));
     verifyAll();
   }
@@ -60,7 +60,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
         OTHER_COMPONENT_ID, controller.PERIOD_SOURCE);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateSummaryWork(studentAuth, runId1, run1Period1Id, NODE_ID1,
+        () -> controller.getClassmateSummaryWork(studentAuth, run1, run1Period1Id, NODE_ID1,
             COMPONENT_ID1, OTHER_NODE_ID_NOT_ALLOWED, OTHER_COMPONENT_ID_NOT_ALLOWED,
             controller.PERIOD_SOURCE));
     verifyAll();
@@ -92,7 +92,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     replayAll();
     try {
       List<StudentWork> classmateSummaryWork = controller.getClassmateSummaryWork(studentAuth,
-          runId1, run1Period1Id, NODE_ID1, COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID,
+          run1, run1Period1Id, NODE_ID1, COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID,
           source);
       assertEquals(classmateSummaryWork, studentWork);
     } catch (Exception e) {
@@ -129,7 +129,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     replayAll();
     try {
       List<Annotation> classmateSummaryAnnotations = controller.getClassmateSummaryAnnotations(
-          studentAuth, runId1, run1Period1Id, NODE_ID1, COMPONENT_ID1, OTHER_NODE_ID,
+          studentAuth, run1, run1Period1Id, NODE_ID1, COMPONENT_ID1, OTHER_NODE_ID,
           OTHER_COMPONENT_ID, source);
       assertEquals(classmateSummaryAnnotations, annotations);
     } catch (Exception e) {
