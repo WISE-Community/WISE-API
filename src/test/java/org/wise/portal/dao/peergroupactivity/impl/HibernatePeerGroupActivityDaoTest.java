@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.Component;
 import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.run.Run;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -46,7 +47,8 @@ public class HibernatePeerGroupActivityDaoTest extends WISEHibernateTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    createPeerGroupActivity(component1);
+    createPeerGroupActivityWithComponent(component1);
+    createPeerGroupActivityWithTag(run1, peerGroupActivityTag1);
   }
 
   @Test
@@ -57,11 +59,24 @@ public class HibernatePeerGroupActivityDaoTest extends WISEHibernateTest {
         componentNotExists.nodeId, componentNotExists.componentId));
   }
 
-  private void createPeerGroupActivity(Component component) {
+  @Test
+  public void getByTag() {
+    assertNotNull(peerGroupActivityDao.getByTag(run1, peerGroupActivityTag1));
+    assertNull(peerGroupActivityDao.getByTag(run1, "tagNotInDB"));
+  }
+
+  private void createPeerGroupActivityWithComponent(Component component) {
     PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
     peerGroupActivity.setRun(component.run);
     peerGroupActivity.setNodeId(component.nodeId);
     peerGroupActivity.setComponentId(component.componentId);
+    peerGroupActivityDao.save(peerGroupActivity);
+  }
+
+  private void createPeerGroupActivityWithTag(Run run, String peerGroupActivityTag) {
+    PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
+    peerGroupActivity.setRun(run);
+    peerGroupActivity.setTag(peerGroupActivityTag);
     peerGroupActivityDao.save(peerGroupActivity);
   }
 }

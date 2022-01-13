@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -143,6 +143,28 @@ public class PeerGroupActivityServiceImplTest {
       fail("PeerGroupActivityNotFoundException expected to be thrown, but was not thrown");
     } catch (PeerGroupActivityNotFoundException e) {
     }
+    verifyAll();
+  }
+
+  @Test
+  public void getByTag_notInDB_SaveAndReturnNewPeerGroupActivity() {
+    String tagNotInDB = "newPeerGroupActivityTag";
+    expect(peerGroupActivityDao.getByTag(run, tagNotInDB)).andReturn(null);
+    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
+    expectLastCall();
+    replayAll();
+    PeerGroupActivity activity = service.getByTag(run, tagNotInDB);
+    assertEquals(tagNotInDB, activity.getTag());
+    verifyAll();
+  }
+
+  @Test
+  public void getByTag_foundInDB_ReturnPeerGroupActivity() {
+    String tagInDB = "existingPeerGroupActivityTag";
+    PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    replayAll();
+    assertEquals(peerGroupActivity, service.getByTag(run, tagInDB));
     verifyAll();
   }
 }

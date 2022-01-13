@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -67,6 +67,21 @@ public class PeerGroupAPIController {
   @Autowired
   private PeerGroupActivityService peerGroupActivityService;
 
+  @GetMapping("/{runId}/{workgroupId}/{peerGroupActivityTag}")
+  PeerGroup getPeerGroup(@PathVariable Long runId, @PathVariable Long workgroupId,
+      @PathVariable String peerGroupActivityTag, Authentication auth)
+      throws JSONException, ObjectNotFoundException, PeerGroupActivityNotFoundException,
+      PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
+    Run run = runService.retrieveById(runId);
+    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
+    User user = userService.retrieveUserByUsername(auth.getName());
+    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
+      return getPeerGroup(run, peerGroupActivityTag, workgroup);
+    } else {
+      throw new AccessDeniedException("Not permitted");
+    }
+  }
+
   @GetMapping("/{runId}/{workgroupId}/{nodeId}/{componentId}")
   PeerGroup getPeerGroup(@PathVariable Long runId, @PathVariable Long workgroupId,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
@@ -80,6 +95,13 @@ public class PeerGroupAPIController {
     } else {
       throw new AccessDeniedException("Not permitted");
     }
+  }
+
+  private PeerGroup getPeerGroup(Run run, String peerGroupActivityTag, Workgroup workgroup)
+      throws JSONException, PeerGroupActivityNotFoundException, PeerGroupCreationException,
+      PeerGroupActivityThresholdNotSatisfiedException {
+    PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
+    return peerGroupService.getPeerGroup(workgroup, activity);
   }
 
   private PeerGroup getPeerGroup(Run run, String nodeId, String componentId, Workgroup workgroup)

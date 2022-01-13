@@ -62,6 +62,16 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
     return activity;
   }
 
+  @Override
+  public PeerGroupActivity getByTag(Run run, String tag) {
+    PeerGroupActivity activity = peerGroupActivityDao.getByTag(run, tag);
+    if (activity == null) {
+      activity = new PeerGroupActivityImpl(run, tag);
+      peerGroupActivityDao.save(activity);
+    }
+    return activity;
+  }
+
   private PeerGroupActivity getPeerGroupActivityFromUnit(Run run, String nodeId,
       String componentId) throws PeerGroupActivityNotFoundException {
     try {

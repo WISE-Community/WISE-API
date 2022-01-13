@@ -19,7 +19,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   private PeerGroupAPIController controller = new PeerGroupAPIController();
 
   @Test
-  public void getPeerGroup_WorkgroupNotAssociatedWithRun_AccessDenied() throws Exception {
+  public void getPeerGroupByComponent_WorkgroupNotAssociatedWithRun_AccessDenied() throws Exception {
     expectWorkgroupAssociatedWithRun(false);
     replayAll();
     try {
@@ -31,7 +31,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   @Test
-  public void getPeerGroup_PeerGroupActivityNotFound_ThrowException() throws Exception {
+  public void getPeerGroupByComponent_PeerGroupActivityNotFound_ThrowException() throws Exception {
     expectWorkgroupAssociatedWithRun(true);
     expectPeerGroupActivityNotFound();
     replayAll();
@@ -44,7 +44,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   @Test
-  public void getPeerGroup_PeerGroupThresholdNotMet_ThrowException() throws Exception {
+  public void getPeerGroupByComponent_PeerGroupThresholdNotMet_ThrowException() throws Exception {
     expectWorkgroupAssociatedWithRunAndActivityFound();
     expectPeerGroupThresholdNotSatisifed();
     replayAll();
@@ -57,7 +57,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   @Test
-  public void getPeerGroup_ErrorCreatingPeerGroup_ThrowException() throws Exception {
+  public void getPeerGroupByComponent_ErrorCreatingPeerGroup_ThrowException() throws Exception {
     expectWorkgroupAssociatedWithRunAndActivityFound();
     expectPeerGroupCreationException();
     replayAll();
@@ -70,7 +70,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   @Test
-  public void getPeerGroup_FoundExistingGroupOrGroupCreated_ReturnGroup() throws Exception {
+  public void getPeerGroupByComponent_FoundExistingGroupOrGroupCreated_ReturnGroup() throws Exception {
     expectWorkgroupAssociatedWithRunAndActivityFound();
     expectPeerGroupCreated();
     replayAll();
