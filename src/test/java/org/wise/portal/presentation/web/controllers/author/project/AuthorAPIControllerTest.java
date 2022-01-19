@@ -25,12 +25,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpSession;
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.portal.impl.PortalImpl;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.response.SimpleResponse;
+import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.session.SessionService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
@@ -42,6 +44,9 @@ public class AuthorAPIControllerTest extends APIControllerTest {
 
   @Mock
   private SessionService sessionService;
+
+  @Mock
+  private PeerGroupActivityService peerGroupActivityService;
 
   @Mock
   private MessagePublisher redisPublisher;
@@ -233,9 +238,8 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void saveProject_NoErrors_shouldReturnProjectSaved() throws Exception {
+  public void saveProject_NoAssociatedRun_shouldReturnProjectSaved() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    replay(userService);
     project1.setMetadata("{\"title\":\"Old Title\"}");
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
     projectService.evictProjectContentCache(projectId1);
@@ -247,13 +251,41 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expectLastCall();
     projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
     expectLastCall();
-    replay(projectService);
+    expect(runService.getProjectRuns(projectId1)).andReturn(new ArrayList<Run>());
+    replay(userService, projectService, runService);
     SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
-    verify(userService, projectService);
+    verify(userService, projectService, runService);
   }
+
+  @Test
+  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupActivitiesAndReturnProjectSaved() throws Exception {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    project1.setMetadata("{\"title\":\"Old Title\"}");
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    projectService.evictProjectContentCache(projectId1);
+    expectLastCall();
+    String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
+    projectService.saveProjectContentToDisk(projectJSONString, project1);
+    expectLastCall();
+    projectService.updateMetadataAndLicenseIfNecessary(anyObject(), anyObject());
+    expectLastCall();
+    projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
+    expectLastCall();
+    List<Run> runsAssociatedWithProject = new ArrayList<Run>();
+    runsAssociatedWithProject.add(run1);
+    expect(runService.getProjectRuns(projectId1)).andReturn(runsAssociatedWithProject);
+    expect(peerGroupActivityService.getByRun(run1)).andReturn(new HashSet<PeerGroupActivity>());
+    replay(userService, projectService, runService, peerGroupActivityService);
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
+        projectJSONString);
+    assertEquals("success", response.getStatus());
+    assertEquals("projectSaved", response.getMessageCode());
+    verify(userService, projectService, runService, peerGroupActivityService);
+  }
+
 
   @Test
   public void getAssetFileNames_withDuplicateReferences_shouldReturnUniqueFileNames()

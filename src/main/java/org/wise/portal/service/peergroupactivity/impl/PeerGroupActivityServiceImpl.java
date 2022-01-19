@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -24,8 +24,12 @@
 package org.wise.portal.service.peergroupactivity.impl;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -75,11 +79,7 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
   private PeerGroupActivity getPeerGroupActivityFromUnit(Run run, String nodeId,
       String componentId) throws PeerGroupActivityNotFoundException {
     try {
-      String projectFilePath = appProperties.getProperty("curriculum_base_dir") +
-          run.getProject().getModulePath();
-      String projectString = FileUtils.readFileToString(new File(projectFilePath));
-      JSONObject projectJSON = new JSONObject(projectString);
-      ProjectContent projectContent = new ProjectContent(projectJSON);
+      ProjectContent projectContent = getProjectContent(run);
       ProjectComponent component = projectContent.getComponent(nodeId, componentId);
       if (component != null) {
         return new PeerGroupActivityImpl(run, nodeId, component);
@@ -87,5 +87,29 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
     } catch (Exception e) {
     }
     throw new PeerGroupActivityNotFoundException();
+  }
+
+  private ProjectContent getProjectContent(Run run) throws IOException, JSONException {
+    String projectFilePath = appProperties.getProperty("curriculum_base_dir") +
+        run.getProject().getModulePath();
+    String projectString = FileUtils.readFileToString(new File(projectFilePath));
+    return new ProjectContent(new JSONObject(projectString));
+  }
+
+  @Override
+  public Set<PeerGroupActivity> getByRun(Run run) {
+    Set<PeerGroupActivity> activities = new HashSet<PeerGroupActivity>();
+    try {
+      getPeerGroupActivityTagsInUnit(run).forEach(tag -> {
+        activities.add(getByTag(run, tag));
+      });
+    } catch (IOException | JSONException e) {
+    }
+    return activities;
+  }
+
+  private Set<String> getPeerGroupActivityTagsInUnit(Run run) throws IOException, JSONException {
+    ProjectContent projectContent = getProjectContent(run);
+    return projectContent.getPeerGroupActivityTags();
   }
 }

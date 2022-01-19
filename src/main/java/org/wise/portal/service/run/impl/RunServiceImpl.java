@@ -66,6 +66,7 @@ import org.wise.portal.presentation.web.exception.TeacherAlreadySharedWithRunExc
 import org.wise.portal.presentation.web.response.SharedOwner;
 import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.DuplicateRunCodeException;
@@ -118,6 +119,9 @@ public class RunServiceImpl implements RunService {
 
   @Autowired
   private ProjectService projectService;
+
+  @Autowired
+  private PeerGroupActivityService peerGroupActivityService;
 
   @Transactional(readOnly = true)
   public List<Run> getRunList() {
@@ -241,6 +245,7 @@ public class RunServiceImpl implements RunService {
         maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
+    peerGroupActivityService.getByRun(run);
     return run;
   }
 
