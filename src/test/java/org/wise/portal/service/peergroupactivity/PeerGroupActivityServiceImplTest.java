@@ -84,12 +84,19 @@ public class PeerGroupActivityServiceImplTest {
 
   private int maxMembershipCount = 2;
 
+  String tagInDB = "existingPeerGroupActivityTag";
+
+  String tagNotInDB = "newPeerGroupActivityTag";
+
+  PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
+
   private String projectJSONString = "{\"nodes\":[{\"id\":\"" + nodeId + "\"," +
       "\"components\":[" +
       "{\"id\":\"" + componentIdWithPGActivity + "\",\"logic\":\"" + logic + "\"," +
       "\"logicThresholdCount\":\"" + logicThresholdCount + "\"," +
       "\"logicThresholdPercent\":\"" + logicThresholdPercent + "\"," +
-      "\"maxMembershipCount\":\"" + maxMembershipCount + "\"" +
+      "\"maxMembershipCount\":\"" + maxMembershipCount + "\"," +
+      "\"peerGroupActivityTag\":\"" + tagInDB + "\"" +
       "}, {\"id\":\"" + componentIdWithoutPGActivity + "\"}]}]}";
 
   @Before
@@ -148,7 +155,6 @@ public class PeerGroupActivityServiceImplTest {
 
   @Test
   public void getByTag_notInDB_SaveAndReturnNewPeerGroupActivity() {
-    String tagNotInDB = "newPeerGroupActivityTag";
     expect(peerGroupActivityDao.getByTag(run, tagNotInDB)).andReturn(null);
     peerGroupActivityDao.save(isA(PeerGroupActivity.class));
     expectLastCall();
@@ -160,11 +166,19 @@ public class PeerGroupActivityServiceImplTest {
 
   @Test
   public void getByTag_foundInDB_ReturnPeerGroupActivity() {
-    String tagInDB = "existingPeerGroupActivityTag";
-    PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
     expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
     replayAll();
     assertEquals(peerGroupActivity, service.getByTag(run, tagInDB));
+    verifyAll();
+  }
+
+  @Test
+  public void getByRun_ReturnPeerGroupActivitiesInRunProject() throws IOException {
+    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
+    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    replayAll();
+    assertEquals(1, service.getByRun(run).size());
     verifyAll();
   }
 }

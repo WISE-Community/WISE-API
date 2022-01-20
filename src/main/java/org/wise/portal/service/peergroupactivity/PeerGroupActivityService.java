@@ -23,6 +23,8 @@
  */
 package org.wise.portal.service.peergroupactivity;
 
+import java.util.Set;
+
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.Run;
 
@@ -53,4 +55,11 @@ public interface PeerGroupActivityService {
    * @return PeerGroupActivity
    */
   PeerGroupActivity getByTag(Run run, String tag);
+
+  /**
+   * Retrieves PeerGroupActivity for the specified run. Scans run's project content for
+   * ProjectActivityTags and looks up the database for the PeerGroupActivity for that tag.
+   * If none is found, creates a new PeerGroupActivity for the tag.
+   */
+  Set<PeerGroupActivity> getByRun(Run run);
 }
