@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -84,12 +84,19 @@ public class PeerGroupActivityServiceImplTest {
 
   private int maxMembershipCount = 2;
 
+  String tagInDB = "existingPeerGroupActivityTag";
+
+  String tagNotInDB = "newPeerGroupActivityTag";
+
+  PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
+
   private String projectJSONString = "{\"nodes\":[{\"id\":\"" + nodeId + "\"," +
       "\"components\":[" +
       "{\"id\":\"" + componentIdWithPGActivity + "\",\"logic\":\"" + logic + "\"," +
       "\"logicThresholdCount\":\"" + logicThresholdCount + "\"," +
       "\"logicThresholdPercent\":\"" + logicThresholdPercent + "\"," +
-      "\"maxMembershipCount\":\"" + maxMembershipCount + "\"" +
+      "\"maxMembershipCount\":\"" + maxMembershipCount + "\"," +
+      "\"peerGroupActivityTag\":\"" + tagInDB + "\"" +
       "}, {\"id\":\"" + componentIdWithoutPGActivity + "\"}]}]}";
 
   @Before
@@ -143,6 +150,35 @@ public class PeerGroupActivityServiceImplTest {
       fail("PeerGroupActivityNotFoundException expected to be thrown, but was not thrown");
     } catch (PeerGroupActivityNotFoundException e) {
     }
+    verifyAll();
+  }
+
+  @Test
+  public void getByTag_notInDB_SaveAndReturnNewPeerGroupActivity() {
+    expect(peerGroupActivityDao.getByTag(run, tagNotInDB)).andReturn(null);
+    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
+    expectLastCall();
+    replayAll();
+    PeerGroupActivity activity = service.getByTag(run, tagNotInDB);
+    assertEquals(tagNotInDB, activity.getTag());
+    verifyAll();
+  }
+
+  @Test
+  public void getByTag_foundInDB_ReturnPeerGroupActivity() {
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    replayAll();
+    assertEquals(peerGroupActivity, service.getByTag(run, tagInDB));
+    verifyAll();
+  }
+
+  @Test
+  public void getByRun_ReturnPeerGroupActivitiesInRunProject() throws IOException {
+    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
+    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    replayAll();
+    assertEquals(1, service.getByRun(run).size());
     verifyAll();
   }
 }

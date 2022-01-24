@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2021 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -23,6 +23,8 @@
  */
 package org.wise.portal.service.peergroupactivity;
 
+import java.util.Set;
+
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.Run;
 
@@ -43,4 +45,21 @@ public interface PeerGroupActivityService {
    */
   PeerGroupActivity getByComponent(Run run, String nodeId, String componentId) throws
       PeerGroupActivityNotFoundException;
+
+  /**
+   * Retrieves PeerGroupActivity from the database for the specified run and tag. If none is found,
+   * creates a new one.
+   *
+   * @param run
+   * @param tag
+   * @return PeerGroupActivity
+   */
+  PeerGroupActivity getByTag(Run run, String tag);
+
+  /**
+   * Retrieves PeerGroupActivity for the specified run. Scans run's project content for
+   * ProjectActivityTags and looks up the database for the PeerGroupActivity for that tag.
+   * If none is found, creates a new PeerGroupActivity for the tag.
+   */
+  Set<PeerGroupActivity> getByRun(Run run);
 }

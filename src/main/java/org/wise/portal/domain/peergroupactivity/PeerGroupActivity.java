@@ -55,4 +55,8 @@ public interface PeerGroupActivity {
   Run getRun();
 
   void setRun(Run run);
+
+  String getTag();
+
+  void setTag(String tag);
 }

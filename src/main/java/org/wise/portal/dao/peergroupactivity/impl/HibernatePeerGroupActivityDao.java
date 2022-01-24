@@ -76,6 +76,19 @@ public class HibernatePeerGroupActivityDao extends AbstractHibernateDao<PeerGrou
     return (PeerGroupActivityImpl) query.getResultStream().findFirst().orElse(null);
   }
 
+  @Override
+  public PeerGroupActivity getByTag(Run run, String tag) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<PeerGroupActivityImpl> cq = cb.createQuery(PeerGroupActivityImpl.class);
+    Root<PeerGroupActivityImpl> peerGroupActivityImplRoot = cq.from(PeerGroupActivityImpl.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(peerGroupActivityImplRoot.get("run"), run.getId()));
+    predicates.add(cb.equal(peerGroupActivityImplRoot.get("tag"), tag));
+    cq.select(peerGroupActivityImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<PeerGroupActivityImpl> query = entityManager.createQuery(cq);
+    return (PeerGroupActivityImpl) query.getResultStream().findFirst().orElse(null);
+  }
+
   private CriteriaBuilder getCriteriaBuilder() {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     return session.getCriteriaBuilder();

@@ -80,6 +80,7 @@ import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.response.ErrorResponse;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.presentation.web.response.SuccessResponse;
+import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
@@ -104,6 +105,9 @@ public class AuthorAPIController {
 
   @Autowired
   protected UserService userService;
+
+  @Autowired
+  protected PeerGroupActivityService peerGroupActivityService;
 
   @Autowired
   protected ProjectService projectService;
@@ -251,12 +255,21 @@ public class AuthorAPIController {
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
+        scanForPeerGroupActivities(project);
         return new SuccessResponse("projectSaved");
       } catch (Exception e) {
         return new ErrorResponse("errorSavingProject");
       }
     } else {
       return new ErrorResponse("notAllowedToEditThisProject");
+    }
+  }
+
+  private void scanForPeerGroupActivities(ProjectImpl project) {
+    List<Run> projectRuns = runService.getProjectRuns(project.getId());
+    if (projectRuns.size() > 0) {
+      Run projectRun = projectRuns.get(0);
+      peerGroupActivityService.getByRun(projectRun);
     }
   }
 

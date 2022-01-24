@@ -77,6 +77,9 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @Column(length = 32768, columnDefinition = "text")
   private String logic;
 
+  @Column(length = 30)
+  private String tag;
+
   @Column
   private int logicThresholdCount;
 
@@ -87,6 +90,11 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   private int maxMembershipCount = 2;
 
   public PeerGroupActivityImpl() {
+  }
+
+  public PeerGroupActivityImpl(Run run, String tag) {
+    this.run = run;
+    this.tag = tag;
   }
 
   public PeerGroupActivityImpl(Run run, String nodeId, ProjectComponent component)

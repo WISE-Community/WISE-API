@@ -23,6 +23,9 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,5 +56,32 @@ public class ProjectContent {
   public ProjectComponent getComponent(String nodeId, String componentId) throws JSONException {
     ProjectNode node = getNode(nodeId);
     return node != null ? node.getComponent(componentId) : null;
+  }
+
+  public Set<String> getPeerGroupActivityTags() throws JSONException {
+    Set<String> tags = new HashSet<String>();
+    JSONArray components = getComponents();
+    for (int j = 0; j < components.length(); j++) {
+      JSONObject component = components.getJSONObject(j);
+      if (component.has("peerGroupActivityTag")) {
+        tags.add(component.getString("peerGroupActivityTag"));
+      }
+    }
+    return tags;
+  }
+
+  private JSONArray getComponents() throws JSONException {
+    JSONArray components = new JSONArray();
+    JSONArray nodes = this.projectJSON.getJSONArray("nodes");
+    for (int i = 0; i < nodes.length(); i++) {
+      JSONObject node = nodes.getJSONObject(i);
+      if (node.has("components")) {
+        JSONArray nodeComponents = node.getJSONArray("components");
+        for (int j = 0; j < nodeComponents.length(); j++) {
+          components.put(nodeComponents.get(j));
+        }
+      }
+    }
+    return components;
   }
 }
