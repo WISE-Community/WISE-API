@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.json.JSONException;
@@ -144,16 +146,48 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   }
 
   private Set<Workgroup> getWorkgroupsInPeerGroupUpToMaxMembership(Workgroup workgroup,
-      PeerGroupActivity activity, Set<Workgroup> possibleMembers) {
+      PeerGroupActivity activity, Set<Workgroup> possibleMembers) throws JSONException {
     Set<Workgroup> members = new HashSet<Workgroup>();
     members.add(workgroup);
+    if (activity.getLogicName().equals("random")) {
+      addMembersRandomly(activity, possibleMembers, members);
+    } else {
+      addMembersInOrder(activity, possibleMembers, members);
+    }
+    return members;
+  }
+
+  private void addMembersRandomly(PeerGroupActivity activity, Set<Workgroup> possibleMembers,
+      Set<Workgroup> members) {
+    while (members.size() < activity.getMaxMembershipCount()) {
+      members.add(getRandomElement(possibleMembers));
+    }
+  }
+
+  private <E> E getRandomElement(Set<? extends E> set) {
+    Random random = new Random();
+    int randomNumber = random.nextInt(set.size());
+    Iterator<? extends E> iterator = set.iterator();
+    int currentIndex = 0;
+    E randomElement = null;
+    while (iterator.hasNext()) {
+      randomElement = iterator.next();
+      if (currentIndex == randomNumber) {
+        return randomElement;
+      }
+      currentIndex++;
+    }
+    return randomElement;
+  }
+
+  private void addMembersInOrder(PeerGroupActivity activity, Set<Workgroup> possibleMembers,
+      Set<Workgroup> members) {
     for (Workgroup possibleMember : possibleMembers) {
       members.add(possibleMember);
       if (members.size() == activity.getMaxMembershipCount()) {
         break;
       }
     }
-    return members;
   }
 
   private Set<Workgroup> getWorkgroupsNotInPeerGroupAndCompletedLogicActivity(
