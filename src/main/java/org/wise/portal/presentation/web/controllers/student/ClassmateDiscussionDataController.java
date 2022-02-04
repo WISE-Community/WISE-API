@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -25,10 +26,10 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
   String DISCUSSION_TYPE = "Discussion";
 
   @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}")
-  public List<StudentWork> getClassmateDiscussionWork(Authentication auth, @PathVariable Long runId,
-      @PathVariable Long periodId, @PathVariable String nodeId, @PathVariable String componentId)
+  public List<StudentWork> getClassmateDiscussionWork(Authentication auth,
+      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable String componentId)
       throws IOException, JSONException, ObjectNotFoundException {
-    Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
       return getStudentWork(run, period, nodeId, componentId);
@@ -39,9 +40,8 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
 
   @GetMapping("/annotations/{runId}/{periodId}/{nodeId}/{componentId}")
   public List<Annotation> getClassmateDiscussionAnnotations(Authentication auth,
-      @PathVariable Long runId, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
       @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
-    Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
       return getAnnotations(run, period, nodeId, componentId);

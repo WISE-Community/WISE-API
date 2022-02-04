@@ -49,7 +49,6 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
 
   protected void expectIsUserInRun(boolean isInRun)
       throws NoSuchMethodException, ObjectNotFoundException {
-    expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(groupService.retrieveById(run1Period1Id)).andReturn(run1Period1);
     expect(userService.retrieveUser(student1UserDetails)).andReturn(student1);
     expect(runService.isUserInRunAndPeriod(student1, run1, run1Period1)).andReturn(isInRun);
