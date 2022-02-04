@@ -44,7 +44,6 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
       @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
-
       return getAnnotations(run, period, nodeId, componentId);
     } else {
       throw new AccessDeniedException(NOT_PERMITTED);
