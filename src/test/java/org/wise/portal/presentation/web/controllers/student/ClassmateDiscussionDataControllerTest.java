@@ -29,7 +29,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
     expectIsUserInRun(false);
     replayAll();
     assertThrows(AccessDeniedException.class, () -> controller
-        .getClassmateDiscussionWork(studentAuth, runId1, run1Period1Id, NODE_ID1, COMPONENT_ID1));
+        .getClassmateDiscussionWork(studentAuth, run1, run1Period1Id, NODE_ID1, COMPONENT_ID1));
     verifyAll();
   }
 
@@ -40,7 +40,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class, () -> controller
-        .getClassmateDiscussionWork(studentAuth, runId1, run1Period1Id, NODE_ID1, COMPONENT_ID1));
+        .getClassmateDiscussionWork(studentAuth, run1, run1Period1Id, NODE_ID1, COMPONENT_ID1));
     verifyAll();
   }
 
@@ -54,7 +54,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
     replayAll();
     try {
       List<StudentWork> classmateDiscussionWork = controller.getClassmateDiscussionWork(studentAuth,
-          runId1, run1Period1Id, NODE_ID1, COMPONENT_ID1);
+          run1, run1Period1Id, NODE_ID1, COMPONENT_ID1);
       assertEquals(classmateDiscussionWork, studentWork);
     } catch (Exception e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
@@ -72,7 +72,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
     replayAll();
     try {
       List<Annotation> classmateDiscussionAnnotations = controller
-          .getClassmateDiscussionAnnotations(studentAuth, runId1, run1Period1Id, NODE_ID1,
+          .getClassmateDiscussionAnnotations(studentAuth, run1, run1Period1Id, NODE_ID1,
               COMPONENT_ID1);
       assertEquals(classmateDiscussionAnnotations, annotations);
     } catch (Exception e) {
