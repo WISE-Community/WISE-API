@@ -13,7 +13,6 @@ import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreateService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.run.RunService;
 
@@ -34,7 +33,7 @@ public class PeerGroupCreateController {
   @PostMapping("/{runId}/{periodId}/{peerGroupActivityTag}")
   PeerGroup create(@PathVariable("runId") RunImpl run,
       @PathVariable("periodId") PersistentGroup period, @PathVariable String peerGroupActivityTag,
-      Authentication auth) throws PeerGroupActivityNotFoundException {
+      Authentication auth) {
     if (canCreatePeerGroup(run, period, auth)) {
       PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
       return peerGroupCreateService.create(activity, period);
