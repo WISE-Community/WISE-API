@@ -119,13 +119,11 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
   }
 
   private void expectNoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByComponent(run1, activity.getNodeId(), activity.getComponentId()))
-        .andReturn(Arrays.asList());
+    expect(peerGroupDao.getListByActivity(activity)).andReturn(Arrays.asList());
   }
 
   private void expectTwoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByComponent(run1, activity.getNodeId(), activity.getComponentId()))
-        .andReturn(Arrays.asList(peerGroup1));
+    expect(peerGroupDao.getListByActivity(activity)).andReturn(Arrays.asList(peerGroup1));
   }
 
   private void expectOneWorkgroupsCompletedLogicComponent() {

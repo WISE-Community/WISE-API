@@ -31,14 +31,12 @@ public class PeerGroupCreateController {
   @Autowired
   private RunService runService;
 
-  @PostMapping("/{runId}/{periodId}/{nodeId}/{componentId}")
+  @PostMapping("/{runId}/{periodId}/{peerGroupActivityTag}")
   PeerGroup create(@PathVariable("runId") RunImpl run,
-      @PathVariable("periodId") PersistentGroup period, @PathVariable String nodeId,
-      @PathVariable String componentId, Authentication auth)
-      throws PeerGroupActivityNotFoundException {
+      @PathVariable("periodId") PersistentGroup period, @PathVariable String peerGroupActivityTag,
+      Authentication auth) throws PeerGroupActivityNotFoundException {
     if (canCreatePeerGroup(run, period, auth)) {
-      PeerGroupActivity activity =
-          peerGroupActivityService.getByComponent(run, nodeId, componentId);
+      PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
       return peerGroupCreateService.create(activity, period);
     }
     throw new AccessDeniedException("Not permitted");

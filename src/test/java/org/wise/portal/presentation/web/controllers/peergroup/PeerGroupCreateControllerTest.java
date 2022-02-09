@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreateService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 
 @RunWith(EasyMockRunner.class)
 public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControllerTest {
@@ -27,7 +26,7 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
     expectUserHasRunWritePermission(false);
     replayAll();
     try {
-      controller.create(run1, run1Period1, run1Node1Id, run1Component1Id, teacherAuth);
+      controller.create(run1, run1Period1, peerGroupActivity1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -39,7 +38,7 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
     expectUserHasRunWritePermission(true);
     replayAll();
     try {
-      controller.create(run1, run2Period2, run1Node1Id, run1Component1Id, teacherAuth);
+      controller.create(run1, run2Period2, peerGroupActivity1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -47,25 +46,12 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
   }
 
   @Test
-  public void create_PeerGroupActivityNotFound_ThrowException() throws Exception {
-    expectUserHasRunWritePermission(true);
-    expectPeerGroupActivityNotFound();
-    replayAll();
-    try {
-      controller.create(run1, run1Period1, run1Node1Id, run1Component1Id, teacherAuth);
-      fail("Expected PeerGroupActivityNotFoundException, but was not thrown");
-    } catch (PeerGroupActivityNotFoundException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
   public void create_PeerGroupActivityFound_CreateGroup() throws Exception {
     expectUserHasRunWritePermission(true);
-    expectPeerGroupActivityFound();
+    expectPeerGroupActivityByTagFound();
     expectCreatePeerGroup();
     replayAll();
-    assertNotNull(controller.create(run1, run1Period1, run1Node1Id, run1Component1Id, teacherAuth));
+    assertNotNull(controller.create(run1, run1Period1, peerGroupActivity1Tag, teacherAuth));
     verifyAll();
   }
 
