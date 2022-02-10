@@ -60,11 +60,15 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
 
   PeerGroupActivity activity1, activity2;
 
+  String peerGroupActivity1Tag = "peerGroupActivity1";
+
+  String peerGroupActivity2Tag = "peerGroupActivity2";
+
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    activity1 = createPeerGroupActivity(component1);
-    activity2 = createPeerGroupActivity(component2);
+    activity1 = createPeerGroupActivity(component1, peerGroupActivity1Tag);
+    activity2 = createPeerGroupActivity(component2, peerGroupActivity2Tag);
     createPeerGroup(activity1, workgroup1);
     createPeerGroup(activity2, workgroup1, workgroup2);
   }
@@ -76,8 +80,9 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
     peerGroupDao.save(peerGroup);
   }
 
-  private PeerGroupActivityImpl createPeerGroupActivity(Component component) {
+  private PeerGroupActivityImpl createPeerGroupActivity(Component component, String tag) {
     PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
+    peerGroupActivity.setTag(tag);
     peerGroupActivity.setRun(component.run);
     peerGroupActivity.setNodeId(component.nodeId);
     peerGroupActivity.setComponentId(component.componentId);
@@ -100,22 +105,6 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
   public void getListByActivity_ReturnListByActivity() {
     assertEquals(1, peerGroupDao.getListByActivity(activity1).size());
     assertEquals(1, peerGroupDao.getListByActivity(activity2).size());
-  }
-
-  @Test
-  public void getListByRun_ReturnListByRun() {
-    assertEquals(2, peerGroupDao.getListByRun(run1).size());
-    assertEquals(0, peerGroupDao.getListByRun(run2).size());
-  }
-
-  @Test
-  public void getListByComponent_ReturnListByComponent() {
-    assertEquals(1, peerGroupDao.getListByComponent(component1.run, component1.nodeId,
-        component1.componentId).size());
-    assertEquals(1, peerGroupDao.getListByComponent(component2.run, component2.nodeId,
-        component2.componentId).size());
-    assertEquals(0, peerGroupDao.getListByComponent(componentNotExists.run,
-        componentNotExists.nodeId, componentNotExists.componentId).size());
   }
 
   @Test

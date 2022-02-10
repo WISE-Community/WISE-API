@@ -87,29 +87,17 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
 
   @Override
   public List<PeerGroup> getListByActivity(PeerGroupActivity activity) {
-    return getListByComponent(activity.getRun(), activity.getNodeId(), activity.getComponentId());
+    return getListByTag(activity.getRun(), activity.getTag());
   }
 
-  @Override
-  public List<PeerGroup> getListByRun(Run run) {
-    return getListByComponent(run, null, null);
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public List<PeerGroup> getListByComponent(Run run, String nodeId, String componentId) {
+  private List<PeerGroup> getListByTag(Run run, String tag) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PeerGroupImpl> cq = cb.createQuery(PeerGroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<PeerGroupActivityImpl> peerGroupActivityImplRoot = cq.from(PeerGroupActivityImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(peerGroupActivityImplRoot.get("run"), run.getId()));
-    if (nodeId != null) {
-      predicates.add(cb.equal(peerGroupActivityImplRoot.get("nodeId"), nodeId));
-    }
-    if (componentId != null) {
-      predicates.add(cb.equal(peerGroupActivityImplRoot.get("componentId"), componentId));
-    }
+    predicates.add(cb.equal(peerGroupActivityImplRoot.get("tag"), tag));
     predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"),
         peerGroupActivityImplRoot.get("id")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));

@@ -218,6 +218,7 @@ create table peer_group_activities (
     maxMembershipCount integer,
     nodeId varchar(30),
     componentId varchar(30),
+    tag varchar(30),
     OPTLOCK integer,
     index peer_group_activities_run_id_index (runId),
     constraint peerGroupActivitiesRunIdFK foreign key (runId) references runs (id),

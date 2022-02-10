@@ -13,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
-import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 
 /**
  * @author Hiroki Terashima
@@ -29,7 +27,6 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
   @Before
   public void setUp() {
     super.setUp();
-    expectRunExists();
   }
 
   @Test
@@ -37,22 +34,9 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
     expectTeacherHasAccessToRun(false);
     replayAll();
     try {
-      controller.getPeerGroupsInfo(runId1, run1Node1Id, run1Component1Id, teacherAuth);
+      controller.getPeerGroupsInfo(run1, peerGroupActivity1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
-  public void getPeerGroupsInfo_PeerGroupActivityNotFound_ThrowException() throws Exception {
-    expectTeacherHasAccessToRun(true);
-    expectPeerGroupActivityNotFound();
-    replayAll();
-    try {
-      controller.getPeerGroupsInfo(runId1, run1Node1Id, run1Component1Id, teacherAuth);
-      fail("Expected PeerGroupActivityNotFoundException, but was not thrown");
-    } catch (PeerGroupActivityNotFoundException e) {
     }
     verifyAll();
   }
@@ -61,11 +45,11 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
   @Test
   public void getPeerGroupsInfo_ActivityFound_ReturnInfo() throws Exception {
     expectTeacherHasAccessToRun(true);
-    expectPeerGroupActivityFound();
+    expectPeerGroupActivityByTagFound();
     expectPeerGroupInfo();
     replayAll();
-    Map<String, Object> peerGroupsInfo = controller.getPeerGroupsInfo(runId1, run1Node1Id,
-        run1Component1Id, teacherAuth);
+    Map<String, Object> peerGroupsInfo = controller.getPeerGroupsInfo(run1, peerGroupActivity1Tag,
+        teacherAuth);
     assertEquals(2, peerGroupsInfo.size());
     assertEquals(2, ((List<PeerGroup>) peerGroupsInfo.get("peerGroups")).size());
     assertEquals(0, ((List<PeerGroup>) peerGroupsInfo.get("workgroupsNotInPeerGroups")).size());
@@ -77,13 +61,6 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
     peerGroupInfo.put("peerGroups", peerGroups);
     peerGroupInfo.put("workgroupsNotInPeerGroups", workgroupsNotInPeerGroups);
     expect(peerGroupInfoService.getPeerGroupInfo(peerGroupActivity)).andReturn(peerGroupInfo);
-  }
-
-  private void expectRunExists() {
-    try {
-      expect(runService.retrieveById(runId1)).andReturn(run1);
-    } catch (ObjectNotFoundException e) {
-    }
   }
 
   private void expectTeacherHasAccessToRun(boolean hasAccess) {

@@ -28,7 +28,6 @@ import org.wise.portal.dao.SimpleDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
@@ -39,10 +38,6 @@ public interface PeerGroupDao<T extends PeerGroup> extends SimpleDao<T> {
   PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity);
 
   List<PeerGroup> getListByActivity(PeerGroupActivity activity);
-
-  List<PeerGroup> getListByRun(Run run);
-
-  List<PeerGroup> getListByComponent(Run run, String nodeId, String componentId);
 
   List<PeerGroup> getListByWorkgroup(Workgroup workgroup);
 
