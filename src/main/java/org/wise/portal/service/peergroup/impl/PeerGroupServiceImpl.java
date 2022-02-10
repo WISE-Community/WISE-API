@@ -160,7 +160,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   private void addMembersRandomly(PeerGroupActivity activity, Set<Workgroup> possibleMembers,
       Set<Workgroup> members) {
     while (members.size() < activity.getMaxMembershipCount()) {
-      members.add(getRandomElement(possibleMembers));
+      Workgroup randomWorkgroup = getRandomElement(possibleMembers);
+      members.add(randomWorkgroup);
+      possibleMembers.remove(randomWorkgroup);
     }
   }
 
