@@ -105,8 +105,7 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
 
   private int getNumWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period) {
     int numWorkgroupsInPeerGroup = 0;
-    List<PeerGroup> peerGroups = peerGroupDao.getListByComponent(activity.getRun(),
-        activity.getNodeId(), activity.getComponentId());
+    List<PeerGroup> peerGroups = peerGroupDao.getListByActivity(activity);
     for (PeerGroup peerGroup : peerGroups) {
       for (Workgroup workgroup : peerGroup.getMembers()) {
         if (workgroup.getPeriod().equals(period)) {

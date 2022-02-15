@@ -38,6 +38,8 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
 
   protected Long peerGroup2Id = 2L;
 
+  protected String peerGroupActivity1Tag = "peerGroupActivity1";
+
   protected List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
 
   protected List<Workgroup> workgroupsNotInPeerGroups = new ArrayList<Workgroup>();
@@ -47,6 +49,7 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
     super.setUp();
     peerGroupActivity = new PeerGroupActivityImpl();
     peerGroupActivity.setRun(run1);
+    peerGroupActivity.setTag(peerGroupActivity1Tag);
     peerGroup1 = new PeerGroupImpl();
     peerGroup1.setPeerGroupActivity(peerGroupActivity);
     peerGroup1.addMember(workgroup1);
@@ -64,6 +67,11 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   protected void expectPeerGroupActivityNotFound() throws PeerGroupActivityNotFoundException {
     expect(peerGroupActivityService.getByComponent(run1, run1Node1Id, run1Component1Id))
         .andThrow(new PeerGroupActivityNotFoundException());
+  }
+
+  protected void expectPeerGroupActivityByTagFound() {
+    expect(peerGroupActivityService.getByTag(run1, peerGroupActivity1Tag))
+        .andReturn(peerGroupActivity);
   }
 
   protected void expectPeerGroupCreationException() throws Exception {
