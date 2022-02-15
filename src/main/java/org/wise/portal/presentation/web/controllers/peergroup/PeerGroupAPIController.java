@@ -32,18 +32,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
-import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
@@ -51,9 +51,6 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @Secured("ROLE_USER")
 @RequestMapping("/api/peer-group")
 public class PeerGroupAPIController {
-
-  @Autowired
-  private RunService runService;
 
   @Autowired
   private UserService userService;
@@ -68,12 +65,11 @@ public class PeerGroupAPIController {
   private PeerGroupActivityService peerGroupActivityService;
 
   @GetMapping("/{runId}/{workgroupId}/{peerGroupActivityTag}")
-  PeerGroup getPeerGroup(@PathVariable Long runId, @PathVariable Long workgroupId,
+  PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
+      @PathVariable("workgroupId") WorkgroupImpl workgroup,
       @PathVariable String peerGroupActivityTag, Authentication auth)
-      throws JSONException, ObjectNotFoundException, PeerGroupActivityNotFoundException,
+      throws JSONException, PeerGroupActivityNotFoundException,
       PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
-    Run run = runService.retrieveById(runId);
-    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
       return getPeerGroup(run, peerGroupActivityTag, workgroup);
@@ -83,12 +79,11 @@ public class PeerGroupAPIController {
   }
 
   @GetMapping("/{runId}/{workgroupId}/{nodeId}/{componentId}")
-  PeerGroup getPeerGroup(@PathVariable Long runId, @PathVariable Long workgroupId,
+  PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
+      @PathVariable ("workgroupId") WorkgroupImpl workgroup,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
-      throws JSONException, ObjectNotFoundException, PeerGroupActivityNotFoundException,
+      throws JSONException, PeerGroupActivityNotFoundException,
       PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
-    Run run = runService.retrieveById(runId);
-    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
       return getPeerGroup(run, nodeId, componentId, workgroup);
