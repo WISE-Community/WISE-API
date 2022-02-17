@@ -75,8 +75,9 @@ public interface VLEService {
    * Saves StudentWork in the data store
    */
   StudentWork saveStudentWork(Integer id, Integer runId, Integer periodId, Integer workgroupId,
-      Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId, String componentType,
-      String studentData, String clientSaveTime) throws ObjectNotFoundException;
+      Long peerGroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
+      String componentType, String studentData, String clientSaveTime)
+      throws ObjectNotFoundException;
 
   /**
    * @return List of Event objects with the specified fields. If none matches, return an empty list.

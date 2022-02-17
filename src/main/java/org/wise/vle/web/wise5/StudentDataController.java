@@ -220,6 +220,8 @@ public class StudentDataController {
                     : studentWorkJSONObject.getInt("periodId"),
                   studentWorkJSONObject.isNull("workgroupId") ? null
                     : studentWorkJSONObject.getInt("workgroupId"),
+                  studentWorkJSONObject.isNull("peerGroupId") ? null
+                    : studentWorkJSONObject.getLong("peerGroupId"),
                   studentWorkJSONObject.isNull("isAutoSave") ? null
                     : studentWorkJSONObject.getBoolean("isAutoSave"),
                   studentWorkJSONObject.isNull("isSubmit") ? null
