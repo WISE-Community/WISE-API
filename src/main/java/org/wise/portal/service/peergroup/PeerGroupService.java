@@ -68,12 +68,10 @@ public interface PeerGroupService {
   List<PeerGroup> getPeerGroups(PeerGroupActivity activity);
 
   /**
-   * Gets StudentWork for the PeerGroup's activity from all the members in the PeerGroup
+   * Gets StudentWork for the component from all the members in the PeerGroup
    * @param peerGroup group of workgroups in the PeerGroup
-   * @return List of StudentWork by members in the PeerGroup for the activity
+   * @return List of StudentWork by members in the PeerGroup for the component
    */
-  public List<StudentWork> getStudentWork(PeerGroup peerGroup);
-
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
 
   public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId,

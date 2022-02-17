@@ -29,6 +29,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.wise.portal.dao.group.impl.HibernateGroupDao;
+import org.wise.portal.dao.peergroup.impl.HibernatePeerGroupDao;
+import org.wise.portal.dao.peergroupactivity.impl.HibernatePeerGroupActivityDao;
 import org.wise.portal.dao.project.impl.HibernateProjectDao;
 import org.wise.portal.dao.run.impl.HibernateRunDao;
 import org.wise.portal.dao.user.impl.HibernateUserDao;
@@ -40,6 +42,8 @@ import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.peergroup.PeerGroup;
+import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
@@ -79,6 +83,12 @@ public abstract class AbstractTransactionalDbTests
 
   @Autowired
   private HibernateGroupDao groupDao;
+
+  @Autowired
+  private HibernatePeerGroupDao peerGroupDao;
+
+  @Autowired
+  private HibernatePeerGroupActivityDao peerGroupActivityDao;
 
   @Autowired
   private HibernateWorkgroupDao workgroupDao;
@@ -211,5 +221,13 @@ public abstract class AbstractTransactionalDbTests
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.DATE, x);
     return new Date(calendar.getTimeInMillis());
+  }
+
+  protected void savePeerGroup(PeerGroup peerGroup) {
+    peerGroupDao.save(peerGroup);
+  }
+
+  protected void savePeerGroupActivity(PeerGroupActivity peerGroupActivity) {
+    peerGroupActivityDao.save(peerGroupActivity);
   }
 }

@@ -193,15 +193,8 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   }
 
   @Override
-  public List<StudentWork> getStudentWork(PeerGroup peerGroup) {
-    return getStudentWork(peerGroup, peerGroup.getPeerGroupActivity().getNodeId(),
-        peerGroup.getPeerGroupActivity().getComponentId());
-  }
-
-  @Override
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
-    return studentWorkDao.getWorkForComponentByWorkgroups(peerGroup.getMembers(), nodeId,
-        componentId);
+    return studentWorkDao.getStudentWork(peerGroup, nodeId, componentId);
   }
 
   @Override

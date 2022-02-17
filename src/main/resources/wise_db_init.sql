@@ -413,14 +413,17 @@ create table studentWork (
     nodeId varchar(30) not null,
     serverSaveTime datetime not null,
     studentData mediumtext not null,
+    peerGroupId bigint,
     periodId bigint not null,
     runId bigint not null,
     workgroupId bigint not null,
     index studentWorkRunIdIndex (runId),
     index studentWorkWorkgroupIdIndex (workgroupId),
+    index studentWorkPeerGroupIdIndex (peerGroupId),
     constraint studentWorkPeriodIdFK foreign key (periodId) references `groups` (id),
     constraint studentWorkRunIdFK foreign key (runId) references runs (id),
     constraint studentWorkWorkgroupIdFK foreign key (workgroupId) references workgroups (id),
+    constraint studentWorkPeerGroupIdFK foreign key (peerGroupId) references peer_groups (id),
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

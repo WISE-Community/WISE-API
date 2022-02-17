@@ -37,6 +37,8 @@ public interface PeerGroup {
 
   PeerGroupActivity getPeerGroupActivity();
 
+  void setPeerGroupActivity(PeerGroupActivity peerGroupActivity);
+
   Set<Workgroup> getMembers();
 
   void setMembers(Set<Workgroup> members);

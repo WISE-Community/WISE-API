@@ -36,7 +36,6 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -185,14 +184,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   @Test
-  public void getStudentWork_PeerGroupExist_ReturnStudentWorkList() {
-    expectGetWorkForComponentByWorkgroups();
-    replayAll();
-    assertEquals(3, service.getStudentWork(peerGroup1).size());
-    verifyAll();
-  }
-
-  @Test
   public void getPeerGroups_ReturnPeerGroupList() {
     expectGetPeerGroupsByActivity();
     replayAll();
@@ -206,9 +197,9 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
         true);
     StudentWork studentWork2 = createComponentWork(run1Workgroup2, run1Node1Id, run1Component1Id,
         true);
-    expectGetWorkForComponentByWorkgroups(peerGroup1.getMembers(), run1Node1Id, run1Component1Id,
+    expectGetWorkForComponent(peerGroup1, run1Node1Id, run1Component1Id,
         createStudentWorkList(studentWork1, studentWork2));
-    expectGetWorkForComponentByWorkgroups(peerGroup1.getMembers(), run1Node2Id, run1Component2Id,
+    expectGetWorkForComponent(peerGroup1, run1Node2Id, run1Component2Id,
         createStudentWorkList());
     replayAll();
     assertEquals(2, service.getStudentWork(peerGroup1, run1Node1Id, run1Component1Id).size());
@@ -224,7 +215,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
         true);
     StudentWork studentWork3 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
         true);
-    expectGetWorkForComponentByWorkgroups(peerGroup1.getMembers(), run1Node1Id, run1Component1Id,
+    expectGetWorkForComponent(peerGroup1, run1Node1Id, run1Component1Id,
         createStudentWorkList(studentWork1, studentWork2, studentWork3));
     replayAll();
     assertEquals(2, service.getLatestStudentWork(peerGroup1, run1Node1Id, run1Component1Id).size());
@@ -242,17 +233,9 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     expectWorkgroupCountThresholdSatisfied(true);
   }
 
-  private void expectGetWorkForComponentByWorkgroups() {
-    expect(studentWorkDao.getWorkForComponentByWorkgroups(peerGroup1.getMembers(),
-        peerGroup1.getPeerGroupActivity().getNodeId(),
-        peerGroup1.getPeerGroupActivity().getComponentId()))
-            .andReturn(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-                componentWorkNonSubmit1));
-  }
-
-  private void expectGetWorkForComponentByWorkgroups(Set<Workgroup> workgroups, String nodeId,
-      String componentId, List<StudentWork> studentWorkList) {
-    expect(studentWorkDao.getWorkForComponentByWorkgroups(workgroups, nodeId, componentId))
+  private void expectGetWorkForComponent(PeerGroup peerGroup, String nodeId, String componentId,
+      List<StudentWork> studentWorkList) {
+    expect(studentWorkDao.getStudentWork(peerGroup, nodeId, componentId))
         .andReturn(studentWorkList);
   }
 

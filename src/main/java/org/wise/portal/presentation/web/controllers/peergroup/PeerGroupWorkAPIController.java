@@ -47,12 +47,13 @@ public class PeerGroupWorkAPIController {
   @Autowired
   private WorkgroupService workgroupService;
 
-  @GetMapping("/{peerGroupId}/student-work")
-  List<StudentWork> getPeerGroupWork(@PathVariable Long peerGroupId, Authentication auth)
+  @GetMapping("/{peerGroupId}/{nodeId}/{componentId}/student-work")
+  List<StudentWork> getPeerGroupWork(@PathVariable Long peerGroupId,
+      @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
       throws ObjectNotFoundException {
     PeerGroup peerGroup = peerGroupService.getById(peerGroupId);
     if (isUserInPeerGroup(peerGroup, auth)) {
-      return peerGroupService.getStudentWork(peerGroup);
+      return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
@@ -76,7 +77,7 @@ public class PeerGroupWorkAPIController {
           componentId);
       Workgroup workgroup = workgroupService.retrieveById(workgroupId);
       PeerGroup peerGroup = peerGroupService.getPeerGroup(workgroup, activity);
-      return peerGroupService.getStudentWork(peerGroup);
+      return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
