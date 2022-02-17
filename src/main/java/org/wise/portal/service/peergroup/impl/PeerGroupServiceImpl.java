@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.json.JSONException;
@@ -144,16 +145,38 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   }
 
   private Set<Workgroup> getWorkgroupsInPeerGroupUpToMaxMembership(Workgroup workgroup,
-      PeerGroupActivity activity, Set<Workgroup> possibleMembers) {
+      PeerGroupActivity activity, Set<Workgroup> possibleMembers) throws JSONException {
     Set<Workgroup> members = new HashSet<Workgroup>();
     members.add(workgroup);
+    possibleMembers.remove(workgroup);
+    if (activity.getLogicName().equals("random")) {
+      addMembersRandomly(activity, possibleMembers, members);
+    } else {
+      addMembersInOrder(activity, possibleMembers, members);
+    }
+    return members;
+  }
+
+  private void addMembersRandomly(PeerGroupActivity activity, Set<Workgroup> possibleMembers,
+      Set<Workgroup> members) {
+    List<Workgroup> possibleMembersList = new ArrayList<Workgroup>(possibleMembers);
+    Random random = new Random();
+    while (members.size() < activity.getMaxMembershipCount()) {
+      int randomInt = random.nextInt(possibleMembersList.size());
+      Workgroup randomWorkgroup = possibleMembersList.get(randomInt);
+      members.add(randomWorkgroup);
+      possibleMembersList.remove(randomWorkgroup);
+    }
+  }
+
+  private void addMembersInOrder(PeerGroupActivity activity, Set<Workgroup> possibleMembers,
+      Set<Workgroup> members) {
     for (Workgroup possibleMember : possibleMembers) {
       members.add(possibleMember);
       if (members.size() == activity.getMaxMembershipCount()) {
         break;
       }
     }
-    return members;
   }
 
   private Set<Workgroup> getWorkgroupsNotInPeerGroupAndCompletedLogicActivity(
