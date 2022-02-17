@@ -48,6 +48,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.vle.wise5.VLEService;
+import org.wise.portal.service.work.BroadcastStudentWorkService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.Event;
@@ -71,6 +72,9 @@ public class StudentDataController {
 
   @Autowired
   private MessagePublisher redisPublisher;
+
+  @Autowired
+  private BroadcastStudentWorkService broadcastStudentWorkService;
 
   @RequestMapping(method = RequestMethod.GET, value = "/student/data")
   public void getWISE5StudentData(HttpServletResponse response,
@@ -159,23 +163,6 @@ public class StudentDataController {
     redisPublisher.publish(message.toString());
   }
 
-  public void broadcastStudentWorkToClassroom(StudentWork componentState) throws JSONException {
-    JSONObject message = new JSONObject();
-    message.put("type", "studentWorkToClassroom");
-    message.put("topic", String.format("/topic/classroom/%s/%s", componentState.getRunId(),
-        componentState.getPeriodId()));
-    message.put("studentWork", componentState.toJSON());
-    redisPublisher.publish(message.toString());
-  }
-
-  public void broadcastStudentWorkToTeacher(StudentWork componentState) throws JSONException {
-    JSONObject message = new JSONObject();
-    message.put("type", "studentWorkToTeacher");
-    message.put("topic", String.format("/topic/teacher/%s", componentState.getRunId()));
-    message.put("studentWork", componentState.toJSON());
-    redisPublisher.publish(message.toString());
-  }
-
   /**
    * Handles batch POSTing student data (StudentWork, Action, Annotation)
    *
@@ -254,9 +241,9 @@ public class StudentDataController {
               studentWorkResultJSONArray.put(savedStudentWorkJSONObject);
 
               studentWork.convertToClientStudentWork();
-              broadcastStudentWorkToTeacher(studentWork);
+              broadcastStudentWorkService.broadcastToTeacher(studentWork);
               if (studentWork.getComponentType().equals("Discussion")) {
-                broadcastStudentWorkToClassroom(studentWork);
+                broadcastStudentWorkService.broadcastToClassroom(studentWork);
               }
             } catch (Exception e) {
               e.printStackTrace();

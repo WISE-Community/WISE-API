@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class StudentWorkSerializer extends JsonSerializer<StudentWork> {
 
   @Override
