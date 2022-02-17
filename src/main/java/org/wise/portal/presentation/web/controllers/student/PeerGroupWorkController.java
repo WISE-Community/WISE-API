@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.peergroup.PeerGroup;
+import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -33,10 +34,10 @@ public class PeerGroupWorkController extends ClassmateDataController {
 
   @GetMapping("{peerGroupId}/{showPeerGroupWorkNodeId}/{showPeerGroupWorkComponentId}/{showWorkNodeId}/{showWorkComponentId}")
   public List<StudentWork> getPeerGroupWork(Authentication auth,
-      @PathVariable Long peerGroupId, @PathVariable String showPeerGroupWorkNodeId, @PathVariable String showPeerGroupWorkComponentId,
+      @PathVariable("peerGroupId") PeerGroupImpl peerGroup,
+      @PathVariable String showPeerGroupWorkNodeId, @PathVariable String showPeerGroupWorkComponentId,
       @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId)
       throws ObjectNotFoundException, JSONException, IOException {
-    PeerGroup peerGroup = peerGroupService.getById(peerGroupId);
     if (isUserInPeerGroup(auth, peerGroup)) {
       Run run = peerGroup.getPeerGroupActivity().getRun();
       if (isValidShowPeerGroupWorkComponent(run, showPeerGroupWorkNodeId, showPeerGroupWorkComponentId, showWorkNodeId, showWorkComponentId)) {
