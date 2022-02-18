@@ -176,7 +176,8 @@ public class PeerGroupActivityServiceImplTest {
   public void getByRun_ReturnPeerGroupActivitiesInRunProject() throws IOException {
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    expect(peerGroupActivityDao.getByComponent(run, nodeId, componentIdWithPGActivity))
+        .andReturn(peerGroupActivity);
     replayAll();
     assertEquals(1, service.getByRun(run).size());
     verifyAll();

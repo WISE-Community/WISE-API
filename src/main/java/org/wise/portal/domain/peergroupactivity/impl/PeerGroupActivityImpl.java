@@ -106,6 +106,7 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
     this.logicThresholdCount = component.getInt("logicThresholdCount");
     this.logicThresholdPercent = component.getInt("logicThresholdPercent");
     this.maxMembershipCount = component.getInt("maxMembershipCount");
+    this.tag = component.getString("peerGroupActivityTag");
   }
 
   public String getLogicNodeId() throws JSONException {

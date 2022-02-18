@@ -37,6 +37,7 @@ import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
+import org.wise.portal.domain.project.impl.ProjectNode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.WISEServiceTest;
@@ -57,42 +58,46 @@ public class PeerGroupServiceTest extends WISEServiceTest {
   public void setUp() throws Exception {
     super.setUp();
     activity = createPeerGroupActivity(run1, run1Component2, run1Component2Id,
-        "maximizeDifferentIdeas", run1Node1Id, run1Component1Id, 3, 50, 2);
+        "maximizeDifferentIdeas", run1Node1Id, run1Component1Id, 3, 50, 2, "tag1");
     peerGroup1 = new PeerGroupImpl(activity, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
     peerGroup2 = new PeerGroupImpl(activity, run1Period1, new HashSet<Workgroup>());
     manualActivity = createPeerGroupActivity(run1, run1Component2, run1Component2Id, "manual",
-        run1Node1Id, run1Component1Id, 2, 50, 2);
+        run1Node1Id, run1Component1Id, 2, 50, 2, "tag1");
   }
 
   private PeerGroupActivity createPeerGroupActivity(Run run, Component component, String componentId,
       String logicName, String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount) throws JSONException {
+      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupActivityTag)
+      throws JSONException {
     String peerGroupActivityComponentString = createPeerGroupActivityComponentString(componentId,
         logicName, logicNodeId, logicComponentId, logicThresholdCount, logicThresholdPercent,
-        maxMembershipCount);
+        maxMembershipCount, peerGroupActivityTag);
     return new PeerGroupActivityImpl(run, component.nodeId,
-        new ProjectComponent(new JSONObject(peerGroupActivityComponentString)));
+        new ProjectComponent(new ProjectNode(new JSONObject("{\"id\":\"node1\"}")),
+        new JSONObject(peerGroupActivityComponentString)));
   }
 
   private String createPeerGroupActivityComponentString(String componentId, String logicName,
       String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount) {
+      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupActivityTag) {
     String logic = createLogicString(logicName, logicNodeId, logicComponentId);
     return createPeerGroupActivityComponentString(componentId, logic, logicThresholdCount,
-        logicThresholdPercent, maxMembershipCount);
+        logicThresholdPercent, maxMembershipCount, peerGroupActivityTag);
   }
 
   private String createPeerGroupActivityComponentString(String componentId, String logic,
-      Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount) {
+      Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount,
+      String peerGroupActivityTag) {
     return new StringBuilder()
         .append("{")
         .append("  \"id\": \"" + componentId + "\",")
         .append("  \"logic\": " + logic + ",")
         .append("  \"logicThresholdCount\": \"" + logicThresholdCount + "\",")
         .append("  \"logicThresholdPercent\": \"" + logicThresholdPercent + "\",")
-        .append("  \"maxMembershipCount\": \"" + maxMembershipCount + "\"")
+        .append("  \"maxMembershipCount\": \"" + maxMembershipCount + "\",")
+        .append("  \"peerGroupActivityTag\": \"" + peerGroupActivityTag + "\"")
         .append("}")
         .toString();
   }

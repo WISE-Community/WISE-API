@@ -28,6 +28,7 @@ import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
+import org.wise.portal.domain.project.impl.ProjectNode;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
@@ -65,7 +66,8 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
 
   private void createPeerGroupActivity() throws JSONException {
     ProjectComponent component = new ProjectComponent(
-        createComponentJSONObject(COMPONENT_ID1, "PeerChat", "", 2, 50, 2));
+        new ProjectNode(new JSONObject("{\"id\":\"node1\"}")),
+        createComponentJSONObject(COMPONENT_ID1, "PeerChat", "", 2, 50, 2, "tag1"));
     peerGroupActivity = new PeerGroupActivityImpl(run1, NODE_ID1, component);
   }
 
@@ -92,7 +94,7 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
 
   private JSONObject createComponentJSONObject(String componentId, String componentType,
       String logic, Integer logicThresholdCount, Integer logicThresholdPercent,
-      Integer maxMembershipCount) throws JSONException {
+      Integer maxMembershipCount, String peerGroupActivityTag) throws JSONException {
     String projectJSONString = new StringBuilder()
         .append("{")
         .append("  \"id\": \"" + componentId + "\",")
@@ -100,7 +102,8 @@ public class ClassmatePeerChatDataControllerTest extends AbstractClassmateDataCo
         .append("  \"logic\": \"" + logic + "\",")
         .append("  \"logicThresholdCount\": " + logicThresholdCount + ",")
         .append("  \"logicThresholdPercent\": " + logicThresholdPercent + ",")
-        .append("  \"maxMembershipCount\": " + maxMembershipCount)
+        .append("  \"maxMembershipCount\": " + maxMembershipCount + ",")
+        .append("  \"peerGroupActivityTag\": \"" + peerGroupActivityTag + "\"")
         .append("}")
         .toString();
     return new JSONObject(projectJSONString);
