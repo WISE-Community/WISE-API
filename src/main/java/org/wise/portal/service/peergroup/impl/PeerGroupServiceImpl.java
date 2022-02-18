@@ -25,7 +25,6 @@ package org.wise.portal.service.peergroup.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -220,14 +219,4 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     return studentWorkDao.getStudentWork(peerGroup, nodeId, componentId);
   }
 
-  @Override
-  public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId,
-      String componentId) {
-    List<StudentWork> allStudentWork = getStudentWork(peerGroup, nodeId, componentId);
-    HashMap<Long, StudentWork> workgroupToStudentWork = new HashMap<Long, StudentWork>();
-    for (StudentWork studentWork : allStudentWork) {
-      workgroupToStudentWork.put(studentWork.getWorkgroup().getId(), studentWork);
-    }
-    return new ArrayList<StudentWork>(workgroupToStudentWork.values());
-  }
 }

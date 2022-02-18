@@ -207,21 +207,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     verifyAll();
   }
 
-  @Test
-  public void getLatestStudentWork_SpecificNodeIdComponentId_ReturnLatestStudentWorkList() {
-    StudentWork studentWork1 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
-        true);
-    StudentWork studentWork2 = createComponentWork(run1Workgroup2, run1Node1Id, run1Component1Id,
-        true);
-    StudentWork studentWork3 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,
-        true);
-    expectGetWorkForComponent(peerGroup1, run1Node1Id, run1Component1Id,
-        createStudentWorkList(studentWork1, studentWork2, studentWork3));
-    replayAll();
-    assertEquals(2, service.getLatestStudentWork(peerGroup1, run1Node1Id, run1Component1Id).size());
-    verifyAll();
-  }
-
   private void expectGetPeerGroupsByActivity() {
     expect(peerGroupDao.getListByActivity(activity)).andReturn(peerGroups);
   }

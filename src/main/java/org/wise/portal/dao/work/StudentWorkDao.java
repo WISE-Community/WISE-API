@@ -24,6 +24,7 @@
 package org.wise.portal.dao.work;
 
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.wise.portal.dao.SimpleDao;
@@ -55,4 +56,6 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 
   List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
+
+  List<StudentWork> getStudentWork(Set<Workgroup> workgroups, String nodeId, String componentId);
 }

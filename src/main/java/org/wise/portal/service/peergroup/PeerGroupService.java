@@ -73,7 +73,4 @@ public interface PeerGroupService {
    * @return List of StudentWork by members in the PeerGroup for the component
    */
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
-
-  public List<StudentWork> getLatestStudentWork(PeerGroup peerGroup, String nodeId,
-      String componentId);
 }
