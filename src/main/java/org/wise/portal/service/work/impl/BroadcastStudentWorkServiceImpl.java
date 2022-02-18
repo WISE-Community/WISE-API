@@ -32,7 +32,7 @@ public class BroadcastStudentWorkServiceImpl implements BroadcastStudentWorkServ
     try {
       JSONObject message = new JSONObject();
       message.put("type", "studentWorkToTeacher");
-      message.put("topic", String.format("/topic/teacher/%s", studentWork.getRunId()));
+      message.put("topic", String.format("/topic/teacher/%s", studentWork.getRun().getId()));
       message.put("studentWork", studentWork.toJSON());
       redisPublisher.publish(message.toString());
     } catch (JSONException e) {
