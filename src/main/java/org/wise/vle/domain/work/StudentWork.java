@@ -185,6 +185,10 @@ public class StudentWork extends PersistableDomain {
           studentWorkJSONObject.put("studentData", studentData);
         }
       }
+
+      if (peerGroup != null) {
+        studentWorkJSONObject.put("peerGroupId", peerGroup.getId());
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
