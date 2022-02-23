@@ -43,6 +43,7 @@ import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -122,7 +123,22 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
   }
 
   @Override
-  public List<StudentWork> getWorkForComponentByWorkgroups(Set<Workgroup> workgroups, String nodeId,
+  public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.equal(studentWorkRoot.get("peerGroup"), peerGroup));
+    predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
+    cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return (List<StudentWork>) query.getResultList();
+  }
+  
+  @Override
+  public List<StudentWork> getStudentWork(Set<Workgroup> workgroups, String nodeId,
       String componentId) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);

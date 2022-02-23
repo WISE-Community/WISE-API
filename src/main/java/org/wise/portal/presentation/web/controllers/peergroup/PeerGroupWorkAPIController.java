@@ -43,11 +43,11 @@ public class PeerGroupWorkAPIController {
   @Autowired
   private UserService userService;
 
-  @GetMapping("/{peerGroupId}/student-work")
+  @GetMapping("/{peerGroupId}/{nodeId}/{componentId}/student-work")
   List<StudentWork> getPeerGroupWork(@PathVariable("peerGroupId") PeerGroupImpl peerGroup,
-      Authentication auth) {
+      @PathVariable String nodeId, @PathVariable String componentId, Authentication auth) {
     if (isUserInPeerGroup(peerGroup, auth)) {
-      return peerGroupService.getStudentWork(peerGroup);
+      return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
@@ -70,7 +70,7 @@ public class PeerGroupWorkAPIController {
       PeerGroupActivity activity = peerGroupActivityService.getByComponent(run, nodeId,
           componentId);
       PeerGroup peerGroup = peerGroupService.getPeerGroup(workgroup, activity);
-      return peerGroupService.getStudentWork(peerGroup);
+      return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }

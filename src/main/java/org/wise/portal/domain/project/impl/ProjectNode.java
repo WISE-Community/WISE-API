@@ -27,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import lombok.Getter;
+
 /**
  * ProjectNode stores a list of <code>ProjectComponent</code> and is used to organize the structure
  * of a Project's content.
@@ -36,8 +38,12 @@ public class ProjectNode {
 
   JSONObject nodeJSON;
 
-  public ProjectNode(JSONObject nodeJSON) {
+  @Getter
+  String id;
+
+  public ProjectNode(JSONObject nodeJSON) throws JSONException {
     this.nodeJSON = nodeJSON;
+    this.id = nodeJSON.getString("id");
   }
 
   public ProjectComponent getComponent(String componentId) throws JSONException {
@@ -45,7 +51,7 @@ public class ProjectNode {
     for (int c = 0; c < components.length(); c++) {
       JSONObject component = components.getJSONObject(c);
       if (component.getString("id").equals(componentId)) {
-        return new ProjectComponent(component);
+        return new ProjectComponent(new ProjectNode(this.nodeJSON), component);
       }
     }
     return null;

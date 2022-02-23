@@ -58,27 +58,27 @@ public class ProjectContent {
     return node != null ? node.getComponent(componentId) : null;
   }
 
-  public Set<String> getPeerGroupActivityTags() throws JSONException {
-    Set<String> tags = new HashSet<String>();
-    JSONArray components = getComponents();
-    for (int j = 0; j < components.length(); j++) {
-      JSONObject component = components.getJSONObject(j);
-      if (component.has("peerGroupActivityTag")) {
-        tags.add(component.getString("peerGroupActivityTag"));
+  public Set<ProjectComponent> getPeerGroupActivityComponents() throws JSONException {
+    Set<ProjectComponent> peerGroupActivityComponents = new HashSet<ProjectComponent>();
+    Set<ProjectComponent> components = getComponents();
+    for (ProjectComponent component : components) {
+      if (component.hasField("peerGroupActivityTag")) {
+        peerGroupActivityComponents.add(component);
       }
     }
-    return tags;
+    return peerGroupActivityComponents;
   }
 
-  private JSONArray getComponents() throws JSONException {
-    JSONArray components = new JSONArray();
+  private Set<ProjectComponent> getComponents() throws JSONException {
+    Set<ProjectComponent> components = new HashSet<ProjectComponent>();
     JSONArray nodes = this.projectJSON.getJSONArray("nodes");
     for (int i = 0; i < nodes.length(); i++) {
       JSONObject node = nodes.getJSONObject(i);
       if (node.has("components")) {
         JSONArray nodeComponents = node.getJSONArray("components");
         for (int j = 0; j < nodeComponents.length(); j++) {
-          components.put(nodeComponents.get(j));
+          components.add(new ProjectComponent(new ProjectNode(node),
+              (JSONObject) nodeComponents.get(j)));
         }
       }
     }

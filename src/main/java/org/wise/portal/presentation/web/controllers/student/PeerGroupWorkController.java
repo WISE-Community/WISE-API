@@ -19,7 +19,7 @@ import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
-import org.wise.portal.service.peergroup.PeerGroupService;
+import org.wise.portal.service.vle.wise5.StudentWorkService;
 import org.wise.vle.domain.work.StudentWork;
 
 @RestController
@@ -30,18 +30,21 @@ public class PeerGroupWorkController extends ClassmateDataController {
   String SHOW_PEER_GROUP_WORK_TYPE = "ShowGroupWork";
 
   @Autowired
-  protected PeerGroupService peerGroupService;
+  protected StudentWorkService studentWorkService;
 
   @GetMapping("{peerGroupId}/{showPeerGroupWorkNodeId}/{showPeerGroupWorkComponentId}/{showWorkNodeId}/{showWorkComponentId}")
   public List<StudentWork> getPeerGroupWork(Authentication auth,
       @PathVariable("peerGroupId") PeerGroupImpl peerGroup,
-      @PathVariable String showPeerGroupWorkNodeId, @PathVariable String showPeerGroupWorkComponentId,
+      @PathVariable String showPeerGroupWorkNodeId,
+      @PathVariable String showPeerGroupWorkComponentId,
       @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId)
       throws ObjectNotFoundException, JSONException, IOException {
     if (isUserInPeerGroup(auth, peerGroup)) {
       Run run = peerGroup.getPeerGroupActivity().getRun();
-      if (isValidShowPeerGroupWorkComponent(run, showPeerGroupWorkNodeId, showPeerGroupWorkComponentId, showWorkNodeId, showWorkComponentId)) {
-        return peerGroupService.getLatestStudentWork(peerGroup, showWorkNodeId, showWorkComponentId);
+      if (isValidShowPeerGroupWorkComponent(run, showPeerGroupWorkNodeId,
+          showPeerGroupWorkComponentId, showWorkNodeId, showWorkComponentId)) {
+        return studentWorkService.getLatestStudentWork(peerGroup.getMembers(), showWorkNodeId,
+            showWorkComponentId);
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);

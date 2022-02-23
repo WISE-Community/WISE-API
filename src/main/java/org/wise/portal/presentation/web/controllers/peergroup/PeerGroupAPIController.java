@@ -71,7 +71,8 @@ public class PeerGroupAPIController {
       throws JSONException, PeerGroupActivityNotFoundException,
       PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
     User user = userService.retrieveUserByUsername(auth.getName());
-    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
+    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup) ||
+        run.isTeacherAssociatedToThisRun(user)) {
       return getPeerGroup(run, peerGroupActivityTag, workgroup);
     } else {
       throw new AccessDeniedException("Not permitted");

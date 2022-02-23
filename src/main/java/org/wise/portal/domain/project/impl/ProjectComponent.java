@@ -41,13 +41,21 @@ public class ProjectComponent {
   @Getter
   String id;
 
-  public ProjectComponent(JSONObject componentJSON) throws JSONException {
+  @Getter
+  ProjectNode node;
+
+  public ProjectComponent(ProjectNode node, JSONObject componentJSON) throws JSONException {
+    this.node = node;
     this.componentJSON = componentJSON;
     this.id = componentJSON.getString("id");
   }
 
   public String getString(String key) throws JSONException {
     return this.componentJSON.getString(key);
+  }
+
+  public boolean hasField(String key) {
+    return this.componentJSON.has(key);
   }
 
   public int getInt(String key) throws JSONException {

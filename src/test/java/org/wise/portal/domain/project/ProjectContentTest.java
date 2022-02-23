@@ -2,7 +2,6 @@ package org.wise.portal.domain.project;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Set;
@@ -13,6 +12,7 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.project.impl.ProjectContent;
 
 @RunWith(EasyMockRunner.class)
@@ -52,9 +52,9 @@ public class ProjectContentTest {
   }
 
   @Test
-  public void getPeerGroupActivityTags_ReturnTags() throws JSONException {
-    Set<String> tags = content.getPeerGroupActivityTags();
-    assertEquals(1, tags.size());
-    assertTrue(tags.contains("tag1"));
+  public void getPeerGroupActivityComponents_ReturnComponentsWithTags() throws JSONException {
+    Set<ProjectComponent> components = content.getPeerGroupActivityComponents();
+    assertEquals(1, components.size());
+    assertEquals("tag1", components.iterator().next().getString("peerGroupActivityTag"));
   }
 }

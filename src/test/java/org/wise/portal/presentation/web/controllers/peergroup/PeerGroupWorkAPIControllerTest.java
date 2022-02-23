@@ -31,7 +31,7 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectUserNotInPeerGroup();
     replayAll();
     try {
-      controller.getPeerGroupWork(peerGroup1, studentAuth);
+      controller.getPeerGroupWork(peerGroup1, run1Node1Id, run1Component1Id,  studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -44,7 +44,8 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectUserInPeerGroup();
     expectGetStudentWork();
     replayAll();
-    assertNotNull(controller.getPeerGroupWork(peerGroup1, studentAuth));
+    assertNotNull(controller.getPeerGroupWork(peerGroup1,  run1Node1Id, run1Component1Id,
+        studentAuth));
     verifyAll();
   }
 
@@ -123,7 +124,8 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   }
 
   private void expectGetStudentWork() {
-    expect(peerGroupService.getStudentWork(peerGroup1)).andReturn(peerGroup1StudentWork);
+    expect(peerGroupService.getStudentWork(peerGroup1, run1Node1Id, run1Component1Id))
+        .andReturn(peerGroup1StudentWork);
   }
 
   private void expectUserNotInPeerGroup() {

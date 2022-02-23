@@ -100,16 +100,21 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
   public Set<PeerGroupActivity> getByRun(Run run) {
     Set<PeerGroupActivity> activities = new HashSet<PeerGroupActivity>();
     try {
-      getPeerGroupActivityTagsInUnit(run).forEach(tag -> {
-        activities.add(getByTag(run, tag));
+      getPeerGroupActivityComponentsInUnit(run).forEach(component -> {
+        try {
+          activities.add(getByComponent(run, component.getNode().getId(), component.getId()));
+        } catch (PeerGroupActivityNotFoundException e) {
+          e.printStackTrace();
+        }
       });
     } catch (IOException | JSONException e) {
     }
     return activities;
   }
 
-  private Set<String> getPeerGroupActivityTagsInUnit(Run run) throws IOException, JSONException {
+  private Set<ProjectComponent> getPeerGroupActivityComponentsInUnit(Run run)
+      throws IOException, JSONException {
     ProjectContent projectContent = getProjectContent(run);
-    return projectContent.getPeerGroupActivityTags();
+    return projectContent.getPeerGroupActivityComponents();
   }
 }
