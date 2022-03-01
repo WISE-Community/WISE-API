@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -159,12 +160,12 @@ public class StudentStatusController {
 
   @GetMapping("/{workgroupId}")
   StudentStatus getStudentStatus(Authentication auth,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup) {
+      @PathVariable("workgroupId") WorkgroupImpl workgroup) throws AccessDeniedException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, workgroup.getRun(), workgroup)) {
       return vleService.getStudentStatusByWorkgroupId(workgroup.getId());
     } else {
-      return null;
+      throw new AccessDeniedException("User does not have permission to view this Student Status");
     }
   }
 }
