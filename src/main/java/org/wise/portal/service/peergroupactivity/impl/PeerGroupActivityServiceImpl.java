@@ -58,12 +58,14 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
   @Override
   public PeerGroupActivity getByComponent(Run run, String nodeId, String componentId)
       throws PeerGroupActivityNotFoundException {
-    PeerGroupActivity activity = peerGroupActivityDao.getByComponent(run, nodeId, componentId);
-    if (activity == null) {
-      activity = getPeerGroupActivityFromUnit(run, nodeId, componentId);
-      peerGroupActivityDao.save(activity);
+    try {
+      String componentTag = getPeerGroupActivityTag(run, nodeId, componentId);
+      if (componentTag != null) {
+        return getByTag(run, componentTag);
+      }
+    } catch (Exception e) {
     }
-    return activity;
+    throw new PeerGroupActivityNotFoundException();
   }
 
   @Override
@@ -76,17 +78,11 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
     return activity;
   }
 
-  private PeerGroupActivity getPeerGroupActivityFromUnit(Run run, String nodeId,
-      String componentId) throws PeerGroupActivityNotFoundException {
-    try {
-      ProjectContent projectContent = getProjectContent(run);
-      ProjectComponent component = projectContent.getComponent(nodeId, componentId);
-      if (component != null) {
-        return new PeerGroupActivityImpl(run, nodeId, component);
-      }
-    } catch (Exception e) {
-    }
-    throw new PeerGroupActivityNotFoundException();
+  private String getPeerGroupActivityTag(Run run, String nodeId, String componentId)
+      throws JSONException, IOException {
+    ProjectContent projectContent = getProjectContent(run);
+    ProjectComponent component = projectContent.getComponent(nodeId, componentId);
+    return component.getPeerGroupActivityTag();
   }
 
   private ProjectContent getProjectContent(Run run) throws IOException, JSONException {
@@ -102,8 +98,8 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
     try {
       getPeerGroupActivityComponentsInUnit(run).forEach(component -> {
         try {
-          activities.add(getByComponent(run, component.getNode().getId(), component.getId()));
-        } catch (PeerGroupActivityNotFoundException e) {
+          activities.add(getByTag(run, component.getPeerGroupActivityTag()));
+        } catch (JSONException e) {
           e.printStackTrace();
         }
       });

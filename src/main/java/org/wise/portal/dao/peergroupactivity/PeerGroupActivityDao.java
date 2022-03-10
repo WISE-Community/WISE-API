@@ -32,7 +32,5 @@ import org.wise.portal.domain.run.Run;
  */
 public interface PeerGroupActivityDao<T extends PeerGroupActivity> extends SimpleDao<T> {
 
-  PeerGroupActivity getByComponent(Run run, String nodeId, String componentId);
-
   PeerGroupActivity getByTag(Run run, String tag);
 }
