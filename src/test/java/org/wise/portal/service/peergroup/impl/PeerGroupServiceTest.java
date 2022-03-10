@@ -74,7 +74,7 @@ public class PeerGroupServiceTest extends WISEServiceTest {
     String peerGroupActivityComponentString = createPeerGroupActivityComponentString(componentId,
         logicName, logicNodeId, logicComponentId, logicThresholdCount, logicThresholdPercent,
         maxMembershipCount, peerGroupActivityTag);
-    return new PeerGroupActivityImpl(run, component.nodeId,
+    return new PeerGroupActivityImpl(run,
         new ProjectComponent(new ProjectNode(new JSONObject("{\"id\":\"node1\"}")),
         new JSONObject(peerGroupActivityComponentString)));
   }
