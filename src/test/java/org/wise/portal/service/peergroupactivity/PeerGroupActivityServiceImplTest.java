@@ -90,7 +90,9 @@ public class PeerGroupActivityServiceImplTest {
 
   PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
 
-  private String projectJSONString = "{\"nodes\":[{\"id\":\"" + nodeId + "\"," +
+  private String projectJSONString = "{" +
+      "\"peerGroupActivities\":[{\"tag\": \"" + tagInDB + "\"}]," +
+      "\"nodes\":[{\"id\":\"" + nodeId + "\"," +
       "\"components\":[" +
       "{\"id\":\"" + componentIdWithPGActivity + "\",\"logic\":\"" + logic + "\"," +
       "\"logicThresholdCount\":\"" + logicThresholdCount + "\"," +

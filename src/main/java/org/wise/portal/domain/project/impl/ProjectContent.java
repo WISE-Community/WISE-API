@@ -23,9 +23,6 @@
  */
 package org.wise.portal.domain.project.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,30 +55,7 @@ public class ProjectContent {
     return node != null ? node.getComponent(componentId) : null;
   }
 
-  public Set<ProjectComponent> getPeerGroupActivityComponents() throws JSONException {
-    Set<ProjectComponent> peerGroupActivityComponents = new HashSet<ProjectComponent>();
-    Set<ProjectComponent> components = getComponents();
-    for (ProjectComponent component : components) {
-      if (component.hasField("peerGroupActivityTag")) {
-        peerGroupActivityComponents.add(component);
-      }
-    }
-    return peerGroupActivityComponents;
-  }
-
-  private Set<ProjectComponent> getComponents() throws JSONException {
-    Set<ProjectComponent> components = new HashSet<ProjectComponent>();
-    JSONArray nodes = this.projectJSON.getJSONArray("nodes");
-    for (int i = 0; i < nodes.length(); i++) {
-      JSONObject node = nodes.getJSONObject(i);
-      if (node.has("components")) {
-        JSONArray nodeComponents = node.getJSONArray("components");
-        for (int j = 0; j < nodeComponents.length(); j++) {
-          components.add(new ProjectComponent(new ProjectNode(node),
-              (JSONObject) nodeComponents.get(j)));
-        }
-      }
-    }
-    return components;
+  public JSONArray getPeerGroupActivities() {
+    return this.projectJSON.optJSONArray("peerGroupActivities");
   }
 }
