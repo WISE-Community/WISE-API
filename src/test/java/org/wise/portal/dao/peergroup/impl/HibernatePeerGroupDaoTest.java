@@ -84,8 +84,6 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
     PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
     peerGroupActivity.setTag(tag);
     peerGroupActivity.setRun(component.run);
-    peerGroupActivity.setNodeId(component.nodeId);
-    peerGroupActivity.setComponentId(component.componentId);
     peerGroupActivityDao.save(peerGroupActivity);
     return peerGroupActivity;
   }

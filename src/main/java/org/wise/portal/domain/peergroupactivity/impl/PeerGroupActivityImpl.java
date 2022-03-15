@@ -68,14 +68,8 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @JsonIgnore
   private Run run;
 
-  @Column(length = 30)
-  private String nodeId;
-
-  @Column(length = 30)
-  private String componentId;
-
   @Column(length = 32768, columnDefinition = "text")
-  private String logic;
+  private String logic = "[{\"name\":\"manual\"}]";
 
   @Column(length = 30)
   private String tag;
@@ -97,11 +91,8 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
     this.tag = tag;
   }
 
-  public PeerGroupActivityImpl(Run run, String nodeId, ProjectComponent component)
-      throws JSONException {
+  public PeerGroupActivityImpl(Run run, ProjectComponent component) throws JSONException {
     this.run = run;
-    this.nodeId = nodeId;
-    this.componentId = component.getId();
     this.logic = component.getString("logic");
     this.logicThresholdCount = component.getInt("logicThresholdCount");
     this.logicThresholdPercent = component.getInt("logicThresholdPercent");

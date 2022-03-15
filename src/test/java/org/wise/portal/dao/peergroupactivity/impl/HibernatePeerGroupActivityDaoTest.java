@@ -52,14 +52,6 @@ public class HibernatePeerGroupActivityDaoTest extends WISEHibernateTest {
   }
 
   @Test
-  public void getByComponent() {
-    assertNotNull(peerGroupActivityDao.getByComponent(component1.run, component1.nodeId,
-        component1.componentId));
-    assertNull(peerGroupActivityDao.getByComponent(componentNotExists.run,
-        componentNotExists.nodeId, componentNotExists.componentId));
-  }
-
-  @Test
   public void getByTag() {
     assertNotNull(peerGroupActivityDao.getByTag(run1, peerGroupActivityTag1));
     assertNull(peerGroupActivityDao.getByTag(run1, "tagNotInDB"));
@@ -68,8 +60,6 @@ public class HibernatePeerGroupActivityDaoTest extends WISEHibernateTest {
   private void createPeerGroupActivityWithComponent(Component component) {
     PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
     peerGroupActivity.setRun(component.run);
-    peerGroupActivity.setNodeId(component.nodeId);
-    peerGroupActivity.setComponentId(component.componentId);
     peerGroupActivityDao.save(peerGroupActivity);
   }
 

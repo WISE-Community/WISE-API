@@ -105,43 +105,11 @@ public class PeerGroupActivityServiceImplTest {
     Project project = new ProjectImpl();
     project.setModulePath("/1/project.json");
     run.setProject(project);
+    peerGroupActivity.setTag(tagInDB);
   }
 
   @Test
-  public void getByComponent_foundInDB_ReturnPeerGroupActivity() throws
-      PeerGroupActivityNotFoundException {
-    PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
-    expect(peerGroupActivityDao.getByComponent(run, nodeId,
-        componentIdWithPGActivity)).andReturn(peerGroupActivity);
-    replay(peerGroupActivityDao);
-    assertEquals(peerGroupActivity, service.getByComponent(run, nodeId,
-        componentIdWithPGActivity));
-    verify(peerGroupActivityDao);
-  }
-
-  @Test
-  public void getByComponent_notInDBButInContent_ReturnPeerGroupActivity() throws
-      IOException, PeerGroupActivityNotFoundException {
-    expect(peerGroupActivityDao.getByComponent(run, nodeId,
-        componentIdWithPGActivity)).andReturn(null);
-    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
-    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
-    expectLastCall();
-    replayAll();
-    PeerGroupActivity activity = service.getByComponent(run, nodeId,
-        componentIdWithPGActivity);
-    assertEquals(logic, activity.getLogic());
-    assertEquals(logicThresholdCount, activity.getLogicThresholdCount());
-    assertEquals(logicThresholdPercent, activity.getLogicThresholdPercent());
-    assertEquals(maxMembershipCount, activity.getMaxMembershipCount());
-    verifyAll();
-  }
-
-  @Test
-  public void getByComponent_notInDBAndNotInContent_ThrowException() throws IOException {
-    expect(peerGroupActivityDao.getByComponent(run, nodeId, componentIdWithoutPGActivity))
-        .andReturn(null);
+  public void getByComponent_TagNotInContent_ThrowException() throws IOException {
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
     replayAll();
@@ -150,6 +118,32 @@ public class PeerGroupActivityServiceImplTest {
       fail("PeerGroupActivityNotFoundException expected to be thrown, but was not thrown");
     } catch (PeerGroupActivityNotFoundException e) {
     }
+    verifyAll();
+  }
+
+  @Test
+  public void getByComponent_TagInContentButNotInDB_CreateNewPeerGroupActivity()
+      throws IOException, PeerGroupActivityNotFoundException {
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(null);
+    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
+    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
+    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
+    expectLastCall();
+    replayAll();
+    PeerGroupActivity activity = service.getByComponent(run, nodeId, componentIdWithPGActivity);
+    assertEquals(tagInDB, activity.getTag());
+    verifyAll();
+  }
+
+  @Test
+  public void getByComponent_TagInContentAndInDB_ReturnGroupActivityFromDB()
+      throws IOException, PeerGroupActivityNotFoundException {
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
+    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
+    replayAll();
+    PeerGroupActivity activity = service.getByComponent(run, nodeId, componentIdWithPGActivity);
+    assertEquals(tagInDB, activity.getTag());
     verifyAll();
   }
 
@@ -176,8 +170,7 @@ public class PeerGroupActivityServiceImplTest {
   public void getByRun_ReturnPeerGroupActivitiesInRunProject() throws IOException {
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    expect(peerGroupActivityDao.getByComponent(run, nodeId, componentIdWithPGActivity))
-        .andReturn(peerGroupActivity);
+    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
     replayAll();
     assertEquals(1, service.getByRun(run).size());
     verifyAll();

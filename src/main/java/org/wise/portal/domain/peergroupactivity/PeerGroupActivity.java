@@ -32,8 +32,6 @@ import org.wise.portal.domain.run.Run;
  */
 public interface PeerGroupActivity {
 
-  String getComponentId();
-
   Long getId();
 
   String getLogic();
@@ -49,8 +47,6 @@ public interface PeerGroupActivity {
   int getLogicThresholdPercent();
 
   int getMaxMembershipCount();
-
-  String getNodeId();
 
   Run getRun();
 
