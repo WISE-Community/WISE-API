@@ -42,7 +42,6 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
 import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
@@ -68,8 +67,8 @@ public class PeerGroupAPIController {
   PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
       @PathVariable("workgroupId") WorkgroupImpl workgroup,
       @PathVariable String peerGroupActivityTag, Authentication auth)
-      throws JSONException, PeerGroupActivityNotFoundException,
-      PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
+      throws JSONException, PeerGroupCreationException,
+      PeerGroupActivityThresholdNotSatisfiedException  {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup) ||
         run.isTeacherAssociatedToThisRun(user)) {
@@ -79,31 +78,10 @@ public class PeerGroupAPIController {
     }
   }
 
-  @GetMapping("/{runId}/{workgroupId}/{nodeId}/{componentId}")
-  PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
-      @PathVariable ("workgroupId") WorkgroupImpl workgroup,
-      @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
-      throws JSONException, PeerGroupActivityNotFoundException,
-      PeerGroupCreationException, PeerGroupActivityThresholdNotSatisfiedException {
-    User user = userService.retrieveUserByUsername(auth.getName());
-    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
-      return getPeerGroup(run, nodeId, componentId, workgroup);
-    } else {
-      throw new AccessDeniedException("Not permitted");
-    }
-  }
-
   private PeerGroup getPeerGroup(Run run, String peerGroupActivityTag, Workgroup workgroup)
-      throws JSONException, PeerGroupActivityNotFoundException, PeerGroupCreationException,
+      throws JSONException, PeerGroupCreationException,
       PeerGroupActivityThresholdNotSatisfiedException {
     PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
-    return peerGroupService.getPeerGroup(workgroup, activity);
-  }
-
-  private PeerGroup getPeerGroup(Run run, String nodeId, String componentId, Workgroup workgroup)
-      throws JSONException, PeerGroupActivityNotFoundException, PeerGroupCreationException,
-      PeerGroupActivityThresholdNotSatisfiedException {
-    PeerGroupActivity activity = peerGroupActivityService.getByComponent(run, nodeId, componentId);
     return peerGroupService.getPeerGroup(workgroup, activity);
   }
 }
