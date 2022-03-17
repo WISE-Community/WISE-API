@@ -68,8 +68,8 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @JsonIgnore
   private Run run;
 
-  @Column(length = 32768, columnDefinition = "text")
-  private String logic = "[{\"name\":\"manual\"}]";
+  @Column(length = 30)
+  private String logic = "manual";
 
   @Column(length = 30)
   private String tag;
@@ -110,10 +110,5 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
 
   private JSONObject getFirstLogicJSON() throws JSONException {
     return new JSONArray(this.logic).getJSONObject(0);
-  }
-
-  public String getLogicName() throws JSONException {
-    JSONObject logic = getFirstLogicJSON();
-    return logic.getString("name");
   }
 }

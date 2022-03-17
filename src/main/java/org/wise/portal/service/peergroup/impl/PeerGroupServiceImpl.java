@@ -76,7 +76,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
       throws JSONException, PeerGroupActivityThresholdNotSatisfiedException,
       PeerGroupCreationException {
     PeerGroup peerGroup = peerGroupDao.getByWorkgroupAndActivity(workgroup, activity);
-    if (activity.getLogicName().equals("manual")) {
+    if (activity.getLogic().contains("manual")) {
+      // use contains check instead of equals until custom logic is implemented for
+      // backwards-compatibility
       return peerGroup;
     } else {
       return peerGroup != null ? peerGroup : this.createPeerGroup(workgroup, activity);
@@ -148,7 +150,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     Set<Workgroup> members = new HashSet<Workgroup>();
     members.add(workgroup);
     possibleMembers.remove(workgroup);
-    if (activity.getLogicName().equals("random")) {
+    if (activity.getLogic().contains("random")) {
+      // use contains check instead of equals until custom logic is implemented for
+      // backwards-compatibility
       addMembersRandomly(activity, possibleMembers, members);
     } else {
       addMembersInOrder(activity, possibleMembers, members);

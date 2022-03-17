@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,21 +97,27 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
   public Set<PeerGroupActivity> getByRun(Run run) {
     Set<PeerGroupActivity> activities = new HashSet<PeerGroupActivity>();
     try {
-      getPeerGroupActivityComponentsInUnit(run).forEach(component -> {
-        try {
-          activities.add(getByTag(run, component.getPeerGroupActivityTag()));
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+      getPeerGroupActivitiesInUnit(run).forEach(peerGroupActivity -> {
+        activities.add(getByTag(run, peerGroupActivity.getTag()));
       });
     } catch (IOException | JSONException e) {
     }
     return activities;
   }
 
-  private Set<ProjectComponent> getPeerGroupActivityComponentsInUnit(Run run)
+  private Set<PeerGroupActivity> getPeerGroupActivitiesInUnit(Run run)
       throws IOException, JSONException {
+    Set<PeerGroupActivity> peerGroupActivities = new HashSet<PeerGroupActivity>();
     ProjectContent projectContent = getProjectContent(run);
-    return projectContent.getPeerGroupActivityComponents();
+    JSONArray peerGroupActivitiesInContent = projectContent.getPeerGroupActivities();
+    if (peerGroupActivitiesInContent != null) {
+      for (int i = 0; i < peerGroupActivitiesInContent.length(); i++) {
+        JSONObject peerGroupActivityInContent = peerGroupActivitiesInContent.optJSONObject(i);
+        PeerGroupActivity peerGroupActivity =
+            new PeerGroupActivityImpl(run, peerGroupActivityInContent.optString("tag"));
+        peerGroupActivities.add(peerGroupActivity);
+      }
+    }
+    return peerGroupActivities;
   }
 }
