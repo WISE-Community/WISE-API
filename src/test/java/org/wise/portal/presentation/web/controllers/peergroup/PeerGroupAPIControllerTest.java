@@ -19,26 +19,13 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   private PeerGroupAPIController controller = new PeerGroupAPIController();
 
   @Test
-  public void getPeerGroupByComponent_WorkgroupNotAssociatedWithRun_AccessDenied() throws Exception {
+  public void getPeerGroup_UserNotAssociatedWithRun_AccessDenied() throws Exception {
     expectWorkgroupAssociatedWithRun(false);
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, run1Node1Id, run1Component1Id, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
-  public void getPeerGroupByComponent_PeerGroupActivityNotFound_ThrowException() throws Exception {
-    expectWorkgroupAssociatedWithRun(true);
-    expectPeerGroupActivityNotFound();
-    replayAll();
-    try {
-      controller.getPeerGroup(run1, workgroup1, run1Node1Id, run1Component1Id, studentAuth);
-      fail("Expected PeerGroupActivityNotFoundException, but was not thrown");
-    } catch (PeerGroupActivityNotFoundException e) {
     }
     verifyAll();
   }
@@ -49,7 +36,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
     expectPeerGroupThresholdNotSatisifed();
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, run1Node1Id, run1Component1Id, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
       fail("Expected PeerGroupCreationException, but was not thrown");
     } catch (PeerGroupActivityThresholdNotSatisfiedException e) {
     }
@@ -62,7 +49,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
     expectPeerGroupCreationException();
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, run1Node1Id, run1Component1Id, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
       fail("Expected PeerGroupCreationException, but was not thrown");
     } catch (PeerGroupCreationException e) {
     }
@@ -70,19 +57,18 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   @Test
-  public void getPeerGroupByComponent_FoundExistingGroupOrGroupCreated_ReturnGroup() throws Exception {
+  public void getPeerGroup_FoundExistingGroupOrGroupCreated_ReturnGroup() throws Exception {
     expectWorkgroupAssociatedWithRunAndActivityFound();
     expectPeerGroupCreated();
     replayAll();
-    assertNotNull(controller.getPeerGroup(run1, workgroup1, run1Node1Id, run1Component1Id,
-        studentAuth));
+    assertNotNull(controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth));
     verifyAll();
   }
 
   private void expectWorkgroupAssociatedWithRunAndActivityFound() throws Exception,
       PeerGroupActivityNotFoundException {
     expectWorkgroupAssociatedWithRun(true);
-    expectPeerGroupActivityFound();
+    expectPeerGroupActivityByTagFound();
   }
 
   private void expectWorkgroupAssociatedWithRun(boolean isAssociated) throws Exception {
