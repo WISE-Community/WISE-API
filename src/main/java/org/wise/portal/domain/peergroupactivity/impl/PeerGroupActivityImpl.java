@@ -34,6 +34,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -52,11 +53,14 @@ import lombok.Setter;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "peer_group_activities", indexes = {
-    @Index(columnList = "runId", name = "peer_group_activities_run_id_index") })
+@Table(name = "peer_group_activities",
+    indexes = { @Index(columnList = "runId", name = "peer_group_activities_run_id_index") },
+    uniqueConstraints = { @UniqueConstraint(columnNames = { "runId", "tag" }) })
 @Getter
 @Setter
 public class PeerGroupActivityImpl implements PeerGroupActivity {
+
+  private static final long serialVersionUID = 1L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -68,10 +72,10 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @JsonIgnore
   private Run run;
 
-  @Column(length = 30)
+  @Column(length = 30, nullable = false)
   private String logic = "manual";
 
-  @Column(length = 30)
+  @Column(length = 30, nullable = false)
   private String tag;
 
   @Column

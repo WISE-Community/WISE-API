@@ -212,11 +212,11 @@ create table notification (
 create table peer_group_activities (
     id bigint not null auto_increment,
     runId bigint not null,
-    logic text,
+    logic text not null,
     logicThresholdCount integer,
     logicThresholdPercent integer,
     maxMembershipCount integer,
-    tag varchar(30),
+    tag varchar(30) not null,
     OPTLOCK integer,
     index peer_group_activities_run_id_index (runId),
     constraint peerGroupActivitiesRunIdFK foreign key (runId) references runs (id),

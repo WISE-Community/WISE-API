@@ -24,17 +24,22 @@
 package org.wise.portal.domain.peergroupactivity;
 
 import org.json.JSONException;
+import org.wise.portal.domain.Persistable;
 import org.wise.portal.domain.run.Run;
 
 /**
  * A class that defines location of peer group activities and how to group workgroups together
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivity {
+public interface PeerGroupActivity extends Persistable {
 
   Long getId();
 
+  void setId(Long id);
+
   String getLogic();
+
+  void setLogic(String logic);
 
   String getLogicComponentId() throws JSONException;
 
@@ -45,6 +50,8 @@ public interface PeerGroupActivity {
   int getLogicThresholdPercent();
 
   int getMaxMembershipCount();
+
+  void setMaxMembershipCount(int maxMembershipCount);
 
   Run getRun();
 
