@@ -255,21 +255,12 @@ public class AuthorAPIController {
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
-        scanForPeerGroupActivities(project);
         return new SuccessResponse("projectSaved");
       } catch (Exception e) {
         return new ErrorResponse("errorSavingProject");
       }
     } else {
       return new ErrorResponse("notAllowedToEditThisProject");
-    }
-  }
-
-  private void scanForPeerGroupActivities(ProjectImpl project) {
-    List<Run> projectRuns = runService.getProjectRuns(project.getId());
-    if (projectRuns.size() > 0) {
-      Run projectRun = projectRuns.get(0);
-      peerGroupActivityService.getByRun(projectRun);
     }
   }
 
