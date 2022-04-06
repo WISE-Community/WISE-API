@@ -49,10 +49,6 @@ apt-get install tomcat9 -y
 echo "Removing Tomcat ROOT folder"
 rm -rf $CATALINA_HOME/webapps/ROOT
 
-echo 'Setting Tomcat to run as ubuntu user'
-sed 's/User=tomcat/User=ubuntu/' -i /lib/systemd/system/tomcat9.service
-systemctl daemon-reload
-
 echo "Add https to Tomcat server.xml"
 sed 's/<Connector port="8080"/<Connector port="8080" scheme="https"/' -i $CATALINA_HOME/conf/server.xml
 
@@ -63,8 +59,8 @@ echo "Restarting Tomcat"
 service tomcat9 restart
 
 echo "Creating Tomcat curriculum and studentuploads folders"
-sudo -u ubuntu -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
-sudo -u ubuntu -g tomcat mkdir $CATALINA_HOME/webapps/studentuploads
+sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
+sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/studentuploads
 
 echo "Installing Nginx"
 apt-get install nginx -y
