@@ -25,6 +25,7 @@ package org.wise.portal.service.peergroupactivity;
 
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 import org.wise.portal.domain.run.Run;
 
@@ -62,4 +63,10 @@ public interface PeerGroupActivityService {
    * If none is found, creates a new PeerGroupActivity for the tag.
    */
   Set<PeerGroupActivity> getByRun(Run run);
+
+  @Transactional
+  PeerGroupActivity createPeerGroupActivity(Run run, PeerGroupActivity activity);
+
+  @Transactional
+  PeerGroupActivity updatePeerGroupActivity(Run run, String tag, PeerGroupActivity activity);
 }

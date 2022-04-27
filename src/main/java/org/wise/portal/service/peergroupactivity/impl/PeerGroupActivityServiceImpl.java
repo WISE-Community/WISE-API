@@ -120,4 +120,19 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
     }
     return peerGroupActivities;
   }
+
+  public PeerGroupActivity createPeerGroupActivity(Run run, PeerGroupActivity activity) {
+    activity.setRun(run);
+    peerGroupActivityDao.save(activity);
+    return activity;
+  }
+
+  public PeerGroupActivity updatePeerGroupActivity(Run run, String tag, PeerGroupActivity activity) {
+    PeerGroupActivity activityInDB = getByTag(run, tag);
+    activityInDB.setLogic(activity.getLogic());
+    activityInDB.setTag(activity.getTag());
+    activityInDB.setMaxMembershipCount(activity.getMaxMembershipCount());
+    peerGroupActivityDao.save(activityInDB);
+    return activityInDB;
+  }
 }
