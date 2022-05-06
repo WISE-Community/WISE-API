@@ -316,4 +316,14 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
     addUserToRun(student1, run1, run1Period1);
     assertTrue(runDao.isUserInRunAndPeriod(student1, run1, run1Period1));
   }
+
+  @Test
+  public void isUserInRun_InRun_ShouldReturnTrue() {
+    assertTrue(runDao.isUserInRun(student1, run1));
+  }
+
+  @Test
+  public void isUserInRun_NotInRun_ShouldReturnFalse() {
+    assertFalse(runDao.isUserInRun(student1, run2));
+  }
 }

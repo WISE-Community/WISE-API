@@ -33,6 +33,16 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
     expect(vleService.getStudentWork(run, period, nodeId, componentId)).andReturn(studentWork);
   }
 
+  protected void expectLatestStudentWork(Run run, Group period, String nodeId, String componentId,
+      List<StudentWork> studentWork) {
+    expect(vleService.getLatestStudentWork(run, period, nodeId, componentId)).andReturn(studentWork);
+  }
+
+  protected void expectLatestStudentWork(Run run, String nodeId, String componentId,
+      List<StudentWork> studentWork) {
+    expect(vleService.getLatestStudentWork(run, nodeId, componentId)).andReturn(studentWork);
+  }
+
   protected void expectAnnotations(List<Annotation> annotations) {
     expectAnnotations(run1, run1Period1, NODE_ID1, COMPONENT_ID1, annotations);
   }
@@ -48,6 +58,12 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
   }
 
   protected void expectIsUserInRun(boolean isInRun)
+      throws NoSuchMethodException, ObjectNotFoundException {
+    expect(userService.retrieveUser(student1UserDetails)).andReturn(student1);
+    expect(runService.isUserInRun(student1, run1)).andReturn(isInRun);
+  }
+
+  protected void expectIsUserInRunAndPeriod(boolean isInRun)
       throws NoSuchMethodException, ObjectNotFoundException {
     expect(groupService.retrieveById(run1Period1Id)).andReturn(run1Period1);
     expect(userService.retrieveUser(student1UserDetails)).andReturn(student1);

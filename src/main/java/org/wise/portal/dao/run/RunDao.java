@@ -114,4 +114,6 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   long getMaxRunId();
 
   boolean isUserInRunAndPeriod(User user, Run run, Group period);
+
+  boolean isUserInRun(User user, Run run);
 }

@@ -33,6 +33,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.hibernate.Session;
 import org.json.JSONException;
@@ -161,5 +162,32 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
         .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
+  }
+
+  public List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId) {
+    return this.getLatestStudentWork(run, null, nodeId, componentId);
+  }
+
+  public List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId,
+      String componentId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Subquery<Long> subQuery = cq.subquery(Long.class);
+    Root<StudentWork> subStudentWorkRoot = subQuery.from(StudentWork.class);
+    List<Predicate> subPredicates = new ArrayList<>();
+    subPredicates.add(cb.equal(subStudentWorkRoot.get("run"), run));
+    subPredicates.add(cb.equal(subStudentWorkRoot.get("nodeId"), nodeId));
+    subPredicates.add(cb.equal(subStudentWorkRoot.get("componentId"), componentId));
+    if (period != null) {
+      subPredicates.add(cb.equal(subStudentWorkRoot.get("period"), period));
+    }
+    subQuery.select(cb.max(subStudentWorkRoot.get("id")))
+        .where(subPredicates.toArray(new Predicate[subPredicates.size()]))
+        .groupBy(subStudentWorkRoot.get("workgroup").get("id"));
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    cq.select(studentWorkRoot).where(cb.in(studentWorkRoot.get("id")).value(subQuery));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    List<StudentWork> result = (List<StudentWork>) query.getResultList();
+    return result;
   }
 }

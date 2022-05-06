@@ -46,4 +46,8 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
   List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
 
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
+ 
+  List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId);
+
+  List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId, String componentId);
 }

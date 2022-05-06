@@ -29,79 +29,114 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   private ClassmateGraphDataController controller = new ClassmateGraphDataController();
 
   @Test
-  public void getClassmateGraphWork_NotInRun_ThrowException()
+  public void getClassmateGraphWorkInPeriod_NotInRun_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(false);
+    expectIsUserInRunAndPeriod(false);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWork(studentAuth, run1, run1Period1Id, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, controller.PERIOD_SOURCE));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
     verifyAll();
   }
 
   @Test
-  public void getClassmateGraphWork_NotGraphComponent_ThrowException()
+  public void getClassmateGraphWorkInPeriod_NotInPeriod_ThrowException()
+      throws NoSuchMethodException, ObjectNotFoundException {
+    expectIsUserInRunAndPeriod(false);
+    replayAll();
+    assertThrows(AccessDeniedException.class,
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
+    verifyAll();
+  }
+
+  @Test
+  public void getClassmateGraphWorkInPeriod_NotGraphComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWork(studentAuth, run1, run1Period1Id, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, controller.PERIOD_SOURCE));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
     verifyAll();
   }
 
   @Test
-  public void getClassmateGraphWork_InvalidNodeId_ThrowException()
+  public void getClassmateGraphWorkInPeriod_InvalidNodeId_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    getClassmateGraphWork_InvalidField_ThrowException(SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
-        controller.PERIOD_SOURCE, SHOW_WORK_NODE_ID_NOT_ALLOWED, SHOW_WORK_COMPONENT_ID,
-        controller.PERIOD_SOURCE);
+    getClassmateGraphWorkInPeriod_InvalidField_ThrowException(SHOW_WORK_NODE_ID,
+        SHOW_WORK_COMPONENT_ID, controller.PERIOD_SOURCE, SHOW_WORK_NODE_ID_NOT_ALLOWED,
+        SHOW_WORK_COMPONENT_ID);
   }
 
   @Test
-  public void getClassmateGraphWork_InvalidComponentId_ThrowException()
+  public void getClassmateGraphWorkInPeriod_InvalidComponentId_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    getClassmateGraphWork_InvalidField_ThrowException(SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
-        controller.PERIOD_SOURCE, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID_NOT_ALLOWED,
-        controller.PERIOD_SOURCE);
+    getClassmateGraphWorkInPeriod_InvalidField_ThrowException(SHOW_WORK_NODE_ID,
+        SHOW_WORK_COMPONENT_ID, controller.PERIOD_SOURCE, SHOW_WORK_NODE_ID,
+        SHOW_WORK_COMPONENT_ID_NOT_ALLOWED);
   }
 
-  @Test
-  public void getClassmateGraphWork_InvalidSource_ThrowException()
-      throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    getClassmateGraphWork_InvalidField_ThrowException(SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
-        controller.PERIOD_SOURCE, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
-        controller.CLASS_SOURCE);
-  }
-
-  private void getClassmateGraphWork_InvalidField_ThrowException(String actualNodeId,
+  private void getClassmateGraphWorkInPeriod_InvalidField_ThrowException(String actualNodeId,
       String actualComponentId, String actualSource, String requestedNodeId,
-      String requestedComponentId, String requestedSource)
+      String requestedComponentId)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, actualNodeId,
         actualComponentId, controller.SHOW_CLASSMATE_WORK_TYPE, actualSource);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWork(studentAuth, run1, run1Period1Id, NODE_ID1,
-            COMPONENT_ID1, requestedNodeId, requestedComponentId, requestedSource));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
+            COMPONENT_ID1, requestedNodeId, requestedComponentId, run1Period1Id));
     verifyAll();
   }
 
   @Test
-  public void getClassmateGraphWork_ValidParams_ReturnWork()
+  public void getClassmateGraphWorkInClass_InvalidSource_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
     expectIsUserInRun(true);
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
         SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.PERIOD_SOURCE);
+    replayAll();
+    assertThrows(AccessDeniedException.class,
+        () -> controller.getClassmateGraphWorkInClass(studentAuth, run1, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID));
+    verifyAll();
+  }
+
+  @Test
+  public void getClassmateGraphWorkInPeriod_ValidParams_ReturnWork()
+      throws IOException, NoSuchMethodException, ObjectNotFoundException {
+    expectIsUserInRunAndPeriod(true);
+    expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
+        SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.PERIOD_SOURCE);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
-    expectStudentWork(run1, run1Period1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, studentWork);
+    expectLatestStudentWork(run1, run1Period1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
+        studentWork);
     replayAll();
     try {
-      List<StudentWork> classmateGraphWork = controller.getClassmateGraphWork(studentAuth, run1,
-          run1Period1Id, NODE_ID1, COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID,
-          controller.PERIOD_SOURCE);
+      List<StudentWork> classmateGraphWork = controller.getClassmateGraphWorkInPeriod(studentAuth,
+          run1, NODE_ID1, COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id);
+      assertEquals(classmateGraphWork, studentWork);
+    } catch (Exception e) {
+      fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
+    }
+    verifyAll();
+  }
+
+  @Test
+  public void getClassmateGraphWorkInClass_ValidParams_ReturnWork()
+      throws IOException, NoSuchMethodException, ObjectNotFoundException {
+    expectIsUserInRun(true);
+    expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
+        SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.CLASS_SOURCE);
+    List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
+    expectLatestStudentWork(run1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, studentWork);
+    replayAll();
+    try {
+      List<StudentWork> classmateGraphWork = controller.getClassmateGraphWorkInClass(studentAuth,
+          run1, NODE_ID1, COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID);
       assertEquals(classmateGraphWork, studentWork);
     } catch (Exception e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);

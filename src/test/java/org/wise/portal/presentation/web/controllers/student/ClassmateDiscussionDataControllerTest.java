@@ -26,7 +26,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
   @Test
   public void getClassmateDiscussionWork_NotInRun_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(false);
+    expectIsUserInRunAndPeriod(false);
     replayAll();
     assertThrows(AccessDeniedException.class, () -> controller
         .getClassmateDiscussionWork(studentAuth, run1, run1Period1Id, NODE_ID1, COMPONENT_ID1));
@@ -36,7 +36,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
   @Test
   public void getClassmateDiscussionWork_NotDiscussionComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class, () -> controller
@@ -47,7 +47,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
   @Test
   public void getClassmateDiscussionWork_InRunDiscussionComponent_ReturnWork()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(controller.DISCUSSION_TYPE);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
     expectStudentWork(studentWork);
@@ -65,7 +65,7 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
   @Test
   public void getClassmateDiscussionAnnotations_InRunDiscussionComponent_ReturnAnnotations()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(controller.DISCUSSION_TYPE);
     List<Annotation> annotations = Arrays.asList(new Annotation(), new Annotation());
     expectAnnotations(annotations);

@@ -32,7 +32,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_NotInRun_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(false);
+    expectIsUserInRunAndPeriod(false);
     replayAll();
     assertThrows(AccessDeniedException.class,
         () -> controller.getClassmateSummaryWork(studentAuth, run1, run1Period1Id, NODE_ID1,
@@ -43,7 +43,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_NotSummaryComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
@@ -55,7 +55,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_InvalidOtherComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, controller.PERIOD_SOURCE);
     replayAll();
@@ -80,7 +80,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
 
   private void getClassmateSummaryWork_InRunSummaryComponent_ReturnWork(String source)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, source);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
@@ -117,7 +117,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
 
   private void getClassmateSummaryAnnotations_InRunSummaryComponent_ReturnAnnotations(String source)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    expectIsUserInRunAndPeriod(true);
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, source);
     List<Annotation> annotations = Arrays.asList(new Annotation(), new Annotation());

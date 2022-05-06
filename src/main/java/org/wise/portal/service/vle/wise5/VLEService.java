@@ -62,6 +62,10 @@ public interface VLEService {
 
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
 
+  List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId);
+
+  List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId, String componentId);
+
   List<NotebookItem> getNotebookItemsExport(Run run);
 
   List<NotebookItem> getLatestNotebookItemsExport(Run run);
