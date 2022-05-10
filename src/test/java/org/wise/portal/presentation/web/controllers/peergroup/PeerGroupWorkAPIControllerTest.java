@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
+import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
 import org.wise.vle.domain.work.StudentWork;
 
 @RunWith(EasyMockRunner.class)
@@ -64,16 +64,16 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   }
 
   @Test
-  public void getPeerGroupWork_PeerGroupActivityNotFoundSpecifiedByComponent_ThrowException()
+  public void getPeerGroupWork_PeerGroupingNotFoundSpecifiedByComponent_ThrowException()
       throws Exception {
     expectUserAllowedToViewStudentWorkForRun();
-    expectPeerGroupActivityNotFound();
+    expectPeerGroupingNotFound();
     replayAll();
     try {
       controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id,
           teacherAuth);
-      fail("PeerGroupActivityNotFoundException expected, but was not thrown");
-    } catch (PeerGroupActivityNotFoundException e) {}
+      fail("PeerGroupingNotFoundException expected, but was not thrown");
+    } catch (PeerGroupingNotFoundException e) {}
     verifyAll();
   }
 
@@ -81,7 +81,7 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   public void getPeerGroupWork_PeerGroupNotFoundSpecifiedByComponent_ThrowException()
       throws Exception {
     expectUserAllowedToViewStudentWorkForRun();
-    expectPeerGroupActivityFound();
+    expectPeerGroupingFound();
     expectPeerGroupCreationException();
     replayAll();
     try {
@@ -96,7 +96,7 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   public void getPeerGroupWork_PeerGroupFoundSpecifiedByComponent_ReturnStudentWork()
       throws Exception {
     expectUserAllowedToViewStudentWorkForRun();
-    expectPeerGroupActivityFound();
+    expectPeerGroupingFound();
     expectPeerGroupFound();
     expectGetStudentWork();
     replayAll();
@@ -111,7 +111,7 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   }
 
   private void expectPeerGroupFound() throws Exception {
-    expect(peerGroupService.getPeerGroup(workgroup1, peerGroupActivity)).andReturn(peerGroup1);
+    expect(peerGroupService.getPeerGroup(workgroup1, peerGrouping)).andReturn(peerGroup1);
   }
 
   private void expectUserAllowedToViewStudentWorkForRun() throws ObjectNotFoundException {

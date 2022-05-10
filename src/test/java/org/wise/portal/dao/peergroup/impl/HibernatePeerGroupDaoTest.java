@@ -39,10 +39,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.Component;
 import org.wise.portal.dao.WISEHibernateTest;
-import org.wise.portal.dao.peergroupactivity.impl.HibernatePeerGroupActivityDao;
+import org.wise.portal.dao.peergrouping.impl.HibernatePeerGroupingDao;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 /**
@@ -56,53 +56,53 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
   HibernatePeerGroupDao peerGroupDao;
 
   @Autowired
-  HibernatePeerGroupActivityDao peerGroupActivityDao;
+  HibernatePeerGroupingDao peerGroupingDao;
 
-  PeerGroupActivity activity1, activity2;
+  PeerGrouping peerGrouping1, peerGrouping2;
 
-  String peerGroupActivity1Tag = "peerGroupActivity1";
+  String peerGrouping1Tag = "peerGrouping1";
 
-  String peerGroupActivity2Tag = "peerGroupActivity2";
+  String peerGrouping2Tag = "peerGrouping2";
 
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    activity1 = createPeerGroupActivity(component1, peerGroupActivity1Tag);
-    activity2 = createPeerGroupActivity(component2, peerGroupActivity2Tag);
-    createPeerGroup(activity1, workgroup1);
-    createPeerGroup(activity2, workgroup1, workgroup2);
+    peerGrouping1 = createPeerGrouping(component1, peerGrouping1Tag);
+    peerGrouping2 = createPeerGrouping(component2, peerGrouping2Tag);
+    createPeerGroup(peerGrouping1, workgroup1);
+    createPeerGroup(peerGrouping2, workgroup1, workgroup2);
   }
 
-  private void createPeerGroup(PeerGroupActivity activity, Workgroup... workgroups) {
+  private void createPeerGroup(PeerGrouping peerGrouping, Workgroup... workgroups) {
     PeerGroupImpl peerGroup = new PeerGroupImpl();
-    peerGroup.setPeerGroupActivity(activity);
+    peerGroup.setPeerGrouping(peerGrouping);
     peerGroup.setMembers(Stream.of(workgroups).collect(Collectors.toCollection(HashSet::new)));
     peerGroupDao.save(peerGroup);
   }
 
-  private PeerGroupActivityImpl createPeerGroupActivity(Component component, String tag) {
-    PeerGroupActivityImpl peerGroupActivity = new PeerGroupActivityImpl();
-    peerGroupActivity.setTag(tag);
-    peerGroupActivity.setRun(component.run);
-    peerGroupActivityDao.save(peerGroupActivity);
-    return peerGroupActivity;
+  private PeerGroupingImpl createPeerGrouping(Component component, String tag) {
+    PeerGroupingImpl peerGrouping = new PeerGroupingImpl();
+    peerGrouping.setTag(tag);
+    peerGrouping.setRun(component.run);
+    peerGroupingDao.save(peerGrouping);
+    return peerGrouping;
   }
 
   @Test
-  public void getByWorkgroupAndActivity_WorkgroupIsInPeerGroupForActivity_ReturnPeerGroup() {
-    assertNotNull(peerGroupDao.getByWorkgroupAndActivity(workgroup1, activity1));
-    assertNotNull(peerGroupDao.getByWorkgroupAndActivity(workgroup1, activity2));
+  public void getByWorkgroupAndPeerGrouping_WorkgroupIsInPeerGroupForPeerGrouping_ReturnPeerGroup() {
+    assertNotNull(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup1, peerGrouping1));
+    assertNotNull(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup1, peerGrouping2));
   }
 
   @Test
-  public void getByWorkgroupAndActivity_WorkgroupNotInPeerGroupForActivity_ReturnNull() {
-    assertNull(peerGroupDao.getByWorkgroupAndActivity(workgroup2, activity1));
+  public void getByWorkgroupAndPeerGrouping_WorkgroupNotInPeerGroupForPeerGrouping_ReturnNull() {
+    assertNull(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup2, peerGrouping1));
   }
 
   @Test
-  public void getListByActivity_ReturnListByActivity() {
-    assertEquals(1, peerGroupDao.getListByActivity(activity1).size());
-    assertEquals(1, peerGroupDao.getListByActivity(activity2).size());
+  public void getListByPeerGrouping_ReturnListByPeerGrouping() {
+    assertEquals(1, peerGroupDao.getListByPeerGrouping(peerGrouping1).size());
+    assertEquals(1, peerGroupDao.getListByPeerGrouping(peerGrouping2).size());
   }
 
   @Test
@@ -113,8 +113,8 @@ public class HibernatePeerGroupDaoTest extends WISEHibernateTest {
   }
 
   @Test
-  public void getWorkgroupsInPeerGroup_ActivityWithPeerGroups_ReturnWorkgroupList() {
-    assertEquals(1, peerGroupDao.getWorkgroupsInPeerGroup(activity1, run1Period1).size());
-    assertEquals(2, peerGroupDao.getWorkgroupsInPeerGroup(activity2, run1Period1).size());
+  public void getWorkgroupsInPeerGroup_PeerGroupingWithPeerGroups_ReturnWorkgroupList() {
+    assertEquals(1, peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping1, run1Period1).size());
+    assertEquals(2, peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping2, run1Period1).size());
   }
 }

@@ -33,16 +33,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
-import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
+import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
@@ -61,27 +61,27 @@ public class PeerGroupAPIController {
   private PeerGroupService peerGroupService;
 
   @Autowired
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
-  @GetMapping("/{runId}/{workgroupId}/{peerGroupActivityTag}")
+  @GetMapping("/{runId}/{workgroupId}/{peerGroupingTag}")
   PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
       @PathVariable("workgroupId") WorkgroupImpl workgroup,
-      @PathVariable String peerGroupActivityTag, Authentication auth)
+      @PathVariable String peerGroupingTag, Authentication auth)
       throws JSONException, PeerGroupCreationException,
-      PeerGroupActivityThresholdNotSatisfiedException  {
+      PeerGroupingThresholdNotSatisfiedException  {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup) ||
         run.isTeacherAssociatedToThisRun(user)) {
-      return getPeerGroup(run, peerGroupActivityTag, workgroup);
+      return getPeerGroup(run, peerGroupingTag, workgroup);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
   }
 
-  private PeerGroup getPeerGroup(Run run, String peerGroupActivityTag, Workgroup workgroup)
+  private PeerGroup getPeerGroup(Run run, String peerGroupingTag, Workgroup workgroup)
       throws JSONException, PeerGroupCreationException,
-      PeerGroupActivityThresholdNotSatisfiedException {
-    PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
-    return peerGroupService.getPeerGroup(workgroup, activity);
+      PeerGroupingThresholdNotSatisfiedException {
+    PeerGrouping peerGrouping = peerGroupingService.getByTag(run, peerGroupingTag);
+    return peerGroupService.getPeerGroup(workgroup, peerGrouping);
   }
 }

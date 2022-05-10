@@ -45,8 +45,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
@@ -68,11 +68,11 @@ public class PeerGroupImpl implements PeerGroup {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id = null;
 
-  @ManyToOne(targetEntity = PeerGroupActivityImpl.class, cascade = { CascadeType.PERSIST },
+  @ManyToOne(targetEntity = PeerGroupingImpl.class, cascade = { CascadeType.PERSIST },
       fetch = FetchType.LAZY)
-  @JoinColumn(name = "peerGroupActivityId", nullable = false)
+  @JoinColumn(name = "peerGroupingId", nullable = false)
   @JsonIgnore
-  private PeerGroupActivity peerGroupActivity;
+  private PeerGrouping peerGrouping;
 
   @ManyToMany(targetEntity = WorkgroupImpl.class)
   @JoinTable(name = "peer_groups_related_to_workgroups",
@@ -87,8 +87,8 @@ public class PeerGroupImpl implements PeerGroup {
 
   public PeerGroupImpl() {}
 
-  public PeerGroupImpl(PeerGroupActivity activity, Group period, Set<Workgroup> members) {
-    this.peerGroupActivity = activity;
+  public PeerGroupImpl(PeerGrouping peerGrouping, Group period, Set<Workgroup> members) {
+    this.peerGrouping = peerGrouping;
     this.period = period;
     this.members = members;
   }

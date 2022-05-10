@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.peergroup.PeerGroupInfoService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.run.RunService;
 
 /**
@@ -25,7 +25,7 @@ import org.wise.portal.service.run.RunService;
 public class TeacherPeerGroupInfoAPIController {
 
   @Autowired
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
   @Autowired
   private PeerGroupInfoService peerGroupInfoService;
@@ -33,13 +33,13 @@ public class TeacherPeerGroupInfoAPIController {
   @Autowired
   private RunService runService;
 
-  @GetMapping("/{runId}/{peerGroupActivityTag}")
+  @GetMapping("/{runId}/{peerGroupingTag}")
   public Map<String, Object> getPeerGroupsInfo(@PathVariable("runId") RunImpl run,
-      @PathVariable String peerGroupActivityTag, Authentication auth)
+      @PathVariable String peerGroupingTag, Authentication auth)
       throws ObjectNotFoundException {
     if (runService.hasReadPermission(auth, run)) {
-      return peerGroupInfoService.getPeerGroupInfo(peerGroupActivityService.getByTag(run,
-          peerGroupActivityTag));
+      return peerGroupInfoService.getPeerGroupInfo(peerGroupingService.getByTag(run,
+          peerGroupingTag));
     } else {
       throw new AccessDeniedException("Not permitted");
     }

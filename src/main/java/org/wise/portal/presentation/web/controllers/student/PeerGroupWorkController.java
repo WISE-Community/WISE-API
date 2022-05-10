@@ -40,7 +40,7 @@ public class PeerGroupWorkController extends ClassmateDataController {
       @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId)
       throws ObjectNotFoundException, JSONException, IOException {
     if (isUserInPeerGroup(auth, peerGroup)) {
-      Run run = peerGroup.getPeerGroupActivity().getRun();
+      Run run = peerGroup.getPeerGrouping().getRun();
       if (isValidShowPeerGroupWorkComponent(run, showPeerGroupWorkNodeId,
           showPeerGroupWorkComponentId, showWorkNodeId, showWorkComponentId)) {
         return studentWorkService.getLatestStudentWork(peerGroup.getMembers(), showWorkNodeId,

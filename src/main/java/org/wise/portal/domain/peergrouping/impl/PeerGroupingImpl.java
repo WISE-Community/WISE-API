@@ -21,7 +21,7 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.domain.peergroupactivity.impl;
+package org.wise.portal.domain.peergrouping.impl;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -53,12 +53,12 @@ import lombok.Setter;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "peer_group_activities",
-    indexes = { @Index(columnList = "runId", name = "peer_group_activities_run_id_index") },
+@Table(name = "peer_groupings",
+    indexes = { @Index(columnList = "runId", name = "peerGroupingsRunIdIndex") },
     uniqueConstraints = { @UniqueConstraint(columnNames = { "runId", "tag" }) })
 @Getter
 @Setter
-public class PeerGroupActivityImpl implements PeerGroupActivity {
+public class PeerGroupingImpl implements PeerGrouping {
 
   private static final long serialVersionUID = 1L;
 
@@ -87,21 +87,21 @@ public class PeerGroupActivityImpl implements PeerGroupActivity {
   @Column
   private int maxMembershipCount = 2;
 
-  public PeerGroupActivityImpl() {
+  public PeerGroupingImpl() {
   }
 
-  public PeerGroupActivityImpl(Run run, String tag) {
+  public PeerGroupingImpl(Run run, String tag) {
     this.run = run;
     this.tag = tag;
   }
 
-  public PeerGroupActivityImpl(Run run, ProjectComponent component) throws JSONException {
+  public PeerGroupingImpl(Run run, ProjectComponent component) throws JSONException {
     this.run = run;
     this.logic = component.getString("logic");
     this.logicThresholdCount = component.getInt("logicThresholdCount");
     this.logicThresholdPercent = component.getInt("logicThresholdPercent");
     this.maxMembershipCount = component.getInt("maxMembershipCount");
-    this.tag = component.getString("peerGroupActivityTag");
+    this.tag = component.getString("peerGroupingTag");
   }
 
   public String getLogicNodeId() throws JSONException {

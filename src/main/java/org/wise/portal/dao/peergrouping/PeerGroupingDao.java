@@ -21,23 +21,16 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.service.peergroup;
+package org.wise.portal.dao.peergrouping;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.wise.portal.dao.SimpleDao;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.run.Run;
 
 /**
- * A checked exception that is thrown when the PeerGroup is not ready to be formed yet
- * because a threshold has not been met
- *
  * @author Hiroki Terashima
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class PeerGroupActivityThresholdNotSatisfiedException extends Exception {
+public interface PeerGroupingDao<T extends PeerGrouping> extends SimpleDao<T> {
 
-  private static final long serialVersionUID = 1L;
-
-  public PeerGroupActivityThresholdNotSatisfiedException() {
-    super("PeerGroupActivityThresholdNotSatisfied");
-  }
+  PeerGrouping getByTag(Run run, String tag);
 }

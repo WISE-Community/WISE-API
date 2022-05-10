@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreateService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.run.RunService;
 
 @RestController
@@ -22,7 +22,7 @@ import org.wise.portal.service.run.RunService;
 public class PeerGroupCreateController {
 
   @Autowired
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
   @Autowired
   private PeerGroupCreateService peerGroupCreateService;
@@ -30,13 +30,13 @@ public class PeerGroupCreateController {
   @Autowired
   private RunService runService;
 
-  @PostMapping("/{runId}/{periodId}/{peerGroupActivityTag}")
+  @PostMapping("/{runId}/{periodId}/{peerGroupingTag}")
   PeerGroup create(@PathVariable("runId") RunImpl run,
-      @PathVariable("periodId") PersistentGroup period, @PathVariable String peerGroupActivityTag,
+      @PathVariable("periodId") PersistentGroup period, @PathVariable String peerGroupingTag,
       Authentication auth) {
     if (canCreatePeerGroup(run, period, auth)) {
-      PeerGroupActivity activity = peerGroupActivityService.getByTag(run, peerGroupActivityTag);
-      return peerGroupCreateService.create(activity, period);
+      PeerGrouping peerGrouping = peerGroupingService.getByTag(run, peerGroupingTag);
+      return peerGroupCreateService.create(peerGrouping, period);
     }
     throw new AccessDeniedException("Not permitted");
   }

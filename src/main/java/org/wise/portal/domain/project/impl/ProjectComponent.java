@@ -62,8 +62,8 @@ public class ProjectComponent {
     return this.componentJSON.getInt(key);
   }
 
-  public String getPeerGroupActivityTag() throws JSONException {
-    return this.componentJSON.getString("peerGroupActivityTag");
+  public String getPeerGroupingTag() throws JSONException {
+    return this.componentJSON.getString("peerGroupingTag");
   }
 
   public JSONArray getJSONArray(String key) throws JSONException {

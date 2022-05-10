@@ -63,14 +63,14 @@ public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
     expectGetPeerGroups();
     expectGetWorkgroups();
     replay(peerGroupService, runService);
-    Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(activity);
+    Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(peerGrouping);
     assertEquals(1, ((List<PeerGroup>) peerGroupInfo.get("peerGroups")).size());
     assertEquals(3, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
     verify(peerGroupService, runService);
   }
 
   private void expectGetPeerGroups() {
-    expect(peerGroupService.getPeerGroups(activity)).andReturn(peerGroups);
+    expect(peerGroupService.getPeerGroups(peerGrouping)).andReturn(peerGroups);
   }
 
   private void expectGetWorkgroups() {

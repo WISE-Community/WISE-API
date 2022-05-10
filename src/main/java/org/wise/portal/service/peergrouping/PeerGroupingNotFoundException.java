@@ -21,15 +21,15 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.service.peergroupactivity;
+package org.wise.portal.service.peergrouping;
 
 /**
- * A checked exception that is thrown when the PeerGroupActivity does not exist in
+ * A checked exception that is thrown when the PeerGrouping does not exist in
  * the data store and the curriculum content
  *
  * @author Hiroki Terashima
  */
-public class PeerGroupActivityNotFoundException extends Exception {
+public class PeerGroupingNotFoundException extends Exception {
 
   private static final long serialVersionUID = 1L;
 

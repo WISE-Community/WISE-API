@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.wise.portal.dao.Component;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.project.impl.ProjectNode;
 import org.wise.portal.domain.run.Run;
@@ -48,7 +48,7 @@ import org.wise.portal.service.WISEServiceTest;
  */
 public class PeerGroupServiceTest extends WISEServiceTest {
 
-  PeerGroupActivity activity, manualActivity;
+  PeerGrouping peerGrouping, manualPeerGrouping;
 
   PeerGroup peerGroup1, peerGroup2, peerGroup3;
 
@@ -57,39 +57,39 @@ public class PeerGroupServiceTest extends WISEServiceTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    activity = createPeerGroupActivity(run1, run1Component2, run1Component2Id,
+    peerGrouping = createPeerGrouping(run1, run1Component2, run1Component2Id,
         "maximizeDifferentIdeas", run1Node1Id, run1Component1Id, 3, 50, 2, "tag1");
-    peerGroup1 = new PeerGroupImpl(activity, run1Period1,
+    peerGroup1 = new PeerGroupImpl(peerGrouping, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
-    peerGroup2 = new PeerGroupImpl(activity, run1Period1, new HashSet<Workgroup>());
-    manualActivity = createPeerGroupActivity(run1, run1Component2, run1Component2Id, "manual",
+    peerGroup2 = new PeerGroupImpl(peerGrouping, run1Period1, new HashSet<Workgroup>());
+    manualPeerGrouping = createPeerGrouping(run1, run1Component2, run1Component2Id, "manual",
         run1Node1Id, run1Component1Id, 2, 50, 2, "tag1");
   }
 
-  private PeerGroupActivity createPeerGroupActivity(Run run, Component component, String componentId,
+  private PeerGrouping createPeerGrouping(Run run, Component component, String componentId,
       String logicName, String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupActivityTag)
+      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupingTag)
       throws JSONException {
-    String peerGroupActivityComponentString = createPeerGroupActivityComponentString(componentId,
+    String peerGroupingComponentString = createPeerGroupingComponentString(componentId,
         logicName, logicNodeId, logicComponentId, logicThresholdCount, logicThresholdPercent,
-        maxMembershipCount, peerGroupActivityTag);
-    return new PeerGroupActivityImpl(run,
+        maxMembershipCount, peerGroupingTag);
+    return new PeerGroupingImpl(run,
         new ProjectComponent(new ProjectNode(new JSONObject("{\"id\":\"node1\"}")),
-        new JSONObject(peerGroupActivityComponentString)));
+        new JSONObject(peerGroupingComponentString)));
   }
 
-  private String createPeerGroupActivityComponentString(String componentId, String logicName,
+  private String createPeerGroupingComponentString(String componentId, String logicName,
       String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupActivityTag) {
+      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupingTag) {
     String logic = createLogicString(logicName, logicNodeId, logicComponentId);
-    return createPeerGroupActivityComponentString(componentId, logic, logicThresholdCount,
-        logicThresholdPercent, maxMembershipCount, peerGroupActivityTag);
+    return createPeerGroupingComponentString(componentId, logic, logicThresholdCount,
+        logicThresholdPercent, maxMembershipCount, peerGroupingTag);
   }
 
-  private String createPeerGroupActivityComponentString(String componentId, String logic,
+  private String createPeerGroupingComponentString(String componentId, String logic,
       Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount,
-      String peerGroupActivityTag) {
+      String peerGroupingTag) {
     return new StringBuilder()
         .append("{")
         .append("  \"id\": \"" + componentId + "\",")
@@ -97,7 +97,7 @@ public class PeerGroupServiceTest extends WISEServiceTest {
         .append("  \"logicThresholdCount\": \"" + logicThresholdCount + "\",")
         .append("  \"logicThresholdPercent\": \"" + logicThresholdPercent + "\",")
         .append("  \"maxMembershipCount\": \"" + maxMembershipCount + "\",")
-        .append("  \"peerGroupActivityTag\": \"" + peerGroupActivityTag + "\"")
+        .append("  \"peerGroupingTag\": \"" + peerGroupingTag + "\"")
         .append("}")
         .toString();
   }

@@ -20,7 +20,7 @@ public class ProjectContentTest {
       "{\"id\":\"node1\"," +
           "\"components\":[" +
               "{\"id\":\"c1\"}," +
-              "{\"id\":\"c2\", \"peerGroupActivityTag\":\"tag1\"}]}]}";
+              "{\"id\":\"c2\", \"peerGroupingTag\":\"tag1\"}]}]}";
 
   @Before
   public void setup() throws JSONException {

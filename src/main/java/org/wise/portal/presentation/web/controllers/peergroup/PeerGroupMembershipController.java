@@ -47,8 +47,7 @@ public class PeerGroupMembershipController {
 
   private boolean canChangeMembership(PeerGroupImpl peerGroup, WorkgroupImpl workgroup,
       Authentication auth) {
-    Run peerGroupActivityRun = peerGroup.getPeerGroupActivity().getRun();
-    return runService.hasWritePermission(auth, peerGroupActivityRun) &&
-        peerGroupActivityRun.equals(workgroup.getRun());
+    Run run = peerGroup.getPeerGrouping().getRun();
+    return runService.hasWritePermission(auth, run) && run.equals(workgroup.getRun());
   }
 }

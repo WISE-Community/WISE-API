@@ -66,7 +66,7 @@ public class PeerGroupMembershipServiceImplTest extends PeerGroupServiceTest {
   }
 
   private void expectPeerGroup(Workgroup workgroup, PeerGroup peerGroup) {
-    expect(peerGroupDao.getByWorkgroupAndActivity(workgroup, activity)).andReturn(
+    expect(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup, peerGrouping)).andReturn(
         peerGroup);
   }
 }

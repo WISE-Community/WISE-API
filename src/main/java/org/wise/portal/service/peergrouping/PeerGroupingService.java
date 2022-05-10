@@ -21,52 +21,52 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.service.peergroupactivity;
+package org.wise.portal.service.peergrouping;
 
 import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
 
 /**
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivityService {
+public interface PeerGroupingService {
 
   /**
-   * Retrieves PeerGroupActivity from the database or curriculum unit for the specified component
+   * Retrieves PeerGrouping from the database or curriculum unit for the specified component
    *
    * @param run
    * @param nodeId
    * @param componentId
-   * @return PeerGroupActivity
-   * @throws PeerGroupActivityNotFoundException if PeerGroupActivity is not found in the
+   * @return PeerGrouping
+   * @throws PeerGroupingNotFoundException if PeerGrouping is not found in the
    *   database or curriculum unit for the specified component
    */
-  PeerGroupActivity getByComponent(Run run, String nodeId, String componentId) throws
-      PeerGroupActivityNotFoundException;
+  PeerGrouping getByComponent(Run run, String nodeId, String componentId) throws
+      PeerGroupingNotFoundException;
 
   /**
-   * Retrieves PeerGroupActivity from the database for the specified run and tag. If none is found,
+   * Retrieves PeerGrouping from the database for the specified run and tag. If none is found,
    * creates a new one.
    *
    * @param run
    * @param tag
-   * @return PeerGroupActivity
+   * @return PeerGrouping
    */
-  PeerGroupActivity getByTag(Run run, String tag);
+  PeerGrouping getByTag(Run run, String tag);
 
   /**
-   * Retrieves PeerGroupActivity for the specified run. Scans run's project content for
-   * ProjectActivityTags and looks up the database for the PeerGroupActivity for that tag.
-   * If none is found, creates a new PeerGroupActivity for the tag.
+   * Retrieves PeerGrouping for the specified run. Scans run's project content for
+   * PeerGroupingTags and looks up the database for the PeerGrouping for that tag.
+   * If none is found, creates a new PeerGrouping for the tag.
    */
-  Set<PeerGroupActivity> getByRun(Run run);
+  Set<PeerGrouping> getByRun(Run run);
 
   @Transactional
-  PeerGroupActivity createPeerGroupActivity(Run run, PeerGroupActivity activity);
+  PeerGrouping createPeerGrouping(Run run, PeerGrouping peerGrouping);
 
   @Transactional
-  PeerGroupActivity updatePeerGroupActivity(Run run, String tag, PeerGroupActivity activity);
+  PeerGrouping updatePeerGrouping(Run run, String tag, PeerGrouping peerGrouping);
 }

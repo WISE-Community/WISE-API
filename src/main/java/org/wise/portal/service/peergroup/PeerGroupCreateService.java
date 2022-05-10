@@ -3,7 +3,7 @@ package org.wise.portal.service.peergroup;
 import org.springframework.security.access.annotation.Secured;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 
 /**
  * @author Hiroki Terashima
@@ -12,10 +12,10 @@ import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
 public interface PeerGroupCreateService {
 
   /**
-   * Creates a new Peer Group with no members for the given activity and period
-   * @param activity PeerGroupActivity
+   * Creates a new Peer Group with no members for the given Peer Grouping and period
+   * @param peerGrouping PeerGrouping
    * @param period Group containing students in the PeerGroup
    * @return newly created Peer Group
    */
-  PeerGroup create(PeerGroupActivity activity, Group period);
+  PeerGroup create(PeerGrouping peerGrouping, Group period);
 }

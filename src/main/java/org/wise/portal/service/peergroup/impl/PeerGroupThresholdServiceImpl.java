@@ -34,7 +34,7 @@ import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
@@ -55,38 +55,38 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  public boolean isCompletionThresholdSatisfied(PeerGroupActivity activity, Group period) {
-    float logicComponentCompletionCount = getLogicComponentCompletionCount(activity, period);
+  public boolean isCompletionThresholdSatisfied(PeerGrouping peerGrouping, Group period) {
+    float logicComponentCompletionCount = getLogicComponentCompletionCount(peerGrouping, period);
     float logicComponentCompletionPercent =
-        (logicComponentCompletionCount / getNumWorkgroupsInPeriod(activity, period)) * 100;
+        (logicComponentCompletionCount / getNumWorkgroupsInPeriod(peerGrouping, period)) * 100;
     return logicComponentCompletionCount >= 2 &&
-        (logicComponentCompletionCount >= activity.getLogicThresholdCount() ||
-        logicComponentCompletionPercent >= activity.getLogicThresholdPercent());
+        (logicComponentCompletionCount >= peerGrouping.getLogicThresholdCount() ||
+        logicComponentCompletionPercent >= peerGrouping.getLogicThresholdPercent());
   }
 
-  public boolean canCreatePeerGroup(PeerGroupActivity activity, Group period) {
-    int numWorkgroupsInPeerGroup = getNumWorkgroupsInPeerGroup(activity, period);
-    int numWorkgroupsNotInPeerGroup = getNumWorkgroupsInPeriod(activity, period) -
+  public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period) {
+    int numWorkgroupsInPeerGroup = getNumWorkgroupsInPeerGroup(peerGrouping, period);
+    int numWorkgroupsNotInPeerGroup = getNumWorkgroupsInPeriod(peerGrouping, period) -
         numWorkgroupsInPeerGroup;
     int numWorkgroupsCompletedLogicComponentButNotInPeerGroup =
-        getLogicComponentCompletionCount(activity, period) - numWorkgroupsInPeerGroup;
+        getLogicComponentCompletionCount(peerGrouping, period) - numWorkgroupsInPeerGroup;
     return numWorkgroupsNotInPeerGroup == 1 ||
         numWorkgroupsCompletedLogicComponentButNotInPeerGroup >= 2;
   }
 
-  private int getNumWorkgroupsInPeriod(PeerGroupActivity activity, Group period) {
-    return runService.getWorkgroups(activity.getRun().getId(), period.getId()).size();
+  private int getNumWorkgroupsInPeriod(PeerGrouping peerGrouping, Group period) {
+    return runService.getWorkgroups(peerGrouping.getRun().getId(), period.getId()).size();
   }
 
-  private int getLogicComponentCompletionCount(PeerGroupActivity activity, Group period) {
+  private int getLogicComponentCompletionCount(PeerGrouping peerGrouping, Group period) {
     try {
-      return getLogicComponentStudentWorkForPeriod(activity, period).size();
+      return getLogicComponentStudentWorkForPeriod(peerGrouping, period).size();
     } catch (JSONException e) {
     }
     return 0;
   }
 
-  private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGroupActivity activity,
+  private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGrouping activity,
       Group period) throws JSONException {
     List<StudentWork> logicComponentStudentWorkForPeriod = studentWorkDao
         .getWorkForComponentByPeriod(activity.getRun(), period,
@@ -103,9 +103,9 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
     return studentWorkUniqueWorkgroups;
   }
 
-  private int getNumWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period) {
+  private int getNumWorkgroupsInPeerGroup(PeerGrouping activity, Group period) {
     int numWorkgroupsInPeerGroup = 0;
-    List<PeerGroup> peerGroups = peerGroupDao.getListByActivity(activity);
+    List<PeerGroup> peerGroups = peerGroupDao.getListByPeerGrouping(activity);
     for (PeerGroup peerGroup : peerGroups) {
       for (Workgroup workgroup : peerGroup.getMembers()) {
         if (workgroup.getPeriod().equals(period)) {

@@ -34,7 +34,7 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
     expectTeacherHasAccessToRun(false);
     replayAll();
     try {
-      controller.getPeerGroupsInfo(run1, peerGroupActivity1Tag, teacherAuth);
+      controller.getPeerGroupsInfo(run1, peerGrouping1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -43,12 +43,12 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
 
   @SuppressWarnings("unchecked")
   @Test
-  public void getPeerGroupsInfo_ActivityFound_ReturnInfo() throws Exception {
+  public void getPeerGroupsInfo_PeerGroupingFound_ReturnInfo() throws Exception {
     expectTeacherHasAccessToRun(true);
-    expectPeerGroupActivityByTagFound();
+    expectPeerGroupingByTagFound();
     expectPeerGroupInfo();
     replayAll();
-    Map<String, Object> peerGroupsInfo = controller.getPeerGroupsInfo(run1, peerGroupActivity1Tag,
+    Map<String, Object> peerGroupsInfo = controller.getPeerGroupsInfo(run1, peerGrouping1Tag,
         teacherAuth);
     assertEquals(2, peerGroupsInfo.size());
     assertEquals(2, ((List<PeerGroup>) peerGroupsInfo.get("peerGroups")).size());
@@ -60,7 +60,7 @@ public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIC
     Map<String, Object> peerGroupInfo = new HashMap<String, Object>();
     peerGroupInfo.put("peerGroups", peerGroups);
     peerGroupInfo.put("workgroupsNotInPeerGroups", workgroupsNotInPeerGroups);
-    expect(peerGroupInfoService.getPeerGroupInfo(peerGroupActivity)).andReturn(peerGroupInfo);
+    expect(peerGroupInfoService.getPeerGroupInfo(peerGrouping)).andReturn(peerGroupInfo);
   }
 
   private void expectTeacherHasAccessToRun(boolean hasAccess) {

@@ -42,8 +42,8 @@ import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
@@ -69,14 +69,15 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
   }
 
   @Override
-  public PeerGroup getByWorkgroupAndActivity(Workgroup workgroup, PeerGroupActivity activity) {
+  public PeerGroup getByWorkgroupAndPeerGrouping(Workgroup workgroup, PeerGrouping peerGrouping) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PeerGroupImpl> cq = cb.createQuery(PeerGroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), activity.getId()));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
+        peerGrouping.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
         peerGroupImplRoot.<Set<Workgroup>>get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
@@ -86,20 +87,20 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
 
 
   @Override
-  public List<PeerGroup> getListByActivity(PeerGroupActivity activity) {
-    return getListByTag(activity.getRun(), activity.getTag());
+  public List<PeerGroup> getListByPeerGrouping(PeerGrouping peerGrouping) {
+    return getListByTag(peerGrouping.getRun(), peerGrouping.getTag());
   }
 
   private List<PeerGroup> getListByTag(Run run, String tag) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PeerGroupImpl> cq = cb.createQuery(PeerGroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
-    Root<PeerGroupActivityImpl> peerGroupActivityImplRoot = cq.from(PeerGroupActivityImpl.class);
+    Root<PeerGroupingImpl> peerGroupingImplRoot = cq.from(PeerGroupingImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupActivityImplRoot.get("run"), run.getId()));
-    predicates.add(cb.equal(peerGroupActivityImplRoot.get("tag"), tag));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"),
-        peerGroupActivityImplRoot.get("id")));
+    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run.getId()));
+    predicates.add(cb.equal(peerGroupingImplRoot.get("tag"), tag));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
+        peerGroupingImplRoot.get("id")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
@@ -125,13 +126,14 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<Workgroup> getWorkgroupsInPeerGroup(PeerGroupActivity activity, Group period) {
+  public List<Workgroup> getWorkgroupsInPeerGroup(PeerGrouping peerGrouping, Group period) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGroupActivity"), activity.getId()));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
+        peerGrouping.getId()));
     predicates.add(cb.equal(workgroupImplRoot.get("period"), period.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
         peerGroupImplRoot.<Set<Workgroup>>get("members")));
