@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupInfoService;
@@ -31,12 +31,12 @@ public class PeerGroupInfoServiceImpl implements PeerGroupInfoService {
   private RunService runService;
 
   @Override
-  public Map<String, Object> getPeerGroupInfo(PeerGroupActivity activity) {
+  public Map<String, Object> getPeerGroupInfo(PeerGrouping peerGrouping) {
     Map<String, Object> peerGroupInfo = new HashMap<String, Object>();
-    List<PeerGroup> peerGroups = peerGroupService.getPeerGroups(activity);
+    List<PeerGroup> peerGroups = peerGroupService.getPeerGroups(peerGrouping);
     peerGroupInfo.put("peerGroups", peerGroups);
-    peerGroupInfo.put("workgroupsNotInPeerGroup", getWorkgroupsNotInPeerGroup(activity.getRun(),
-        peerGroups));
+    peerGroupInfo.put("workgroupsNotInPeerGroup",
+        getWorkgroupsNotInPeerGroup(peerGrouping.getRun(), peerGroups));
     return peerGroupInfo;
   }
 

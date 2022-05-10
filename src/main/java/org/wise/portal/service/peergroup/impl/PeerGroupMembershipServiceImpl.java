@@ -17,8 +17,8 @@ public class PeerGroupMembershipServiceImpl implements PeerGroupMembershipServic
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
   public PeerGroup addMember(PeerGroup peerGroup, Workgroup workgroup) {
-    PeerGroup oldPeerGroup = peerGroupDao.getByWorkgroupAndActivity(workgroup,
-        peerGroup.getPeerGroupActivity());
+    PeerGroup oldPeerGroup = peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup,
+        peerGroup.getPeerGrouping());
     if (oldPeerGroup != null) {
       removeMember(oldPeerGroup, workgroup);
     }

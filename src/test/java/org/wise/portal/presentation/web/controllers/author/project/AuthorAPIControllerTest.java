@@ -25,14 +25,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpSession;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.portal.impl.PortalImpl;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.response.SimpleResponse;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.session.SessionService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
@@ -46,7 +46,7 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   private SessionService sessionService;
 
   @Mock
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
   @Mock
   private MessagePublisher redisPublisher;
@@ -261,7 +261,7 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupActivitiesAndReturnProjectSaved() throws Exception {
+  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupingsAndReturnProjectSaved() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     project1.setMetadata("{\"title\":\"Old Title\"}");
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
@@ -277,13 +277,13 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     List<Run> runsAssociatedWithProject = new ArrayList<Run>();
     runsAssociatedWithProject.add(run1);
     expect(runService.getProjectRuns(projectId1)).andReturn(runsAssociatedWithProject);
-    expect(peerGroupActivityService.getByRun(run1)).andReturn(new HashSet<PeerGroupActivity>());
-    replay(userService, projectService, runService, peerGroupActivityService);
+    expect(peerGroupingService.getByRun(run1)).andReturn(new HashSet<PeerGrouping>());
+    replay(userService, projectService, runService, peerGroupingService);
     SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
-    verify(userService, projectService, runService, peerGroupActivityService);
+    verify(userService, projectService, runService, peerGroupingService);
   }
 
 

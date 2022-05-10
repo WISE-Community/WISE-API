@@ -1,4 +1,4 @@
-package org.wise.portal.service.peergroupactivity;
+package org.wise.portal.service.peergrouping;
 
 import java.io.IOException;
 
@@ -12,37 +12,37 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.service.run.RunService;
 
 import lombok.Setter;
 
 @Service
-public class PeerGroupActivityDeserializer extends JsonDeserializer<PeerGroupActivityImpl> {
+public class PeerGroupingDeserializer extends JsonDeserializer<PeerGroupingImpl> {
 
   @Autowired
   @Setter
   RunService runService;
 
   @Override
-  public PeerGroupActivityImpl deserialize(JsonParser parser, DeserializationContext ctxt)
+  public PeerGroupingImpl deserialize(JsonParser parser, DeserializationContext ctxt)
       throws IOException, JsonProcessingException {
     ObjectCodec objectCodec = parser.getCodec();
     JsonNode node = objectCodec.readTree(parser);
-    PeerGroupActivityImpl activity = new PeerGroupActivityImpl();
+    PeerGroupingImpl peerGrouping = new PeerGroupingImpl();
     if (node.has("id")) {
-      activity.setId(node.get("id").asLong());
+      peerGrouping.setId(node.get("id").asLong());
     }
-    activity.setLogic(node.get("logic").asText());
-    activity.setTag(node.get("tag").asText());
-    activity.setMaxMembershipCount(node.get("maxMembershipCount").asInt());
+    peerGrouping.setLogic(node.get("logic").asText());
+    peerGrouping.setTag(node.get("tag").asText());
+    peerGrouping.setMaxMembershipCount(node.get("maxMembershipCount").asInt());
     try {
       if (node.has("runId")) {
-        activity.setRun(runService.retrieveById(node.get("runId").asLong()));
+        peerGrouping.setRun(runService.retrieveById(node.get("runId").asLong()));
       }
     } catch (ObjectNotFoundException e) {
       e.printStackTrace();
     }
-    return activity;
+    return peerGrouping;
   }
 }

@@ -21,7 +21,7 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.service.peergroupactivity.impl;
+package org.wise.portal.service.peergrouping.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,55 +35,55 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.dao.peergrouping.PeerGroupingDao;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.project.impl.ProjectContent;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 
 /**
  * @author Hiroki Terashima
  */
 @Service
-public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
+public class PeerGroupingServiceImpl implements PeerGroupingService {
 
   @Autowired
-  private PeerGroupActivityDao<PeerGroupActivity> peerGroupActivityDao;
+  private PeerGroupingDao<PeerGrouping> peerGroupingDao;
 
   @Autowired
   protected Environment appProperties;
 
   @Override
-  public PeerGroupActivity getByComponent(Run run, String nodeId, String componentId)
-      throws PeerGroupActivityNotFoundException {
+  public PeerGrouping getByComponent(Run run, String nodeId, String componentId)
+      throws PeerGroupingNotFoundException {
     try {
-      String componentTag = getPeerGroupActivityTag(run, nodeId, componentId);
+      String componentTag = getPeerGroupingTag(run, nodeId, componentId);
       if (componentTag != null) {
         return getByTag(run, componentTag);
       }
     } catch (Exception e) {
     }
-    throw new PeerGroupActivityNotFoundException();
+    throw new PeerGroupingNotFoundException();
   }
 
   @Override
-  public PeerGroupActivity getByTag(Run run, String tag) {
-    PeerGroupActivity activity = peerGroupActivityDao.getByTag(run, tag);
-    if (activity == null) {
-      activity = new PeerGroupActivityImpl(run, tag);
-      peerGroupActivityDao.save(activity);
+  public PeerGrouping getByTag(Run run, String tag) {
+    PeerGrouping peerGrouping = peerGroupingDao.getByTag(run, tag);
+    if (peerGrouping == null) {
+      peerGrouping = new PeerGroupingImpl(run, tag);
+      peerGroupingDao.save(peerGrouping);
     }
-    return activity;
+    return peerGrouping;
   }
 
-  private String getPeerGroupActivityTag(Run run, String nodeId, String componentId)
+  private String getPeerGroupingTag(Run run, String nodeId, String componentId)
       throws JSONException, IOException {
     ProjectContent projectContent = getProjectContent(run);
     ProjectComponent component = projectContent.getComponent(nodeId, componentId);
-    return component.getPeerGroupActivityTag();
+    return component.getPeerGroupingTag();
   }
 
   private ProjectContent getProjectContent(Run run) throws IOException, JSONException {
@@ -94,45 +94,45 @@ public class PeerGroupActivityServiceImpl implements PeerGroupActivityService {
   }
 
   @Override
-  public Set<PeerGroupActivity> getByRun(Run run) {
-    Set<PeerGroupActivity> activities = new HashSet<PeerGroupActivity>();
+  public Set<PeerGrouping> getByRun(Run run) {
+    Set<PeerGrouping> activities = new HashSet<PeerGrouping>();
     try {
-      getPeerGroupActivitiesInUnit(run).forEach(peerGroupActivity -> {
-        activities.add(getByTag(run, peerGroupActivity.getTag()));
+      getPeerGroupingsInUnit(run).forEach(peerGrouping -> {
+        activities.add(getByTag(run, peerGrouping.getTag()));
       });
     } catch (IOException | JSONException e) {
     }
     return activities;
   }
 
-  private Set<PeerGroupActivity> getPeerGroupActivitiesInUnit(Run run)
+  private Set<PeerGrouping> getPeerGroupingsInUnit(Run run)
       throws IOException, JSONException {
-    Set<PeerGroupActivity> peerGroupActivities = new HashSet<PeerGroupActivity>();
+    Set<PeerGrouping> peerGroupings = new HashSet<PeerGrouping>();
     ProjectContent projectContent = getProjectContent(run);
-    JSONArray peerGroupActivitiesInContent = projectContent.getPeerGroupActivities();
-    if (peerGroupActivitiesInContent != null) {
-      for (int i = 0; i < peerGroupActivitiesInContent.length(); i++) {
-        JSONObject peerGroupActivityInContent = peerGroupActivitiesInContent.optJSONObject(i);
-        PeerGroupActivity peerGroupActivity =
-            new PeerGroupActivityImpl(run, peerGroupActivityInContent.optString("tag"));
-        peerGroupActivities.add(peerGroupActivity);
+    JSONArray peerGroupingsInContent = projectContent.getPeerGroupings();
+    if (peerGroupingsInContent != null) {
+      for (int i = 0; i < peerGroupingsInContent.length(); i++) {
+        JSONObject peerGroupingInContent = peerGroupingsInContent.optJSONObject(i);
+        PeerGrouping peerGrouping =
+            new PeerGroupingImpl(run, peerGroupingInContent.optString("tag"));
+        peerGroupings.add(peerGrouping);
       }
     }
-    return peerGroupActivities;
+    return peerGroupings;
   }
 
-  public PeerGroupActivity createPeerGroupActivity(Run run, PeerGroupActivity activity) {
-    activity.setRun(run);
-    peerGroupActivityDao.save(activity);
-    return activity;
+  public PeerGrouping createPeerGrouping(Run run, PeerGrouping peerGrouping) {
+    peerGrouping.setRun(run);
+    peerGroupingDao.save(peerGrouping);
+    return peerGrouping;
   }
 
-  public PeerGroupActivity updatePeerGroupActivity(Run run, String tag, PeerGroupActivity activity) {
-    PeerGroupActivity activityInDB = getByTag(run, tag);
-    activityInDB.setLogic(activity.getLogic());
-    activityInDB.setTag(activity.getTag());
-    activityInDB.setMaxMembershipCount(activity.getMaxMembershipCount());
-    peerGroupActivityDao.save(activityInDB);
-    return activityInDB;
+  public PeerGrouping updatePeerGrouping(Run run, String tag, PeerGrouping peerGrouping) {
+    PeerGrouping peerGroupingInDB = getByTag(run, tag);
+    peerGroupingInDB.setLogic(peerGrouping.getLogic());
+    peerGroupingInDB.setTag(peerGrouping.getTag());
+    peerGroupingInDB.setMaxMembershipCount(peerGrouping.getMaxMembershipCount());
+    peerGroupingDao.save(peerGroupingInDB);
+    return peerGroupingInDB;
   }
 }

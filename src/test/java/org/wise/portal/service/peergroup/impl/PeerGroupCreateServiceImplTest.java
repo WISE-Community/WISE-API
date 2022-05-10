@@ -30,7 +30,7 @@ public class PeerGroupCreateServiceImplTest extends PeerGroupServiceTest {
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
     replay(peerGroupDao);
-    PeerGroup peerGroup = service.create(activity, run1Period1);
+    PeerGroup peerGroup = service.create(peerGrouping, run1Period1);
     assertEquals(0, peerGroup.getMembers().size());
     verify(peerGroupDao);
   }

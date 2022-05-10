@@ -8,9 +8,9 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
-import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
+import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
+import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
 
 @RunWith(EasyMockRunner.class)
 public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTest {
@@ -23,7 +23,7 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
     expectWorkgroupAssociatedWithRun(false);
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -32,24 +32,24 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
 
   @Test
   public void getPeerGroupByComponent_PeerGroupThresholdNotMet_ThrowException() throws Exception {
-    expectWorkgroupAssociatedWithRunAndActivityFound();
+    expectWorkgroupAssociatedWithRunAndPeerGroupingFound();
     expectPeerGroupThresholdNotSatisifed();
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth);
       fail("Expected PeerGroupCreationException, but was not thrown");
-    } catch (PeerGroupActivityThresholdNotSatisfiedException e) {
+    } catch (PeerGroupingThresholdNotSatisfiedException e) {
     }
     verifyAll();
   }
 
   @Test
   public void getPeerGroupByComponent_ErrorCreatingPeerGroup_ThrowException() throws Exception {
-    expectWorkgroupAssociatedWithRunAndActivityFound();
+    expectWorkgroupAssociatedWithRunAndPeerGroupingFound();
     expectPeerGroupCreationException();
     replayAll();
     try {
-      controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth);
+      controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth);
       fail("Expected PeerGroupCreationException, but was not thrown");
     } catch (PeerGroupCreationException e) {
     }
@@ -58,17 +58,17 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
 
   @Test
   public void getPeerGroup_FoundExistingGroupOrGroupCreated_ReturnGroup() throws Exception {
-    expectWorkgroupAssociatedWithRunAndActivityFound();
+    expectWorkgroupAssociatedWithRunAndPeerGroupingFound();
     expectPeerGroupCreated();
     replayAll();
-    assertNotNull(controller.getPeerGroup(run1, workgroup1, peerGroupActivity1Tag, studentAuth));
+    assertNotNull(controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth));
     verifyAll();
   }
 
-  private void expectWorkgroupAssociatedWithRunAndActivityFound() throws Exception,
-      PeerGroupActivityNotFoundException {
+  private void expectWorkgroupAssociatedWithRunAndPeerGroupingFound() throws Exception,
+      PeerGroupingNotFoundException {
     expectWorkgroupAssociatedWithRun(true);
-    expectPeerGroupActivityByTagFound();
+    expectPeerGroupingByTagFound();
   }
 
   private void expectWorkgroupAssociatedWithRun(boolean isAssociated) throws Exception {
@@ -78,11 +78,11 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
   }
 
   private void expectPeerGroupThresholdNotSatisifed() throws Exception {
-    expect(peerGroupService.getPeerGroup(workgroup1, peerGroupActivity))
-        .andThrow(new PeerGroupActivityThresholdNotSatisfiedException());
+    expect(peerGroupService.getPeerGroup(workgroup1, peerGrouping))
+        .andThrow(new PeerGroupingThresholdNotSatisfiedException());
   }
 
   private void expectPeerGroupCreated() throws Exception {
-    expect(peerGroupService.getPeerGroup(workgroup1, peerGroupActivity)).andReturn(peerGroup1);
+    expect(peerGroupService.getPeerGroup(workgroup1, peerGrouping)).andReturn(peerGroup1);
   }
 }

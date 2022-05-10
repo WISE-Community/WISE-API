@@ -44,15 +44,15 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
-import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
+import org.wise.portal.dao.peergrouping.PeerGroupingDao;
 import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
+import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
@@ -74,7 +74,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
   @Mock
-  private PeerGroupActivityDao<PeerGroupActivity> peerGroupActivityDao;
+  private PeerGroupingDao<PeerGrouping> peerGroupingDao;
 
   @Mock
   private RunDao<RunImpl> runDao;
@@ -89,7 +89,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   public void getPeerGroup_PeerGroupInDB_ReturnPeerGroup() throws Exception {
     expectPeerGroupFromDB(peerGroup1);
     replayAll();
-    assertNotNull(service.getPeerGroup(run1Workgroup1, activity));
+    assertNotNull(service.getPeerGroup(run1Workgroup1, peerGrouping));
     verifyAll();
   }
 
@@ -99,9 +99,9 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     expectWorkForComponentByWorkgroup(Arrays.asList());
     replayAll();
     try {
-      service.getPeerGroup(run1Workgroup1, activity);
-      fail("PeerGroupActivityThresholdNotSatisfiedException expected, but wasn't thrown");
-    } catch (PeerGroupActivityThresholdNotSatisfiedException e) {
+      service.getPeerGroup(run1Workgroup1, peerGrouping);
+      fail("PeerGroupingThresholdNotSatisfiedException expected, but wasn't thrown");
+    } catch (PeerGroupingThresholdNotSatisfiedException e) {
     }
     verifyAll();
   }
@@ -113,9 +113,9 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     expectCompletionThresholdSatisfied(false);
     replayAll();
     try {
-      service.getPeerGroup(run1Workgroup1, activity);
-      fail("PeerGroupActivityThresholdNotSatisfiedException expected, but wasn't thrown");
-    } catch (PeerGroupActivityThresholdNotSatisfiedException e) {
+      service.getPeerGroup(run1Workgroup1, peerGrouping);
+      fail("PeerGroupingThresholdNotSatisfiedException expected, but wasn't thrown");
+    } catch (PeerGroupingThresholdNotSatisfiedException e) {
     }
     verifyAll();
   }
@@ -128,7 +128,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     expectWorkgroupCountThresholdSatisfied(false);
     replayAll();
     try {
-      service.getPeerGroup(run1Workgroup1, activity);
+      service.getPeerGroup(run1Workgroup1, peerGrouping);
       fail("PeerGroupCreationException expected, but wasn't thrown");
     } catch (PeerGroupCreationException e) {
     }
@@ -146,7 +146,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
     replayAll();
-    assertEquals(3, service.getPeerGroup(run1Workgroup1, activity).getMembers().size());
+    assertEquals(3, service.getPeerGroup(run1Workgroup1, peerGrouping).getMembers().size());
     verifyAll();
   }
 
@@ -161,33 +161,33 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
     replayAll();
-    assertEquals(2, service.getPeerGroup(run1Workgroup1, activity).getMembers().size());
+    assertEquals(2, service.getPeerGroup(run1Workgroup1, peerGrouping).getMembers().size());
     verifyAll();
   }
 
   @Test
   public void getPeerGroup_ManualLogicPeerGroupNotExist_ReturnNull() throws Exception {
-    expectPeerGroupFromDB(null, manualActivity);
+    expectPeerGroupFromDB(null, manualPeerGrouping);
     replayAll();
-    assertNull(service.getPeerGroup(run1Workgroup1, manualActivity));
+    assertNull(service.getPeerGroup(run1Workgroup1, manualPeerGrouping));
     verifyAll();
   }
 
   @Test
   public void getPeerGroup_ManualLogicPeerGroupExists_ReturnPeerGroup() throws Exception {
-    PeerGroup peerGroup = new PeerGroupImpl(manualActivity, run1Period1,
+    PeerGroup peerGroup = new PeerGroupImpl(manualPeerGrouping, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
-    expectPeerGroupFromDB(peerGroup, manualActivity);
+    expectPeerGroupFromDB(peerGroup, manualPeerGrouping);
     replayAll();
-    assertEquals(peerGroup, service.getPeerGroup(run1Workgroup1, manualActivity));
+    assertEquals(peerGroup, service.getPeerGroup(run1Workgroup1, manualPeerGrouping));
     verifyAll();
   }
 
   @Test
   public void getPeerGroups_ReturnPeerGroupList() {
-    expectGetPeerGroupsByActivity();
+    expectGetPeerGroupsByPeerGrouping();
     replayAll();
-    assertEquals(1, service.getPeerGroups(activity).size());
+    assertEquals(1, service.getPeerGroups(peerGrouping).size());
     verifyAll();
   }
 
@@ -207,8 +207,8 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     verifyAll();
   }
 
-  private void expectGetPeerGroupsByActivity() {
-    expect(peerGroupDao.getListByActivity(activity)).andReturn(peerGroups);
+  private void expectGetPeerGroupsByPeerGrouping() {
+    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(peerGroups);
   }
 
   private void expectAllThresholdsSatisfied() throws JSONException {
@@ -225,16 +225,16 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   private void expectWorkgroupsInPeerGroup(List<Object> asList) {
-    expect(peerGroupDao.getWorkgroupsInPeerGroup(activity, run1Period1)).andReturn(Arrays.asList());
+    expect(peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping, run1Period1)).andReturn(Arrays.asList());
   }
 
   private void expectWorkgroupCountThresholdSatisfied(boolean isSatisfied) {
-    expect(peerGroupThresholdService.canCreatePeerGroup(activity, run1Period1))
+    expect(peerGroupThresholdService.canCreatePeerGroup(peerGrouping, run1Period1))
         .andReturn(isSatisfied);
   }
 
   private void expectCompletionThresholdSatisfied(boolean isSatisfied) {
-    expect(peerGroupThresholdService.isCompletionThresholdSatisfied(activity, run1Period1))
+    expect(peerGroupThresholdService.isCompletionThresholdSatisfied(peerGrouping, run1Period1))
         .andReturn(isSatisfied);
   }
 
@@ -244,17 +244,18 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   private void expectPeerGroupFromDB(PeerGroup peerGroup) {
-    expectPeerGroupFromDB(peerGroup, activity);
+    expectPeerGroupFromDB(peerGroup, peerGrouping);
   }
 
-  private void expectPeerGroupFromDB(PeerGroup peerGroup, PeerGroupActivity activity) {
-    expect(peerGroupDao.getByWorkgroupAndActivity(run1Workgroup1, activity)).andReturn(peerGroup);
+  private void expectPeerGroupFromDB(PeerGroup peerGroup, PeerGrouping peerGrouping) {
+    expect(peerGroupDao.getByWorkgroupAndPeerGrouping(run1Workgroup1, peerGrouping))
+      .andReturn(peerGroup);
   }
 
   private void expectWorkForComponentByWorkgroup(List<StudentWork> expectedWork)
       throws JSONException {
-    expect(studentWorkDao.getWorkForComponentByWorkgroup(run1Workgroup1, activity.getLogicNodeId(),
-        activity.getLogicComponentId())).andReturn(expectedWork);
+    expect(studentWorkDao.getWorkForComponentByWorkgroup(run1Workgroup1,
+        peerGrouping.getLogicNodeId(), peerGrouping.getLogicComponentId())).andReturn(expectedWork);
   }
 
   private void expectIsLastOnesLeftToPair() {

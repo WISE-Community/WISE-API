@@ -21,7 +21,7 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.service.peergroupactivity;
+package org.wise.portal.service.peergrouping;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
@@ -42,14 +42,14 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.core.env.Environment;
-import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.dao.peergrouping.PeerGroupingDao;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
-import org.wise.portal.service.peergroupactivity.impl.PeerGroupActivityServiceImpl;
+import org.wise.portal.service.peergrouping.impl.PeerGroupingServiceImpl;
 
 /**
  * @author Hiroki Terashima
@@ -57,13 +57,13 @@ import org.wise.portal.service.peergroupactivity.impl.PeerGroupActivityServiceIm
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("jdk.internal.reflect.*")
 @PrepareForTest(FileUtils.class)
-public class PeerGroupActivityServiceImplTest {
+public class PeerGroupingServiceImplTest {
 
   @TestSubject
-  private PeerGroupActivityService service = new PeerGroupActivityServiceImpl();
+  private PeerGroupingService service = new PeerGroupingServiceImpl();
 
   @Mock
-  private PeerGroupActivityDao<PeerGroupActivity> peerGroupActivityDao;
+  private PeerGroupingDao<PeerGrouping> peerGroupingDao;
 
   @Mock
   private Environment appProperties;
@@ -72,9 +72,9 @@ public class PeerGroupActivityServiceImplTest {
 
   private String nodeId = "node1";
 
-  private String componentIdWithPGActivity = "component1";
+  private String componentIdWithPeerGrouping = "component1";
 
-  private String componentIdWithoutPGActivity = "component2";
+  private String componentIdWithoutPeerGrouping = "component2";
 
   private String logic = "[{“name”: “maximizeSimilarIdeas”, “nodeId”: “node1”, “componentId”: “xyz”}]";
 
@@ -84,22 +84,22 @@ public class PeerGroupActivityServiceImplTest {
 
   private int maxMembershipCount = 2;
 
-  String tagInDB = "existingPeerGroupActivityTag";
+  String tagInDB = "existingPeerGroupingTag";
 
-  String tagNotInDB = "newPeerGroupActivityTag";
+  String tagNotInDB = "newPeerGroupingTag";
 
-  PeerGroupActivity peerGroupActivity = new PeerGroupActivityImpl();
+  PeerGrouping peerGrouping = new PeerGroupingImpl();
 
   private String projectJSONString = "{" +
-      "\"peerGroupActivities\":[{\"tag\": \"" + tagInDB + "\"}]," +
+      "\"peerGroupings\":[{\"tag\": \"" + tagInDB + "\"}]," +
       "\"nodes\":[{\"id\":\"" + nodeId + "\"," +
       "\"components\":[" +
-      "{\"id\":\"" + componentIdWithPGActivity + "\",\"logic\":\"" + logic + "\"," +
+      "{\"id\":\"" + componentIdWithPeerGrouping + "\",\"logic\":\"" + logic + "\"," +
       "\"logicThresholdCount\":\"" + logicThresholdCount + "\"," +
       "\"logicThresholdPercent\":\"" + logicThresholdPercent + "\"," +
       "\"maxMembershipCount\":\"" + maxMembershipCount + "\"," +
-      "\"peerGroupActivityTag\":\"" + tagInDB + "\"" +
-      "}, {\"id\":\"" + componentIdWithoutPGActivity + "\"}]}]}";
+      "\"peerGroupingTag\":\"" + tagInDB + "\"" +
+      "}, {\"id\":\"" + componentIdWithoutPeerGrouping + "\"}]}]}";
 
   @Before
   public void setUp() {
@@ -107,7 +107,7 @@ public class PeerGroupActivityServiceImplTest {
     Project project = new ProjectImpl();
     project.setModulePath("/1/project.json");
     run.setProject(project);
-    peerGroupActivity.setTag(tagInDB);
+    peerGrouping.setTag(tagInDB);
   }
 
   @Test
@@ -116,63 +116,63 @@ public class PeerGroupActivityServiceImplTest {
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
     replayAll();
     try {
-      service.getByComponent(run, nodeId, componentIdWithoutPGActivity);
-      fail("PeerGroupActivityNotFoundException expected to be thrown, but was not thrown");
-    } catch (PeerGroupActivityNotFoundException e) {
+      service.getByComponent(run, nodeId, componentIdWithoutPeerGrouping);
+      fail("PeerGroupingNotFoundException expected to be thrown, but was not thrown");
+    } catch (PeerGroupingNotFoundException e) {
     }
     verifyAll();
   }
 
   @Test
-  public void getByComponent_TagInContentButNotInDB_CreateNewPeerGroupActivity()
-      throws IOException, PeerGroupActivityNotFoundException {
-    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(null);
+  public void getByComponent_TagInContentButNotInDB_CreateNewPeerGrouping()
+      throws IOException, PeerGroupingNotFoundException {
+    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(null);
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
+    peerGroupingDao.save(isA(PeerGrouping.class));
     expectLastCall();
     replayAll();
-    PeerGroupActivity activity = service.getByComponent(run, nodeId, componentIdWithPGActivity);
-    assertEquals(tagInDB, activity.getTag());
+    PeerGrouping peerGrouping = service.getByComponent(run, nodeId, componentIdWithPeerGrouping);
+    assertEquals(tagInDB, peerGrouping.getTag());
     verifyAll();
   }
 
   @Test
-  public void getByComponent_TagInContentAndInDB_ReturnGroupActivityFromDB()
-      throws IOException, PeerGroupActivityNotFoundException {
-    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+  public void getByComponent_TagInContentAndInDB_ReturnPeerGroupingFromDB()
+      throws IOException, PeerGroupingNotFoundException {
+    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
     replayAll();
-    PeerGroupActivity activity = service.getByComponent(run, nodeId, componentIdWithPGActivity);
-    assertEquals(tagInDB, activity.getTag());
+    PeerGrouping peerGrouping = service.getByComponent(run, nodeId, componentIdWithPeerGrouping);
+    assertEquals(tagInDB, peerGrouping.getTag());
     verifyAll();
   }
 
   @Test
-  public void getByTag_notInDB_SaveAndReturnNewPeerGroupActivity() {
-    expect(peerGroupActivityDao.getByTag(run, tagNotInDB)).andReturn(null);
-    peerGroupActivityDao.save(isA(PeerGroupActivity.class));
+  public void getByTag_notInDB_SaveAndReturnNewPeerGrouping() {
+    expect(peerGroupingDao.getByTag(run, tagNotInDB)).andReturn(null);
+    peerGroupingDao.save(isA(PeerGrouping.class));
     expectLastCall();
     replayAll();
-    PeerGroupActivity activity = service.getByTag(run, tagNotInDB);
-    assertEquals(tagNotInDB, activity.getTag());
+    PeerGrouping peerGrouping = service.getByTag(run, tagNotInDB);
+    assertEquals(tagNotInDB, peerGrouping.getTag());
     verifyAll();
   }
 
   @Test
-  public void getByTag_foundInDB_ReturnPeerGroupActivity() {
-    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+  public void getByTag_foundInDB_ReturnPeerGrouping() {
+    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
     replayAll();
-    assertEquals(peerGroupActivity, service.getByTag(run, tagInDB));
+    assertEquals(peerGrouping, service.getByTag(run, tagInDB));
     verifyAll();
   }
 
   @Test
-  public void getByRun_ReturnPeerGroupActivitiesInRunProject() throws IOException {
+  public void getByRun_ReturnPeerGroupingsInRunProject() throws IOException {
     expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
     expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    expect(peerGroupActivityDao.getByTag(run, tagInDB)).andReturn(peerGroupActivity);
+    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
     replayAll();
     assertEquals(1, service.getByRun(run).size());
     verifyAll();

@@ -10,7 +10,7 @@ public interface PeerGroupMembershipService {
 
   /**
    * Add a workgroup to the PeerGroup. If the workgroup is a member of another PeerGroup for the
-   * same PeerGroupActivity, remove it from the PeerGroup first.
+   * same PeerGrouping, remove it from the PeerGroup first.
    * @param peerGroup existing PeerGroup to add workgroup as a member
    * @param workgroup Workgroup to move into PeerGroup
    * @return PeerGroup updated PeerGroup

@@ -39,8 +39,8 @@ import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -60,13 +60,13 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
   @Autowired
   private StudentWorkDao<StudentWork> studentWorkDao;
 
-  protected PeerGroupActivity peerGroupActivity;
+  protected PeerGrouping peerGrouping;
   protected PeerGroup peerGroup1, peerGroup2;
 
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    createPeerGroupActivity();
+    createPeerGrouping();
     createPeerGroups();
     createStudentWork(workgroup1, peerGroup1, NODE_ID1, COMPONENT_ID1, DUMMY_STUDENT_WORK1);
     createStudentWork(workgroup1, peerGroup1, NODE_ID2, COMPONENT_ID2, DUMMY_STUDENT_WORK2);
@@ -200,20 +200,20 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     return studentWorkList.get(index).getStudentData();
   }
 
-  private void createPeerGroupActivity() {
-    peerGroupActivity = new PeerGroupActivityImpl();
-    peerGroupActivity.setRun(run1);
-    savePeerGroupActivity(peerGroupActivity);
+  private void createPeerGrouping() {
+    peerGrouping = new PeerGroupingImpl();
+    peerGrouping.setRun(run1);
+    savePeerGrouping(peerGrouping);
   }
 
   private void createPeerGroups() {
     peerGroup1 = new PeerGroupImpl();
-    peerGroup1.setPeerGroupActivity(peerGroupActivity);
+    peerGroup1.setPeerGrouping(peerGrouping);
     peerGroup1.addMember(workgroup1);
     peerGroup1.addMember(workgroup2);
     savePeerGroup(peerGroup1);
     peerGroup2 = new PeerGroupImpl();
-    peerGroup2.setPeerGroupActivity(peerGroupActivity);
+    peerGroup2.setPeerGrouping(peerGrouping);
     peerGroup2.addMember(workgroup3);
     savePeerGroup(peerGroup2);
   }

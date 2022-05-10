@@ -24,7 +24,7 @@
 package org.wise.portal.service.peergroup;
 
 import org.wise.portal.domain.group.Group;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 
 /**
  * @author Hiroki Terashima
@@ -34,18 +34,18 @@ public interface PeerGroupThresholdService {
   /**
    * Returns true iff the completion threshold has been satisfied to start creating PeerGroup.
    * Completion threshold includes minimum workgroups completed count and percentage
-   * @param activity PeerGroupActivity for which to test for PeerGroup members
+   * @param peerGrouping PeerGrouping for which to test for PeerGroup members
    * @param period Group subset of workgroups in the run to test for PeerGroup members
    * @return boolean
    */
-  public boolean isCompletionThresholdSatisfied(PeerGroupActivity activity, Group period);
+  public boolean isCompletionThresholdSatisfied(PeerGrouping peerGrouping, Group period);
 
   /**
    * Returns true iff this workgroup is the last workgroup to be in a PeerGroup (last one left), or
    * there are at least two workgroups who have completed the logic step but are not in a PeerGroup
-   * @param activity PeerGroupActivity for which to test for PeerGroup members
+   * @param peerGrouping PeerGrouping for which to test for PeerGroup members
    * @param period Group subset of workgroups in the run to test for PeerGroup members
    * @return boolean
    */
-  public boolean canCreatePeerGroup(PeerGroupActivity activity, Group period);
+  public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period);
 }

@@ -21,16 +21,43 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.dao.peergroupactivity;
+package org.wise.portal.domain.peergrouping;
 
-import org.wise.portal.dao.SimpleDao;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.json.JSONException;
+import org.wise.portal.domain.Persistable;
 import org.wise.portal.domain.run.Run;
 
 /**
+ * A class that defines location of peer group activities and how to group workgroups together
  * @author Hiroki Terashima
  */
-public interface PeerGroupActivityDao<T extends PeerGroupActivity> extends SimpleDao<T> {
+public interface PeerGrouping extends Persistable {
 
-  PeerGroupActivity getByTag(Run run, String tag);
+  Long getId();
+
+  void setId(Long id);
+
+  String getLogic();
+
+  void setLogic(String logic);
+
+  String getLogicComponentId() throws JSONException;
+
+  String getLogicNodeId() throws JSONException;
+
+  int getLogicThresholdCount();
+
+  int getLogicThresholdPercent();
+
+  int getMaxMembershipCount();
+
+  void setMaxMembershipCount(int maxMembershipCount);
+
+  Run getRun();
+
+  void setRun(Run run);
+
+  String getTag();
+
+  void setTag(String tag);
 }

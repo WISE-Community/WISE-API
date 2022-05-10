@@ -26,7 +26,7 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
     expectUserHasRunWritePermission(false);
     replayAll();
     try {
-      controller.create(run1, run1Period1, peerGroupActivity1Tag, teacherAuth);
+      controller.create(run1, run1Period1, peerGrouping1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -38,7 +38,7 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
     expectUserHasRunWritePermission(true);
     replayAll();
     try {
-      controller.create(run1, run2Period2, peerGroupActivity1Tag, teacherAuth);
+      controller.create(run1, run2Period2, peerGrouping1Tag, teacherAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -46,17 +46,17 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
   }
 
   @Test
-  public void create_PeerGroupActivityFound_CreateGroup() throws Exception {
+  public void create_PeerGroupingFound_CreateGroup() throws Exception {
     expectUserHasRunWritePermission(true);
-    expectPeerGroupActivityByTagFound();
+    expectPeerGroupingByTagFound();
     expectCreatePeerGroup();
     replayAll();
-    assertNotNull(controller.create(run1, run1Period1, peerGroupActivity1Tag, teacherAuth));
+    assertNotNull(controller.create(run1, run1Period1, peerGrouping1Tag, teacherAuth));
     verifyAll();
   }
 
   private void expectCreatePeerGroup() {
-    expect(peerGroupCreateService.create(peerGroupActivity, run1Period1))
+    expect(peerGroupCreateService.create(peerGrouping, run1Period1))
         .andReturn(new PeerGroupImpl());
   }
 

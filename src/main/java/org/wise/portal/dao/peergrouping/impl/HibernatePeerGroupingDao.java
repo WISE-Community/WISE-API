@@ -21,7 +21,7 @@
  * ARISING OUT OF THE USE OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF
  * REGENTS HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.wise.portal.dao.peergroupactivity.impl;
+package org.wise.portal.dao.peergrouping.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,42 +37,42 @@ import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
-import org.wise.portal.dao.peergroupactivity.PeerGroupActivityDao;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.dao.peergrouping.PeerGroupingDao;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.run.Run;
 
 /**
  * @author Hiroki Terashima
  */
 @Repository
-public class HibernatePeerGroupActivityDao extends AbstractHibernateDao<PeerGroupActivity>
-    implements PeerGroupActivityDao<PeerGroupActivity> {
+public class HibernatePeerGroupingDao extends AbstractHibernateDao<PeerGrouping>
+    implements PeerGroupingDao<PeerGrouping> {
 
   @PersistenceContext
   private EntityManager entityManager;
 
   @Override
   protected String getFindAllQuery() {
-    return "from PeerGroupActivityImpl";
+    return "from PeerGroupingImpl";
   }
 
   @Override
-  protected Class<? extends PeerGroupActivity> getDataObjectClass() {
-    return PeerGroupActivityImpl.class;
+  protected Class<? extends PeerGrouping> getDataObjectClass() {
+    return PeerGroupingImpl.class;
   }
 
   @Override
-  public PeerGroupActivity getByTag(Run run, String tag) {
+  public PeerGrouping getByTag(Run run, String tag) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<PeerGroupActivityImpl> cq = cb.createQuery(PeerGroupActivityImpl.class);
-    Root<PeerGroupActivityImpl> peerGroupActivityImplRoot = cq.from(PeerGroupActivityImpl.class);
+    CriteriaQuery<PeerGroupingImpl> cq = cb.createQuery(PeerGroupingImpl.class);
+    Root<PeerGroupingImpl> peerGroupingImplRoot = cq.from(PeerGroupingImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupActivityImplRoot.get("run"), run.getId()));
-    predicates.add(cb.equal(peerGroupActivityImplRoot.get("tag"), tag));
-    cq.select(peerGroupActivityImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
-    TypedQuery<PeerGroupActivityImpl> query = entityManager.createQuery(cq);
-    return (PeerGroupActivityImpl) query.getResultStream().findFirst().orElse(null);
+    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run.getId()));
+    predicates.add(cb.equal(peerGroupingImplRoot.get("tag"), tag));
+    cq.select(peerGroupingImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    TypedQuery<PeerGroupingImpl> query = entityManager.createQuery(cq);
+    return (PeerGroupingImpl) query.getResultStream().findFirst().orElse(null);
   }
 
   private CriteriaBuilder getCriteriaBuilder() {

@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
-import org.wise.portal.service.peergroup.PeerGroupActivityThresholdNotSatisfiedException;
+import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityNotFoundException;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.vle.domain.work.StudentWork;
@@ -32,7 +32,7 @@ import org.wise.vle.domain.work.StudentWork;
 public class PeerGroupWorkAPIController {
 
   @Autowired
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
   @Autowired
   private PeerGroupService peerGroupService;
@@ -63,13 +63,13 @@ public class PeerGroupWorkAPIController {
   List<StudentWork> getPeerGroupWork(@PathVariable("runId") RunImpl run,
       @PathVariable("workgroupId") WorkgroupImpl workgroup,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth)
-      throws JSONException, PeerGroupActivityNotFoundException,
-      PeerGroupActivityThresholdNotSatisfiedException, PeerGroupCreationException {
+      throws JSONException, PeerGroupingNotFoundException,
+      PeerGroupingThresholdNotSatisfiedException, PeerGroupCreationException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (runService.isAllowedToViewStudentWork(run, user)) {
-      PeerGroupActivity activity = peerGroupActivityService.getByComponent(run, nodeId,
+      PeerGrouping peerGrouping = peerGroupingService.getByComponent(run, nodeId,
           componentId);
-      PeerGroup peerGroup = peerGroupService.getPeerGroup(workgroup, activity);
+      PeerGroup peerGroup = peerGroupService.getPeerGroup(workgroup, peerGrouping);
       return peerGroupService.getStudentWork(peerGroup, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");

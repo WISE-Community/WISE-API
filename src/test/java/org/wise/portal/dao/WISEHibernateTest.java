@@ -52,7 +52,7 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
   protected final String RUN_CODE3 = "Rhino789";
 
   protected Component component1, component2, componentNotExists;
-  protected String peerGroupActivityTag1 = "PeerGroupActivity1";
+  protected String peerGroupingTag1 = "PeerGrouping1";
   protected Project project1;
   protected Run run1, run2, run3;
   protected Group run1Period1, run1Period2, run2Period1;

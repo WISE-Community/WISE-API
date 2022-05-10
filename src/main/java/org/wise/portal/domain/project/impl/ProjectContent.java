@@ -55,7 +55,7 @@ public class ProjectContent {
     return node != null ? node.getComponent(componentId) : null;
   }
 
-  public JSONArray getPeerGroupActivities() {
-    return this.projectJSON.optJSONArray("peerGroupActivities");
+  public JSONArray getPeerGroupings() {
+    return this.projectJSON.optJSONArray("peerGroupings");
   }
 }

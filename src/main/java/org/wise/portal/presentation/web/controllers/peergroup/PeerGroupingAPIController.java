@@ -9,30 +9,30 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
-import org.wise.portal.domain.peergroupactivity.impl.PeerGroupActivityImpl;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.run.impl.RunImpl;
-import org.wise.portal.service.peergroupactivity.PeerGroupActivityService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 
 @RestController
 @Secured("ROLE_TEACHER")
-@RequestMapping("/api/run/{runId}/peer-group-settings")
-public class PeerGroupSettingsAPIController {
+@RequestMapping("/api/run/{runId}/peer-grouping")
+public class PeerGroupingAPIController {
 
   @Autowired
-  private PeerGroupActivityService peerGroupActivityService;
+  private PeerGroupingService peerGroupingService;
 
   @PostMapping
   @PreAuthorize("hasPermission(#run, 'WRITE') or hasRole('ROLE_ADMINISTRATOR')")
-  PeerGroupActivity create(@PathVariable("runId") RunImpl run,
-      @RequestBody PeerGroupActivityImpl activity) {
-    return peerGroupActivityService.createPeerGroupActivity(run, activity);
+  PeerGrouping create(@PathVariable("runId") RunImpl run,
+      @RequestBody PeerGroupingImpl peerGrouping) {
+    return peerGroupingService.createPeerGrouping(run, peerGrouping);
   }
 
   @PutMapping("/{tag}")
   @PreAuthorize("hasPermission(#run, 'WRITE') or hasRole('ROLE_ADMINISTRATOR')")
-  PeerGroupActivity update(@PathVariable("runId") RunImpl run, @PathVariable("tag") String tag,
-      @RequestBody PeerGroupActivityImpl activity) {
-    return peerGroupActivityService.updatePeerGroupActivity(run, tag, activity);
+  PeerGrouping update(@PathVariable("runId") RunImpl run, @PathVariable("tag") String tag,
+      @RequestBody PeerGroupingImpl peerGrouping) {
+    return peerGroupingService.updatePeerGrouping(run, tag, peerGrouping);
   }
 }

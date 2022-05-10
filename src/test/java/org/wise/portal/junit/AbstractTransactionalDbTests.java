@@ -30,7 +30,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.wise.portal.dao.group.impl.HibernateGroupDao;
 import org.wise.portal.dao.peergroup.impl.HibernatePeerGroupDao;
-import org.wise.portal.dao.peergroupactivity.impl.HibernatePeerGroupActivityDao;
+import org.wise.portal.dao.peergrouping.impl.HibernatePeerGroupingDao;
 import org.wise.portal.dao.project.impl.HibernateProjectDao;
 import org.wise.portal.dao.run.impl.HibernateRunDao;
 import org.wise.portal.dao.user.impl.HibernateUserDao;
@@ -43,7 +43,7 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.peergroup.PeerGroup;
-import org.wise.portal.domain.peergroupactivity.PeerGroupActivity;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
@@ -88,7 +88,7 @@ public abstract class AbstractTransactionalDbTests
   private HibernatePeerGroupDao peerGroupDao;
 
   @Autowired
-  private HibernatePeerGroupActivityDao peerGroupActivityDao;
+  private HibernatePeerGroupingDao peerGroupingDao;
 
   @Autowired
   private HibernateWorkgroupDao workgroupDao;
@@ -227,7 +227,7 @@ public abstract class AbstractTransactionalDbTests
     peerGroupDao.save(peerGroup);
   }
 
-  protected void savePeerGroupActivity(PeerGroupActivity peerGroupActivity) {
-    peerGroupActivityDao.save(peerGroupActivity);
+  protected void savePeerGrouping(PeerGrouping peerGrouping) {
+    peerGroupingDao.save(peerGrouping);
   }
 }

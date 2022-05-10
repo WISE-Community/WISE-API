@@ -209,7 +209,7 @@ create table notification (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-create table peer_group_activities (
+create table peer_groupings (
     id bigint not null auto_increment,
     runId bigint not null,
     logic text not null,
@@ -218,17 +218,17 @@ create table peer_group_activities (
     maxMembershipCount integer,
     tag varchar(30) not null,
     OPTLOCK integer,
-    index peer_group_activities_run_id_index (runId),
-    constraint peerGroupActivitiesRunIdFK foreign key (runId) references runs (id),
+    index peerGroupingsRunIdIndex (runId),
+    constraint peerGroupingsRunIdFK foreign key (runId) references runs (id),
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table peer_groups (
     id bigint not null auto_increment,
-    peerGroupActivityId bigint not null,
+    peerGroupingId bigint not null,
     periodId bigint,
     OPTLOCK integer,
-    constraint peerGroupActivityIdFK foreign key (peerGroupActivityId) references peer_group_activities (id),
+    constraint peerGroupingIdFK foreign key (peerGroupingId) references peer_groupings (id),
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

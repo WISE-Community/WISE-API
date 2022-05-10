@@ -66,7 +66,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectCompletionCountOne();
     expectThreeWorkgroupsInPeriod();
     replayAll();
-    assertFalse(service.isCompletionThresholdSatisfied(activity, run1Period1));
+    assertFalse(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -75,7 +75,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectCompletionCountTwo();
     expectFiveWorkgroupsInPeriod();
     replayAll();
-    assertFalse(service.isCompletionThresholdSatisfied(activity, run1Period1));
+    assertFalse(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -84,7 +84,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectCompletionCountTwo();
     expectThreeWorkgroupsInPeriod();
     replayAll();
-    assertTrue(service.isCompletionThresholdSatisfied(activity, run1Period1));
+    assertTrue(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -94,7 +94,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectThreeWorkgroupsInPeriod();
     expectTwoWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertTrue(service.canCreatePeerGroup(activity, run1Period1));
+    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -104,7 +104,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectThreeWorkgroupsInPeriod();
     expectTwoWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertTrue(service.canCreatePeerGroup(activity, run1Period1));
+    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -114,16 +114,16 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectThreeWorkgroupsInPeriod();
     expectOneWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertFalse(service.canCreatePeerGroup(activity, run1Period1));
+    assertFalse(service.canCreatePeerGroup(peerGrouping, run1Period1));
     verifyAll();
   }
 
   private void expectNoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByActivity(activity)).andReturn(Arrays.asList());
+    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(Arrays.asList());
   }
 
   private void expectTwoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByActivity(activity)).andReturn(Arrays.asList(peerGroup1));
+    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(Arrays.asList(peerGroup1));
   }
 
   private void expectOneWorkgroupsCompletedLogicComponent() {
