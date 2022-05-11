@@ -76,14 +76,6 @@ public class PeerGroupingServiceImplTest {
 
   private String componentIdWithoutPeerGrouping = "component2";
 
-  private String logic = "[{“name”: “maximizeSimilarIdeas”, “nodeId”: “node1”, “componentId”: “xyz”}]";
-
-  private int logicThresholdCount = 10;
-
-  private int logicThresholdPercent = 50;
-
-  private int maxMembershipCount = 2;
-
   String tagInDB = "existingPeerGroupingTag";
 
   String tagNotInDB = "newPeerGroupingTag";
@@ -94,10 +86,7 @@ public class PeerGroupingServiceImplTest {
       "\"peerGroupings\":[{\"tag\": \"" + tagInDB + "\"}]," +
       "\"nodes\":[{\"id\":\"" + nodeId + "\"," +
       "\"components\":[" +
-      "{\"id\":\"" + componentIdWithPeerGrouping + "\",\"logic\":\"" + logic + "\"," +
-      "\"logicThresholdCount\":\"" + logicThresholdCount + "\"," +
-      "\"logicThresholdPercent\":\"" + logicThresholdPercent + "\"," +
-      "\"maxMembershipCount\":\"" + maxMembershipCount + "\"," +
+      "{\"id\":\"" + componentIdWithPeerGrouping + "\"," +
       "\"peerGroupingTag\":\"" + tagInDB + "\"" +
       "}, {\"id\":\"" + componentIdWithoutPeerGrouping + "\"}]}]}";
 
@@ -124,20 +113,6 @@ public class PeerGroupingServiceImplTest {
   }
 
   @Test
-  public void getByComponent_TagInContentButNotInDB_CreateNewPeerGrouping()
-      throws IOException, PeerGroupingNotFoundException {
-    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(null);
-    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
-    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    peerGroupingDao.save(isA(PeerGrouping.class));
-    expectLastCall();
-    replayAll();
-    PeerGrouping peerGrouping = service.getByComponent(run, nodeId, componentIdWithPeerGrouping);
-    assertEquals(tagInDB, peerGrouping.getTag());
-    verifyAll();
-  }
-
-  @Test
   public void getByComponent_TagInContentAndInDB_ReturnPeerGroupingFromDB()
       throws IOException, PeerGroupingNotFoundException {
     expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
@@ -150,31 +125,10 @@ public class PeerGroupingServiceImplTest {
   }
 
   @Test
-  public void getByTag_notInDB_SaveAndReturnNewPeerGrouping() {
-    expect(peerGroupingDao.getByTag(run, tagNotInDB)).andReturn(null);
-    peerGroupingDao.save(isA(PeerGrouping.class));
-    expectLastCall();
-    replayAll();
-    PeerGrouping peerGrouping = service.getByTag(run, tagNotInDB);
-    assertEquals(tagNotInDB, peerGrouping.getTag());
-    verifyAll();
-  }
-
-  @Test
   public void getByTag_foundInDB_ReturnPeerGrouping() {
     expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
     replayAll();
     assertEquals(peerGrouping, service.getByTag(run, tagInDB));
-    verifyAll();
-  }
-
-  @Test
-  public void getByRun_ReturnPeerGroupingsInRunProject() throws IOException {
-    expect(appProperties.getProperty("curriculum_base_dir")).andReturn("/var/curriculum");
-    expect(FileUtils.readFileToString(isA(File.class))).andReturn(projectJSONString);
-    expect(peerGroupingDao.getByTag(run, tagInDB)).andReturn(peerGrouping);
-    replayAll();
-    assertEquals(1, service.getByRun(run).size());
     verifyAll();
   }
 }

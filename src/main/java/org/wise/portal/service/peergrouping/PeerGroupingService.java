@@ -23,8 +23,10 @@
  */
 package org.wise.portal.service.peergrouping;
 
+import java.io.IOException;
 import java.util.Set;
 
+import org.json.JSONException;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
@@ -57,15 +59,11 @@ public interface PeerGroupingService {
    */
   PeerGrouping getByTag(Run run, String tag);
 
-  /**
-   * Retrieves PeerGrouping for the specified run. Scans run's project content for
-   * PeerGroupingTags and looks up the database for the PeerGrouping for that tag.
-   * If none is found, creates a new PeerGrouping for the tag.
-   */
-  Set<PeerGrouping> getByRun(Run run);
-
   @Transactional
   PeerGrouping createPeerGrouping(Run run, PeerGrouping peerGrouping);
+
+  @Transactional
+  Set<PeerGrouping> createPeerGroupings(Run run) throws IOException, JSONException;
 
   @Transactional
   PeerGrouping updatePeerGrouping(Run run, String tag, PeerGrouping peerGrouping);

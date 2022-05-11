@@ -29,15 +29,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.Before;
-import org.wise.portal.dao.Component;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
-import org.wise.portal.domain.project.impl.ProjectComponent;
-import org.wise.portal.domain.project.impl.ProjectNode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.WISEServiceTest;
@@ -57,60 +53,18 @@ public class PeerGroupServiceTest extends WISEServiceTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    peerGrouping = createPeerGrouping(run1, run1Component2, run1Component2Id,
-        "maximizeDifferentIdeas", run1Node1Id, run1Component1Id, 3, 50, 2, "tag1");
+    peerGrouping = createPeerGrouping(run1, "tag1", "random", 3, 50, 2);
     peerGroup1 = new PeerGroupImpl(peerGrouping, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
     peerGroup2 = new PeerGroupImpl(peerGrouping, run1Period1, new HashSet<Workgroup>());
-    manualPeerGrouping = createPeerGrouping(run1, run1Component2, run1Component2Id, "manual",
-        run1Node1Id, run1Component1Id, 2, 50, 2, "tag1");
+    manualPeerGrouping = createPeerGrouping(run1, "tag1", "manual", 2, 50, 2);
   }
 
-  private PeerGrouping createPeerGrouping(Run run, Component component, String componentId,
-      String logicName, String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupingTag)
+  private PeerGrouping createPeerGrouping(Run run, String peerGroupingTag, String logicName,
+      Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount)
       throws JSONException {
-    String peerGroupingComponentString = createPeerGroupingComponentString(componentId,
-        logicName, logicNodeId, logicComponentId, logicThresholdCount, logicThresholdPercent,
-        maxMembershipCount, peerGroupingTag);
-    return new PeerGroupingImpl(run,
-        new ProjectComponent(new ProjectNode(new JSONObject("{\"id\":\"node1\"}")),
-        new JSONObject(peerGroupingComponentString)));
-  }
-
-  private String createPeerGroupingComponentString(String componentId, String logicName,
-      String logicNodeId, String logicComponentId, Integer logicThresholdCount,
-      Integer logicThresholdPercent, Integer maxMembershipCount, String peerGroupingTag) {
-    String logic = createLogicString(logicName, logicNodeId, logicComponentId);
-    return createPeerGroupingComponentString(componentId, logic, logicThresholdCount,
-        logicThresholdPercent, maxMembershipCount, peerGroupingTag);
-  }
-
-  private String createPeerGroupingComponentString(String componentId, String logic,
-      Integer logicThresholdCount, Integer logicThresholdPercent, Integer maxMembershipCount,
-      String peerGroupingTag) {
-    return new StringBuilder()
-        .append("{")
-        .append("  \"id\": \"" + componentId + "\",")
-        .append("  \"logic\": " + logic + ",")
-        .append("  \"logicThresholdCount\": \"" + logicThresholdCount + "\",")
-        .append("  \"logicThresholdPercent\": \"" + logicThresholdPercent + "\",")
-        .append("  \"maxMembershipCount\": \"" + maxMembershipCount + "\",")
-        .append("  \"peerGroupingTag\": \"" + peerGroupingTag + "\"")
-        .append("}")
-        .toString();
-  }
-
-  private String createLogicString(String name, String nodeId, String componentId) {
-    return new StringBuilder()
-        .append("[")
-        .append("  {")
-        .append("    \"name\": \"" + name + "\",")
-        .append("    \"nodeId\": \"" + nodeId + "\",")
-        .append("    \"componentId\": \"" + componentId + "\"")
-        .append("  }")
-        .append("]")
-        .toString();
+    return new PeerGroupingImpl(run, peerGroupingTag, logicName, logicThresholdCount,
+        logicThresholdPercent, maxMembershipCount);
   }
 }

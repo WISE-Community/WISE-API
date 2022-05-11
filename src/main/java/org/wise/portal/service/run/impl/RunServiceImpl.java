@@ -245,7 +245,7 @@ public class RunServiceImpl implements RunService {
         maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
-    peerGroupingService.getByRun(run);
+    peerGroupingService.createPeerGroupings(run);
     return run;
   }
 
