@@ -23,22 +23,17 @@
  */
 package org.wise.portal.service.peergroup.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
-import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
-import org.wise.vle.domain.work.StudentWork;
 
 /**
  * @author Hiroki Terashima
@@ -52,55 +47,14 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
   @Autowired
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
-  @Autowired
-  private StudentWorkDao<StudentWork> studentWorkDao;
-
-  public boolean isCompletionThresholdSatisfied(PeerGrouping peerGrouping, Group period) {
-    float logicComponentCompletionCount = getLogicComponentCompletionCount(peerGrouping, period);
-    float logicComponentCompletionPercent =
-        (logicComponentCompletionCount / getNumWorkgroupsInPeriod(peerGrouping, period)) * 100;
-    return logicComponentCompletionCount >= 2 &&
-        (logicComponentCompletionCount >= peerGrouping.getLogicThresholdCount() ||
-        logicComponentCompletionPercent >= peerGrouping.getLogicThresholdPercent());
-  }
-
   public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period) {
-    int numWorkgroupsInPeerGroup = getNumWorkgroupsInPeerGroup(peerGrouping, period);
     int numWorkgroupsNotInPeerGroup = getNumWorkgroupsInPeriod(peerGrouping, period) -
-        numWorkgroupsInPeerGroup;
-    int numWorkgroupsCompletedLogicComponentButNotInPeerGroup =
-        getLogicComponentCompletionCount(peerGrouping, period) - numWorkgroupsInPeerGroup;
-    return numWorkgroupsNotInPeerGroup == 1 ||
-        numWorkgroupsCompletedLogicComponentButNotInPeerGroup >= 2;
+        getNumWorkgroupsInPeerGroup(peerGrouping, period);
+    return numWorkgroupsNotInPeerGroup > 1;
   }
 
   private int getNumWorkgroupsInPeriod(PeerGrouping peerGrouping, Group period) {
     return runService.getWorkgroups(peerGrouping.getRun().getId(), period.getId()).size();
-  }
-
-  private int getLogicComponentCompletionCount(PeerGrouping peerGrouping, Group period) {
-    try {
-      return getLogicComponentStudentWorkForPeriod(peerGrouping, period).size();
-    } catch (JSONException e) {
-    }
-    return 0;
-  }
-
-  private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGrouping activity,
-      Group period) throws JSONException {
-    List<StudentWork> logicComponentStudentWorkForPeriod = studentWorkDao
-        .getWorkForComponentByPeriod(activity.getRun(), period,
-        activity.getLogicNodeId(), activity.getLogicComponentId());
-    Collections.reverse(logicComponentStudentWorkForPeriod);
-    List<Workgroup> workgroups = new ArrayList<Workgroup>();
-    List<StudentWork> studentWorkUniqueWorkgroups = new ArrayList<StudentWork>();
-    for (StudentWork studentWork : logicComponentStudentWorkForPeriod) {
-      if (studentWork.getIsSubmit() && !workgroups.contains(studentWork.getWorkgroup())) {
-        studentWorkUniqueWorkgroups.add(studentWork);
-        workgroups.add(studentWork.getWorkgroup());
-      }
-    }
-    return studentWorkUniqueWorkgroups;
   }
 
   private int getNumWorkgroupsInPeerGroup(PeerGrouping activity, Group period) {

@@ -26,11 +26,10 @@ package org.wise.portal.service.peergroup.impl;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
@@ -62,49 +61,11 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
   private StudentWorkDao<StudentWork> studentWorkDao;
 
   @Test
-  public void isCompletionThresholdSatisfied_LessThan2Complete_ReturnFalse() {
-    expectCompletionCountOne();
-    expectThreeWorkgroupsInPeriod();
-    replayAll();
-    assertFalse(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
-    verifyAll();
-  }
-
-  @Test
-  public void isCompletionThresholdSatisfied_ThresholdCountAndPercentNotMet_ReturnFalse() {
-    expectCompletionCountTwo();
-    expectFiveWorkgroupsInPeriod();
-    replayAll();
-    assertFalse(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
-    verifyAll();
-  }
-
-  @Test
-  public void isCompletionThresholdSatisfied_AllThresholdsSatisfied_ReturnTrue() {
-    expectCompletionCountTwo();
-    expectThreeWorkgroupsInPeriod();
-    replayAll();
-    assertTrue(service.isCompletionThresholdSatisfied(peerGrouping, run1Period1));
-    verifyAll();
-  }
-
-  @Test
-  public void canCreatePeerGroup_OneWorkgroupNotInPeerGroup_ReturnTrue() {
+  public void canCreatePeerGroup_OneWorkgroupNotInPeerGroup_ReturnFalse() {
     expectTwoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
-    expectTwoWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
-    verifyAll();
-  }
-
-  @Test
-  public void canCreatePeerGroup_TwoCompletedWorkgroupsButNotInPeerGroup_ReturnTrue() {
-    expectNoWorkgroupsInPeerGroup();
-    expectThreeWorkgroupsInPeriod();
-    expectTwoWorkgroupsCompletedLogicComponent();
-    replayAll();
-    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
+    assertFalse(service.canCreatePeerGroup(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -112,9 +73,8 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
   public void canCreatePeerGroup_NoThresholdMet_ReturnFalse() {
     expectNoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
-    expectOneWorkgroupsCompletedLogicComponent();
     replayAll();
-    assertFalse(service.canCreatePeerGroup(peerGrouping, run1Period1));
+    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -126,39 +86,9 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(Arrays.asList(peerGroup1));
   }
 
-  private void expectOneWorkgroupsCompletedLogicComponent() {
-    expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1));
-  }
-
-  private void expectTwoWorkgroupsCompletedLogicComponent() {
-    expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-        componentWorkNonSubmit1));
-  }
-
-  private void expectWorkForLogicComponent(List<StudentWork> expectedWork) {
-    expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(expectedWork);
-  }
-
   private void expectThreeWorkgroupsInPeriod() {
     expect(runService.getWorkgroups(run1Id, run1Period1.getId())).andReturn(Arrays.asList(
         run1Workgroup1, run1Workgroup2, run1Workgroup3));
-  }
-
-  private void expectFiveWorkgroupsInPeriod() {
-    expect(runService.getWorkgroups(run1Id, run1Period1.getId())).andReturn(Arrays.asList(
-        run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4, run1Workgroup5));
-  }
-
-  private void expectCompletionCountOne() {
-    expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(createStudentWorkList(componentWorkSubmit1));
-  }
-
-  private void expectCompletionCountTwo() {
-    expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(createStudentWorkList(componentWorkSubmit1,
-        componentWorkSubmit2, componentWorkNonSubmit1));
   }
 
   private void verifyAll() {

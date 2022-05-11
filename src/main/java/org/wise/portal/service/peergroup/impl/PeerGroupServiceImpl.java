@@ -24,7 +24,6 @@
 package org.wise.portal.service.peergroup.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -37,7 +36,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.work.StudentWorkDao;
-import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
@@ -87,9 +85,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupingThresholdNotSatisfiedException, PeerGroupCreationException {
-    if (!isCompletionThresholdSatisfied(peerGrouping, workgroup)) {
-      throw new PeerGroupingThresholdNotSatisfiedException();
-    } else if (!peerGroupThresholdService.canCreatePeerGroup(peerGrouping, workgroup.getPeriod())) {
+    if (!peerGroupThresholdService.canCreatePeerGroup(peerGrouping, workgroup.getPeriod())) {
       throw new PeerGroupCreationException();
     } else {
       PeerGroup peerGroup = new PeerGroupImpl(peerGrouping, workgroup.getPeriod(),
@@ -99,53 +95,32 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     }
   }
 
-  private boolean isCompletionThresholdSatisfied(PeerGrouping peerGrouping, Workgroup workgroup) {
-    return hasWorkForPeerGroupingLogic(workgroup, peerGrouping) && peerGroupThresholdService
-        .isCompletionThresholdSatisfied(peerGrouping, workgroup.getPeriod());
-  }
-
-  private boolean hasWorkForPeerGroupingLogic(Workgroup workgroup,
-      PeerGrouping peerGrouping) {
-    try {
-      return studentWorkDao.getWorkForComponentByWorkgroup(workgroup, peerGrouping.getLogicNodeId(),
-          peerGrouping.getLogicComponentId()).size() > 0;
-    } catch (JSONException e) {
-      return false;
-    }
-  }
-
   private Set<Workgroup> getPeerGroupMembers(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupCreationException {
     try {
+      List<Workgroup> workgroupsInPeriod = runDao.getWorkgroupsForRunAndPeriod(
+          workgroup.getRun().getId(), workgroup.getPeriod().getId());
       List<Workgroup> workgroupsInPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping,
           workgroup.getPeriod());
-      Set<Workgroup> workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic =
-          getWorkgroupsNotInPeerGroupAndCompletedPeerGroupingLogic(
-          peerGrouping, workgroup.getPeriod(), workgroupsInPeerGroup);
-      if (isLastOnesLeftToPair(workgroup.getRun(), workgroup.getPeriod(), workgroupsInPeerGroup,
-          workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic,
+      Set<Workgroup> workgroupsNotInPeerGroup = getWorkgroupsNotInPeerGroup(workgroupsInPeriod,
+          workgroupsInPeerGroup);
+      if (isLastOnesLeftToPair(workgroupsInPeerGroup, workgroupsInPeriod,
           peerGrouping.getMaxMembershipCount())) {
-        return workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic;
+        return workgroupsNotInPeerGroup;
       } else {
         return getWorkgroupsInPeerGroupUpToMaxMembership(workgroup, peerGrouping,
-            workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic);
+            workgroupsNotInPeerGroup);
       }
     } catch (JSONException e) {
       throw new PeerGroupCreationException();
     }
   }
 
-  private boolean isLastOnesLeftToPair(Run run, Group period, List<Workgroup> workgroupsInPeerGroup,
-      Set<Workgroup> workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic,
-      int maxMembershipCount) {
-    List<Workgroup> workgroupsInPeriod = runDao.getWorkgroupsForRunAndPeriod(run.getId(),
-        period.getId());
+  private boolean isLastOnesLeftToPair(List<Workgroup> workgroupsInPeerGroup,
+      List<Workgroup> workgroupsInPeriod, int maxMembershipCount) {
     workgroupsInPeriod.removeIf(workgroup -> workgroup.getMembers().size() == 0);
     int numWorkgroupsNotInPeerGroup = workgroupsInPeriod.size() - workgroupsInPeerGroup.size();
-    int numWorkgroupsNotInPeerGroupAndCompletedPeerGroupingLogic =
-        workgroupsNotInPeerGroupAndCompletedPeerGroupingLogic.size();
-    return numWorkgroupsNotInPeerGroup == numWorkgroupsNotInPeerGroupAndCompletedPeerGroupingLogic
-        && (numWorkgroupsNotInPeerGroupAndCompletedPeerGroupingLogic - maxMembershipCount) <= 1;
+    return (numWorkgroupsNotInPeerGroup - maxMembershipCount) <= 1;
   }
 
   private Set<Workgroup> getWorkgroupsInPeerGroupUpToMaxMembership(Workgroup workgroup,
@@ -153,13 +128,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     Set<Workgroup> members = new HashSet<Workgroup>();
     members.add(workgroup);
     possibleMembers.remove(workgroup);
-    if (peerGrouping.getLogic().contains("random")) {
-      // use contains check instead of equals until custom logic is implemented for
-      // backwards-compatibility
-      addMembersRandomly(peerGrouping, possibleMembers, members);
-    } else {
-      addMembersInOrder(peerGrouping, possibleMembers, members);
-    }
+    addMembersRandomly(peerGrouping, possibleMembers, members);
     return members;
   }
 
@@ -175,45 +144,15 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     }
   }
 
-  private void addMembersInOrder(PeerGrouping peerGrouping, Set<Workgroup> possibleMembers,
-      Set<Workgroup> members) {
-    for (Workgroup possibleMember : possibleMembers) {
-      members.add(possibleMember);
-      if (members.size() == peerGrouping.getMaxMembershipCount()) {
-        break;
-      }
-    }
-  }
-
-  private Set<Workgroup> getWorkgroupsNotInPeerGroupAndCompletedPeerGroupingLogic(
-      PeerGrouping peerGrouping, Group period, List<Workgroup> workgroupsInPeerGroup)
-      throws JSONException {
-    List<StudentWork> logicComponentStudentWork = getLogicComponentStudentWorkForPeriod(
-        peerGrouping, period);
+  private Set<Workgroup> getWorkgroupsNotInPeerGroup(List<Workgroup> workgroupsInPeriod,
+      List<Workgroup> workgroupsInPeerGroup) throws JSONException {
     Set<Workgroup> workgroupsNotInPeerGroup = new HashSet<Workgroup>();
-    for (StudentWork work : logicComponentStudentWork) {
-      if (!workgroupsInPeerGroup.contains(work.getWorkgroup())) {
-        workgroupsNotInPeerGroup.add(work.getWorkgroup());
+    for (Workgroup workgroup : workgroupsInPeriod) {
+      if (!workgroupsInPeerGroup.contains(workgroup)) {
+        workgroupsNotInPeerGroup.add(workgroup);
       }
     }
     return workgroupsNotInPeerGroup;
-  }
-
-  private List<StudentWork> getLogicComponentStudentWorkForPeriod(PeerGrouping peerGrouping,
-      Group period) throws JSONException {
-    List<StudentWork> logicComponentStudentWorkForPeriod = studentWorkDao
-        .getWorkForComponentByPeriod(peerGrouping.getRun(), period, peerGrouping.getLogicNodeId(),
-            peerGrouping.getLogicComponentId());
-    Collections.reverse(logicComponentStudentWorkForPeriod);
-    List<Workgroup> workgroups = new ArrayList<Workgroup>();
-    List<StudentWork> studentWorkUniqueWorkgroups = new ArrayList<StudentWork>();
-    for (StudentWork studentWork : logicComponentStudentWorkForPeriod) {
-      if (studentWork.getIsSubmit() && !workgroups.contains(studentWork.getWorkgroup())) {
-        studentWorkUniqueWorkgroups.add(studentWork);
-        workgroups.add(studentWork.getWorkgroup());
-      }
-    }
-    return studentWorkUniqueWorkgroups;
   }
 
   @Override
@@ -225,5 +164,4 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
     return studentWorkDao.getStudentWork(peerGroup, nodeId, componentId);
   }
-
 }

@@ -203,6 +203,7 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
   private void createPeerGrouping() {
     peerGrouping = new PeerGroupingImpl();
     peerGrouping.setRun(run1);
+    peerGrouping.setTag("tag1");
     savePeerGrouping(peerGrouping);
   }
 
