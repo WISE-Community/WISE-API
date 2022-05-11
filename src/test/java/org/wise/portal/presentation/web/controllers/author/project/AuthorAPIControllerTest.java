@@ -251,13 +251,12 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expectLastCall();
     projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
     expectLastCall();
-    expect(runService.getProjectRuns(projectId1)).andReturn(new ArrayList<Run>());
-    replay(userService, projectService, runService);
+    replay(userService, projectService);
     SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
-    verify(userService, projectService, runService);
+    verify(userService, projectService);
   }
 
   @Test
@@ -274,16 +273,12 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expectLastCall();
     projectService.saveProjectToDatabase(project1, teacher1, projectJSONString);
     expectLastCall();
-    List<Run> runsAssociatedWithProject = new ArrayList<Run>();
-    runsAssociatedWithProject.add(run1);
-    expect(runService.getProjectRuns(projectId1)).andReturn(runsAssociatedWithProject);
-    expect(peerGroupingService.getByRun(run1)).andReturn(new HashSet<PeerGrouping>());
-    replay(userService, projectService, runService, peerGroupingService);
+    replay(userService, projectService);
     SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
-    verify(userService, projectService, runService, peerGroupingService);
+    verify(userService, projectService);
   }
 
 

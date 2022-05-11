@@ -52,7 +52,6 @@ import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
@@ -94,37 +93,8 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   @Test
-  public void getPeerGroup_NoWorkForLogicComponent_ThrowException() throws Exception {
-    expectPeerGroupFromDB(null);
-    expectWorkForComponentByWorkgroup(Arrays.asList());
-    replayAll();
-    try {
-      service.getPeerGroup(run1Workgroup1, peerGrouping);
-      fail("PeerGroupingThresholdNotSatisfiedException expected, but wasn't thrown");
-    } catch (PeerGroupingThresholdNotSatisfiedException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
-  public void getPeerGroup_CompletionThresholdNotSatisfied_ThrowException() throws Exception {
-    expectPeerGroupFromDB(null);
-    expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
-    expectCompletionThresholdSatisfied(false);
-    replayAll();
-    try {
-      service.getPeerGroup(run1Workgroup1, peerGrouping);
-      fail("PeerGroupingThresholdNotSatisfiedException expected, but wasn't thrown");
-    } catch (PeerGroupingThresholdNotSatisfiedException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
   public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ThrowException() throws Exception {
     expectPeerGroupFromDB(null);
-    expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
-    expectCompletionThresholdSatisfied(true);
     expectWorkgroupCountThresholdSatisfied(false);
     replayAll();
     try {
@@ -140,8 +110,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
       throws Exception {
     expectAllThresholdsSatisfied();
     expectWorkgroupsInPeerGroup(Arrays.asList());
-    expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-        componentWorkSubmit3, componentWorkNonSubmit1));
     expectIsLastOnesLeftToPair();
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
@@ -155,8 +123,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
       throws Exception {
     expectAllThresholdsSatisfied();
     expectWorkgroupsInPeerGroup(Arrays.asList());
-    expectWorkForLogicComponent(createStudentWorkList(componentWorkSubmit1, componentWorkSubmit2,
-        componentWorkSubmit3, componentWorkSubmit4, componentWorkNonSubmit1));
     expectIsMultiplePairingsLeft();
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
@@ -213,8 +179,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
 
   private void expectAllThresholdsSatisfied() throws JSONException {
     expectPeerGroupFromDB(null);
-    expectWorkForComponentByWorkgroup(Arrays.asList(componentWorkSubmit1));
-    expectCompletionThresholdSatisfied(true);
     expectWorkgroupCountThresholdSatisfied(true);
   }
 
@@ -230,11 +194,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
 
   private void expectWorkgroupCountThresholdSatisfied(boolean isSatisfied) {
     expect(peerGroupThresholdService.canCreatePeerGroup(peerGrouping, run1Period1))
-        .andReturn(isSatisfied);
-  }
-
-  private void expectCompletionThresholdSatisfied(boolean isSatisfied) {
-    expect(peerGroupThresholdService.isCompletionThresholdSatisfied(peerGrouping, run1Period1))
         .andReturn(isSatisfied);
   }
 

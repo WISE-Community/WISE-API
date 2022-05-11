@@ -60,6 +60,7 @@ public class HibernatePeerGroupingDaoTest extends WISEHibernateTest {
   private void createPeerGroupingWithComponent(Component component) {
     PeerGroupingImpl peerGrouping = new PeerGroupingImpl();
     peerGrouping.setRun(component.run);
+    peerGrouping.setTag("tag1");
     peerGroupingDao.save(peerGrouping);
   }
 
