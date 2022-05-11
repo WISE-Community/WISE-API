@@ -60,23 +60,15 @@ public class PeerGroupingServiceImpl implements PeerGroupingService {
   public PeerGrouping getByComponent(Run run, String nodeId, String componentId)
       throws PeerGroupingNotFoundException {
     try {
-      String componentTag = getPeerGroupingTag(run, nodeId, componentId);
-      if (componentTag != null) {
-        return getByTag(run, componentTag);
-      }
+      return getByTag(run, getPeerGroupingTag(run, nodeId, componentId));
     } catch (Exception e) {
+      throw new PeerGroupingNotFoundException();
     }
-    throw new PeerGroupingNotFoundException();
   }
 
   @Override
   public PeerGrouping getByTag(Run run, String tag) {
-    PeerGrouping peerGrouping = peerGroupingDao.getByTag(run, tag);
-    if (peerGrouping == null) {
-      peerGrouping = new PeerGroupingImpl(run, tag);
-      peerGroupingDao.save(peerGrouping);
-    }
-    return peerGrouping;
+    return peerGroupingDao.getByTag(run, tag);
   }
 
   private String getPeerGroupingTag(Run run, String nodeId, String componentId)
@@ -93,16 +85,12 @@ public class PeerGroupingServiceImpl implements PeerGroupingService {
     return new ProjectContent(new JSONObject(projectString));
   }
 
-  @Override
-  public Set<PeerGrouping> getByRun(Run run) {
-    Set<PeerGrouping> activities = new HashSet<PeerGrouping>();
-    try {
-      getPeerGroupingsInUnit(run).forEach(peerGrouping -> {
-        activities.add(getByTag(run, peerGrouping.getTag()));
-      });
-    } catch (IOException | JSONException e) {
-    }
-    return activities;
+  public Set<PeerGrouping> createPeerGroupings(Run run) throws IOException, JSONException {
+    Set<PeerGrouping> peerGroupings = getPeerGroupingsInUnit(run);
+    peerGroupings.forEach(peerGrouping -> {
+      peerGroupingDao.save(peerGrouping);
+    });
+    return peerGroupings;
   }
 
   private Set<PeerGrouping> getPeerGroupingsInUnit(Run run)
@@ -113,8 +101,14 @@ public class PeerGroupingServiceImpl implements PeerGroupingService {
     if (peerGroupingsInContent != null) {
       for (int i = 0; i < peerGroupingsInContent.length(); i++) {
         JSONObject peerGroupingInContent = peerGroupingsInContent.optJSONObject(i);
-        PeerGrouping peerGrouping =
-            new PeerGroupingImpl(run, peerGroupingInContent.optString("tag"));
+        PeerGrouping peerGrouping = new PeerGroupingImpl(
+            run,
+            peerGroupingInContent.optString("tag"),
+            peerGroupingInContent.optString("logic"),
+            peerGroupingInContent.optInt("logicThresholdCount"),
+            peerGroupingInContent.optInt("logicThresholdPercent"),
+            peerGroupingInContent.optInt("maxMembershipCount")
+        );
         peerGroupings.add(peerGrouping);
       }
     }

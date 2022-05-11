@@ -42,7 +42,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
-import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 
@@ -90,18 +89,14 @@ public class PeerGroupingImpl implements PeerGrouping {
   public PeerGroupingImpl() {
   }
 
-  public PeerGroupingImpl(Run run, String tag) {
+  public PeerGroupingImpl(Run run, String tag, String logic, Integer logicThresholdCount,
+      Integer logicThresholdPercent, Integer maxMembershipCount) {
     this.run = run;
     this.tag = tag;
-  }
-
-  public PeerGroupingImpl(Run run, ProjectComponent component) throws JSONException {
-    this.run = run;
-    this.logic = component.getString("logic");
-    this.logicThresholdCount = component.getInt("logicThresholdCount");
-    this.logicThresholdPercent = component.getInt("logicThresholdPercent");
-    this.maxMembershipCount = component.getInt("maxMembershipCount");
-    this.tag = component.getString("peerGroupingTag");
+    this.logic = logic;
+    this.logicThresholdCount = logicThresholdCount;
+    this.logicThresholdPercent = logicThresholdPercent;
+    this.maxMembershipCount = maxMembershipCount;
   }
 
   public String getLogicNodeId() throws JSONException {
