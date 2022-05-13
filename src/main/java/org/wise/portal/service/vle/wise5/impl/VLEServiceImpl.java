@@ -52,6 +52,7 @@ import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.group.GroupService;
+import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
@@ -118,6 +119,9 @@ public class VLEServiceImpl implements VLEService {
 
   @Autowired
   private WorkgroupService workgroupService;
+
+  @Autowired
+  private PeerGroupService peerGroupService;
 
   @Override
   public List<StudentWork> getStudentWorkList(Integer id, Integer runId, Integer periodId,
@@ -206,8 +210,8 @@ public class VLEServiceImpl implements VLEService {
 
   @Override
   public StudentWork saveStudentWork(Integer id, Integer runId, Integer periodId,
-      Integer workgroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
-      String componentType, String studentData, String clientSaveTime) {
+      Integer workgroupId, Long peerGroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId,
+      String componentId, String componentType, String studentData, String clientSaveTime) {
     StudentWork studentWork;
     if (id != null) {
       // if the id is passed in, the client is requesting an update, so fetch the StudentWork from
@@ -239,6 +243,13 @@ public class VLEServiceImpl implements VLEService {
     if (workgroupId != null) {
       try {
         studentWork.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
+      } catch (ObjectNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (peerGroupId != null) {
+      try {
+        studentWork.setPeerGroup(peerGroupService.getById(peerGroupId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }

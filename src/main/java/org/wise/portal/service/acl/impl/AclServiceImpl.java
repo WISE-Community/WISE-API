@@ -187,19 +187,7 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
       }
     }
     boolean hasAllPermissions = true;
-    ArrayList<Integer> permissionsList = new ArrayList<Integer>();
-    // separate possibly comma-separated permissions string into array of permissions
-    if (permission instanceof String) {
-      String[] permissions = ((String) permission).split(",");
-      for (String permissionStr : permissions) {
-        permissionsList.add(Integer.valueOf((String) permissionStr));
-      }
-    } else if (permission instanceof Integer) {
-      permissionsList.add((Integer) permission);
-    } else if (permission instanceof BasePermission) {
-      permissionsList.add(((BasePermission) permission).getMask());
-    }
-    for (int permissionMask : permissionsList) {
+    for (int permissionMask : convertPermissionToList(permission)) {
       Permission p = null;
       if (permissionMask == BasePermission.ADMINISTRATION.getMask()) {
         p = BasePermission.ADMINISTRATION;
@@ -212,6 +200,33 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
           (UserDetails) authentication.getPrincipal());
     }
     return hasAllPermissions;
+  }
+
+  private ArrayList<Integer> convertPermissionToList(Object permissionObj) {
+    ArrayList<Integer> permissionsList = new ArrayList<Integer>();
+    // separate possibly comma-separated permissions string into array of permissions
+    if (permissionObj instanceof String) {
+      String[] permissions = ((String) permissionObj).split(",");
+      for (String permissionStr : permissions) {
+        permissionsList.add(getBasePermission(permissionStr).getMask());
+      }
+    } else if (permissionObj instanceof Integer) {
+      permissionsList.add((Integer) permissionObj);
+    } else if (permissionObj instanceof BasePermission) {
+      permissionsList.add(((BasePermission) permissionObj).getMask());
+    }
+    return permissionsList;
+  }
+
+  private Permission getBasePermission(String permissionStr) {
+    if (permissionStr.equals("ADMINISTRATION")) {
+      return BasePermission.ADMINISTRATION;
+    } else if (permissionStr.equals("READ")) {
+      return BasePermission.READ;
+    } else if (permissionStr.equals("WRITE")) {
+      return BasePermission.WRITE;
+    }
+    return null;
   }
 
   @Override

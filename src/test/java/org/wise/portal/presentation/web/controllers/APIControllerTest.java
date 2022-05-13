@@ -1,6 +1,6 @@
 package org.wise.portal.presentation.web.controllers;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +16,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.authentication.Gender;
+import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.PersistentGrantedAuthority;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -39,89 +41,80 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 
 public abstract class APIControllerTest {
 
-  protected final String STUDENT_FIRSTNAME = "SpongeBob";
-
-  protected final String STUDENT_LASTNAME = "Squarepants";
-
-  protected final String STUDENT_USERNAME = "SpongeBobS0101";
-
-  protected final String STUDENT2_FIRSTNAME = "Patrick";
-
-  protected final String STUDENT2_LASTNAME = "Starr";
-
-  protected final String STUDENT2_USERNAME = "PatrickS0101";
-
-  protected final String STUDENT_PASSWORD = "studentPass";
-
-  protected final String STUDENT1_GOOGLE_ID = "google-user-12345";
-
-  protected final String TEACHER_FIRSTNAME = "Squidward";
-
-  protected final String TEACHER_LASTNAME = "Tentacles";
-
-  protected final String TEACHER_USERNAME = "SquidwardTentacles";
-
-  protected final String TEACHER2_USERNAME = "SandyCheeks";
-
   protected final String ADMIN_USERNAME = "MrKrabb";
-
+  protected final String RUN1_RUNCODE = "orca123";
+  protected final String RUN2_RUNCODE = "panda123";
+  protected final String RUN3_RUNCODE = "giraffe123";
+  protected final String RUN1_PERIOD1_NAME = "1";
+  protected final String RUN1_PERIOD2_NAME = "2";
+  protected final String STUDENT_FIRSTNAME = "SpongeBob";
+  protected final String STUDENT_LASTNAME = "Squarepants";
+  protected final String STUDENT_PASSWORD = "studentPass";
+  protected final String STUDENT_USERNAME = "SpongeBobS0101";
+  protected final String STUDENT1_GOOGLE_ID = "google-user-12345";
+  protected final String STUDENT2_FIRSTNAME = "Patrick";
+  protected final String STUDENT2_LASTNAME = "Starr";
+  protected final String STUDENT2_USERNAME = "PatrickS0101";
+  protected final String TEACHER_FIRSTNAME = "Squidward";
+  protected final String TEACHER_LASTNAME = "Tentacles";
+  protected final String TEACHER_USERNAME = "SquidwardTentacles";
+  protected final String TEACHER2_FIRSTNAME = "Sandy";
+  protected final String TEACHER2_LASTNAME = "Cheeks";
+  protected final String TEACHER2_USERNAME = "SandyCheeks";
   protected final String USERNAME_NOT_IN_DB = "usernameNotInDB";
 
-  protected Long student1Id = 94678L;
-
-  protected Long student2Id = 94679L;
-
-  protected Long teacher1Id = 94210L;
-
-  protected User student1, student2, teacher1, teacher2, admin1;
-
-  protected Authentication studentAuth, teacherAuth, adminAuth;
-
-  protected StudentUserDetails student1UserDetails, student2UserDetails;
-
-  protected TeacherUserDetails teacher1UserDetails, admin1UserDetails;
-
-  protected Long runId1 = 1L;
-
-  protected Long runId2 = 2L;
-
-  protected Long runId3 = 3L;
-
-  protected Long projectId1 = 1L;
-
-  protected String RUN1_RUNCODE = "orca123";
-
-  protected String RUN1_PERIOD1_NAME = "1";
-
-  protected String RUN1_PERIOD2_NAME = "2";
-
-  protected RunImpl run1, run2, run3;
-
-  protected List<Run> runs;
-
-  protected List<Tag> run1Tags;
-
-  protected WorkgroupImpl workgroup1, workgroup2, teacher1Run1Workgroup;
-
+  protected Authentication adminAuth, studentAuth, teacherAuth;
   protected ProjectImpl project1, project2, project3;
-
-  protected Group run1Period1, run1Period2, run2Period2, run3Period4;
-
+  protected Long projectId1 = 1L;
+  protected Long projectId2 = 2L;
+  protected Long projectId3 = 3L;
+  protected RunImpl run1, run2, run3;
+  protected List<Tag> run1Tags;
+  protected PersistentGroup run1Period1, run1Period2, run2Period2, run3Period4;
   protected Long run1Period1Id = 1L;
-
   protected Long run1Period2Id = 2L;
+  protected Long run2Period2Id = 3L;
+  protected Long run3Period4Id = 4L;
+  protected Long runId1 = 1L;
+  protected Long runId2 = 2L;
+  protected Long runId3 = 3L;
+  protected List<Run> runs;
+  protected Long student1Id = 94678L;
+  protected Long student2Id = 94679L;
+  protected User student1, student2, teacher1, teacher2, admin1;
+  protected StudentUserDetails student1UserDetails, student2UserDetails;
+  protected Long teacher1Id = 94210L;
+  protected Long teacher2Id = 94211L;
+  protected TeacherUserDetails teacher1UserDetails, teacher2UserDetails, admin1UserDetails;
+  protected WorkgroupImpl workgroup1, workgroup2, workgroup3, teacher1Run1Workgroup;
+  protected Long workgroup1Id = 1L;
+  protected Long workgroup2Id = 2L;
+  protected Long workgroup3Id = 3L;
+
+  protected String run1Node1Id = "run1Node1";
+
+  protected String run1Component1Id = "run1Component1";
 
   @Mock
-  protected HttpServletRequest request;
+  protected Environment appProperties;
 
   @Mock
   protected GroupService groupService;
 
   @Mock
-  protected UserService userService;
+  protected PortalService portalService;
+
+  @Mock
+  protected ProjectService projectService;
+
+  @Mock
+  protected HttpServletRequest request;
 
   @Mock
   protected RunService runService;
+
+  @Mock
+  protected UserService userService;
 
   @Mock
   protected VLEService vleService;
@@ -129,137 +122,70 @@ public abstract class APIControllerTest {
   @Mock
   protected WorkgroupService workgroupService;
 
-  @Mock
-  protected ProjectService projectService;
-
-  @Mock
-  protected PortalService portalService;
-
-  @Mock
-  protected Environment appProperties;
-
   @Before
   public void setUp() {
-    student1 = new UserImpl();
-    student1.setId(student1Id);
-    PersistentGrantedAuthority studentAuthority = new PersistentGrantedAuthority();
-    studentAuthority.setAuthority(UserDetailsService.STUDENT_ROLE);
-    student1UserDetails = new StudentUserDetails();
-    student1UserDetails.setFirstname(STUDENT_FIRSTNAME);
-    student1UserDetails.setLastname(STUDENT_LASTNAME);
-    student1UserDetails.setUsername(STUDENT_USERNAME);
-    student1UserDetails.setGender(Gender.FEMALE);
-    student1UserDetails.setNumberOfLogins(5);
-    student1UserDetails.setAuthorities(new GrantedAuthority[] { studentAuthority });
-    student1UserDetails.setGoogleUserId(STUDENT1_GOOGLE_ID);
-    student1.setUserDetails(student1UserDetails);
-    student2 = new UserImpl();
-    student2.setId(student2Id);
-    PersistentGrantedAuthority studentAuthority2 = new PersistentGrantedAuthority();
-    studentAuthority2.setAuthority(UserDetailsService.STUDENT_ROLE);
-    student2UserDetails = new StudentUserDetails();
-    student2UserDetails.setFirstname(STUDENT2_FIRSTNAME);
-    student2UserDetails.setLastname(STUDENT2_LASTNAME);
-    student2UserDetails.setUsername(STUDENT2_USERNAME);
-    student2UserDetails.setGender(Gender.FEMALE);
-    student2UserDetails.setNumberOfLogins(10);
-    student2UserDetails.setAuthorities(new GrantedAuthority[] { studentAuthority2 });
-    student2.setUserDetails(student2UserDetails);
-    Object credentials = null;
-    studentAuth = new TestingAuthenticationToken(student1UserDetails, credentials);
-    teacher1 = new UserImpl();
-    teacher1.setId(teacher1Id);
-    PersistentGrantedAuthority teacherAuthority = new PersistentGrantedAuthority();
-    teacherAuthority.setAuthority(UserDetailsService.TEACHER_ROLE);
-    teacher1UserDetails = new TeacherUserDetails();
-    teacher1UserDetails.setFirstname(TEACHER_FIRSTNAME);
-    teacher1UserDetails.setLastname(TEACHER_LASTNAME);
-    teacher1UserDetails.setUsername(TEACHER_USERNAME);
-    teacher1UserDetails.setSchoollevel(Schoollevel.COLLEGE);
-    teacher1UserDetails.setNumberOfLogins(5);
-    teacher1UserDetails.setAuthorities(new GrantedAuthority[] { teacherAuthority });
-    teacher1.setUserDetails(teacher1UserDetails);
-    teacherAuth = new TestingAuthenticationToken(teacher1UserDetails, credentials);
-    admin1 = new UserImpl();
-    admin1UserDetails = new TeacherUserDetails();
-    PersistentGrantedAuthority adminAuthority = new PersistentGrantedAuthority();
-    adminAuthority.setAuthority(UserDetailsService.ADMIN_ROLE);
-    admin1UserDetails.setAuthorities(new GrantedAuthority[] { adminAuthority });
-    admin1UserDetails.setUsername(ADMIN_USERNAME);
-    admin1.setUserDetails(admin1UserDetails);
-    adminAuth = new TestingAuthenticationToken(admin1UserDetails, credentials);
-    run1 = new RunImpl();
-    run1.setId(runId1);
-    run1.setOwner(teacher1);
-    run1.setStarttime(new Date());
-    run1.setMaxWorkgroupSize(3);
-    run1.setRuncode(RUN1_RUNCODE);
-    HashSet<Group> run1Periods = new HashSet<Group>();
-    run1Period1 = new PersistentGroup();
-    run1Period1.setId(run1Period1Id);
-    run1Period1.setName(RUN1_PERIOD1_NAME);
-    run1Period1.addMember(student1);
-    run1Periods.add(run1Period1);
-    run1Period2 = new PersistentGroup();
-    run1Period2.setId(run1Period2Id);
-    run1Period2.setName(RUN1_PERIOD2_NAME);
-    run1Periods.add(run1Period2);
-    run1.setPeriods(run1Periods);
-    project1 = new ProjectImpl();
-    project1.setId(projectId1);
-    project1.setModulePath("/1/project.json");
-    project1.setOwner(teacher1);
-    project1.setWISEVersion(5);
-    project1.setMaxTotalAssetsSize(15728640L);
-    run1.setProject(project1);
-    run1.setLastRun(new Date());
-    workgroup1 = new WorkgroupImpl();
-    workgroup1.addMember(student1);
-    workgroup1.setPeriod(run1Period1);
-    workgroup1.setRun(run1);
-    workgroup2 = new WorkgroupImpl();
-    workgroup2.addMember(student2);
-    workgroup2.setPeriod(run1Period1);
-    workgroup2.setRun(run1);
-    teacher1Run1Workgroup = new WorkgroupImpl();
-    teacher1Run1Workgroup.addMember(teacher1);
-    teacher1Run1Workgroup.setRun(run1);
-    teacher2 = new UserImpl();
-    TeacherUserDetails tud2 = new TeacherUserDetails();
-    tud2.setUsername(TEACHER2_USERNAME);
-    teacher2.setUserDetails(tud2);
-    runs = new ArrayList<Run>();
-    run2 = new RunImpl();
-    run2.setId(runId2);
-    run2.setOwner(teacher1);
-    run2.setStarttime(new Date());
-    HashSet<Group> run2Periods = new HashSet<Group>();
-    run2Period2 = new PersistentGroup();
-    run2Period2.setName("2");
-    run2Period2.addMember(student1);
-    run2Periods.add(run2Period2);
-    run2.setPeriods(run2Periods);
-    project2 = new ProjectImpl();
-    project2.setModulePath("/2/project.json");
-    project2.setOwner(teacher2);
-    run2.setProject(project2);
-    run3 = new RunImpl();
-    run3.setId(runId3);
-    run3.setOwner(teacher2);
-    run3.setStarttime(new Date());
-    HashSet<Group> run3Periods = new HashSet<Group>();
-    run3Period4 = new PersistentGroup();
-    run3Period4.setName("4");
-    run3Period4.addMember(student1);
-    run3Periods.add(run3Period4);
-    run3.setPeriods(run3Periods);
-    project3 = new ProjectImpl();
-    project3.setModulePath("/3/project.json");
-    project3.setOwner(teacher2);
-    run3.setProject(project3);
-    runs.add(run1);
-    runs.add(run2);
-    runs.add(run3);
+    createAdmin();
+    createTeachers();
+    createStudents();
+    createProjects();
+    createRuns();
+    createWorkgroups();
+  }
+
+  private void createStudents() {
+    student1UserDetails = createStudentUserDetails(STUDENT_FIRSTNAME, STUDENT_LASTNAME,
+        STUDENT_USERNAME, Gender.MALE, 5, STUDENT1_GOOGLE_ID);
+    student1 = createStudent(student1Id, student1UserDetails);
+    student2UserDetails = createStudentUserDetails(STUDENT2_FIRSTNAME, STUDENT2_LASTNAME,
+        STUDENT2_USERNAME, Gender.MALE, 10, null);
+    student2 = createStudent(student2Id, student2UserDetails);
+    studentAuth = createAuthentication(student1UserDetails);
+  }
+
+  private void createTeachers() {
+    teacher1UserDetails = createTeacherUserDetails(TEACHER_FIRSTNAME, TEACHER_LASTNAME,
+        TEACHER_USERNAME, Schoollevel.COLLEGE, 5);
+    teacher1 = createTeacher(teacher1Id, teacher1UserDetails);
+    teacherAuth = createAuthentication(teacher1UserDetails);
+    teacher2UserDetails = createTeacherUserDetails(TEACHER2_FIRSTNAME, TEACHER2_LASTNAME,
+        TEACHER2_USERNAME, Schoollevel.COLLEGE, 5);
+    teacher2 = createTeacher(teacher2Id, teacher2UserDetails);
+  }
+
+  private void createAdmin() {
+    admin1UserDetails = createAdminUserDetails(ADMIN_USERNAME);
+    admin1 = createAdmin(admin1UserDetails);
+    adminAuth = createAuthentication(admin1UserDetails);
+  }
+
+  private void createProjects() {
+    project1 = createProject(projectId1, "/1/project.json", teacher1, 5);
+    project2 = createProject(projectId2, "/2/project.json", teacher2, 5);
+    project3 = createProject(projectId3, "/3/project.json", teacher2, 5);
+  }
+
+  private void createRuns() {
+    run1Period1 = createPeriod(run1Period1Id, RUN1_PERIOD1_NAME, student1);
+    run1Period2 = createPeriod(run1Period2Id, RUN1_PERIOD2_NAME);
+    HashSet<Group> run1Periods = new HashSet<Group>(Arrays.asList(run1Period1, run1Period2));
+    run1 = createRun(runId1, teacher1, new Date(), new Date(), 3, RUN1_RUNCODE, project1,
+        run1Periods);
+    run2Period2 = createPeriod(run2Period2Id, "Run2Period2", student1);
+    HashSet<Group> run2Periods = new HashSet<Group>(Arrays.asList(run2Period2));
+    run2 = createRun(runId2, teacher1, new Date(), new Date(), 3, RUN2_RUNCODE, project2,
+        run2Periods);
+    run3Period4 = createPeriod(run3Period4Id, "Run3Period4", student1);
+    HashSet<Group> run3Periods = new HashSet<Group>(Arrays.asList(run3Period4));
+    run3 = createRun(runId3, teacher2, new Date(), new Date(), 3, RUN3_RUNCODE, project3,
+        run3Periods);
+    runs = Arrays.asList(run1, run2, run3);
+  }
+
+  private void createWorkgroups() {
+    workgroup1 = createWorkgroup(workgroup1Id, run1, run1Period1, student1);
+    workgroup2 = createWorkgroup(workgroup2Id, run1, run1Period1, student2);
+    workgroup3 = createWorkgroup(workgroup3Id, run2, run2Period2, student1);
+    teacher1Run1Workgroup = createTeacherWorkgroup(run1, teacher1);
   }
 
   @After
@@ -275,5 +201,125 @@ public abstract class APIControllerTest {
   }
 
   public APIControllerTest() {
+  }
+
+  protected User createStudent(Long id, StudentUserDetails studentUserDetails) {
+    User student = new UserImpl();
+    student.setId(id);
+    student.setUserDetails(studentUserDetails);
+    return student;
+  }
+
+  protected WorkgroupImpl createWorkgroup(Long id, Run run, Group period) {
+    WorkgroupImpl workgroup = new WorkgroupImpl();
+    workgroup.setId(id);
+    workgroup.setRun(run);
+    workgroup.setPeriod(period);
+    return workgroup;
+  }
+
+  protected WorkgroupImpl createWorkgroup(Long id, Run run, Group period, User student) {
+    WorkgroupImpl workgroup = createWorkgroup(id, run, period);
+    workgroup.addMember(student);
+    return workgroup;
+  }
+
+  protected WorkgroupImpl createTeacherWorkgroup(Run run, User teacher) {
+    WorkgroupImpl workgroup = new WorkgroupImpl();
+    workgroup.setRun(run);
+    workgroup.addMember(teacher);
+    return workgroup;
+  }
+
+  protected StudentUserDetails createStudentUserDetails(String firstName, String lastName,
+      String username, Gender gender, Integer numberOfLogins, String googleUserId) {
+    StudentUserDetails studentUserDetails = new StudentUserDetails();
+    studentUserDetails.setFirstname(firstName);
+    studentUserDetails.setLastname(lastName);
+    studentUserDetails.setUsername(username);
+    studentUserDetails.setGender(gender);
+    studentUserDetails.setNumberOfLogins(numberOfLogins);
+    PersistentGrantedAuthority studentAuthority = new PersistentGrantedAuthority();
+    studentAuthority.setAuthority(UserDetailsService.STUDENT_ROLE);
+    studentUserDetails.setAuthorities(new GrantedAuthority[] { studentAuthority });
+    studentUserDetails.setGoogleUserId(googleUserId);
+    return studentUserDetails;
+  }
+
+  protected User createTeacher(Long id, TeacherUserDetails teacherUserDetails) {
+    User teacher = new UserImpl();
+    teacher.setId(id);
+    teacher.setUserDetails(teacherUserDetails);
+    return teacher;
+  }
+
+  protected TeacherUserDetails createTeacherUserDetails(String firstName, String lastName,
+      String username, Schoollevel schoolLevel, Integer numberOfLogins) {
+    TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
+    teacherUserDetails.setFirstname(firstName);
+    teacherUserDetails.setLastname(lastName);
+    teacherUserDetails.setUsername(username);
+    teacherUserDetails.setSchoollevel(schoolLevel);
+    teacherUserDetails.setNumberOfLogins(numberOfLogins);
+    PersistentGrantedAuthority teacherAuthority = new PersistentGrantedAuthority();
+    teacherAuthority.setAuthority(UserDetailsService.TEACHER_ROLE);
+    teacherUserDetails.setAuthorities(new GrantedAuthority[] { teacherAuthority });
+    return teacherUserDetails;
+  }
+
+  protected User createAdmin(TeacherUserDetails teacherUserDetails) {
+    User admin = new UserImpl();
+    admin.setUserDetails(teacherUserDetails);
+    return admin;
+  }
+
+  protected TeacherUserDetails createAdminUserDetails(String username) {
+    TeacherUserDetails adminUserDetails = new TeacherUserDetails();
+    PersistentGrantedAuthority adminAuthority = new PersistentGrantedAuthority();
+    adminAuthority.setAuthority(UserDetailsService.ADMIN_ROLE);
+    adminUserDetails.setAuthorities(new GrantedAuthority[] { adminAuthority });
+    adminUserDetails.setUsername(username);
+    return adminUserDetails;
+  }
+
+  protected Authentication createAuthentication(MutableUserDetails userDetails) {
+    return new TestingAuthenticationToken(userDetails, null);
+  }
+
+  protected RunImpl createRun(Long id, User owner, Date startTime, Date lastRunTime,
+      Integer maxWorkgroupSize, String runCode, Project project, HashSet<Group> periods) {
+    RunImpl run = new RunImpl();
+    run.setId(id);
+    run.setOwner(owner);
+    run.setStarttime(startTime);
+    run.setLastRun(lastRunTime);
+    run.setMaxWorkgroupSize(maxWorkgroupSize);
+    run.setRuncode(runCode);
+    run.setProject(project);
+    run.setPeriods(periods);
+    return run;
+  }
+
+  protected ProjectImpl createProject(Long id, String modulePath, User teacher, Integer wiseVersion) {
+    ProjectImpl project = new ProjectImpl();
+    project.setId(id);
+    project.setModulePath(modulePath);
+    project.setOwner(teacher);
+    project.setWISEVersion(wiseVersion);
+    project.setMaxTotalAssetsSize(15728640L);
+    return project;
+  }
+
+  protected PersistentGroup createPeriod(Long id, String name) {
+    PersistentGroup period = new PersistentGroup();
+    period.setId(id);
+    period.setName(name);
+    return period;
+  }
+
+  protected PersistentGroup createPeriod(Long id, String name, User student) {
+    PersistentGroup period = createPeriod(id, name);
+    period.addMember(student);
+    return period;
   }
 }
