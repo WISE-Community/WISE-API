@@ -48,13 +48,16 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
   public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period) {
-    int numWorkgroupsNotInPeerGroup = getNumWorkgroupsInPeriod(peerGrouping, period) -
+    int numWorkgroupsNotInPeerGroup = getNumNonEmptyWorkgroupsInPeriod(peerGrouping, period) -
         getNumWorkgroupsInPeerGroup(peerGrouping, period);
     return numWorkgroupsNotInPeerGroup > 1;
   }
 
-  private int getNumWorkgroupsInPeriod(PeerGrouping peerGrouping, Group period) {
-    return runService.getWorkgroups(peerGrouping.getRun().getId(), period.getId()).size();
+  private int getNumNonEmptyWorkgroupsInPeriod(PeerGrouping peerGrouping, Group period) {
+    List<Workgroup> workgroupsInPeriod = runService.getWorkgroups(
+        peerGrouping.getRun().getId(), period.getId());
+    workgroupsInPeriod.removeIf(workgroupInPeriod -> workgroupInPeriod.getMembers().size() == 0);
+    return workgroupsInPeriod.size();
   }
 
   private int getNumWorkgroupsInPeerGroup(PeerGrouping activity, Group period) {
