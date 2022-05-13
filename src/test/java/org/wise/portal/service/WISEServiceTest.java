@@ -26,7 +26,6 @@ package org.wise.portal.service;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Before;
 import org.wise.portal.dao.Component;
@@ -35,6 +34,7 @@ import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.user.impl.UserImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.vle.domain.work.StudentWork;
@@ -51,7 +51,7 @@ public class WISEServiceTest {
   protected Group run1Period1;
 
   protected Workgroup run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4,
-      run1Workgroup5;
+      run1Workgroup5, run1Workgroup6;
 
   protected List<Workgroup> run1Workgroups = new ArrayList<Workgroup>();
 
@@ -74,13 +74,21 @@ public class WISEServiceTest {
   public void setUp() throws Exception {
     run1 = new RunImpl();
     run1.setId(run1Id);
+    this.setUpUsers();
     run1Period1 = new PersistentGroup();
     run1Period1.setId(run1Id);
     run1Workgroup1 = createWorkgroupInPeriod(run1, 1L, run1Period1, student1);
+    run1Workgroups.add(run1Workgroup1);
     run1Workgroup2 = createWorkgroupInPeriod(run1, 2L, run1Period1, student2);
+    run1Workgroups.add(run1Workgroup2);
     run1Workgroup3 = createWorkgroupInPeriod(run1, 3L, run1Period1, student3);
+    run1Workgroups.add(run1Workgroup3);
     run1Workgroup4 = createWorkgroupInPeriod(run1, 4L, run1Period1, student4);
+    run1Workgroups.add(run1Workgroup4);
     run1Workgroup5 = createWorkgroupInPeriod(run1, 5L, run1Period1, student5);
+    run1Workgroups.add(run1Workgroup5);
+    run1Workgroup6 = createWorkgroupInPeriod(run1, 5L, run1Period1);
+    run1Workgroups.add(run1Workgroup6);
     run1Component1 = new Component(run1, run1Node1Id, run1Component1Id);
     run1Component2 = new Component(run1, run1Node2Id, run1Component2Id);
     componentWorkSubmit1 = createComponentWork(run1Workgroup1, true);
@@ -90,16 +98,28 @@ public class WISEServiceTest {
     componentWorkNonSubmit1 = createComponentWork(run1Workgroup1, false);
   }
 
-  private Workgroup createWorkgroupInPeriod(Run run, Long id, Group period, User member) {
+  private void setUpUsers() {
+    this.student1 = new UserImpl();
+    this.student2 = new UserImpl();
+    this.student3 = new UserImpl();
+    this.student4 = new UserImpl();
+    this.student5 = new UserImpl();
+  }
+
+  private Workgroup createWorkgroupInPeriod(Run run, Long id, Group period) {
     Workgroup workgroup = new WorkgroupImpl();
     workgroup.setId(id);
     workgroup.setRun(run);
     workgroup.setPeriod(period);
-    Set<User> members = new HashSet<User>();
+    workgroup.getGroup().setName("Group " + id);
+    return workgroup;
+  }
+
+  private Workgroup createWorkgroupInPeriod(Run run, Long id, Group period, User member) {
+    Workgroup workgroup = this.createWorkgroupInPeriod(run, id, period);
+    HashSet<User> members = new HashSet<User>();
     members.add(member);
     workgroup.setMembers(members);
-    workgroup.getGroup().setName("Group " + id);
-    run1Workgroups.add(workgroup);
     return workgroup;
   }
 

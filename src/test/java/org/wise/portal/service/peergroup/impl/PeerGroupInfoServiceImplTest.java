@@ -65,7 +65,7 @@ public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
     replay(peerGroupService, runService);
     Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(peerGrouping);
     assertEquals(1, ((List<PeerGroup>) peerGroupInfo.get("peerGroups")).size());
-    assertEquals(3, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
+    assertEquals(4, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
     verify(peerGroupService, runService);
   }
 

@@ -100,6 +100,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     try {
       List<Workgroup> workgroupsInPeriod = runDao.getWorkgroupsForRunAndPeriod(
           workgroup.getRun().getId(), workgroup.getPeriod().getId());
+      workgroupsInPeriod.removeIf(workgroupInPeriod -> workgroupInPeriod.getMembers().size() == 0);
       List<Workgroup> workgroupsInPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping,
           workgroup.getPeriod());
       Set<Workgroup> workgroupsNotInPeerGroup = getWorkgroupsNotInPeerGroup(workgroupsInPeriod,
@@ -118,7 +119,6 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   private boolean isLastOnesLeftToPair(List<Workgroup> workgroupsInPeerGroup,
       List<Workgroup> workgroupsInPeriod, int maxMembershipCount) {
-    workgroupsInPeriod.removeIf(workgroup -> workgroup.getMembers().size() == 0);
     int numWorkgroupsNotInPeerGroup = workgroupsInPeriod.size() - workgroupsInPeerGroup.size();
     return (numWorkgroupsNotInPeerGroup - maxMembershipCount) <= 1;
   }
