@@ -53,6 +53,7 @@ import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
+import org.wise.portal.service.peergroup.PeerGroupNotFoundException;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
@@ -135,7 +136,11 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   public void getPeerGroup_ManualLogicPeerGroupNotExist_ReturnNull() throws Exception {
     expectPeerGroupFromDB(null, manualPeerGrouping);
     replayAll();
-    assertNull(service.getPeerGroup(run1Workgroup1, manualPeerGrouping));
+    try {
+      assertNull(service.getPeerGroup(run1Workgroup1, manualPeerGrouping));
+      fail("PeerGroupNotFoundException expected, but wasn't thrown");
+    } catch(PeerGroupNotFoundException e) {
+    }
     verifyAll();
   }
 
@@ -197,11 +202,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
         .andReturn(isSatisfied);
   }
 
-  private void expectWorkForLogicComponent(List<StudentWork> workForLogicComponent) {
-    expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(workForLogicComponent);
-  }
-
   private void expectPeerGroupFromDB(PeerGroup peerGroup) {
     expectPeerGroupFromDB(peerGroup, peerGrouping);
   }
@@ -209,12 +209,6 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   private void expectPeerGroupFromDB(PeerGroup peerGroup, PeerGrouping peerGrouping) {
     expect(peerGroupDao.getByWorkgroupAndPeerGrouping(run1Workgroup1, peerGrouping))
       .andReturn(peerGroup);
-  }
-
-  private void expectWorkForComponentByWorkgroup(List<StudentWork> expectedWork)
-      throws JSONException {
-    expect(studentWorkDao.getWorkForComponentByWorkgroup(run1Workgroup1,
-        peerGrouping.getLogicNodeId(), peerGrouping.getLogicComponentId())).andReturn(expectedWork);
   }
 
   private void expectIsLastOnesLeftToPair() {

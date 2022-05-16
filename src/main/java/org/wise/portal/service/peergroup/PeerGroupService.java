@@ -58,7 +58,8 @@ public interface PeerGroupService {
    * like an error occurred while grouping members
    */
   PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping) throws JSONException,
-      PeerGroupingThresholdNotSatisfiedException, PeerGroupCreationException;
+      PeerGroupingThresholdNotSatisfiedException, PeerGroupNotFoundException,
+      PeerGroupNotFoundException, PeerGroupCreationException;
 
   /**
    * Gets all the PeerGroups for the specified PeerGrouping
