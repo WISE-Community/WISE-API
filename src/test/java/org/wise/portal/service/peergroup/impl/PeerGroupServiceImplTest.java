@@ -93,15 +93,11 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   @Test
-  public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ThrowException() throws Exception {
+  public void getPeerGroup_WorkgroupCountThresholdNotSatisfied_ReturnNull() throws Exception {
     expectPeerGroupFromDB(null);
     expectWorkgroupCountThresholdSatisfied(false);
     replayAll();
-    try {
-      service.getPeerGroup(run1Workgroup1, peerGrouping);
-      fail("PeerGroupCreationException expected, but wasn't thrown");
-    } catch (PeerGroupCreationException e) {
-    }
+    assertNull(service.getPeerGroup(run1Workgroup1, peerGrouping));
     verifyAll();
   }
 
