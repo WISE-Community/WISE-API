@@ -21,11 +21,6 @@ import org.wise.vle.domain.work.StudentWork;
 @RunWith(EasyMockRunner.class)
 public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataControllerTest {
 
-  String OTHER_COMPONENT_ID = "component2";
-  String OTHER_COMPONENT_ID_NOT_ALLOWED = "component3";
-  String OTHER_NODE_ID = "node2";
-  String OTHER_NODE_ID_NOT_ALLOWED = "node3";
-
   @TestSubject
   private ClassmateSummaryDataController controller = new ClassmateSummaryDataController();
 

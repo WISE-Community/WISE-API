@@ -16,6 +16,8 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.work.StudentWorkJsonModule;
 import org.wise.vle.domain.work.StudentWork;
+import org.wise.vle.domain.work.StudentWorkDeserializer;
+import org.wise.vle.domain.work.StudentWorkSerializer;
 
 public class StudentWorkTest {
 
@@ -23,6 +25,7 @@ public class StudentWorkTest {
   Run run;
   Group period;
   Workgroup workgroup;
+  ObjectMapper mapper;
 
   @Before
   public void setup() {
@@ -45,12 +48,15 @@ public class StudentWorkTest {
     studentWork.setIsAutoSave(true);
     studentWork.setIsSubmit(false);
     studentWork.setNodeId("node1");
+    mapper = new ObjectMapper();
+    StudentWorkJsonModule studentWorkJsonModule = new StudentWorkJsonModule();
+    studentWorkJsonModule.addSerializer(StudentWork.class, new StudentWorkSerializer());
+    studentWorkJsonModule.addDeserializer(StudentWork.class, new StudentWorkDeserializer());
+    mapper.registerModule(studentWorkJsonModule);
   }
 
   @Test
   public void serialize() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new StudentWorkJsonModule());
     String json = mapper.writeValueAsString(studentWork);
     String expectedJson = "{\"id\":1000,\"clientSaveTime\":1582338031000,"
         + "\"componentId\":\"9gyphw34j8\",\"componentType\":\"OpenResponse\",\"isAutoSave\":true,"
@@ -62,8 +68,6 @@ public class StudentWorkTest {
 
   @Test
   public void serializeWithNullableFields() throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.registerModule(new StudentWorkJsonModule());
     studentWork.setComponentId(null);
     studentWork.setComponentType(null);
     String json = mapper.writeValueAsString(studentWork);

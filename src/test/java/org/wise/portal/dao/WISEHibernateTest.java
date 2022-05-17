@@ -25,8 +25,6 @@ package org.wise.portal.dao;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Before;
 import org.wise.portal.domain.authentication.Gender;
@@ -54,6 +52,7 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
   protected final String RUN_CODE3 = "Rhino789";
 
   protected Component component1, component2, componentNotExists;
+  protected String peerGroupingTag1 = "PeerGrouping1";
   protected Project project1;
   protected Run run1, run2, run3;
   protected Group run1Period1, run1Period2, run2Period1;
@@ -78,23 +77,22 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
     run1 = createProjectAndRun(getNextAvailableProjectId(), PROJECT_NAME, teacher1, runStartTime,
-        "Panda123");
+        RUN_CODE1);
     run2 = createProjectAndRun(getNextAvailableProjectId(), PROJECT_NAME, teacher1, runStartTime,
-        "Rhino456");
+        RUN_CODE2);
     run3 = createProjectAndRun(getNextAvailableProjectId(), PROJECT_NAME, teacher1, runStartTime,
-        "Rhino789");
+        RUN_CODE3);
     project1 = run1.getProject();
     run1Period1 = createPeriod("Run 1 Period 1");
     run1Period2 = createPeriod("Run 1 Period 2");
     run2Period1 = createPeriod("Run 2 Period 1");
-    Set<Group> periods = new TreeSet<Group>();
-    periods.add(run1Period1);
-    periods.add(run1Period2);
-    run1.setPeriods(periods);
+    addPeriodToRun(run1Period1, run1);
+    addPeriodToRun(run1Period2, run1);
+    addPeriodToRun(run2Period1, run2);
     teacherWorkgroup1 = addUserToRun(teacher1, run1, null);
     workgroup1 = addUserToRun(student1, run1, run1Period1);
     workgroup2 = addUserToRun(student2, run1, run1Period1);
-    workgroup3 = addUserToRun(student2, run2, run2Period1);
+    workgroup3 = addUserToRun(student3, run2, run2Period1);
     component1 = new Component(run1, NODE_ID1, COMPONENT_ID1);
     component2 = new Component(run1, NODE_ID2, COMPONENT_ID2);
     componentNotExists = new Component(run1, "nodeX", "componentX");

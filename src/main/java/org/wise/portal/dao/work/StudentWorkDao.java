@@ -23,18 +23,20 @@
  */
 package org.wise.portal.dao.work;
 
+import java.util.List;
+import java.util.Set;
+
 import org.json.JSONObject;
 import org.wise.portal.dao.SimpleDao;
 import org.wise.portal.domain.group.Group;
+import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.work.StudentWork;
 
-import java.util.List;
-
 /**
  * Domain Access Object for StudentWork
- * 
+ *
  * @author Hiroki Terashima
  */
 public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
@@ -43,11 +45,21 @@ public interface StudentWorkDao<T extends StudentWork> extends SimpleDao<T> {
       Workgroup workgroup, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
       String componentType, List<JSONObject> components);
 
+  List<StudentWork> getWorkForComponentByWorkgroup(Workgroup workgroup, String nodeId,
+      String componentId);
+
+  List<StudentWork> getWorkForComponentByPeriod(Run run, Group period, String nodeId,
+      String componentId);
+
   List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
 
   List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
- 
+
   List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId);
 
   List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId, String componentId);
+
+  List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
+
+  List<StudentWork> getStudentWork(Set<Workgroup> workgroups, String nodeId, String componentId);
 }

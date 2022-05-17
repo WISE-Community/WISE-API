@@ -29,7 +29,6 @@ import org.json.JSONObject;
 
 /**
  * A class that stores the entire content for a project.
- * 
  * @author Hiroki Terashima
  */
 public class ProjectContent {
@@ -54,5 +53,9 @@ public class ProjectContent {
   public ProjectComponent getComponent(String nodeId, String componentId) throws JSONException {
     ProjectNode node = getNode(nodeId);
     return node != null ? node.getComponent(componentId) : null;
+  }
+
+  public JSONArray getPeerGroupings() {
+    return this.projectJSON.optJSONArray("peerGroupings");
   }
 }

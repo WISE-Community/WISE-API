@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class StudentWorkSerializer extends JsonSerializer<StudentWork> {
 
   @Override
@@ -26,6 +29,9 @@ public class StudentWorkSerializer extends JsonSerializer<StudentWork> {
     ObjectMapper objectMapper = new ObjectMapper();
     gen.writeObjectField("studentData", objectMapper.readTree(studentWork.getStudentData()));
     gen.writeObjectField("workgroupId", studentWork.getWorkgroup().getId());
+    if (studentWork.getPeerGroup() != null) {
+      gen.writeObjectField("peerGroupId", studentWork.getPeerGroup().getId());
+    }
     gen.writeEndObject();
   }
 }

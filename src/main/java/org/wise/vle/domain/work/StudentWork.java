@@ -35,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.peergroup.PeerGroup;
+import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -75,6 +77,12 @@ public class StudentWork extends PersistableDomain {
   @JoinColumn(name = "workgroupId", nullable = false)
   @JsonIgnore
   private Workgroup workgroup;
+
+  @ManyToOne(targetEntity = PeerGroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
+  @JoinColumn(name = "peerGroupId", nullable = true)
+  @JsonIgnore
+  private PeerGroup peerGroup;
 
   @Column(name = "isAutoSave", nullable = false)
   private Boolean isAutoSave;
@@ -176,6 +184,10 @@ public class StudentWork extends PersistableDomain {
         } catch (JSONException e) {
           studentWorkJSONObject.put("studentData", studentData);
         }
+      }
+
+      if (peerGroup != null) {
+        studentWorkJSONObject.put("peerGroupId", peerGroup.getId());
       }
     } catch (JSONException e) {
       e.printStackTrace();

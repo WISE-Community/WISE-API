@@ -80,6 +80,7 @@ import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.response.ErrorResponse;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.presentation.web.response.SuccessResponse;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
@@ -104,6 +105,9 @@ public class AuthorAPIController {
 
   @Autowired
   protected UserService userService;
+
+  @Autowired
+  protected PeerGroupingService peerGroupingService;
 
   @Autowired
   protected ProjectService projectService;

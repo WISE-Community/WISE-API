@@ -32,7 +32,6 @@ import lombok.Getter;
 /**
  * ProjectComponent defines activities that students work on, like MultipleChoice, OpenResponse,
  * etc.
- *
  * @author Hiroki Terashima
  */
 public class ProjectComponent {
@@ -42,7 +41,11 @@ public class ProjectComponent {
   @Getter
   String id;
 
-  public ProjectComponent(JSONObject componentJSON) throws JSONException {
+  @Getter
+  ProjectNode node;
+
+  public ProjectComponent(ProjectNode node, JSONObject componentJSON) throws JSONException {
+    this.node = node;
     this.componentJSON = componentJSON;
     this.id = componentJSON.getString("id");
   }
@@ -51,8 +54,16 @@ public class ProjectComponent {
     return this.componentJSON.getString(key);
   }
 
+  public boolean hasField(String key) {
+    return this.componentJSON.has(key);
+  }
+
   public int getInt(String key) throws JSONException {
     return this.componentJSON.getInt(key);
+  }
+
+  public String getPeerGroupingTag() throws JSONException {
+    return this.componentJSON.getString("peerGroupingTag");
   }
 
   public JSONArray getJSONArray(String key) throws JSONException {
