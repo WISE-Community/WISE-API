@@ -42,7 +42,6 @@ import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
-import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.vle.domain.work.StudentWork;
@@ -71,8 +70,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Override
   public PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
-      throws JSONException, PeerGroupingThresholdNotSatisfiedException,
-      PeerGroupCreationException {
+      throws JSONException, PeerGroupCreationException {
     PeerGroup peerGroup = peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup, peerGrouping);
     if (peerGrouping.getLogic().contains("manual")) {
       // use contains check instead of equals until custom logic is implemented for
@@ -84,7 +82,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   }
 
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
-      throws PeerGroupingThresholdNotSatisfiedException, PeerGroupCreationException {
+      throws PeerGroupCreationException {
     if (!peerGroupThresholdService.canCreatePeerGroup(peerGrouping, workgroup.getPeriod())) {
       return null;
     } else {

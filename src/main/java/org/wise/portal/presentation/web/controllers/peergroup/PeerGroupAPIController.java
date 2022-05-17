@@ -39,7 +39,6 @@ import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
-import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergrouping.PeerGroupingService;
@@ -67,8 +66,7 @@ public class PeerGroupAPIController {
   PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
       @PathVariable("workgroupId") WorkgroupImpl workgroup,
       @PathVariable String peerGroupingTag, Authentication auth)
-      throws JSONException, PeerGroupCreationException,
-      PeerGroupingThresholdNotSatisfiedException  {
+      throws JSONException, PeerGroupCreationException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup) ||
         run.isTeacherAssociatedToThisRun(user)) {
@@ -79,8 +77,7 @@ public class PeerGroupAPIController {
   }
 
   private PeerGroup getPeerGroup(Run run, String peerGroupingTag, Workgroup workgroup)
-      throws JSONException, PeerGroupCreationException,
-      PeerGroupingThresholdNotSatisfiedException {
+      throws JSONException, PeerGroupCreationException {
     PeerGrouping peerGrouping = peerGroupingService.getByTag(run, peerGroupingTag);
     return peerGroupService.getPeerGroup(workgroup, peerGrouping);
   }
