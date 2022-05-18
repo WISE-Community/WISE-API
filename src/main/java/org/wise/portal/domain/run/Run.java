@@ -146,6 +146,8 @@ public interface Run extends Persistable {
    */
   boolean isStudentAssociatedToThisRun(User studentUser);
 
+  boolean isStudentAssociatedToThisRunAndPeriod(User studentUser, Group period);
+
   boolean isOwner(User user);
 
   /**

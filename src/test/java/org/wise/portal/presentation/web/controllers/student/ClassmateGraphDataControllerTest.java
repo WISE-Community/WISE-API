@@ -31,29 +31,29 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   @Test
   public void getClassmateGraphWorkInPeriod_NotInRun_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRunAndPeriod(false);
+    setupStudent2NotInRunAndNotInPeriod();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run3, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run3Period4Id));
     verifyAll();
   }
 
   @Test
   public void getClassmateGraphWorkInPeriod_NotInPeriod_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRunAndPeriod(false);
+    setupStudent2InRunButNotInPeriod();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run1, NODE_ID1,
+            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period2Id));
     verifyAll();
   }
 
   @Test
   public void getClassmateGraphWorkInPeriod_NotGraphComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRunAndPeriod(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
@@ -82,7 +82,7 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
       String actualComponentId, String actualSource, String requestedNodeId,
       String requestedComponentId)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRunAndPeriod(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, actualNodeId,
         actualComponentId, controller.SHOW_CLASSMATE_WORK_TYPE, actualSource);
     replayAll();
@@ -95,7 +95,7 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   @Test
   public void getClassmateGraphWorkInClass_InvalidSource_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRun();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
         SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.PERIOD_SOURCE);
     replayAll();
@@ -108,7 +108,7 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   @Test
   public void getClassmateGraphWorkInPeriod_ValidParams_ReturnWork()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRunAndPeriod(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
         SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.PERIOD_SOURCE);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
@@ -128,7 +128,7 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   @Test
   public void getClassmateGraphWorkInClass_ValidParams_ReturnWork()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRun();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.GRAPH_TYPE, SHOW_WORK_NODE_ID,
         SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.CLASS_SOURCE);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
