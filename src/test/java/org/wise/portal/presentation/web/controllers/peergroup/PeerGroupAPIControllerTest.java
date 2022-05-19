@@ -8,7 +8,6 @@ import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.security.access.AccessDeniedException;
-import org.wise.portal.service.peergroup.PeerGroupingThresholdNotSatisfiedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
 
@@ -26,19 +25,6 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
       controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
-    }
-    verifyAll();
-  }
-
-  @Test
-  public void getPeerGroupByComponent_PeerGroupThresholdNotMet_ThrowException() throws Exception {
-    expectWorkgroupAssociatedWithRunAndPeerGroupingFound();
-    expectPeerGroupThresholdNotSatisifed();
-    replayAll();
-    try {
-      controller.getPeerGroup(run1, workgroup1, peerGrouping1Tag, studentAuth);
-      fail("Expected PeerGroupCreationException, but was not thrown");
-    } catch (PeerGroupingThresholdNotSatisfiedException e) {
     }
     verifyAll();
   }
@@ -75,11 +61,6 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
     expect(userService.retrieveUserByUsername(studentAuth.getName())).andReturn(student1);
     expect(workgroupService.isUserInWorkgroupForRun(student1, run1, workgroup1))
         .andReturn(isAssociated);
-  }
-
-  private void expectPeerGroupThresholdNotSatisifed() throws Exception {
-    expect(peerGroupService.getPeerGroup(workgroup1, peerGrouping))
-        .andThrow(new PeerGroupingThresholdNotSatisfiedException());
   }
 
   private void expectPeerGroupCreated() throws Exception {

@@ -52,13 +52,11 @@ public interface PeerGroupService {
    * @param workgroup Workgroup to get/create the PeerGroup for
    * @param peerGrouping PeerGrouping to get/create the PeerGroup for
    * @return PeerGroup for the specified workgroup and PeerGrouping
-   * @throws PeerGroupingThresholdNotSatisfiedException the PeerGroup cannot be created due to
-   * threshold not being met
    * @throws PeerGroupCreationException the PeerGroup cannot be created for other reasons
    * like an error occurred while grouping members
    */
   PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping) throws JSONException,
-      PeerGroupingThresholdNotSatisfiedException, PeerGroupCreationException;
+      PeerGroupCreationException;
 
   /**
    * Gets all the PeerGroups for the specified PeerGrouping
