@@ -171,12 +171,20 @@ public class VLEServiceImpl implements VLEService {
   }
 
   public List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId) {
-    return studentWorkDao.getLatestStudentWork(run, nodeId, componentId);
+    return filterLatestStudentWork(getStudentWork(run, nodeId, componentId));
   }
 
   public List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId,
       String componentId) {
-    return studentWorkDao.getLatestStudentWork(run, period, nodeId, componentId);
+    return filterLatestStudentWork(getStudentWork(run, period, nodeId, componentId));
+  }
+
+  private List<StudentWork> filterLatestStudentWork(List<StudentWork> allStudentWork) {
+    HashMap<Long, StudentWork> latestStudentWork = new HashMap<Long, StudentWork>();
+    for (StudentWork studentWork : allStudentWork) {
+      latestStudentWork.put(studentWork.getWorkgroup().getId(), studentWork);
+    }
+    return new ArrayList<StudentWork>(latestStudentWork.values());
   }
 
   private List<StudentWork> filterLatestWorkForEachWorkgroup(List<StudentWork> allStudentWork) {
