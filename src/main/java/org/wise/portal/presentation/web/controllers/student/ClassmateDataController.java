@@ -16,7 +16,6 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.group.GroupService;
 import org.wise.portal.service.project.ProjectService;
-import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.vle.domain.annotation.wise5.Annotation;
@@ -33,17 +32,19 @@ public abstract class ClassmateDataController {
   protected ProjectService projectService;
 
   @Autowired
-  protected RunService runService;
-
-  @Autowired
   protected UserService userService;
 
   @Autowired
   protected VLEService vleService;
 
+  protected boolean isUserInRun(Authentication auth, Run run) {
+    User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
+    return run.isStudentAssociatedToThisRun(user);
+  }
+
   protected boolean isUserInRunAndPeriod(Authentication auth, Run run, Group period) {
     User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
-    return runService.isUserInRunAndPeriod(user, run, period);
+    return run.isStudentAssociatedToThisRunAndPeriod(user, period);
   }
 
   protected boolean isComponentType(Run run, String nodeId, String componentId,
@@ -67,6 +68,16 @@ public abstract class ClassmateDataController {
   protected List<StudentWork> getStudentWork(Run run, Group period, String nodeId,
       String componentId) {
     return vleService.getStudentWork(run, period, nodeId, componentId);
+  }
+
+  protected List<StudentWork> getLatestStudentWork(Run run, String nodeId,
+      String componentId) {
+    return vleService.getLatestStudentWork(run, nodeId, componentId);
+  }
+
+  protected List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId,
+      String componentId) {
+    return vleService.getLatestStudentWork(run, period, nodeId, componentId);
   }
 
   protected List<Annotation> getAnnotations(Run run, String nodeId, String componentId) {

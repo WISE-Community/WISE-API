@@ -477,6 +477,4 @@ public interface RunService {
 
   JSONObject transferRunOwnership(Long runId, String teacherUsername)
       throws ObjectNotFoundException;
-
-  boolean isUserInRunAndPeriod(User user, Run run, Group period);
 }

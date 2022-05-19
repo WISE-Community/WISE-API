@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.util.List;
 
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
@@ -37,6 +39,16 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
     expect(vleService.getStudentWork(run, period, nodeId, componentId)).andReturn(studentWork);
   }
 
+  protected void expectLatestStudentWork(Run run, Group period, String nodeId, String componentId,
+      List<StudentWork> studentWork) {
+    expect(vleService.getLatestStudentWork(run, period, nodeId, componentId)).andReturn(studentWork);
+  }
+
+  protected void expectLatestStudentWork(Run run, String nodeId, String componentId,
+      List<StudentWork> studentWork) {
+    expect(vleService.getLatestStudentWork(run, nodeId, componentId)).andReturn(studentWork);
+  }
+
   protected void expectAnnotations(List<Annotation> annotations) {
     expectAnnotations(run1, run1Period1, NODE_ID1, COMPONENT_ID1, annotations);
   }
@@ -51,11 +63,38 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
     expect(vleService.getAnnotations(run, period, nodeId, componentId)).andReturn(annotations);
   }
 
-  protected void expectIsUserInRun(boolean isInRun)
-      throws NoSuchMethodException, ObjectNotFoundException {
-    expect(groupService.retrieveById(run1Period1Id)).andReturn(run1Period1);
-    expect(userService.retrieveUser(student1UserDetails)).andReturn(student1);
-    expect(runService.isUserInRunAndPeriod(student1, run1, run1Period1)).andReturn(isInRun);
+  protected void expectPeriod(Long periodId, Group period) throws ObjectNotFoundException {
+    expect(groupService.retrieveById(periodId)).andReturn(period);
+  }
+
+  protected void expectUser(StudentUserDetails studentUserDetails, User student) {
+    expect(userService.retrieveUser(studentUserDetails)).andReturn(student);
+  }
+
+  protected void expectPeriodAndUser(User student, StudentUserDetails studentUserDetails,
+      Long periodId, Group period) throws ObjectNotFoundException {
+    expectPeriod(periodId, period);
+    expectUser(studentUserDetails, student);
+  }
+
+  protected void setupStudent1InRun() throws ObjectNotFoundException {
+    expectUser(student1UserDetails, student1);
+  }
+
+  protected void setupStudent1InRunAndInPeriod() throws ObjectNotFoundException {
+    expectPeriodAndUser(student1, student1UserDetails, run1Period1Id, run1Period1);
+  }
+
+  protected void setupStudent2NotInRun() throws ObjectNotFoundException {
+    expectUser(student2UserDetails, student2);
+  }
+
+  protected void setupStudent2NotInRunAndNotInPeriod() throws ObjectNotFoundException {
+    expectPeriodAndUser(student2, student2UserDetails, run3Period4Id, run3Period4);
+  }
+
+  protected void setupStudent2InRunButNotInPeriod() throws ObjectNotFoundException {
+    expectPeriodAndUser(student2, student2UserDetails, run1Period2Id, run1Period2);
   }
 
   protected void expectComponentType(String componentType)
@@ -84,10 +123,10 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
   }
 
   protected void replayAll() {
-    replay(groupService, projectService, runService, userService, vleService);
+    replay(groupService, projectService, userService, vleService);
   }
 
   protected void verifyAll() {
-    verify(groupService, projectService, runService, userService, vleService);
+    verify(groupService, projectService, userService, vleService);
   }
 }

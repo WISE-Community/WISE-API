@@ -801,8 +801,4 @@ public class RunServiceImpl implements RunService {
   public boolean isAllowedToViewStudentNames(Run run, User user) {
     return run.isOwner(user) || hasSpecificPermission(run, user, RunPermission.VIEW_STUDENT_NAMES);
   }
-
-  public boolean isUserInRunAndPeriod(User user, Run run, Group period) {
-    return runDao.isUserInRunAndPeriod(user, run, period);
-  }
 }

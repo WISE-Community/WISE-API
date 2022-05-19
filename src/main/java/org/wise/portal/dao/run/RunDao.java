@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.SimpleDao;
-import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -112,6 +111,4 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
   List<Workgroup> getWorkgroupsForRunAndPeriod(Long runId, Long periodId);
 
   long getMaxRunId();
-
-  boolean isUserInRunAndPeriod(User user, Run run, Group period);
 }

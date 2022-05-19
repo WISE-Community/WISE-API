@@ -30,20 +30,29 @@ public class ClassmateGraphDataController extends ClassmateDataController {
   final String PERIOD_SOURCE = "period";
   final String SHOW_CLASSMATE_WORK_TYPE = "showClassmateWork";
 
-  @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}/{showClassmateWorkSource}")
-  public List<StudentWork> getClassmateGraphWork(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
+  @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}/period/{periodId}")
+  public List<StudentWork> getClassmateGraphWorkInPeriod(Authentication auth,
+      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
       @PathVariable String componentId, @PathVariable String showWorkNodeId,
-      @PathVariable String showWorkComponentId, @PathVariable String showClassmateWorkSource)
+      @PathVariable String showWorkComponentId, @PathVariable Long periodId)
       throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, showWorkNodeId,
-        showWorkComponentId, showClassmateWorkSource)) {
-      if (showClassmateWorkSource.equals(PERIOD_SOURCE)) {
-        return getStudentWork(run, period, showWorkNodeId, showWorkComponentId);
-      } else if (showClassmateWorkSource.equals(CLASS_SOURCE)) {
-        return getStudentWork(run, showWorkNodeId, showWorkComponentId);
-      }
+        showWorkComponentId, PERIOD_SOURCE)) {
+      return getLatestStudentWork(run, period, showWorkNodeId, showWorkComponentId);
+    }
+    throw new AccessDeniedException(NOT_PERMITTED);
+  }
+
+  @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}/class")
+  public List<StudentWork> getClassmateGraphWorkInClass(Authentication auth,
+      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
+      @PathVariable String componentId, @PathVariable String showWorkNodeId,
+      @PathVariable String showWorkComponentId)
+      throws IOException, JSONException, ObjectNotFoundException {
+    if (isAllowedToGetData(auth, run, nodeId, componentId, showWorkNodeId, showWorkComponentId,
+        CLASS_SOURCE)) {
+      return getLatestStudentWork(run, showWorkNodeId, showWorkComponentId);
     }
     throw new AccessDeniedException(NOT_PERMITTED);
   }
@@ -53,6 +62,13 @@ public class ClassmateGraphDataController extends ClassmateDataController {
       String showClassmateWorkSource) throws IOException, JSONException, ObjectNotFoundException {
     return isUserInRunAndPeriod(auth, run, period) && isValidGraphComponent(run, nodeId,
         componentId, showWorkNodeId, showWorkComponentId, showClassmateWorkSource);
+  }
+
+  private boolean isAllowedToGetData(Authentication auth, Run run, String nodeId,
+      String componentId, String showWorkNodeId, String showWorkComponentId,
+      String showClassmateWorkSource) throws IOException, JSONException, ObjectNotFoundException {
+    return isUserInRun(auth, run) && isValidGraphComponent(run, nodeId, componentId, showWorkNodeId,
+        showWorkComponentId, showClassmateWorkSource);
   }
 
   private boolean isValidGraphComponent(Run run, String nodeId, String componentId,

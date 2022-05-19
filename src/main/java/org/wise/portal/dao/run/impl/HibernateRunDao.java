@@ -237,27 +237,4 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
       return 0;
     }
   }
-
-  public boolean isUserInRunAndPeriod(User user, Run run, Group period) {
-    CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
-    Root<UserImpl> userImplRoot = cq.from(UserImpl.class);
-    Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
-    Root<PersistentGroup> periodRoot = cq.from(PersistentGroup.class);
-    Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
-    Root<PersistentGroup> persistentGroupRoot = cq.from(PersistentGroup.class);
-    List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(userImplRoot.get("id"), user.getId()));
-    predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
-    predicates.add(cb.equal(periodRoot.get("id"), period.getId()));
-    predicates.add(cb.equal(runImplRoot.get("id"), workgroupImplRoot.get("run")));
-    predicates.add(cb.equal(workgroupImplRoot.get("period"), periodRoot.get("id")));
-    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
-    predicates
-        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
-    cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
-    TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
-    List<WorkgroupImpl> runResultList = query.getResultList();
-    return runResultList.size() > 0;
-  }
 }

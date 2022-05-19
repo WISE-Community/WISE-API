@@ -63,7 +63,7 @@ public abstract class APIControllerTest {
   protected final String TEACHER2_USERNAME = "SandyCheeks";
   protected final String USERNAME_NOT_IN_DB = "usernameNotInDB";
 
-  protected Authentication adminAuth, studentAuth, teacherAuth;
+  protected Authentication adminAuth, studentAuth, studentAuth2, teacherAuth;
   protected ProjectImpl project1, project2, project3;
   protected Long projectId1 = 1L;
   protected Long projectId2 = 2L;
@@ -136,10 +136,11 @@ public abstract class APIControllerTest {
     student1UserDetails = createStudentUserDetails(STUDENT_FIRSTNAME, STUDENT_LASTNAME,
         STUDENT_USERNAME, Gender.MALE, 5, STUDENT1_GOOGLE_ID);
     student1 = createStudent(student1Id, student1UserDetails);
+    studentAuth = createAuthentication(student1UserDetails);
     student2UserDetails = createStudentUserDetails(STUDENT2_FIRSTNAME, STUDENT2_LASTNAME,
         STUDENT2_USERNAME, Gender.MALE, 10, null);
     student2 = createStudent(student2Id, student2UserDetails);
-    studentAuth = createAuthentication(student1UserDetails);
+    studentAuth2 = createAuthentication(student2UserDetails);
   }
 
   private void createTeachers() {

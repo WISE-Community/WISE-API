@@ -26,7 +26,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -298,22 +297,5 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
     run2.setTimesRun(1);
     runs = runDao.getRunsByActivity();
     assertEquals(2, runs.size());
-  }
-
-  @Test
-  public void isUserInRunAndPeriod_NotInRun_ShouldReturnFalse() {
-    assertFalse(runDao.isUserInRunAndPeriod(student1, run1, run1Period2));
-  }
-
-  @Test
-  public void isUserInRunAndPeriod_InRunButNotPeriod_ShouldReturnFalse() {
-    addUserToRun(student1, run1, run1Period1);
-    assertFalse(runDao.isUserInRunAndPeriod(student1, run1, run1Period2));
-  }
-
-  @Test
-  public void isUserInRunAndPeriod_InRunAndPeriod_ShouldReturnTrue() {
-    addUserToRun(student1, run1, run1Period1);
-    assertTrue(runDao.isUserInRunAndPeriod(student1, run1, run1Period1));
   }
 }

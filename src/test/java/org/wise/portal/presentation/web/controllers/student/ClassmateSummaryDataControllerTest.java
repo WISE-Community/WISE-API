@@ -27,10 +27,21 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_NotInRun_ThrowException()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(false);
+    setupStudent2NotInRunAndNotInPeriod();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateSummaryWork(studentAuth, run1, run1Period1Id, NODE_ID1,
+        () -> controller.getClassmateSummaryWork(studentAuth2, run3, run3Period4Id, NODE_ID1,
+            COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID, controller.PERIOD_SOURCE));
+    verifyAll();
+  }
+
+  @Test
+  public void getClassmateSummaryWork_NotInPeriod_ThrowException()
+      throws NoSuchMethodException, ObjectNotFoundException {
+    setupStudent2InRunButNotInPeriod();
+    replayAll();
+    assertThrows(AccessDeniedException.class,
+        () -> controller.getClassmateSummaryWork(studentAuth2, run1, run1Period2Id, NODE_ID1,
             COMPONENT_ID1, OTHER_NODE_ID, OTHER_COMPONENT_ID, controller.PERIOD_SOURCE));
     verifyAll();
   }
@@ -38,7 +49,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_NotSummaryComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
@@ -50,7 +61,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   @Test
   public void getClassmateSummaryWork_InvalidOtherComponent_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, controller.PERIOD_SOURCE);
     replayAll();
@@ -75,7 +86,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
 
   private void getClassmateSummaryWork_InRunSummaryComponent_ReturnWork(String source)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, source);
     List<StudentWork> studentWork = Arrays.asList(new StudentWork(), new StudentWork());
@@ -112,7 +123,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
 
   private void getClassmateSummaryAnnotations_InRunSummaryComponent_ReturnAnnotations(String source)
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(true);
+    setupStudent1InRunAndInPeriod();
     expectComponentType(NODE_ID1, COMPONENT_ID1, controller.SUMMARY_TYPE, OTHER_NODE_ID,
         OTHER_COMPONENT_ID, source);
     List<Annotation> annotations = Arrays.asList(new Annotation(), new Annotation());

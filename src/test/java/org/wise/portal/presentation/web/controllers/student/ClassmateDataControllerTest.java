@@ -14,8 +14,6 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.group.Group;
-import org.wise.portal.domain.run.Run;
 
 @RunWith(EasyMockRunner.class)
 public class ClassmateDataControllerTest extends AbstractClassmateDataControllerTest {
@@ -31,27 +29,36 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
   private ClassmateDataController controller = new ClassmateDataControllerImpl();
 
   @Test
-  public void isUserInRunAndPeriod_NotInRun_ShouldReturnFalse()
+  public void isUserInRun_NotInRun_ShouldReturnFalse()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(run2, run2Period2, false);
+    setupStudent2NotInRun();
     replayAll();
-    assertFalse(controller.isUserInRunAndPeriod(studentAuth, run2, run2Period2));
+    assertFalse(controller.isUserInRun(studentAuth2, run3));
+    verifyAll();
+  }
+
+  @Test
+  public void isUserInRun_InRun_ShouldReturnTrue()
+      throws NoSuchMethodException, ObjectNotFoundException {
+    setupStudent1InRun();
+    replayAll();
+    assertTrue(controller.isUserInRun(studentAuth, run1));
     verifyAll();
   }
 
   @Test
   public void isUserInRunAndPeriod_NotInPeriod_ShouldReturnFalse()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(run1, run1Period2, false);
+    setupStudent2NotInRun();
     replayAll();
-    assertFalse(controller.isUserInRunAndPeriod(studentAuth, run1, run1Period2));
+    assertFalse(controller.isUserInRunAndPeriod(studentAuth2, run3, run3Period4));
     verifyAll();
   }
 
   @Test
   public void isUserInRunAndPeriod_InRun_ShouldReturnTrue()
       throws NoSuchMethodException, ObjectNotFoundException {
-    expectIsUserInRun(run1, run1Period1, true);
+    setupStudent1InRun();
     replayAll();
     assertTrue(controller.isUserInRunAndPeriod(studentAuth, run1, run1Period1));
     verifyAll();
@@ -91,12 +98,6 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
     replayAll();
     assertNotNull(controller.getProjectComponent(run1, NODE_ID1, COMPONENT_ID1));
     verifyAll();
-  }
-
-  private void expectIsUserInRun(Run run, Group period, boolean isInRun)
-      throws NoSuchMethodException, ObjectNotFoundException {
-    expect(userService.retrieveUser(student1UserDetails)).andReturn(student1);
-    expect(runService.isUserInRunAndPeriod(student1, run, period)).andReturn(isInRun);
   }
 
   private void expectGetProjectContent(String nodeId, String componentId, String componentType)
