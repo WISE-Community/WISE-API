@@ -23,6 +23,9 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,5 +60,22 @@ public class ProjectContent {
 
   public JSONArray getPeerGroupings() {
     return this.projectJSON.optJSONArray("peerGroupings");
+  }
+
+  public List<ProjectComponent> getComponents() throws JSONException {
+    List<ProjectComponent> projectComponents = new ArrayList<ProjectComponent>();
+    JSONArray nodes = this.projectJSON.getJSONArray("nodes");
+    for (int n = 0; n < nodes.length(); n++) {
+      JSONObject node = nodes.getJSONObject(n);
+      if (node.getString("type").equals("node")) {
+        ProjectNode projectNode = new ProjectNode(node);
+        JSONArray components = node.getJSONArray("components");
+        for (int c = 0; c < components.length(); c++) {
+          JSONObject component = components.getJSONObject(c);
+          projectComponents.add(new ProjectComponent(projectNode, component));
+        }
+      }
+    }
+    return projectComponents;
   }
 }

@@ -61,6 +61,14 @@ public abstract class ClassmateDataController {
     return projectContent.getComponent(nodeId, componentId);
   }
 
+  protected List<ProjectComponent> getProjectComponents(Run run)
+      throws IOException, JSONException, ObjectNotFoundException {
+    String projectString = projectService.getProjectContent(run.getProject());
+    JSONObject projectJSON = new JSONObject(projectString);
+    ProjectContent projectContent = new ProjectContent(projectJSON);
+    return projectContent.getComponents();
+  }
+
   protected List<StudentWork> getStudentWork(Run run, String nodeId, String componentId) {
     return vleService.getStudentWork(run, nodeId, componentId);
   }
