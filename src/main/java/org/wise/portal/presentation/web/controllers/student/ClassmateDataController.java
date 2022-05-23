@@ -62,7 +62,7 @@ public abstract class ClassmateDataController {
   }
 
   protected List<ProjectComponent> getProjectComponents(Run run)
-      throws IOException, JSONException, ObjectNotFoundException {
+      throws IOException, JSONException {
     String projectString = projectService.getProjectContent(run.getProject());
     JSONObject projectJSON = new JSONObject(projectString);
     ProjectContent projectContent = new ProjectContent(projectJSON);

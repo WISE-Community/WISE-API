@@ -37,9 +37,9 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
       throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
-      if (PERIOD_SOURCE.equals(source)) {
+      if (isPeriodSource(source)) {
         return getLatestStudentWork(run, period, nodeId, componentId);
-      } else if (ALL_PERIODS_SOURCE.equals(source)) {
+      } else if (isAllPeriodsSource(source)) {
         return getLatestStudentWork(run, nodeId, componentId);
       }
     }
@@ -53,9 +53,9 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
       throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
-      if (PERIOD_SOURCE.equals(source)) {
+      if (isPeriodSource(source)) {
         return getLatestScoreAnnotations(getAnnotations(run, period, nodeId, componentId));
-      } else if (ALL_PERIODS_SOURCE.equals(source)) {
+      } else if (isAllPeriodsSource(source)) {
         return getLatestScoreAnnotations(getAnnotations(run, nodeId, componentId));
       }
     }
@@ -82,10 +82,18 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
     return false;
   }
 
+  private boolean isPeriodSource(String source) {
+    return source.equals(PERIOD_SOURCE);
+  }
+
+  private boolean isAllPeriodsSource(String source) {
+    return source.equals(ALL_PERIODS_SOURCE);
+  }
+
   private List<Annotation> getLatestScoreAnnotations(List<Annotation> annotations) {
     HashMap<Long, Annotation> latestScoreAnnotationPerWorkgroup = new HashMap<Long, Annotation>();
     for (Annotation annotation : annotations) {
-      if (isScoreType(annotation)) {
+      if (annotation.isScoreType()) {
         Long key = annotation.getToWorkgroup().getId();
         if (latestScoreAnnotationPerWorkgroup.containsKey(key)) {
           if (isAfter(annotation, latestScoreAnnotationPerWorkgroup.get(key))) {
@@ -97,11 +105,6 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
       }
     }
     return new ArrayList<Annotation>(latestScoreAnnotationPerWorkgroup.values());
-  }
-
-  private boolean isScoreType(Annotation annotation) {
-    String type = annotation.getType();
-    return type.equals("score") || type.equals("autoScore");
   }
 
   private boolean isAfter(Annotation annotation1, Annotation annotation2) {
