@@ -141,7 +141,7 @@ public interface VLEService {
   /**
    * Saves StudentAssets in the data store
    */
-  StudentAsset saveStudentAsset(Integer id, Integer runId, Integer periodId, Integer workgroupId,
+  StudentAsset saveStudentAsset(Integer id, Long runId, Integer periodId, Integer workgroupId,
       String nodeId, String componentId, String componentType, Boolean isReferenced,
       String fileName, String filePath, Long fileSize, String clientSaveTime,
       String clientDeleteTime) throws ObjectNotFoundException;

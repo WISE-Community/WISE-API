@@ -643,7 +643,7 @@ public class VLEServiceImpl implements VLEService {
   }
 
   @Override
-  public StudentAsset saveStudentAsset(Integer id, Integer runId, Integer periodId,
+  public StudentAsset saveStudentAsset(Integer id, Long runId, Integer periodId,
       Integer workgroupId, String nodeId, String componentId, String componentType,
       Boolean isReferenced, String fileName, String filePath, Long fileSize, String clientSaveTime,
       String clientDeleteTime) throws ObjectNotFoundException {
