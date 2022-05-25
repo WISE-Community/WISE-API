@@ -148,6 +148,10 @@ public class Annotation extends PersistableDomain {
     }
   }
 
+  public boolean isScoreType() {
+    return this.type.equals("score") || this.type.equals("autoScore");
+  }
+
   public JSONObject toJSON() {
     JSONObject eventJSONObject = new JSONObject();
 

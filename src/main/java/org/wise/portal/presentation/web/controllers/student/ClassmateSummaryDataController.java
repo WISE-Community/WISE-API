@@ -1,6 +1,8 @@
 package org.wise.portal.presentation.web.controllers.student;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -28,53 +30,84 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
   final String PERIOD_SOURCE = "period";
   final String SUMMARY_TYPE = "Summary";
 
-  @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}/{otherNodeId}/{otherComponentId}/{source}")
+  @GetMapping("/student-work/{runId}/{periodId}/{nodeId}/{componentId}/{source}")
   public List<StudentWork> getClassmateSummaryWork(Authentication auth,
       @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
-      @PathVariable String componentId, @PathVariable String otherNodeId,
-      @PathVariable String otherComponentId, @PathVariable String source)
+      @PathVariable String componentId, @PathVariable String source)
       throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
-    if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
-      if (source.equals(PERIOD_SOURCE)) {
-        return getStudentWork(run, period, otherNodeId, otherComponentId);
-      } else if (source.equals(ALL_PERIODS_SOURCE)) {
-        return getStudentWork(run, otherNodeId, otherComponentId);
+    if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
+      if (isPeriodSource(source)) {
+        return getLatestStudentWork(run, period, nodeId, componentId);
+      } else if (isAllPeriodsSource(source)) {
+        return getLatestStudentWork(run, nodeId, componentId);
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);
   }
 
-  @GetMapping("/annotations/{runId}/{periodId}/{nodeId}/{componentId}/{otherNodeId}/{otherComponentId}/{source}")
-  public List<Annotation> getClassmateSummaryAnnotations(Authentication auth,
+  @GetMapping("/scores/{runId}/{periodId}/{nodeId}/{componentId}/{source}")
+  public List<Annotation> getClassmateSummaryScores(Authentication auth,
       @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
-      @PathVariable String componentId, @PathVariable String otherNodeId,
-      @PathVariable String otherComponentId, @PathVariable String source)
+      @PathVariable String componentId, @PathVariable String source)
       throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
-    if (isAllowedToGetData(auth, run, period, nodeId, componentId, otherNodeId, otherComponentId)) {
-      if (source.equals(PERIOD_SOURCE)) {
-        return getAnnotations(run, period, otherNodeId, otherComponentId);
-      } else if (source.equals(ALL_PERIODS_SOURCE)) {
-        return getAnnotations(run, otherNodeId, otherComponentId);
+    if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
+      if (isPeriodSource(source)) {
+        return getLatestScoreAnnotations(getAnnotations(run, period, nodeId, componentId));
+      } else if (isAllPeriodsSource(source)) {
+        return getLatestScoreAnnotations(getAnnotations(run, nodeId, componentId));
       }
     }
     throw new AccessDeniedException(NOT_PERMITTED);
   }
 
   private boolean isAllowedToGetData(Authentication auth, Run run, Group period, String nodeId,
-      String componentId, String otherNodeId, String otherComponentId)
+      String componentId)
       throws IOException, JSONException, ObjectNotFoundException {
     return isUserInRunAndPeriod(auth, run, period)
-        && isValidSummaryComponent(run, nodeId, componentId, otherNodeId, otherComponentId);
+        && isValidSummaryComponent(run, nodeId, componentId);
   }
 
-  private boolean isValidSummaryComponent(Run run, String nodeId, String componentId,
-      String otherNodeId, String otherComponentId)
+  private boolean isValidSummaryComponent(Run run, String nodeId, String componentId)
       throws IOException, JSONException, ObjectNotFoundException {
-    ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return projectComponent.getString("type").equals(SUMMARY_TYPE)
-        && projectComponent.getString("summaryNodeId").equals(otherNodeId)
-        && projectComponent.getString("summaryComponentId").equals(otherComponentId);
+    List<ProjectComponent> projectComponents = getProjectComponents(run);
+    for (ProjectComponent projectComponent : projectComponents) {
+      if (projectComponent.getString("type").equals(SUMMARY_TYPE) &&
+          projectComponent.getString("summaryNodeId").equals(nodeId) &&
+          projectComponent.getString("summaryComponentId").equals(componentId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isPeriodSource(String source) {
+    return source.equals(PERIOD_SOURCE);
+  }
+
+  private boolean isAllPeriodsSource(String source) {
+    return source.equals(ALL_PERIODS_SOURCE);
+  }
+
+  private List<Annotation> getLatestScoreAnnotations(List<Annotation> annotations) {
+    HashMap<Long, Annotation> latestScoreAnnotationPerWorkgroup = new HashMap<Long, Annotation>();
+    for (Annotation annotation : annotations) {
+      if (annotation.isScoreType()) {
+        Long key = annotation.getToWorkgroup().getId();
+        if (latestScoreAnnotationPerWorkgroup.containsKey(key)) {
+          if (isAfter(annotation, latestScoreAnnotationPerWorkgroup.get(key))) {
+            latestScoreAnnotationPerWorkgroup.put(key, annotation);
+          }
+        } else {
+          latestScoreAnnotationPerWorkgroup.put(key, annotation);
+        }
+      }
+    }
+    return new ArrayList<Annotation>(latestScoreAnnotationPerWorkgroup.values());
+  }
+
+  private boolean isAfter(Annotation annotation1, Annotation annotation2) {
+    return annotation1.getServerSaveTime().after(annotation2.getServerSaveTime());
   }
 }

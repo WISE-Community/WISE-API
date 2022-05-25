@@ -107,6 +107,7 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
         .append("  \"nodes\": [")
         .append("    {")
         .append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",")
         .append("      \"components\": [")
         .append("        {")
         .append("          \"id\": \"" + componentId + "\",")

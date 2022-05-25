@@ -109,6 +109,7 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
         .append("  \"nodes\": [")
         .append("    {")
         .append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",")
         .append("      \"components\": [")
         .append("        {")
         .append("          \"id\": \"" + componentId + "\",")
