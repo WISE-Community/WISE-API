@@ -24,12 +24,8 @@
 package org.wise.vle.web.wise5;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -48,9 +44,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
@@ -101,61 +97,45 @@ public class StudentAssetController {
 
   @PostMapping("/student/asset/{runId}")
   @ResponseBody
-  protected StudentAsset postStudentAsset(@PathVariable Integer runId,
-      @RequestParam(value = "periodId", required = true) Integer periodId,
-      @RequestParam(value = "workgroupId", required = true) Integer workgroupId,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
+  protected StudentAsset postStudentAsset(
+      @RequestParam("clientSaveTime") String clientSaveTime,
       @RequestParam(value = "componentId", required = false) String componentId,
       @RequestParam(value = "componentType", required = false) String componentType,
-      @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
-      HttpServletRequest request) throws Exception {
-    Run run = null;
-    try {
-      run = runService.retrieveById(new Long(runId));
-    } catch (NumberFormatException e) {
-      e.printStackTrace();
-    } catch (ObjectNotFoundException e) {
-      e.printStackTrace();
-    }
-
+      @RequestParam("files") List<MultipartFile> files,
+      @RequestParam(value = "nodeId", required = false) String nodeId,
+      @RequestParam("periodId") Integer periodId,
+      @PathVariable("runId") RunImpl run,
+      @RequestParam("workgroupId") Integer workgroupId
+      ) throws Exception {
     String dirName = run.getId() + "/" + workgroupId + "/unreferenced";
     String path = appProperties.getProperty("studentuploads_base_dir");
-    Long studentMaxAssetSize = new Long(
+    Long studentMaxAssetSize = Long.valueOf(
         appProperties.getProperty("student_max_asset_size", "5242880"));
-    Long studentMaxTotalAssetsSize = new Long(
+    Long studentMaxTotalAssetsSize = Long.valueOf(
         appProperties.getProperty("student_max_total_assets_size", "10485760"));
     String pathToCheckSize = path + "/" + dirName;
-    StandardMultipartHttpServletRequest multiRequest = (StandardMultipartHttpServletRequest) request;
-    Map<String, MultipartFile> fileMap = multiRequest.getFileMap();
-    if (fileMap != null && fileMap.size() > 0) {
-      Set<String> keySet = fileMap.keySet();
-      Iterator<String> iter = keySet.iterator();
-      while (iter.hasNext()) {
-        String key = iter.next();
-        MultipartFile file = fileMap.get(key);
-        if (file.getSize() > studentMaxAssetSize) {
-          throw new Exception("error handling uploaded asset: filesize exceeds max allowed");
-        }
+    for (MultipartFile file : files) {
+      if (file.getSize() > studentMaxAssetSize) {
+        throw new Exception("error handling uploaded asset: filesize exceeds max allowed");
+      }
+      if (AssetManager.uploadAssetWISE5(file, path, dirName, pathToCheckSize,
+          studentMaxTotalAssetsSize)) {
+        Integer id = null;
+        Boolean isReferenced = false;
+        String fileName = file.getOriginalFilename();
+        String filePath = "/" + dirName + "/" + fileName;
+        Long fileSize = file.getSize();
         String clientDeleteTime = null;
-        Boolean result = AssetManager.uploadAssetWISE5(file, path, dirName, pathToCheckSize,
-            studentMaxTotalAssetsSize);
-        if (result) {
-          Integer id = null;
-          Boolean isReferenced = false;
-          String fileName = file.getOriginalFilename();
-          String filePath = "/" + dirName + "/" + fileName;
-          Long fileSize = file.getSize();
-          try {
-            return vleService.saveStudentAsset(id, runId, periodId, workgroupId, nodeId,
-                componentId, componentType, isReferenced, fileName, filePath, fileSize,
-                clientSaveTime, clientDeleteTime);
-          } catch (ObjectNotFoundException e) {
-            e.printStackTrace();
-            throw new Exception("error handling uploaded asset");
-          }
-        } else {
-          throw new Exception("error: total asset size exceeds max allowed");
+        try {
+          return vleService.saveStudentAsset(id, run.getId(), periodId, workgroupId, nodeId,
+              componentId, componentType, isReferenced, fileName, filePath, fileSize,
+              clientSaveTime, clientDeleteTime);
+        } catch (ObjectNotFoundException e) {
+          e.printStackTrace();
+          throw new Exception("error handling uploaded asset");
         }
+      } else {
+        throw new Exception("error: total asset size exceeds max allowed");
       }
     }
     return null;
@@ -182,9 +162,9 @@ public class StudentAssetController {
 
   @PostMapping("/student/asset/{runId}/copy")
   @ResponseBody
-  protected StudentAsset copyStudentAsset(@PathVariable Integer runId,
+  protected StudentAsset copyStudentAsset(@PathVariable Long runId,
       @RequestBody ObjectNode postedParams) throws Exception {
-    Run run = runService.retrieveById(new Long(runId));
+    Run run = runService.retrieveById(runId);
     Integer studentAssetId = postedParams.get("studentAssetId").asInt();
     Integer periodId = postedParams.get("periodId").asInt();
     Integer workgroupId = postedParams.get("workgroupId").asInt();
