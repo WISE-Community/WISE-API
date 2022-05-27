@@ -237,6 +237,7 @@ public class RunServiceImpl implements RunService {
     return run;
   }
 
+  @Transactional()
   public Run createRun(Long projectId, User user, Set<String> periodNames,
       Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
       Locale locale) throws Exception {
