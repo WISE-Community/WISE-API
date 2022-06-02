@@ -72,17 +72,18 @@ public class WISEAuthenticationSuccessHandler
       Authentication authentication) throws ServletException, IOException {
     MutableUserDetails userDetails = (MutableUserDetails) authentication.getPrincipal();
     boolean userIsAdmin = false;
-    
+    Locale locale = getLocale(request, userDetails);
+
     if (userDetails instanceof StudentUserDetails) {
       String accessCode = (String) request.getAttribute("accessCode");
-      String studentHome = appProperties.getProperty("wise.hostname") + "/student";
+      String studentHomeUrl = getStudentHomeUrl(locale);
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
         if (accessCode != null && !accessCode.equals("")) {
-          response.sendRedirect(studentHome + "?accessCode=" + accessCode);
+          response.sendRedirect(studentHomeUrl + "?accessCode=" + accessCode);
           return;
         }
-        response.sendRedirect(studentHome);
+        response.sendRedirect(studentHomeUrl);
         return;
       }
       // pLT= previous login time (not this time, but last time)
@@ -95,7 +96,7 @@ public class WISEAuthenticationSuccessHandler
     } else if (userDetails instanceof TeacherUserDetails) {
       if (request.getServletPath().contains("google-login") ||
           ControllerUtil.isUserPreviousAdministrator()) {
-        response.sendRedirect(appProperties.getProperty("wise.hostname") + "/teacher");
+        response.sendRedirect(getTeacherHomeUrl(locale));
         return;
       }
       this.setDefaultTargetUrl(WISEAuthenticationProcessingFilter.TEACHER_DEFAULT_TARGET_PATH);
@@ -135,7 +136,6 @@ public class WISEAuthenticationSuccessHandler
           new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         SecurityContextHolder.getContext().setAuthentication(null);
-
         String contextPath = request.getContextPath();
         response.sendRedirect(contextPath + WISEAuthenticationProcessingFilter.LOGIN_DISABLED_MESSGE_PAGE);
         return;
@@ -146,21 +146,6 @@ public class WISEAuthenticationSuccessHandler
       // do nothing
     }
 
-    // set user's language (if specified)
-    Locale locale = null;
-    String userLanguage = userDetails.getLanguage();
-    if (userLanguage != null) {
-      if (userLanguage.contains("_")) {
-        String language = userLanguage.substring(0, userLanguage.indexOf("_"));
-        String country = userLanguage.substring(userLanguage.indexOf("_")+1);
-        locale = new Locale(language, country);
-      } else {
-        locale = new Locale(userLanguage);
-      }
-    } else {
-      // user default browser locale setting if user hasn't specified locale
-      locale = request.getLocale();
-    }
     request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
 
     // redirect if specified in the login request
@@ -176,4 +161,55 @@ public class WISEAuthenticationSuccessHandler
     userDetailsService.updateStatsOnSuccessfulLogin((MutableUserDetails) userDetails);
     //super.handle(request, response, authentication);
   }
+
+  private String getTeacherHomeUrl(Locale locale) {
+    String teacherHomeUrl = appProperties.getProperty("wise.hostname") +
+      getLocalePath(locale) +
+      WISEAuthenticationProcessingFilter.TEACHER_DEFAULT_TARGET_PATH;
+    return teacherHomeUrl;
+  }
+
+  private String getStudentHomeUrl(Locale locale) {
+    String studentHomeUrl = appProperties.getProperty("wise.hostname") +
+      getLocalePath(locale) +
+      WISEAuthenticationProcessingFilter.STUDENT_DEFAULT_TARGET_PATH;
+    return studentHomeUrl;
+  }
+
+  private String getLocalePath(Locale locale) {
+    String localePath = "";
+    if (locale.equals(Locale.ENGLISH)) {
+      localePath = "";
+    } else if (locale.equals(Locale.SIMPLIFIED_CHINESE)) {
+      localePath = "/zh-Hans";
+    } else if (locale.equals(Locale.TRADITIONAL_CHINESE)) {
+      localePath = "/zh-Hant";
+    } else if (locale.getLanguage().equals(new Locale("es").getLanguage())) {
+      localePath = "/es";
+    } else if (locale.equals(Locale.JAPANESE)) {
+      localePath = "/ja";
+    } else if (locale.getLanguage().equals(new Locale("tr").getLanguage())) {
+      localePath = "/tr";
+    }
+    return localePath;
+  }
+
+  private Locale getLocale(HttpServletRequest request, MutableUserDetails userDetails) {
+    Locale locale = null;
+    String userLanguage = userDetails.getLanguage();
+    if (userLanguage != null) {
+      if (userLanguage.contains("_")) {
+        String language = userLanguage.substring(0, userLanguage.indexOf("_"));
+        String country = userLanguage.substring(userLanguage.indexOf("_")+1);
+        locale = new Locale(language, country);
+      } else {
+        locale = new Locale(userLanguage);
+      }
+    } else {
+      // user default browser locale setting if user hasn't specified locale
+      locale = request.getLocale();
+    }
+    return locale;
+  }
+
 }
