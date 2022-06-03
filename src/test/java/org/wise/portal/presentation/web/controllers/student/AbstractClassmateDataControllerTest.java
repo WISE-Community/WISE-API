@@ -23,7 +23,6 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
   String OTHER_COMPONENT_ID_NOT_ALLOWED = "component3";
   String OTHER_NODE_ID = "node2";
   String OTHER_NODE_ID_NOT_ALLOWED = "node3";
-  String SHOULD_NOT_HAVE_THROWN_EXCEPTION = "Should not have thrown an exception";
 
   protected void expectStudentWork(List<StudentWork> studentWork) {
     expectStudentWork(run1, run1Period1, NODE_ID1, COMPONENT_ID1, studentWork);

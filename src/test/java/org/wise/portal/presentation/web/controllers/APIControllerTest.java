@@ -47,6 +47,7 @@ public abstract class APIControllerTest {
   protected final String RUN3_RUNCODE = "giraffe123";
   protected final String RUN1_PERIOD1_NAME = "1";
   protected final String RUN1_PERIOD2_NAME = "2";
+  protected final String SHOULD_NOT_HAVE_THROWN_EXCEPTION = "Should not have thrown an exception";
   protected final String STUDENT_FIRSTNAME = "SpongeBob";
   protected final String STUDENT_LASTNAME = "Squarepants";
   protected final String STUDENT_PASSWORD = "studentPass";

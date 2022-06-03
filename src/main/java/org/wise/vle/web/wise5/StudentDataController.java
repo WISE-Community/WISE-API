@@ -30,13 +30,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,16 +43,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.service.work.BroadcastStudentWorkService;
+import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.Event;
 import org.wise.vle.domain.work.StudentWork;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Controller for handling GET and POST requests of WISE5 student data WISE5 student data is stored
@@ -61,16 +65,22 @@ import org.wise.vle.domain.work.StudentWork;
  *
  * @author Hiroki Terashima
  */
-@Secured("ROLE_USER")
+@Secured("ROLE_STUDENT")
 @Controller("wise5StudentDataController")
 @RequestMapping("/api")
 public class StudentDataController {
 
   @Autowired
+  private RunService runService;
+
+  @Autowired
+  private UserService userService;
+
+  @Autowired
   private VLEService vleService;
 
   @Autowired
-  private RunService runService;
+  private WorkgroupService workgroupService;
 
   @Autowired
   private MessagePublisher redisPublisher;
@@ -80,6 +90,7 @@ public class StudentDataController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/student/data")
   public void getWISE5StudentData(HttpServletResponse response,
+      Authentication authentication,
       @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
       @RequestParam(value = "getEvents", defaultValue = "false") boolean getEvents,
       @RequestParam(value = "getAnnotations", defaultValue = "false") boolean getAnnotations,
@@ -102,48 +113,32 @@ public class StudentDataController {
       @RequestParam(value = "notebookItemId", required = false) Integer notebookItemId,
       @RequestParam(value = "annotationType", required = false) String annotationType,
       @RequestParam(value = "components", required = false) List<JSONObject> components,
-      @RequestParam(value = "onlyGetLatest", required = false) Boolean onlyGetLatest) {
+      @RequestParam(value = "onlyGetLatest", required = false) Boolean onlyGetLatest)
+      throws ObjectNotFoundException, IOException, JSONException {
     JSONObject result = new JSONObject();
-    if (getStudentWork) {
-      List<StudentWork> studentWorkList = vleService.getStudentWorkList(id, runId, periodId,
-          workgroupId, isAutoSave, isSubmit, nodeId, componentId, componentType, components,
-          onlyGetLatest);
-      JSONArray studentWorkJSONArray = new JSONArray();
-      for (int c = 0; c < studentWorkList.size(); c++) {
-        StudentWork studentWork = studentWorkList.get(c);
-        studentWorkJSONArray.put(studentWork.toJSON());
-      }
+    User user = userService.retrieveUser((StudentUserDetails) authentication.getPrincipal());
+    Run run = runService.retrieveById(Long.valueOf(runId));
+    if (getStudentWork && isAllowedToGetStudentData(user, run, workgroupId)) {
       try {
-        result.put("studentWorkList", studentWorkJSONArray);
+        result.put("studentWorkList", getStudentWork(id, runId, periodId, workgroupId,
+            isAutoSave, isSubmit, nodeId, componentId, componentType, components, onlyGetLatest));
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
-    if (getEvents) {
-      List<Event> events = vleService.getEvents(id, runId, periodId, workgroupId, nodeId,
-          componentId, componentType, context, category, event, components);
-      JSONArray eventsJSONArray = new JSONArray();
-      for (int e = 0; e < events.size(); e++) {
-        Event eventObject = events.get(e);
-        eventsJSONArray.put(eventObject.toJSON());
-      }
+    if (getEvents && isAllowedToGetEvents(user, run, workgroupId)) {
       try {
-        result.put("events", eventsJSONArray);
+        result.put("events", getEvents(id, runId, periodId, workgroupId, nodeId, componentId,
+            componentType, context, category, event, components));
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
-    if (getAnnotations) {
-      List<Annotation> annotations = vleService.getAnnotations(id, runId, periodId, fromWorkgroupId,
-          toWorkgroupId, nodeId, componentId, studentWorkId, localNotebookItemId, notebookItemId,
-          annotationType);
-      JSONArray annotationsJSONArray = new JSONArray();
-      for (int a = 0; a < annotations.size(); a++) {
-        Annotation annotationObject = annotations.get(a);
-        annotationsJSONArray.put(annotationObject.toJSON());
-      }
+    if (getAnnotations && isAllowedToGetAnnotations(user, run, fromWorkgroupId, toWorkgroupId)) {
       try {
-        result.put("annotations", annotationsJSONArray);
+        result.put("annotations", getAnnotations(id, runId, periodId, fromWorkgroupId,
+            toWorkgroupId, nodeId, componentId, studentWorkId, localNotebookItemId,
+            notebookItemId, annotationType));
       } catch (JSONException e) {
         e.printStackTrace();
       }
@@ -155,6 +150,67 @@ public class StudentDataController {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private boolean isAllowedToGetStudentData(User user, Run run, Integer workgroupId)
+      throws ObjectNotFoundException {
+    return isMemberOfWorkgroupId(user, run, workgroupId);
+  }
+
+  private boolean isAllowedToGetEvents(User user, Run run, Integer workgroupId)
+      throws ObjectNotFoundException {
+    return isMemberOfWorkgroupId(user, run, workgroupId);
+  }
+
+  private boolean isAllowedToGetAnnotations(User user, Run run, Integer fromWorkgroupId,
+      Integer toWorkgroupId) throws ObjectNotFoundException {
+    return isMemberOfWorkgroupId(user, run, fromWorkgroupId) ||
+        isMemberOfWorkgroupId(user, run, toWorkgroupId);
+  }
+
+  private boolean isMemberOfWorkgroupId(User user, Run run, Integer workgroupId)
+      throws ObjectNotFoundException {
+    return workgroupId != null && workgroupService.isUserInWorkgroupForRun(user, run,
+        workgroupService.retrieveById(Long.valueOf(workgroupId)));
+  }
+
+  private JSONArray getStudentWork(Integer id, Integer runId, Integer periodId, Integer workgroupId,
+      Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId, String componentType,
+      List<JSONObject> components, Boolean onlyGetLatest) {
+    List<StudentWork> studentWorkList = vleService.getStudentWorkList(id, runId, periodId,
+        workgroupId, isAutoSave, isSubmit, nodeId, componentId, componentType, components,
+        onlyGetLatest);
+    JSONArray studentWorkJSONArray = new JSONArray();
+    for (StudentWork studentWork : studentWorkList) {
+      studentWorkJSONArray.put(studentWork.toJSON());
+    }
+    return studentWorkJSONArray;
+  }
+
+  private JSONArray getEvents(Integer id, Integer runId, Integer periodId,
+    Integer workgroupId, String nodeId, String componentId, String componentType, String context,
+    String category, String event, List<JSONObject> components) {
+    List<Event> events = vleService.getEvents(id, runId, periodId, workgroupId, nodeId,
+        componentId, componentType, context, category, event, components);
+    JSONArray eventsJSONArray = new JSONArray();
+    for (Event eventObject : events) {
+      eventsJSONArray.put(eventObject.toJSON());
+    }
+    return eventsJSONArray;
+  }
+
+  private JSONArray getAnnotations(Integer id, Integer runId, Integer periodId,
+      Integer fromWorkgroupId, Integer toWorkgroupId, String nodeId, String componentId,
+      Integer studentWorkId, String localNotebookItemId, Integer notebookItemId,
+      String annotationType) {
+    List<Annotation> annotations = vleService.getAnnotations(id, runId, periodId, fromWorkgroupId,
+        toWorkgroupId, nodeId, componentId, studentWorkId, localNotebookItemId, notebookItemId,
+        annotationType);
+    JSONArray annotationsJSONArray = new JSONArray();
+    for (Annotation annotation : annotations) {
+      annotationsJSONArray.put(annotation.toJSON());
+    }
+    return annotationsJSONArray;
   }
 
   public void broadcastAnnotationToTeacher(Annotation annotation) throws JSONException {
