@@ -109,11 +109,25 @@ echo "Copying backup-nginx-logs script to /etc/cron.daily folder"
 cp $BUILD_FILES/api/backup-nginx-logs /etc/cron.daily
 chmod +x /etc/cron.daily/backup-nginx-logs
 
-echo "Install mysql client"
+echo "Installing mysql client"
 apt-get install mysql-client-core-8.0 -y
 
-echo "Install redis client"
+echo "Installing redis client"
 apt-get install redis-tools -y
 
 echo "Installing tree"
 apt-get install tree -y
+
+echo "Installing sysstat"
+apt-get install sysstat -y
+
+echo "Configuring sysstat parameters"
+sed 's/ENABLED="false"/ENABLED="true"/' -i /etc/default/sysstat
+sed 's/HISTORY=7/HISTORY=30/' -i /etc/sysstat/sysstat
+sed 's/SADC_OPTIONS="-S DISK"/SADC_OPTIONS="-D -S DISK"/' -i /etc/sysstat/sysstat
+
+echo "Enabling sysstat on startup"
+systemctl enable sysstat
+
+echo "Starting sysstat"
+systemctl start sysstat
