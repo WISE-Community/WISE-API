@@ -118,7 +118,7 @@ public class StudentDataController {
     JSONObject result = new JSONObject();
     User user = userService.retrieveUser((StudentUserDetails) authentication.getPrincipal());
     Run run = runService.retrieveById(Long.valueOf(runId));
-    if (getStudentWork && isAllowedToGetStudentData(user, run, workgroupId)) {
+    if (getStudentWork && isMemberOfWorkgroupId(user, run, workgroupId)) {
       try {
         result.put("studentWorkList", getStudentWork(id, runId, periodId, workgroupId,
             isAutoSave, isSubmit, nodeId, componentId, componentType, components, onlyGetLatest));
@@ -126,7 +126,7 @@ public class StudentDataController {
         e.printStackTrace();
       }
     }
-    if (getEvents && isAllowedToGetEvents(user, run, workgroupId)) {
+    if (getEvents && isMemberOfWorkgroupId(user, run, workgroupId)) {
       try {
         result.put("events", getEvents(id, runId, periodId, workgroupId, nodeId, componentId,
             componentType, context, category, event, components));
@@ -150,16 +150,6 @@ public class StudentDataController {
     } catch (IOException e) {
       e.printStackTrace();
     }
-  }
-
-  private boolean isAllowedToGetStudentData(User user, Run run, Integer workgroupId)
-      throws ObjectNotFoundException {
-    return isMemberOfWorkgroupId(user, run, workgroupId);
-  }
-
-  private boolean isAllowedToGetEvents(User user, Run run, Integer workgroupId)
-      throws ObjectNotFoundException {
-    return isMemberOfWorkgroupId(user, run, workgroupId);
   }
 
   private boolean isAllowedToGetAnnotations(User user, Run run, Integer fromWorkgroupId,
