@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -71,6 +72,10 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
     expect(userService.retrieveUser(studentUserDetails)).andReturn(student);
   }
 
+  protected void expectUser(TeacherUserDetails teacherUserDetails, User teacher) {
+    expect(userService.retrieveUser(teacherUserDetails)).andReturn(teacher);
+  }
+
   protected void expectPeriodAndUser(User student, StudentUserDetails studentUserDetails,
       Long periodId, Group period) throws ObjectNotFoundException {
     expectPeriod(periodId, period);
@@ -100,6 +105,14 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
   protected void expectComponentType(String componentType)
       throws IOException, ObjectNotFoundException {
     expectComponentType(NODE_ID1, COMPONENT_ID1, componentType);
+  }
+
+  protected void setupTeacher1() throws ObjectNotFoundException {
+    expectUser(teacher1UserDetails, teacher1);
+  }
+
+  protected void setupTeacher2() throws ObjectNotFoundException {
+    expectUser(teacher2UserDetails, teacher2);
   }
 
   protected void expectComponentType(String nodeId, String componentId, String componentType)
