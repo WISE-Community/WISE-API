@@ -265,6 +265,11 @@ public class RunImpl implements Run {
     return getPeriodOfStudent(studentUser) != null;
   }
 
+  public boolean isStudentAssociatedToThisRunAndPeriod(User studentUser, Group period) {
+    Group periodOfStudent = getPeriodOfStudent(studentUser);
+    return periodOfStudent != null && periodOfStudent.getId() == period.getId();
+  }
+
   public Group getPeriodOfStudent(User studentUser) {
     for (Group period : getPeriods()) {
       if (period.getMembers().contains(studentUser)) {

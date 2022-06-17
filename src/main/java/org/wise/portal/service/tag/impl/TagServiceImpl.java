@@ -122,8 +122,8 @@ public class TagServiceImpl implements TagService {
 
   @Override
   @Transactional()
-  public void deleteTag(Authentication auth, Tag tag) {
-    tagDao.delete(tag);
+  public void deleteTag(Authentication auth, Tag tag) throws ObjectNotFoundException {
+    tagDao.delete(tagDao.getById(tag.getId()));
     User user = userService.retrieveUserByUsername(auth.getName());
     aclService.removePermission(tag, BasePermission.ADMINISTRATION, user);
     aclService.removePermission(tag, BasePermission.WRITE, user);

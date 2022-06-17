@@ -14,15 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.MutableUserDetails;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.Run;
@@ -33,6 +38,7 @@ import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.mail.IMailFacade;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
@@ -67,6 +73,9 @@ public class UserAPIController {
 
   @Autowired
   protected MessageSource messageSource;
+
+  @Autowired
+  protected StudentService studentService;
 
   @Value("${google.clientId:}")
   protected String googleClientId = "";
@@ -116,6 +125,26 @@ public class UserAPIController {
       info.put("username", username);
     }
     return info;
+  }
+
+  @Secured("ROLE_TEACHER")
+  @GetMapping("/info/{userId}")
+  HashMap<String, Object> getStudentUserInfoById(Authentication auth, @PathVariable Long userId)
+      throws ObjectNotFoundException, AccessDeniedException {
+    User teacherUser = userService.retrieveUserByUsername(auth.getName());
+    User studentUser = userService.retrieveById(userId);
+    if (studentService.isStudentAssociatedWithTeacher(studentUser, teacherUser)) {
+      HashMap<String, Object> info = new HashMap<String, Object>();
+      info.put("id", userId);
+      StudentUserDetails details = (StudentUserDetails) studentUser.getUserDetails();
+      info.put("username", details.getUsername());
+      info.put("lastLoginTime", details.getLastLoginTime());
+      info.put("signUpTime", details.getSignupdate());
+      info.put("numberOfLogins", details.getNumberOfLogins());
+      return info;
+    } else {
+      throw new AccessDeniedException("user is not associated with the student");
+    }
   }
 
   boolean isPreviousAdmin(Authentication authentication) {

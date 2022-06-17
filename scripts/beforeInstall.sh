@@ -5,6 +5,12 @@ export BUILD_DIR=$HOME/build-folder
 export BUILD_FILES=$HOME/wise-build-files
 export CATALINA_HOME=/var/lib/tomcat9
 
+if [[ "$DEPLOYMENT_GROUP_NAME" == "qa-wise-api-deployment-group" ]]; then
+  export ENV="qa"
+else
+  export ENV="prod"
+fi
+
 sudo -u ubuntu -g ubuntu touch $HOME/deploy.log
 exec &>> $HOME/deploy.log
 
@@ -43,10 +49,6 @@ apt-get install tomcat9 -y
 echo "Removing Tomcat ROOT folder"
 rm -rf $CATALINA_HOME/webapps/ROOT
 
-echo 'Setting Tomcat to run as ubuntu user'
-sed 's/User=tomcat/User=ubuntu/' -i /lib/systemd/system/tomcat9.service
-systemctl daemon-reload
-
 echo "Add https to Tomcat server.xml"
 sed 's/<Connector port="8080"/<Connector port="8080" scheme="https"/' -i $CATALINA_HOME/conf/server.xml
 
@@ -57,8 +59,8 @@ echo "Restarting Tomcat"
 service tomcat9 restart
 
 echo "Creating Tomcat curriculum and studentuploads folders"
-sudo -u ubuntu -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
-sudo -u ubuntu -g tomcat mkdir $CATALINA_HOME/webapps/studentuploads
+sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
+sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/studentuploads
 
 echo "Installing Nginx"
 apt-get install nginx -y
@@ -74,7 +76,7 @@ sed 's/gzip on;/gzip on;\n        gzip_types text\/plain text\/xml image\/gif im
 
 echo "Copying WISE Nginx config file to Nginx sites-enabled folder"
 rm -f /etc/nginx/sites-enabled/*
-cp $BUILD_FILES/api/wise.conf /etc/nginx/sites-enabled/wise.conf
+cp $BUILD_FILES/api/$ENV/wise.conf /etc/nginx/sites-enabled/wise.conf
 systemctl restart nginx
 
 echo "Creating additional folders for WISE"
@@ -83,7 +85,7 @@ sudo -u ubuntu -g ubuntu mkdir $HOME/backup
 sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 
 echo "Copying application.properties file to the build folder"
-cp $BUILD_FILES/api/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
+cp $BUILD_FILES/api/$ENV/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
 
 echo "Installing network drive package"
 apt-get install nfs-common -y

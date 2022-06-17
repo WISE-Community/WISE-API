@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -23,56 +23,40 @@
  */
 package org.wise.vle.web;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import java.util.HashMap;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
+import org.wise.vle.domain.webservice.crater.CRaterScoringResponse;
+import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
+import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
+import org.wise.vle.domain.webservice.crater.CRaterVerificationResponse;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/c-rater")
 public class CRaterController {
 
-  @Autowired
-  private Environment appProperties;
-
-  @RequestMapping("/c-rater/score")
-  protected String scoreCRaterItem(
-      @RequestParam(value = "itemId") String itemId,
-      @RequestParam(value = "responseId") String responseId,
-      @RequestParam(value = "studentData") String studentData) {
-    String cRaterClientId = appProperties.getProperty("cRater_client_id");
-    String cRaterScoringUrl = appProperties.getProperty("cRater_scoring_url");
-    String cRaterPassword = appProperties.getProperty("cRater_password");
-    String responseString = CRaterHttpClient.getCRaterScoringResponse(cRaterScoringUrl,
-      cRaterPassword, cRaterClientId, itemId, responseId, studentData);
-    JSONObject cRaterResponseJSONObj = new JSONObject();
-    try {
-      if (CRaterHttpClient.isSingleScore(responseString)) {
-        cRaterResponseJSONObj.put("score", CRaterHttpClient.getScore(responseString));
-      } else {
-        cRaterResponseJSONObj.put("scores", CRaterHttpClient.getScores(responseString));
-      }
-      cRaterResponseJSONObj.put("cRaterResponse", responseString);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return cRaterResponseJSONObj.toString();
+  @GetMapping("/verify")
+  boolean verifyItemId(CRaterVerificationRequest request) {
+    CRaterVerificationResponse cRaterResponse = CRaterHttpClient.getVerificationResponse(request);
+    return cRaterResponse.isVerified();
   }
 
-  @RequestMapping("/c-rater/verify")
-  protected String verityCRaterItem(
-      @RequestParam(value = "itemId") String itemId) throws JSONException {
-    String cRaterClientId = appProperties.getProperty("cRater_client_id");
-    String cRaterVerificationUrl = appProperties.getProperty("cRater_verification_url");
-    String cRaterPassword = appProperties.getProperty("cRater_password");
-    String verificationResponse = CRaterHttpClient.getCRaterVerificationResponse(
-        cRaterVerificationUrl, cRaterPassword, cRaterClientId, itemId);
-    JSONObject response = new JSONObject();
-    response.put("isAvailable", verificationResponse.matches("(.*)avail=\"Y\"(.*)"));
-    return response.toString();
+  @PostMapping("/score")
+  HashMap<String, Object> scoreItem(@RequestBody CRaterScoringRequest request) {
+    CRaterScoringResponse cRaterResponse = CRaterHttpClient.getScoringResponse(request);
+    HashMap<String, Object> response = new HashMap<String, Object>();
+    if (cRaterResponse.isSingleScore()) {
+      response.put("score", cRaterResponse.getScore());
+    } else {
+      response.put("scores", cRaterResponse.getScores());
+    }
+    response.put("ideas", cRaterResponse.getIdeas());
+    response.put("cRaterResponse", cRaterResponse.getResponse());
+    return response;
   }
 }

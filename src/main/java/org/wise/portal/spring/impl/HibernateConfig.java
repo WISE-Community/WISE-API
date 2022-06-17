@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -59,8 +58,7 @@ public class HibernateConfig {
   @Value("${spring.jpa.hibernate.ddl-auto:none}")
   private String hibernateDDLAuto;
 
-  @Bean
-  @Primary
+  @Bean(name = {"sessionFactory", "entityManagerFactory"})
   public LocalSessionFactoryBean sessionFactory() {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
     sessionFactory.setDataSource(dataSource);
@@ -69,7 +67,7 @@ public class HibernateConfig {
     return sessionFactory;
   }
 
-  @Bean(name = "transactionManager")
+  @Bean(name = {"hibernateTransactionManager", "transactionManager"})
   public PlatformTransactionManager hibernateTransactionManager() {
     HibernateTransactionManager transactionManager = new HibernateTransactionManager();
     transactionManager.setSessionFactory(sessionFactory().getObject());

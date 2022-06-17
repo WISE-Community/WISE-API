@@ -29,6 +29,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.achievement.Achievement;
@@ -57,6 +58,14 @@ public interface VLEService {
       Integer workgroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
       String componentType, List<JSONObject> components, Boolean onlyGetLatest);
 
+  List<StudentWork> getStudentWork(Run run, String nodeId, String componentId);
+
+  List<StudentWork> getStudentWork(Run run, Group period, String nodeId, String componentId);
+
+  List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId);
+
+  List<StudentWork> getLatestStudentWork(Run run, Group period, String nodeId, String componentId);
+
   List<NotebookItem> getNotebookItemsExport(Run run);
 
   List<NotebookItem> getLatestNotebookItemsExport(Run run);
@@ -70,8 +79,9 @@ public interface VLEService {
    * Saves StudentWork in the data store
    */
   StudentWork saveStudentWork(Integer id, Integer runId, Integer periodId, Integer workgroupId,
-      Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId, String componentType,
-      String studentData, String clientSaveTime) throws ObjectNotFoundException;
+      Long peerGroupId, Boolean isAutoSave, Boolean isSubmit, String nodeId, String componentId,
+      String componentType, String studentData, String clientSaveTime)
+      throws ObjectNotFoundException;
 
   /**
    * @return List of Event objects with the specified fields. If none matches, return an empty list.
@@ -97,13 +107,13 @@ public interface VLEService {
   /**
    * @return List of Achievements with specified fields. If none matches, return an empty list
    */
-  List<Achievement> getAchievements(Integer id, Integer runId, Integer workgroupId,
-      String achievementId, String type);
+  List<Achievement> getAchievements(Integer id, Run run, Workgroup workgroup, String achievementId,
+      String type);
 
   /**
    * Saves the specified achievements with specified fields and returns the saved result
    */
-  Achievement saveAchievement(Integer id, Integer runId, Integer workgroupId, String achievementId,
+  Achievement saveAchievement(Integer id, Run run, Workgroup workgroup, String achievementId,
       String type, String data);
 
   /**
@@ -113,6 +123,10 @@ public interface VLEService {
   List<Annotation> getAnnotations(Integer id, Integer runId, Integer periodId,
       Integer fromWorkgroupId, Integer toWorkgroupId, String nodeId, String componentId,
       Integer studentWorkId, String localNotebookItemId, Integer notebookItemId, String type);
+
+  List<Annotation> getAnnotations(Run run, String nodeId, String componentId);
+
+  List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId);
 
   /**
    * Saves Annotation in the data store
@@ -127,7 +141,7 @@ public interface VLEService {
   /**
    * Saves StudentAssets in the data store
    */
-  StudentAsset saveStudentAsset(Integer id, Integer runId, Integer periodId, Integer workgroupId,
+  StudentAsset saveStudentAsset(Integer id, Long runId, Integer periodId, Integer workgroupId,
       String nodeId, String componentId, String componentType, Boolean isReferenced,
       String fileName, String filePath, Long fileSize, String clientSaveTime,
       String clientDeleteTime) throws ObjectNotFoundException;
@@ -143,18 +157,16 @@ public interface VLEService {
   /**
    * Returns a list of notebook items that belong in a specified group.
    *
-   * @param runId
-   *                    id of run
-   * @param groupName
-   *                    name of group
+   * @param run Run containing the group
+   * @param groupName name of group
    * @return list of notebook items that belong in the group
    */
-  List<NotebookItem> getNotebookItemsByGroup(Integer runId, String groupName);
+  List<NotebookItem> getNotebookItemsByGroup(Run run, String groupName);
 
   /**
    * Saves NotebookItem in the data store
    */
-  NotebookItem saveNotebookItem(Integer id, Integer runId, Integer periodId, Integer workgroupId,
+  NotebookItem saveNotebookItem(Integer id, Run run, Integer periodId, Workgroup workgroup,
       String nodeId, String componentId, Integer studentWorkId, Integer studentAssetId,
       String localNotebookItemId, String type, String title, String content, String groups,
       String clientSaveTime, String clientDeleteTime);
@@ -184,12 +196,12 @@ public interface VLEService {
   /**
    * Copies NotebookItem in the data store
    *
-   * @param workgroupId
+   * @param workgroup Workgroup that requests to copy the item
    * @param parentNotebookItemId
    * @param clientSaveTime
    * @return
    */
-  NotebookItem copyNotebookItem(Integer workgroupId, Integer parentNotebookItemId,
+  NotebookItem copyNotebookItem(Workgroup workgroup, Integer parentNotebookItemId,
       String clientSaveTime);
 
   /**
@@ -200,8 +212,8 @@ public interface VLEService {
    */
   List<Notification> getNotificationsByGroupId(String groupId) throws ObjectNotFoundException;
 
-  List<Notification> getNotifications(Integer id, Long runId, Integer periodId,
-      Long toWorkgroupId, String groupId, String nodeId, String componentId);
+  List<Notification> getNotifications(Integer id, Run run, Integer periodId, Workgroup toWorkgroup,
+      String groupId, String nodeId, String componentId);
 
   /**
    * Save Notification in the data store

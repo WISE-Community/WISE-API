@@ -52,33 +52,37 @@ import java.util.Set;
 
 /**
  * A Service for Projects
+ * 
  * @author Hiroki Terashima
  */
 public interface ProjectService {
 
   /**
    * Get a <code>List</code> of <code>Project</code> that the specified user owns.
+   * 
    * @return a <code>List</code> of <code>Project</code>
    */
   @Transactional
-  @Secured( { "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
+  @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
   List<Project> getProjectList(User user);
 
   /**
    * Get a <code>List</code> of <code>Project</code> that have been shared with the specified user.
+   * 
    * @return a <code>List</code> of <code>Project</code>
    */
   @Transactional
-  @Secured( { "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
+  @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
   List<Project> getSharedProjectList(User user);
 
   @Transactional
-  @Secured( { "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
+  @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
   List<Project> getSharedProjectsWithoutRun(User user);
 
   /**
-   * Retrieves a <code>List</code> of <code>Project</code> that  has been bookmarked
-   * by the given <code>User</code>.
+   * Retrieves a <code>List</code> of <code>Project</code> that has been bookmarked by the given
+   * <code>User</code>.
+   * 
    * @param bookmarker User who we're looking up
    * @return <code>List<Project></code>
    * @throws ObjectNotFoundException
@@ -88,6 +92,7 @@ public interface ProjectService {
 
   /**
    * Adds the given <code>User</code> bookmarker to the <code>Project</code> project.
+   * 
    * @param project the project to bookmark
    * @param bookmarker User that wants to bookmark the project
    */
@@ -96,6 +101,7 @@ public interface ProjectService {
 
   /**
    * Removes the given <code>User</code> bookmarker from the <code>Project</code> project.
+   * 
    * @param project <code>Project</code>
    * @param bookmarker <code>User</code>
    */
@@ -104,29 +110,32 @@ public interface ProjectService {
 
   /**
    * Returns the permission that the specified user has on the specified project.
+   * 
    * @param project The <code>Project</code> that is shared.
    * @param user The <code>User</code> that shares the <code>Project</code>
-   * @return A <code>String</code> containing the permission that the user has on the project.
-   * If the user does not have permission on the project, null is returned.
+   * @return A <code>String</code> containing the permission that the user has on the project. If
+   * the user does not have permission on the project, null is returned.
    */
   @Transactional(readOnly = true)
   String getSharedTeacherRole(Project project, User user);
 
   /**
    * Add shared teacher to a project.
+   * 
    * @param addSharedTeacherParameters
    */
-  @Secured( {"ROLE_TEACHER"} )
+  @Secured({ "ROLE_TEACHER" })
   @Transactional()
   void addSharedTeacherToProject(AddSharedTeacherParameters addSharedTeacherParameters)
       throws ObjectNotFoundException;
 
-  @Secured( {"ROLE_TEACHER"} )
+  @Secured({ "ROLE_TEACHER" })
   @Transactional()
   void removeSharedTeacherFromProject(Project project, User user) throws ObjectNotFoundException;
 
   /**
    * Creates a new <code>Project</code>.
+   * 
    * @param projectParameters <code>ProjectParameters</code> the project parameters object
    * @return the <code>Project</code> that was created
    * @throws ObjectNotFoundException when projectparameters references objects that do not exist
@@ -136,6 +145,7 @@ public interface ProjectService {
 
   /**
    * Saves the project
+   * 
    * @param project <code>Project</code> contains updated Project.
    */
   @Transactional()
@@ -143,6 +153,7 @@ public interface ProjectService {
 
   /**
    * Launches the VLE for the specified Workgroup.
+   * 
    * @param workgroup Workgroup requesting to launch the project
    * @return
    * @throws Exception
@@ -153,6 +164,7 @@ public interface ProjectService {
 
   /**
    * Launches a Preview of the Project.
+   * 
    * @param previewProjectParameters parameters required to preview the project
    * @throws ObjectNotFoundException when the specified projectId does not exist
    * @throws IOException when the url cannot be loaded
@@ -161,6 +173,7 @@ public interface ProjectService {
 
   /**
    * Gets a project with the given projectId.
+   * 
    * @param projectId the id of the project
    * @return <code>Project</code> with the specified projectId
    * @throws ObjectNotFoundException when the specified projectId does not exist
@@ -168,9 +181,10 @@ public interface ProjectService {
   Project getById(Serializable projectId) throws ObjectNotFoundException;
 
   /**
-   * Given a <code>Project</code> project and <code>User</code> user, returns
-   * <code>boolean</code> true if the user is allowed to create a run from that
-   * project (ie, project is TELS, owner, sharedOwner), returns false otherwise.
+   * Given a <code>Project</code> project and <code>User</code> user, returns <code>boolean</code>
+   * true if the user is allowed to create a run from that project (ie, project is TELS, owner,
+   * sharedOwner), returns false otherwise.
+   * 
    * @param project
    * @param user
    * @return boolean
@@ -180,6 +194,7 @@ public interface ProjectService {
   /**
    * Given a <code>Project</code> project and <code>User</code> user, returns true if the user is
    * allowed to author that particular project, returns false otherwise.
+   * 
    * @param project
    * @param user
    * @return boolean
@@ -187,8 +202,9 @@ public interface ProjectService {
   boolean canAuthorProject(Project project, User user);
 
   /**
-   * Given a <code>Project</code> project and a <code>User</code> user, returns true if the user
-   * has read access to that particular project, returns false otherwise.
+   * Given a <code>Project</code> project and a <code>User</code> user, returns true if the user has
+   * read access to that particular project, returns false otherwise.
+   * 
    * @param project
    * @param user
    * @return
@@ -197,14 +213,16 @@ public interface ProjectService {
 
   /**
    * Returns a <code>List<Project></code> list of all projects in the data store.
+   * 
    * @return List<Project> projects
    */
   List<Project> getAdminProjectList();
 
   /**
-   * Returns a <code>List<Project></code> list of library projects
-   * Library projects show up in "Browse Library" page but not on the homepage.
-   * Library projects show up in both "Browse Library" page and in the homepage.
+   * Returns a <code>List<Project></code> list of library projects Library projects show up in
+   * "Browse Library" page but not on the homepage. Library projects show up in both "Browse
+   * Library" page and in the homepage.
+   * 
    * @return List<Project> - list of library projects
    */
   List<Project> getPublicLibraryProjectList();
@@ -212,32 +230,36 @@ public interface ProjectService {
   List<Project> getTeacherSharedProjectList();
 
   /**
-   * Returns a <code>List<Project></code> list of library projects.
-   * Library projects show up in "Browse Library" page but not on the homepage.
-   * Library projects show up in both "Browse Library" page and in the homepage.
+   * Returns a <code>List<Project></code> list of library projects. Library projects show up in
+   * "Browse Library" page but not on the homepage. Library projects show up in both "Browse
+   * Library" page and in the homepage.
+   * 
    * @return List<Project> - list of library projects
    */
   List<Project> getLibraryProjectList();
 
   /**
-   * Given a <code>Set<String></code> set of tag names, returns a
-   * <code>List<Project></code> list of projects with all of the tag names.
+   * Given a <code>Set<String></code> set of tag names, returns a <code>List<Project></code> list of
+   * projects with all of the tag names.
+   * 
    * @param tagNames Set<String> - set of tagNames
    * @return List<Project> - list of projects
    */
   List<Project> getProjectListByTagNames(Set<String> tagNames);
 
   /**
-   * Given a partial author name (e.g. "hiro", "hiroki"), returns a list of projects
-   * that were authored by that person.
+   * Given a partial author name (e.g. "hiro", "hiroki"), returns a list of projects that were
+   * authored by that person.
+   * 
    * @param authorName<String> partial or full author name
    * @return List<Project> - list of projects
    */
   List<Project> getProjectListByAuthorName(String authorName);
 
   /**
-   * Given a partial title (e.g. "Global", "Global Climate"), returns a list of projects
-   * that match that title.
+   * Given a partial title (e.g. "Global", "Global Climate"), returns a list of projects that match
+   * that title.
+   * 
    * @param title <String> partial or full project title
    * @return List<Project> - list of projects
    */
@@ -245,6 +267,7 @@ public interface ProjectService {
 
   /**
    * Given a <code>String</code> and a <code>Project</code> adds the tag to the project.
+   * 
    * @param tag
    * @param projectId
    */
@@ -253,16 +276,18 @@ public interface ProjectService {
 
   /**
    * Given a <code>Tag</code> and a <code>Project</code>, removes the tag from the project.
-   * @param tagId - Integer id of tag
-   * @param projectId - id of project
+   * 
+   * @param tagId Integer id of tag
+   * @param projectId id of project
    */
   @Transactional
   void removeTagFromProject(Integer tagId, Long projectId);
 
   /**
-   * Given a <code>Long</code> tag id, a project id and a name, updates that
-   * project tag to that name, returning the resulting tag Id.
-   * @param tagId - Integer id of tag
+   * Given a <code>Long</code> tag id, a project id and a name, updates that project tag to that
+   * name, returning the resulting tag Id.
+   * 
+   * @param tagId Integer id of tag
    * @param projectId id of project
    * @param name name of tag
    * @return Integer - tag id
@@ -270,8 +295,9 @@ public interface ProjectService {
   Integer updateTag(Integer tagId, Long projectId, String name);
 
   /**
-   * Given a Project and a <code>String</code> tag name, returns <code>boolean</code> true
-   * if the project contains a tag with that name, false otherwise.
+   * Given a Project and a <code>String</code> tag name, returns <code>boolean</code> true if the
+   * project contains a tag with that name, false otherwise.
+   * 
    * @param project
    * @param name name of tag
    * @return boolean
@@ -279,8 +305,9 @@ public interface ProjectService {
   boolean projectContainsTag(Project project, String name);
 
   /**
-   * Given a <code>User</code> user and a <code>String</code> tag name, returns true if that user
-   * is authorized to create a tag with that name, returns false otherwise.
+   * Given a <code>User</code> user and a <code>String</code> tag name, returns true if that user is
+   * authorized to create a tag with that name, returns false otherwise.
+   * 
    * @param user
    * @param name
    * @return boolean
@@ -289,6 +316,7 @@ public interface ProjectService {
 
   /**
    * Given a project id, returns projects that are copies of the project.
+   * 
    * @param projectId
    * @return
    */
@@ -296,6 +324,7 @@ public interface ProjectService {
 
   /**
    * Given a project, gets the project id for the project's root level project.
+   * 
    * @param project
    * @return id of the root project
    * @throws ObjectNotFoundException
@@ -345,12 +374,16 @@ public interface ProjectService {
   void replaceMetadataInProjectJSONFile(String projectFilePath, ProjectMetadata metadata)
       throws IOException, JSONException;
 
-  public void saveProjectToDatabase(Project project, User user, String projectJSONString)
+  void saveProjectToDatabase(Project project, User user, String projectJSONString)
       throws JSONException, NotAuthorizedException;
 
-  public void updateMetadataAndLicenseIfNecessary(Project project, String projectJSONString)
+  void updateMetadataAndLicenseIfNecessary(Project project, String projectJSONString)
       throws JSONException;
 
-  public void updateProjectNameIfNecessary(Project project, JSONObject projectMetadataJSON)
+  void updateProjectNameIfNecessary(Project project, JSONObject projectMetadataJSON)
       throws JSONException;
+
+  String getProjectContent(Project project) throws IOException;
+
+  void evictProjectContentCache(Long projectId);
 }

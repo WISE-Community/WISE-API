@@ -33,20 +33,29 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
+import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.status.StudentStatus;
 
-@Controller
+@RestController
+@Secured("ROLE_USER")
 @RequestMapping("/api/studentStatus")
 public class StudentStatusController {
 
@@ -58,6 +67,12 @@ public class StudentStatusController {
 
   @Autowired
   private MessagePublisher redisPublisher;
+
+  @Autowired
+  private UserService userService;
+
+  @Autowired
+  protected WorkgroupService workgroupService;
 
   /**
    * Handles POST requests from students when they send their status to the server so we can keep
@@ -143,4 +158,14 @@ public class StudentStatusController {
     redisPublisher.publish(message.toString());
   }
 
+  @GetMapping("/{workgroupId}")
+  StudentStatus getStudentStatus(Authentication auth,
+      @PathVariable("workgroupId") WorkgroupImpl workgroup) throws AccessDeniedException {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    if (workgroupService.isUserInWorkgroupForRun(user, workgroup.getRun(), workgroup)) {
+      return vleService.getStudentStatusByWorkgroupId(workgroup.getId());
+    } else {
+      throw new AccessDeniedException("User does not have permission to view this Student Status");
+    }
+  }
 }

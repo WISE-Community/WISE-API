@@ -55,6 +55,7 @@ import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -202,26 +203,24 @@ public class InformationController {
     }
   }
 
-  @RequestMapping("/config/studentRun/{runId}")
-  public void handleGetConfigWISE5StudentRun(HttpServletRequest request,
-      HttpServletResponse response, @PathVariable Long runId)
-      throws ObjectNotFoundException, IOException, JSONException {
+  @GetMapping("/config/studentRun/{runId}")
+  public void getConfigWISE5StudentRun(HttpServletRequest request, HttpServletResponse response,
+      @PathVariable("runId") RunImpl run) throws ObjectNotFoundException, IOException,
+      JSONException {
     JSONObject config = new JSONObject();
     config.put("mode", "studentRun");
-    Run run = runService.retrieveById(runId);
     getRunConfigParameters(request, config, run);
     Project project = run.getProject();
     addCommonConfigParameters(request, config, project);
     printConfigToResponse(response, config);
   }
 
-  @RequestMapping("/config/classroomMonitor/{runId}")
-  public void handleGetConfigWISE5ClassroomMonitor(HttpServletRequest request,
-      HttpServletResponse response, @PathVariable Long runId)
+  @GetMapping("/config/classroomMonitor/{runId}")
+  public void getConfigWISE5ClassroomMonitor(HttpServletRequest request,
+      HttpServletResponse response, @PathVariable("runId") RunImpl run)
       throws ObjectNotFoundException, IOException, JSONException {
     JSONObject config = new JSONObject();
     config.put("mode", "classroomMonitor");
-    Run run = runService.retrieveById(runId);
     getRunConfigParameters(request, config, run);
     User signedInUser = ControllerUtil.getSignedInUser();
     String contextPath = request.getContextPath();
@@ -229,7 +228,7 @@ public class InformationController {
       config.put("runCode", run.getRuncode());
       config.put("teacherDataURL", contextPath + "/api/teacher/data");
       config.put("runDataExportURL", contextPath + "/api/teacher/export");
-      config.put("notebookURL", contextPath + "/api/teacher/notebook/run/" + runId);
+      config.put("notebookURL", contextPath + "/api/teacher/notebook/run/" + run.getId());
     }
     Project project = run.getProject();
     if (hasRunWriteAccess(signedInUser, run)) {
@@ -302,8 +301,8 @@ public class InformationController {
       String firstName = "";
       String lastName = "";
       JSONArray userIds = new JSONArray();
+      MutableUserDetails userDetails = loggedInUser.getUserDetails();
       if (loggedInUser.isTeacher()) {
-        MutableUserDetails userDetails = loggedInUser.getUserDetails();
         firstName = userDetails.getFirstname();
         lastName = userDetails.getLastname();
         usernames = userDetails.getUsername();
@@ -312,8 +311,9 @@ public class InformationController {
         usernames = getUsernamesFromWorkgroup(workgroup);
         userIds = getStudentIdsFromWorkgroup(workgroup);
       }
+      Boolean isGoogleUser = userDetails.isGoogleUser();
       JSONObject myUserInfo = getMyUserInfoJSONObject(periodId, periodName, userIds, workgroupId,
-          usernames, firstName, lastName);
+          usernames, firstName, lastName, isGoogleUser);
       myUserInfo.put("myClassInfo", getMyClassInfoJSONObject(run, workgroup, loggedInUser));
       JSONObject userInfo = new JSONObject();
       userInfo.put("myUserInfo", myUserInfo);
@@ -350,10 +350,8 @@ public class InformationController {
         try {
           sharedTeacherUserInfo.put("workgroupId", sharedTeacherWorkgroup.getId());
           sharedTeacherUserInfo.put("username", sharedTeacherWorkgroup.generateWorkgroupName());
-          sharedTeacherUserInfo.put(
-              "userId",
-              sharedTeacherWorkgroup.getMembers().iterator().next().getId()
-          );
+          sharedTeacherUserInfo.put("userId",
+              sharedTeacherWorkgroup.getMembers().iterator().next().getId());
 
           String sharedTeacherRole = runService.getSharedTeacherRole(run, sharedOwner);
           if (sharedTeacherRole == null) {
@@ -399,13 +397,30 @@ public class InformationController {
    * @param loggedInUser
    * @return
    * @throws ObjectNotFoundException
+   * @throws JSONException
    */
   private JSONArray getClassmateUserInfosJSONArray(Run run, Workgroup workgroup, User loggedInUser)
-      throws ObjectNotFoundException {
+      throws ObjectNotFoundException, JSONException {
     JSONArray classmateUserInfos = new JSONArray();
     for (Workgroup classmateWorkgroup : runService.getWorkgroups(run.getId())) {
       if (isClassmateWorkgroup(workgroup, loggedInUser, classmateWorkgroup)) {
         classmateUserInfos.put(getClassmateUserInfoJSON(classmateWorkgroup, run, loggedInUser));
+      }
+    }
+    for (Group period : run.getPeriods()) {
+      JSONArray studentsNotInWorkgroup = new JSONArray();
+      for (User user : period.getMembers()) {
+        if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
+          JSONObject userJSONInfo =
+              createUserJSONInfo(user, isAllowedToViewStudentNames(run, loggedInUser));
+          studentsNotInWorkgroup.put(userJSONInfo);
+        }
+      }
+      if (studentsNotInWorkgroup.length() > 0) {
+        JSONObject studentsNotInWorkgroupInfo = new JSONObject();
+        studentsNotInWorkgroupInfo.put("periodId", period.getId());
+        studentsNotInWorkgroupInfo.put("users", studentsNotInWorkgroup);
+        classmateUserInfos.put(studentsNotInWorkgroupInfo);
       }
     }
     return classmateUserInfos;
@@ -422,7 +437,7 @@ public class InformationController {
   }
 
   private JSONObject getMyUserInfoJSONObject(String periodId, String periodName, JSONArray userIds,
-      Long workgroupId, String usernames, String firstName, String lastName) {
+      Long workgroupId, String usernames, String firstName, String lastName, Boolean isGoogleUser) {
     JSONObject myUserInfo = new JSONObject();
     try {
       myUserInfo.put("workgroupId", workgroupId);
@@ -443,6 +458,7 @@ public class InformationController {
 
       myUserInfo.put("periodName", periodName);
       myUserInfo.put("userIds", userIds);
+      myUserInfo.put("isGoogleUser", isGoogleUser);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -655,7 +671,7 @@ public class InformationController {
     config.put("studentStatusURL", contextPath + "/api/studentStatus");
     config.put("runStatusURL", contextPath + "/api/runStatus");
     config.put("userInfo", getUserInfo(run));
-    config.put("studentDataURL", contextPath + "/api/student/data"); // the url to get/post student data
+    config.put("studentDataURL", contextPath + "/api/student/data");
     config.put("studentAssetsURL", contextPath + "/api/student/asset/" + runId);
     config.put("notebookURL", contextPath + "/api/student/notebook/run/" + runId);
     config.put("achievementURL", contextPath + "/api/achievement/" + runId);
@@ -771,7 +787,7 @@ public class InformationController {
    * @return Workgroup for the currently-logged in user
    * @throws ObjectNotFoundException
    */
-  private Workgroup getWorkgroup(Run run) throws ObjectNotFoundException {
+  private Workgroup getWorkgroup(Run run) {
     Workgroup workgroup = null;
     SecurityContext context = SecurityContextHolder.getContext();
     if (context.getAuthentication().getPrincipal() instanceof UserDetails) {
@@ -901,23 +917,28 @@ public class InformationController {
     JSONArray users = new JSONArray();
     boolean canViewStudentNames = isAllowedToViewStudentNames(run, loggedInUser);
     for (User user : workgroup.getMembers()) {
-      JSONObject userJSONObject = new JSONObject();
-      try {
-        MutableUserDetails userDetails = user.getUserDetails();
-        userJSONObject.put("id", user.getId());
-        if (canViewStudentNames) {
-          String firstName = userDetails.getFirstname();
-          String lastName = userDetails.getLastname();
-          userJSONObject.put("name", firstName + " " + lastName);
-          userJSONObject.put("firstName", firstName);
-          userJSONObject.put("lastName", lastName);
-          userJSONObject.put("username", userDetails.getUsername());
-        }
-        users.put(userJSONObject);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+      users.put(createUserJSONInfo(user, canViewStudentNames));
     }
     return users;
+  }
+
+  private JSONObject createUserJSONInfo(User user, boolean canViewStudentNames) {
+    JSONObject userJSONObject = new JSONObject();
+    MutableUserDetails userDetails = user.getUserDetails();
+    try {
+      userJSONObject.put("id", user.getId());
+      userJSONObject.put("isGoogleUser", user.getUserDetails().isGoogleUser());
+      if (canViewStudentNames) {
+        String firstName = userDetails.getFirstname();
+        String lastName = userDetails.getLastname();
+        userJSONObject.put("name", firstName + " " + lastName);
+        userJSONObject.put("firstName", firstName);
+        userJSONObject.put("lastName", lastName);
+        userJSONObject.put("username", userDetails.getUsername());
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return userJSONObject;
   }
 }

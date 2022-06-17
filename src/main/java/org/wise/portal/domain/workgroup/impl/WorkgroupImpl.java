@@ -44,6 +44,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.hibernate.proxy.HibernateProxy;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.impl.TagImpl;
 import org.wise.portal.domain.run.Run;
@@ -92,6 +93,33 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   @ManyToMany(targetEntity = TagImpl.class, fetch = FetchType.LAZY)
   @JoinTable(name = "workgroups_related_to_tags", joinColumns = { @JoinColumn(name = "workgroups_fk", nullable = false) }, inverseJoinColumns = @JoinColumn(name = "tags_fk", nullable = false))
   private Set<Tag> tags = new HashSet<Tag>();
+
+  public WorkgroupImpl() {}
+
+  /**
+   * Alternate WorkgroupImpl constructor with default users
+   * A teacher can be in a Workgroup. In this case, the members provided as a parameter in this
+   * method must match the owners of the run.
+   *
+   * @param name workgroup name
+   * @param members set of users in this workgroup
+   * @param run the <code>Run</code> that this workgroup belongs in
+   * @param period <code>Group</code> that this workgroup belongs in
+   * @return the created <code>Workgroup</code>
+   */
+  public WorkgroupImpl(String name, Set<User> members, Run run, Group period) {
+    this.getGroup().setName(name);
+    for (User member : members) {
+      this.addMember(member);
+    }
+    this.setRun(run);
+    this.setPeriod(period);
+    if ((run.getOwner() != null && members.size() == 1
+        && run.getOwner().equals(members.iterator().next()))
+        || (members.size() > 0 && run.getSharedowners() != null && run.getSharedowners().containsAll(members))) {
+          this.setTeacherWorkgroup(true);
+    }
+  }
 
   public Set<User> getMembers() {
     return this.group.getMembers();
@@ -152,9 +180,16 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
       return true;
     if (obj == null)
       return false;
-    if (getClass() != obj.getClass())
+    if (obj instanceof HibernateProxy) {
+      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+        return false;
+      }
+    } else if (getClass() != obj.getClass())
       return false;
     final WorkgroupImpl other = (WorkgroupImpl) obj;
+    if (this.getId() != null && this.getId().equals(other.getId())) {
+      return true;
+    }
     if (group == null) {
       if (other.group != null)
         return false;

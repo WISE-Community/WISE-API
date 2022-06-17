@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 import org.easymock.TestSubject;
 import org.junit.Test;
-import org.wise.portal.presentation.web.exception.InvalidPasswordExcpetion;
+import org.wise.portal.presentation.web.exception.InvalidPasswordException;
 
 public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
 
@@ -95,7 +95,7 @@ public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
 
   @Test
   public void unlinkGoogleAccount_ValidNewPassword_ReturnUpdatedUserMap()
-      throws InvalidPasswordExcpetion {
+      throws InvalidPasswordException {
     String newPassword = "my new pass";
     assertTrue(student1.getUserDetails().isGoogleUser());
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1).times(2);

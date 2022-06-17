@@ -24,7 +24,6 @@
 package org.wise.portal.spring.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -59,9 +58,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -97,16 +93,16 @@ public class WebSecurityConfig<S extends Session>
         .addFilterAfter(authenticationProcessingFilter(),
             GoogleOpenIdConnectFilter.class)
         .authorizeRequests()
-        // .antMatchers("/agent/**").hasAnyRole("ADMINISTRATOR,RESEARCHER,TEACHER")
-        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR,RESEARCHER")
+        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR","RESEARCHER")
+        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR","RESEARCHER")
         .antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
         .antMatchers("/student/account/info").hasAnyRole("TEACHER")
         .antMatchers("/student/**").hasAnyRole("STUDENT")
-        .antMatchers("/studentStatus").hasAnyRole("TEACHER,STUDENT")
+        .antMatchers("/studentStatus").hasAnyRole("TEACHER","STUDENT")
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/score/**/**").permitAll()
-        .antMatchers("/sso/discourse").hasAnyRole("TEACHER,STUDENT")
+        .antMatchers("/sso/discourse").hasAnyRole("TEACHER","STUDENT")
         .antMatchers("/teachingassistant/**/**").permitAll()
         .antMatchers("/api/**/**").permitAll()
         .antMatchers("/").permitAll();

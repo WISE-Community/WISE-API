@@ -180,6 +180,7 @@ public class WebConfig implements WebMvcConfigurer {
     mappings.setProperty("org.wise.portal.presentation.web.exception.NotAuthorizedException",
         "errors/accessdenied");
     resolver.setExceptionMappings(mappings);
+    resolver.addStatusCode("errors/accessdenied", 403);
     return resolver;
   }
 

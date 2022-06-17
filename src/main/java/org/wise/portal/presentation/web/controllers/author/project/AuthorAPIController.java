@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2019 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2021 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -31,13 +31,13 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +70,7 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
+import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.project.impl.ProjectMetadataImpl;
 import org.wise.portal.domain.project.impl.ProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectType;
@@ -79,6 +80,7 @@ import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.response.ErrorResponse;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.presentation.web.response.SuccessResponse;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
@@ -103,6 +105,9 @@ public class AuthorAPIController {
 
   @Autowired
   protected UserService userService;
+
+  @Autowired
+  protected PeerGroupingService peerGroupingService;
 
   @Autowired
   protected ProjectService projectService;
@@ -151,9 +156,8 @@ public class AuthorAPIController {
     if (projectIdStr != null && !projectIdStr.equals("") && !projectIdStr.equals("none")) {
       project = projectService.getById(Long.parseLong(projectIdStr));
       if (project.getWiseVersion().equals(5)) {
-        return new ModelAndView(
-            new RedirectView(appProperties.getProperty("wise.hostname") +
-            "/teacher/edit/unit/" + projectIdStr));
+        return new ModelAndView(new RedirectView(
+            appProperties.getProperty("wise.hostname") + "/teacher/edit/unit/" + projectIdStr));
       } else if (project.getWiseVersion().equals(4)) {
         ModelAndView wise4AuthoringView = new ModelAndView(
             new RedirectView("/legacy/author/authorproject.html?projectId=" + projectIdStr));
@@ -212,7 +216,8 @@ public class AuthorAPIController {
     Project project = projectService.getById(projectId);
     HashMap<String, String> response = new HashMap<String, String>();
     if (projectService.canAuthorProject(project, user)) {
-      String projectAssetsFolderPathString = projectService.getProjectLocalPath(project) + "/assets";;
+      String projectAssetsFolderPathString = projectService.getProjectLocalPath(project)
+          + "/assets";
       Path fromImagePath = null;
       if (isCustom) {
         fromImagePath = Paths.get(projectAssetsFolderPathString + "/" + projectIcon);
@@ -240,12 +245,13 @@ public class AuthorAPIController {
 
   @PostMapping("/project/save/{projectId}")
   @ResponseBody
-  protected SimpleResponse saveProject(Authentication auth, @PathVariable Long projectId,
-      @RequestBody String projectJSONString) throws JSONException, ObjectNotFoundException {
-    Project project = projectService.getById(projectId);
+  protected SimpleResponse saveProject(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project, @RequestBody String projectJSONString)
+      throws JSONException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       try {
+        projectService.evictProjectContentCache(project.getId());
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
@@ -262,8 +268,8 @@ public class AuthorAPIController {
   @ResponseBody
   @SuppressWarnings("unchecked")
   protected HashMap<String, Object> getDefaultAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request)
-      throws ObjectNotFoundException, JsonMappingException, JsonProcessingException {
+      HttpServletRequest request) throws ObjectNotFoundException, JsonMappingException,
+      JsonProcessingException {
     HashMap<String, Object> config = new HashMap<String, Object>();
     User user = userService.retrieveUserByUsername(auth.getName());
     String contextPath = request.getContextPath();
@@ -372,9 +378,8 @@ public class AuthorAPIController {
   @GetMapping("/config/{projectId}")
   @ResponseBody
   protected HashMap<String, Object> getAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request, @PathVariable Long projectId)
+      HttpServletRequest request, @PathVariable("projectId") ProjectImpl project)
       throws IOException, ObjectNotFoundException {
-    Project project = projectService.getById(projectId);
     HashMap<String, Object> config = getDefaultAuthorProjectConfig(auth, request);
     String contextPath = request.getContextPath();
     String curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
@@ -387,14 +392,14 @@ public class AuthorAPIController {
           appProperties.getProperty("project_max_total_assets_size", "15728640"));
     }
 
-    config.put("projectId", projectId);
+    config.put("projectId", project.getId());
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + projectId);
+    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
     config.put("projectBaseURL", projectBaseURL);
-    config.put("previewProjectURL", contextPath + "/preview/unit/" + projectId);
+    config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
-    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + projectId);
+    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + project.getId());
     config.put("featuredProjectIconsURL", contextPath + "/api/author/project/featured/icons");
     config.put("projectIconURL", contextPath + "/api/author/project/icon");
     config.put("mode", "author");
@@ -403,10 +408,10 @@ public class AuthorAPIController {
     boolean canEditProject = projectService.canAuthorProject(project, user);
     config.put("canEditProject", canEditProject);
     if (canEditProject) {
-      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + projectId);
-      config.put("commitProjectURL", contextPath + "/project/commit/" + projectId);
+      config.put("saveProjectURL", contextPath + "/api/author/project/save/" + project.getId());
+      config.put("commitProjectURL", contextPath + "/project/commit/" + project.getId());
     }
-    List<Run> projectRuns = runService.getProjectRuns(projectId);
+    List<Run> projectRuns = runService.getProjectRuns(project.getId());
     if (projectRuns.size() > 0) {
       Run projectRun = projectRuns.get(0);
       config.put("canGradeStudentWork", runService.isAllowedToGradeStudentWork(projectRun, user));
@@ -419,10 +424,8 @@ public class AuthorAPIController {
   /**
    * Get the run that uses the project id
    *
-   * @param projectId
-   *                    the project id
-   * @param runs
-   *                    list of runs to look in
+   * @param projectId the project id
+   * @param runs list of runs to look in
    * @returns the run that uses the project if the project is used in a run
    */
   private Run getRun(Long projectId, List<Run> runs) {
@@ -436,17 +439,17 @@ public class AuthorAPIController {
 
   @PostMapping("/project/notify/{projectId}/{isBegin}")
   @ResponseBody
-  protected void notifyAuthorBeginEnd(Authentication auth, @PathVariable Long projectId,
-      @PathVariable boolean isBegin) throws Exception {
+  protected void notifyAuthorBeginEnd(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project, @PathVariable boolean isBegin)
+      throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
-    Project project = projectService.getById(projectId);
     if (projectService.canAuthorProject(project, user)) {
       if (isBegin) {
-        sessionService.addCurrentAuthor(projectId, auth.getName());
+        sessionService.addCurrentAuthor(project.getId(), auth.getName());
       } else {
-        sessionService.removeCurrentAuthor(projectId, auth.getName());
+        sessionService.removeCurrentAuthor(project.getId(), auth.getName());
       }
-      notifyCurrentAuthors(projectId);
+      notifyCurrentAuthors(project.getId());
     }
   }
 
@@ -461,12 +464,9 @@ public class AuthorAPIController {
   /**
    * Import steps and copy assets if necessary
    *
-   * @param steps
-   *                        a string containing a JSONArray of steps
-   * @param toProjectId
-   *                        the project id we are importing into
-   * @param fromProjectId
-   *                        the project id we are importing from
+   * @param steps a string containing a JSONArray of steps
+   * @param toProjectId the project id we are importing into
+   * @param fromProjectId the project id we are importing from
    */
   @PostMapping("/project/importSteps/{projectId}")
   @ResponseBody
@@ -481,25 +481,6 @@ public class AuthorAPIController {
       return null;
     }
 
-    /*
-     * Regex string to match asset file references in the step/component content. e.g. carbon.png
-     */
-    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
-        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
-        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
-    Pattern pattern = Pattern.compile(patternString);
-    Matcher matcher = pattern.matcher(steps);
-
-    /*
-     * this list will hold all the file names that are referenced by the steps that we are importing
-     */
-    List<String> fileNames = new ArrayList<String>();
-    while (matcher.find()) {
-      fileNames.add(matcher.group(2));
-    }
-
-    // remove duplicates from the list of file names
-    fileNames = fileNames.stream().distinct().collect(Collectors.toList());
     Project fromProject = projectService.getById(fromProjectId);
     String fromProjectUrl = fromProject.getModulePath();
     Project toProject = projectService.getById(toProjectId);
@@ -530,7 +511,7 @@ public class AuthorAPIController {
     String toProjectAssetsUrl = fullToProjectFolderUrl + "/assets";
     File toProjectAssetsFolder = new File(toProjectAssetsUrl);
 
-    for (String fileName : fileNames) {
+    for (String fileName : getAssetFileNames(steps)) {
       /*
        * Import the asset to the project we are importing to. If the project already contains a file
        * with the same file name and does not have the same file content, it will be given a new
@@ -548,6 +529,24 @@ public class AuthorAPIController {
 
     // send back the steps string which may have been modified if we needed to change a file name
     return steps;
+  }
+
+  protected List<String> getAssetFileNames(String stepsText) {
+    // Replace %20 with a space so that file names with a space will be properly found. Sometimes
+    // html content that contains a file name with a space will replace the space with %20.
+    String stepsTextModified = stepsText.replaceAll("%20", " ");
+
+    // Regex string to match asset file references in the step/component content. e.g. carbon.png
+    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
+        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
+        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
+    Pattern pattern = Pattern.compile(patternString);
+    Matcher matcher = pattern.matcher(stepsTextModified);
+    HashSet<String> fileNames = new HashSet<String>();
+    while (matcher.find()) {
+      fileNames.add(matcher.group(2));
+    }
+    return new ArrayList<String>(fileNames);
   }
 
   private void createNewProjectDirectory(String projectId) throws IOException {

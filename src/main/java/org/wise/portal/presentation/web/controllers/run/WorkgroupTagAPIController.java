@@ -1,5 +1,6 @@
 package org.wise.portal.presentation.web.controllers.run;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,8 @@ import org.wise.portal.service.tag.TagService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
+
+import lombok.Setter;
 
 @RestController
 @Secured("ROLE_USER")
@@ -75,7 +79,8 @@ public class WorkgroupTagAPIController {
 
   @Secured("ROLE_TEACHER")
   @PostMapping("/run/{runId}/delete")
-  void deleteTag(@PathVariable Long runId, @RequestBody TagImpl tag, Authentication auth) {
+  void deleteTag(@PathVariable Long runId, @RequestBody TagImpl tag, Authentication auth)
+      throws JsonProcessingException, ObjectNotFoundException, JSONException {
     if (tagService.canEditTag(auth, tag)) {
       tagService.deleteTag(auth, tag);
     } else {
@@ -105,6 +110,20 @@ public class WorkgroupTagAPIController {
     throw new AccessDeniedException("Not permitted");
   }
 
+  @GetMapping("/{tagId}/workgroups")
+  Set<Workgroup> getWorkgroupsWithTag(@PathVariable Integer tagId, Authentication auth)
+      throws ObjectNotFoundException, JsonProcessingException {
+    Tag tag = tagService.getTagById(tagId);
+    Set<Workgroup> workgroupsWithTag = new HashSet<Workgroup>();
+    for (Workgroup workgroup : runService.getWorkgroups(tag.getRun().getId())) {
+      if (workgroup.getTags().contains(tag)) {
+        workgroupsWithTag.add(workgroup);
+      }
+    }
+    return workgroupsWithTag;
+  }
+
+  @Transactional
   @PostMapping("/workgroup/{workgroupId}/add")
   Set<Tag> addTagToWorkgroup(@PathVariable Long workgroupId, @RequestBody TagImpl tag,
       Authentication auth) throws ObjectNotFoundException, JsonProcessingException, JSONException {
@@ -120,6 +139,7 @@ public class WorkgroupTagAPIController {
   }
 
   @Secured("ROLE_TEACHER")
+  @Transactional
   @DeleteMapping("/workgroup/{workgroupId}/delete")
   Set<Tag> removeTagFromWorkgroup(@PathVariable Long workgroupId, @RequestBody TagImpl tag,
       Authentication auth) throws ObjectNotFoundException, JsonProcessingException, JSONException {
@@ -129,6 +149,46 @@ public class WorkgroupTagAPIController {
       workgroupService.removeTag(workgroup, tag);
       broadcastTags(workgroup);
       return workgroup.getTags();
+    } else {
+      throw new AccessDeniedException("Not permitted");
+    }
+  }
+
+  @Secured("ROLE_TEACHER")
+  @Transactional
+  @PostMapping("/workgroups/add-delete")
+  void addRemoveTagsFromWorkgroups(
+      @RequestBody List<TagToUpdate> tagsToUpdate, Authentication auth)
+      throws ObjectNotFoundException, JsonProcessingException, JSONException {
+    for (TagToUpdate tagToUpdate : tagsToUpdate) {
+      for (Long workgroupId : tagToUpdate.workgroupIdsToRemove) {
+        removeTagFromWorkgroup(auth, tagToUpdate.tag, workgroupId);
+      }
+      for (Long workgroupId : tagToUpdate.workgroupIdsToAdd) {
+        addTagToWorkgroup(auth, tagToUpdate.tag, workgroupId);
+      }
+    }
+  }
+
+  private void removeTagFromWorkgroup(Authentication auth, Tag tag, Long workgroupId)
+      throws ObjectNotFoundException, JSONException, JsonProcessingException {
+    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
+    User user = userService.retrieveUserByUsername(auth.getName());
+    if (canWriteTag(auth, workgroup, user)) {
+      workgroupService.removeTag(workgroup, tag);
+      broadcastTags(workgroup);
+    } else {
+      throw new AccessDeniedException("Not permitted");
+    }
+  }
+
+  private void addTagToWorkgroup(Authentication auth, Tag tag, Long workgroupId)
+      throws ObjectNotFoundException, JSONException, JsonProcessingException {
+    Workgroup workgroup = workgroupService.retrieveById(workgroupId);
+    User user = userService.retrieveUserByUsername(auth.getName());
+    if (canWriteTag(auth, workgroup, user)) {
+      workgroupService.addTag(workgroup, tag);
+      broadcastTags(workgroup);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
@@ -152,4 +212,11 @@ public class WorkgroupTagAPIController {
     message.put("tags", mapper.writeValueAsString(workgroup.getTags()));
     redisPublisher.publish(message.toString());
   }
+}
+
+@Setter
+class TagToUpdate {
+  TagImpl tag;
+  List<Long> workgroupIdsToAdd;
+  List<Long> workgroupIdsToRemove;
 }

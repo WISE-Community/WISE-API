@@ -147,53 +147,10 @@
                 $("#archiveRunDialog > #archiveIfrm").attr('src',path);
             });
 
-            // setup manage students dialog
             $('.manageStudents').on('click',function(){
-                var title = $(this).attr('title');
-                var params = $(this).attr('id').replace('manageStudents_','');
-                var path = "${contextPath}/teacher/management/viewmystudents?" + params;
-                var div = $('#manageStudentsDialog').html('<iframe id="manageStudentsIfrm" width="100%" height="100%"></iframe>');
-                $('body').css('overflow','hidden');
-                div.dialog({
-                    modal: true,
-                    width: $(window).width() - 32,
-                    height: $(window).height() - 32,
-                    title: title,
-                    position: 'center',
-                    beforeClose: function() {
-                        // check for unsaved changes and alert user if necessary
-                        if(document.getElementById('manageStudentsIfrm').contentWindow['unsavedChanges']){
-                            var answer = confirm("Warning: You currently have unsaved changes to student teams. If you exit now, they will be discarded. To save your changes, choose 'Cancel' and click the 'SAVE CHANGES' button in the upper right corner.\n\nAre you sure you want to exit without saving?")
-                            if(answer){
-                                return true;
-                            } else {
-                                return false;
-                            };
-                        } else {
-                            return true;
-                        }
-                    },
-                    close: function(){
-                        // refresh page if required (run title or student periods have been modified)
-                        if(document.getElementById('manageStudentsIfrm').contentWindow['refreshRequired']){
-                            window.location.reload();
-                        }
-                        $(this).html('');
-                        $('body').css('overflow','auto');
-                    },
-                    buttons: {
-                        Exit: function(){
-                            $(this).dialog('close');
-                        }
-                    }
-                });
-                $("#manageStudentsDialog > #manageStudentsIfrm").attr('src',path);
+                var runId = $(this).attr('runId');
+                window.location.href =  "${contextPath}/teacher/manage/unit/" + runId + "/manage-students";
             });
-
-
-
-
-
             var oTable = $('.runTable').dataTable({
                 "sPaginationType": "full_numbers",
                 "iDisplayLength": 10,
@@ -404,11 +361,11 @@
                                                 <tr>
                                                     <td style="width:35%;" class="tableInnerData">${period.name}</td>
                                                     <td style="width:65%;" class="tableInnerDataRight">
-                                                        <a class="manageStudents" title="<spring:message code="teacher.management.projectruntabs.manageStudents"/>: ${run.name} (<spring:message code="run_id"/> ${run.id})" id="runId=${run.id}&periodName=${period.name}">${fn:length(period.members)}&nbsp;<spring:message code="teacher.management.projectruntabs.registered"/></a>
+                                                        <a class="manageStudents" runId="${run.id}" title="<spring:message code="teacher.management.projectruntabs.manageStudents"/>: ${run.name} (<spring:message code="run_id"/> ${run.id})" id="runId=${run.id}&periodName=${period.name}">${fn:length(period.members)}&nbsp;<spring:message code="teacher.management.projectruntabs.registered"/></a>
                                                     </td>
                                                 </tr>
                                             </c:forEach>
-                                            <tr><td colspan="2" class="manageStudentGroups"><a class="manageStudents" title="<spring:message code="teacher.management.projectruntabs.manageStudents"/>: ${run.name} (<spring:message code="run_id"/> ${run.id})" id="runId=${run.id}"><img class="icon" alt="groups" src="${contextPath}/<spring:theme code="connected"/>" /><span><spring:message code="teacher.management.projectruntabs.manageStudents"/></span></a></td></tr>
+                                            <tr><td colspan="2" class="manageStudentGroups"><a class="manageStudents" runId="${run.id}" title="<spring:message code="teacher.management.projectruntabs.manageStudents"/>: ${run.name} (<spring:message code="run_id"/> ${run.id})" id="runId=${run.id}"><img class="icon" alt="groups" src="${contextPath}/<spring:theme code="connected"/>" /><span><spring:message code="teacher.management.projectruntabs.manageStudents"/></span></a></td></tr>
                                         </table>
                                     </td>
                                     <td>

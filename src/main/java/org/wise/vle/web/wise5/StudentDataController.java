@@ -36,6 +36,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +49,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.vle.wise5.VLEService;
+import org.wise.portal.service.work.BroadcastStudentWorkService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.Event;
@@ -59,6 +61,7 @@ import org.wise.vle.domain.work.StudentWork;
  *
  * @author Hiroki Terashima
  */
+@Secured("ROLE_USER")
 @Controller("wise5StudentDataController")
 @RequestMapping("/api")
 public class StudentDataController {
@@ -71,6 +74,9 @@ public class StudentDataController {
 
   @Autowired
   private MessagePublisher redisPublisher;
+
+  @Autowired
+  private BroadcastStudentWorkService broadcastStudentWorkService;
 
   @RequestMapping(method = RequestMethod.GET, value = "/student/data")
   public void getWISE5StudentData(HttpServletResponse response,
@@ -229,6 +235,8 @@ public class StudentDataController {
                     : studentWorkJSONObject.getInt("periodId"),
                   studentWorkJSONObject.isNull("workgroupId") ? null
                     : studentWorkJSONObject.getInt("workgroupId"),
+                  studentWorkJSONObject.isNull("peerGroupId") ? null
+                    : studentWorkJSONObject.getLong("peerGroupId"),
                   studentWorkJSONObject.isNull("isAutoSave") ? null
                     : studentWorkJSONObject.getBoolean("isAutoSave"),
                   studentWorkJSONObject.isNull("isSubmit") ? null
@@ -261,9 +269,9 @@ public class StudentDataController {
               studentWorkResultJSONArray.put(savedStudentWorkJSONObject);
 
               studentWork.convertToClientStudentWork();
-              broadcastStudentWorkToTeacher(studentWork);
+              broadcastStudentWorkService.broadcastToTeacher(studentWork);
               if (studentWork.getComponentType().equals("Discussion")) {
-                broadcastStudentWorkToClassroom(studentWork);
+                broadcastStudentWorkService.broadcastToClassroom(studentWork);
               }
             } catch (Exception e) {
               e.printStackTrace();

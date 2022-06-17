@@ -268,7 +268,7 @@ public interface RunService {
    * @param periodId
    *                   periodId to which all returned workgroups belong
    */
-  List<Workgroup> getWorkgroups(Long runId, Long periodId) throws ObjectNotFoundException;
+  List<Workgroup> getWorkgroups(Long runId, Long periodId);
 
   /**
    * Sets whether the run is paused

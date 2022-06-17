@@ -104,7 +104,8 @@ public class WorkgroupTagAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void deleteTag_TeacherDoesNotHavePermission_AccessDenied() {
+  public void deleteTag_TeacherDoesNotHavePermission_AccessDenied()
+      throws JsonProcessingException, ObjectNotFoundException, JSONException {
     expect(tagService.canEditTag(teacherAuth, tag1)).andReturn(false);
     replay(tagService);
     try {
@@ -116,7 +117,8 @@ public class WorkgroupTagAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void deleteTag_TeacherHasPermission_DeleteTag() {
+  public void deleteTag_TeacherHasPermission_DeleteTag()
+      throws ObjectNotFoundException, JsonProcessingException, JSONException {
     expect(tagService.canEditTag(teacherAuth, tag1)).andReturn(true);
     tagService.deleteTag(teacherAuth, tag1);
     expectLastCall();

@@ -19,6 +19,7 @@ package org.wise.portal.junit;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
@@ -28,6 +29,8 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.wise.portal.dao.group.impl.HibernateGroupDao;
+import org.wise.portal.dao.peergroup.impl.HibernatePeerGroupDao;
+import org.wise.portal.dao.peergrouping.impl.HibernatePeerGroupingDao;
 import org.wise.portal.dao.project.impl.HibernateProjectDao;
 import org.wise.portal.dao.run.impl.HibernateRunDao;
 import org.wise.portal.dao.user.impl.HibernateUserDao;
@@ -39,6 +42,8 @@ import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.peergroup.PeerGroup;
+import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
@@ -51,16 +56,16 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.user.UserService;
 
 /**
- * Allows testers to perform data store integration tests. Provides transactions and access
- * to the Spring Beans.
+ * Allows testers to perform data store integration tests. Provides transactions and access to the
+ * Spring Beans.
  *
  * @author Cynick Young
  * @author Hiroki Terashima
  */
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-public abstract class AbstractTransactionalDbTests extends
-    AbstractTransactionalJUnit4SpringContextTests {
+public abstract class AbstractTransactionalDbTests
+    extends AbstractTransactionalJUnit4SpringContextTests {
 
   @Autowired
   protected SessionFactory sessionFactory;
@@ -72,7 +77,7 @@ public abstract class AbstractTransactionalDbTests extends
 
   @Autowired
   private HibernateRunDao runDao;
-  
+
   @Autowired
   private HibernateUserDao userDao;
 
@@ -80,11 +85,17 @@ public abstract class AbstractTransactionalDbTests extends
   private HibernateGroupDao groupDao;
 
   @Autowired
+  private HibernatePeerGroupDao peerGroupDao;
+
+  @Autowired
+  private HibernatePeerGroupingDao peerGroupingDao;
+
+  @Autowired
   private HibernateWorkgroupDao workgroupDao;
-  
+
   @Autowired
   private UserService userService;
-  
+
   private Long nextAvailableProjectId = 1L;
 
   public void setUp() throws Exception {
@@ -102,9 +113,9 @@ public abstract class AbstractTransactionalDbTests extends
   }
 
   public User createTeacherUser(String firstName, String lastName, String username,
-        String displayName, String password, String city, String state, String country,
-        String email, String schoolName, Schoollevel schoolLevel, String googleUserId)
-        throws DuplicateUsernameException {
+      String displayName, String password, String city, String state, String country, String email,
+      String schoolName, Schoollevel schoolLevel, String googleUserId)
+      throws DuplicateUsernameException {
     TeacherUserDetails userDetails = new TeacherUserDetails();
     userDetails.setFirstname(firstName);
     userDetails.setLastname(lastName);
@@ -123,9 +134,8 @@ public abstract class AbstractTransactionalDbTests extends
     return user;
   }
 
-  public User createStudentUser(String firstName, String lastName, String  username, 
-        String password, int birthMonth, int birthDay, Gender gender)
-        throws DuplicateUsernameException {
+  public User createStudentUser(String firstName, String lastName, String username, String password,
+      int birthMonth, int birthDay, Gender gender) throws DuplicateUsernameException {
     StudentUserDetails userDetails = new StudentUserDetails();
     userDetails.setFirstname(firstName);
     userDetails.setLastname(lastName);
@@ -164,8 +174,7 @@ public abstract class AbstractTransactionalDbTests extends
     return run;
   }
 
-  public Run createProjectAndRun(Long id, String name, User owner, Date startTime,
-      String runCode) {
+  public Run createProjectAndRun(Long id, String name, User owner, Date startTime, String runCode) {
     Project project = createProject(id, name, owner);
     projectDao.save(project);
     Run run = createRun(id, name, startTime, runCode, owner, project);
@@ -196,9 +205,29 @@ public abstract class AbstractTransactionalDbTests extends
     return workgroup;
   }
 
+  public Workgroup addUserToRun(User user, Run run, Group period) {
+    Set<User> members = new HashSet<User>();
+    members.add(user);
+    return createWorkgroup(members, run, period);
+  }
+
+  public void addPeriodToRun(Group period, Run run) {
+    Set<Group> periods = run.getPeriods();
+    periods.add(period);
+    run.setPeriods(periods);
+  }
+
   public Date getDateXDaysFromNow(int x) {
     Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.DATE, x); 
+    calendar.add(Calendar.DATE, x);
     return new Date(calendar.getTimeInMillis());
+  }
+
+  protected void savePeerGroup(PeerGroup peerGroup) {
+    peerGroupDao.save(peerGroup);
+  }
+
+  protected void savePeerGrouping(PeerGrouping peerGrouping) {
+    peerGroupingDao.save(peerGrouping);
   }
 }

@@ -50,9 +50,7 @@ import org.wise.portal.service.user.UserService;
 @Controller
 @SessionAttributes("changeStudentPasswordParameters")
 @RequestMapping(value = {
-  "/student/changestudentpassword.html",
-  "/**/changepassword.html",
-  "/teacher/management/changestudentpassword"})
+  "/**/changepassword.html"})
 public class ChangeUserPasswordController {
 
   @Autowired

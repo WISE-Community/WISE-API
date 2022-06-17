@@ -209,6 +209,37 @@ create table notification (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table peer_groupings (
+    id bigint not null auto_increment,
+    runId bigint not null,
+    logic text not null,
+    logicThresholdCount integer,
+    logicThresholdPercent integer,
+    maxMembershipCount integer,
+    tag varchar(30) not null,
+    OPTLOCK integer,
+    index peerGroupingsRunIdIndex (runId),
+    constraint peerGroupingsRunIdFK foreign key (runId) references runs (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table peer_groups (
+    id bigint not null auto_increment,
+    peerGroupingId bigint not null,
+    periodId bigint,
+    OPTLOCK integer,
+    constraint peerGroupingIdFK foreign key (peerGroupingId) references peer_groupings (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table peer_groups_related_to_workgroups (
+    peer_group_fk bigint not null,
+    workgroup_fk bigint not null,
+    constraint peer_groups_related_to_workgroups_workgroup_fk foreign key (workgroup_fk) references workgroups (id),
+    constraint peer_groups_related_to_workgroups_peer_group_fk foreign key (peer_group_fk) references peer_groups (id),
+    primary key (peer_group_fk, workgroup_fk)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 create table portal (
     id tinyint not null auto_increment,
     address varchar(255),
@@ -382,14 +413,17 @@ create table studentWork (
     nodeId varchar(30) not null,
     serverSaveTime datetime not null,
     studentData mediumtext not null,
+    peerGroupId bigint,
     periodId bigint not null,
     runId bigint not null,
     workgroupId bigint not null,
     index studentWorkRunIdIndex (runId),
     index studentWorkWorkgroupIdIndex (workgroupId),
+    index studentWorkPeerGroupIdIndex (peerGroupId),
     constraint studentWorkPeriodIdFK foreign key (periodId) references `groups` (id),
     constraint studentWorkRunIdFK foreign key (runId) references runs (id),
     constraint studentWorkWorkgroupIdFK foreign key (workgroupId) references workgroups (id),
+    constraint studentWorkPeerGroupIdFK foreign key (peerGroupId) references peer_groups (id),
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

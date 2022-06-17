@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -67,6 +66,7 @@ import org.wise.portal.presentation.web.exception.TeacherAlreadySharedWithRunExc
 import org.wise.portal.presentation.web.response.SharedOwner;
 import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.DuplicateRunCodeException;
@@ -119,6 +119,9 @@ public class RunServiceImpl implements RunService {
 
   @Autowired
   private ProjectService projectService;
+
+  @Autowired
+  private PeerGroupingService peerGroupingService;
 
   @Transactional(readOnly = true)
   public List<Run> getRunList() {
@@ -235,15 +238,17 @@ public class RunServiceImpl implements RunService {
     return run;
   }
 
+  @Transactional()
   public Run createRun(Long projectId, User user, Set<String> periodNames, boolean isRandomPeriodAssignment,
-        Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-        Locale locale) throws Exception {
+      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
+      Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
     RunParameters runParameters = createRunParameters(project, user, periodNames,
         isRandomPeriodAssignment, maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate,
         locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
+    peerGroupingService.createPeerGroupings(run);
     return run;
   }
 
@@ -806,5 +811,4 @@ public class RunServiceImpl implements RunService {
     run.setRandomPeriodAssignment(isRandomPeriodAssignment);
     runDao.save(run);
   }
-
 }

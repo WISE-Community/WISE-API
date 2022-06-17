@@ -26,6 +26,7 @@ package org.wise.portal.service.tag;
 import java.util.List;
 
 import org.springframework.security.core.Authentication;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.run.Run;
 
@@ -86,5 +87,5 @@ public interface TagService {
 
   boolean canEditTag(Authentication auth, Tag tag);
 
-  void deleteTag(Authentication auth, Tag tag);
+  void deleteTag(Authentication auth, Tag tag) throws ObjectNotFoundException;
 }

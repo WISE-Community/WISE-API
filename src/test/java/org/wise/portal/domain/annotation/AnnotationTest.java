@@ -1,5 +1,7 @@
 package org.wise.portal.domain.annotation;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
@@ -89,5 +91,23 @@ public class AnnotationTest {
         + "\"nodeId\":null,\"periodId\":100,\"runId\":1,\"serverSaveTime\":2000000000000,"
         + "\"type\":\"score\"}";
     assertEquals(expectedJson, json);
+  }
+
+  @Test
+  public void isScoreType_scoreType_shouldReturnTrue() {
+    annotation.setType("score");
+    assertTrue(annotation.isScoreType());
+  }
+
+  @Test
+  public void isScoreType_autoScoreType_shouldReturnTrue() {
+    annotation.setType("autoScore");
+    assertTrue(annotation.isScoreType());
+  }
+
+  @Test
+  public void isScoreType_commentType_shouldReturnFalse() {
+    annotation.setType("comment");
+    assertFalse(annotation.isScoreType());
   }
 }

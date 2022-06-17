@@ -23,13 +23,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.notification.NotificationService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
-import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.notification.Notification;
 
@@ -51,9 +52,6 @@ public class NotificationController {
   private UserService userService;
 
   @Autowired
-  private WorkgroupService workgroupService;
-
-  @Autowired
   private NotificationService notificationService;
 
   @Autowired
@@ -71,33 +69,30 @@ public class NotificationController {
   @GetMapping("/notification/{runId}")
   protected List<Notification> getNotifications(
       Authentication auth,
-      @PathVariable Long runId,
+      @PathVariable("runId") RunImpl run,
       @RequestParam(value = "id", required = false) Integer id,
       @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "toWorkgroupId", required = false) Long toWorkgroupId,
+      @RequestParam(value = "toWorkgroupId", required = false) WorkgroupImpl toWorkgroup,
       @RequestParam(value = "groupId", required = false) String groupId,
       @RequestParam(value = "nodeId", required = false) String nodeId,
       @RequestParam(value = "componentId", required = false) String componentId)
       throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
-    Run run = runService.retrieveById(new Long(runId));
-    if (toWorkgroupId != null) {
-      Workgroup workgroup = workgroupService.retrieveById(new Long(toWorkgroupId));
-      if (isStudentAndNotAllowedToSaveNotification(user, run, workgroup)) {
+    if (toWorkgroup != null) {
+      if (isStudentAndNotAllowedToSaveNotification(user, run, toWorkgroup)) {
         return new ArrayList<Notification>();
       }
     } else if (!user.isAdmin() && !runService.hasRunPermission(run, user, BasePermission.READ)) {
       return new ArrayList<Notification>();
     }
-    return vleService.getNotifications(id, runId, periodId,
-        toWorkgroupId, groupId, nodeId, componentId);
+    return vleService.getNotifications(id, run, periodId, toWorkgroup, groupId, nodeId,
+        componentId);
   }
 
   @PostMapping("/notification/{runId}")
-  protected Notification saveNotification(@PathVariable Integer runId,
+  protected Notification saveNotification(@PathVariable("runId") RunImpl run,
       @RequestBody Notification notification, Authentication authentication) throws Exception {
     User user = userService.retrieveUserByUsername(authentication.getName());
-    Run run = runService.retrieveById(new Long(runId));
     Workgroup fromWorkgroup = notification.getFromWorkgroup();
     Workgroup toWorkgroup = notification.getToWorkgroup();
     if (user.isAdmin() || runService.hasRunPermission(run, user, BasePermission.READ)) {
@@ -176,11 +171,10 @@ public class NotificationController {
   }
 
   @PostMapping("/notification/{runId}/dismiss")
-  protected Notification dismissNotification(@PathVariable Integer runId,
+  protected Notification dismissNotification(@PathVariable("runId") RunImpl run,
       @RequestBody Notification notification, Authentication authentication)
       throws IOException, ObjectNotFoundException, JSONException {
     User user = userService.retrieveUserByUsername(authentication.getName());
-    Run run = runService.retrieveById(new Long(runId));
     if (canDismissNotification(user, notification, run)) {
       Timestamp timeDismissed = notification.getTimeDismissed();
       notification = vleService.dismissNotification(notification, timeDismissed);
