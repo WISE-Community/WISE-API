@@ -52,7 +52,7 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
 
   private boolean isAllowedToGetData(Authentication auth, Run run, Group period, String nodeId,
       String componentId) throws IOException, JSONException, ObjectNotFoundException {
-    return isUserInRunAndPeriod(auth, run, period)
+    return isStudentInRunAndPeriod(auth, run, period)
         && isDiscussionComponent(run, nodeId, componentId);
   }
 

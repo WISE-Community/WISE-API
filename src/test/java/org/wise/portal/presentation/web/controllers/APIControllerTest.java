@@ -64,7 +64,7 @@ public abstract class APIControllerTest {
   protected final String TEACHER2_USERNAME = "SandyCheeks";
   protected final String USERNAME_NOT_IN_DB = "usernameNotInDB";
 
-  protected Authentication adminAuth, studentAuth, studentAuth2, teacherAuth;
+  protected Authentication adminAuth, studentAuth, studentAuth2, teacherAuth, teacherAuth2;
   protected ProjectImpl project1, project2, project3;
   protected Long projectId1 = 1L;
   protected Long projectId2 = 2L;
@@ -152,6 +152,7 @@ public abstract class APIControllerTest {
     teacher2UserDetails = createTeacherUserDetails(TEACHER2_FIRSTNAME, TEACHER2_LASTNAME,
         TEACHER2_USERNAME, Schoollevel.COLLEGE, 5);
     teacher2 = createTeacher(teacher2Id, teacher2UserDetails);
+    teacherAuth2 = createAuthentication(teacher2UserDetails);
   }
 
   private void createAdmin() {
