@@ -250,7 +250,7 @@ public class StudentDataController {
           for (int c = 0; c < studentWorkJSONArray.length(); c++) {
             try {
               JSONObject studentWorkJSONObject = studentWorkJSONArray.getJSONObject(c);
-              if (!canSave( "studentWork", studentWorkJSONObject, workgroup)) {
+              if (!canSaveStudentWorkOrEvent(studentWorkJSONObject, workgroup)) {
                 continue;
               }
               StudentWork studentWork = vleService.saveStudentWork(
@@ -311,7 +311,7 @@ public class StudentDataController {
           for (int e = 0; e < eventsJSONArray.length(); e++) {
             try {
               JSONObject eventJSONObject = eventsJSONArray.getJSONObject(e);
-              if (!canSave("event", eventJSONObject, workgroup)) {
+              if (!canSaveStudentWorkOrEvent(eventJSONObject, workgroup)) {
                 continue;
               }
               Event event = vleService.saveEvent(
@@ -332,7 +332,7 @@ public class StudentDataController {
                   eventJSONObject.isNull("clientSaveTime") ? null
                     : eventJSONObject.getString("clientSaveTime"),
                   eventJSONObject.isNull("projectId") ? null : eventJSONObject.getInt("projectId"),
-                  eventJSONObject.isNull("userId") ? null : eventJSONObject.getInt("userId"));  // REMOVE
+                  null);
 
               // before returning saved Event, strip all fields except id, responseToken, and
               // serverSaveTime to minimize response size
@@ -353,7 +353,7 @@ public class StudentDataController {
           for (int a = 0; a < annotationsJSONArray.length(); a++) {
             try {
               JSONObject annotationJSONObject = annotationsJSONArray.getJSONObject(a);
-              if (!canSave("annotation", annotationJSONObject, workgroup)) {
+              if (!canSaveAnnotation(annotationJSONObject, workgroup)) {
                 continue;
               }
               Annotation annotation;
@@ -456,20 +456,46 @@ public class StudentDataController {
     }
   }
 
-  private boolean canSave(String type, JSONObject jsonObject, Workgroup workgroup) {
+  private boolean canSaveStudentWorkOrEvent(JSONObject jsonObject, Workgroup workgroup) {
+    return isMatchingRunAndPeriod(jsonObject, workgroup) && isMatchingWorkgroup(jsonObject, workgroup);
+  }
+
+  private boolean isMatchingRunAndPeriod(JSONObject jsonObject, Workgroup workgroup) {
     try {
-      boolean result = jsonObject.getInt("runId") == workgroup.getRun().getId() &&
+      return jsonObject.getInt("runId") == workgroup.getRun().getId() &&
           jsonObject.getLong("periodId") == workgroup.getPeriod().getId();
-      if (type.equals("studentWork") || type.equals("event")) {
-        return result && jsonObject.getLong("workgroupId") == workgroup.getId();
-      } else if (type.equals("annotation")) {
-        Workgroup toWorkgroup =
-            workgroupService.retrieveById(jsonObject.getLong("toWorkgroupId"));
-        return result && jsonObject.getLong("fromWorkgroupId") == workgroup.getId() &&
-            toWorkgroup.getRun().equals(workgroup.getRun());
-      }
     } catch (JSONException e) {
-    } catch (ObjectNotFoundException e) {
+    }
+    return false;
+  }
+
+  private boolean isMatchingWorkgroup(JSONObject jsonObject, Workgroup workgroup) {
+    try {
+      return jsonObject.getLong("workgroupId") == workgroup.getId();
+    } catch (JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean canSaveAnnotation(JSONObject jsonObject, Workgroup workgroup) {
+    return isMatchingRunAndPeriod(jsonObject, workgroup) &&
+        isValidFromWorkgroupId(jsonObject, workgroup) &&
+        isToWorkgroupInSameRun(jsonObject, workgroup);
+  }
+
+  private boolean isToWorkgroupInSameRun(JSONObject jsonObject, Workgroup workgroup) {
+    try {
+      Workgroup toWorkgroup = workgroupService.retrieveById(jsonObject.getLong("toWorkgroupId"));
+      return toWorkgroup.getRun().equals(workgroup.getRun());
+    } catch (ObjectNotFoundException | JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean isValidFromWorkgroupId(JSONObject jsonObject, Workgroup workgroup) {
+    try {
+      return jsonObject.getLong("fromWorkgroupId") == workgroup.getId();
+    } catch (JSONException e) {
     }
     return false;
   }
