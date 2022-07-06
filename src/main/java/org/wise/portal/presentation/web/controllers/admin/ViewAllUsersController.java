@@ -31,13 +31,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.wise.portal.domain.authentication.impl.StudentUserDetails;
-import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.authentication.UserDetailsService;
-import org.wise.portal.service.session.SessionService;
 import org.wise.portal.service.user.UserService;
 
 /**
@@ -53,9 +50,6 @@ public class ViewAllUsersController{
   @Autowired
   private UserDetailsService userDetailsService;
 
-  @Autowired
-  private SessionService sessionService;
-
   protected static final String TEACHERS = "teachers";
 
   protected static final String STUDENTS = "students";
@@ -70,44 +64,36 @@ public class ViewAllUsersController{
 
   private static final String USERNAMES = "usernames";
 
-  private static final String LOGGED_IN_STUDENT_USERNAMES = "loggedInStudentUsernames";
-
-  private static final String LOGGED_IN_TEACHER_USERNAMES = "loggedInTeacherUsernames";
-
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected String showUsers(HttpServletRequest request, ModelMap modelMap) throws Exception {
-    String onlyShowLoggedInUser = request.getParameter("onlyShowLoggedInUser");
     String onlyShowUsersWhoLoggedIn = request.getParameter("onlyShowUsersWhoLoggedIn");
-    if (onlyShowLoggedInUser != null && onlyShowLoggedInUser.equals("true")) {
-      modelMap.put(LOGGED_IN_STUDENT_USERNAMES, sessionService.getLoggedInStudents());
-      modelMap.put(LOGGED_IN_TEACHER_USERNAMES, sessionService.getLoggedInTeachers());
-    } else if (onlyShowUsersWhoLoggedIn != null) {
+    if (onlyShowUsersWhoLoggedIn != null) {
       List<User> studentsWhoLoggedInSince = new ArrayList<User>();
       List<User> teachersWhoLoggedInSince = new ArrayList<User>();
       if ("today".equals(onlyShowUsersWhoLoggedIn)) {
         studentsWhoLoggedInSince =
             userService.retrieveStudentUsersWhoLoggedInToday();
-        teachersWhoLoggedInSince = 
+        teachersWhoLoggedInSince =
             userService.retrieveTeacherUsersWhoLoggedInToday();
       } else if ("thisWeek".equals(onlyShowUsersWhoLoggedIn)) {
         studentsWhoLoggedInSince =
             userService.retrieveStudentUsersWhoLoggedInThisWeek();
-        teachersWhoLoggedInSince = 
+        teachersWhoLoggedInSince =
             userService.retrieveTeacherUsersWhoLoggedInThisWeek();
       } else if ("thisMonth".equals(onlyShowUsersWhoLoggedIn)) {
         studentsWhoLoggedInSince =
             userService.retrieveStudentUsersWhoLoggedInThisMonth();
-        teachersWhoLoggedInSince = 
+        teachersWhoLoggedInSince =
             userService.retrieveTeacherUsersWhoLoggedInThisMonth();
       } else if ("thisYear".equals(onlyShowUsersWhoLoggedIn)) {
         studentsWhoLoggedInSince =
             userService.retrieveStudentUsersWhoLoggedInThisYear();
-        teachersWhoLoggedInSince = 
+        teachersWhoLoggedInSince =
             userService.retrieveTeacherUsersWhoLoggedInThisYear();
       } else {
         studentsWhoLoggedInSince =
             userService.retrieveStudentUsersWhoLoggedInSinceYesterday();
-        teachersWhoLoggedInSince = 
+        teachersWhoLoggedInSince =
             userService.retrieveTeacherUsersWhoLoggedInSinceYesterday();
       }
       modelMap.put("studentsWhoLoggedInSince", studentsWhoLoggedInSince);

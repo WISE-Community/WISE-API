@@ -105,7 +105,7 @@
                             <sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
                                 <spring:message code='admin.index.list' />
                                 <spring:message code='admin.index.allUsersWhoLoggedIn' />
-                                <a href="${contextPath}/admin/account/manageusers?onlyShowLoggedInUser=true">
+                                <a href="${contextPath}/admin/account/show-online-users">
                                     <spring:message code='now' /> (${numCurrentlyLoggedInUsers})</a> |
                                 <a href="${contextPath}/admin/account/manageusers?onlyShowUsersWhoLoggedIn=today">
                                     <spring:message code='today' /> (${numUsersWhoLoggedInToday})</a> |
