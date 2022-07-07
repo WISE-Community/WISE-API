@@ -29,6 +29,7 @@ import java.net.URLEncoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +43,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,6 +53,7 @@ import org.wise.portal.domain.admin.DailyAdminJob;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.session.SessionService;
 
@@ -74,11 +79,18 @@ public class AdminIndexController {
   private DailyAdminJob adminJob;
 
   @Autowired
+  private SessionRegistry sessionRegistry;
+
+  @Autowired
   protected SessionService sessionService;
+
+  @Autowired
+  private UserDetailsService userDetailsService;
 
   @GetMapping("/admin")
   protected ModelAndView showAdminHome(HttpServletRequest request) throws Exception {
     ModelAndView modelAndView = new ModelAndView("admin/index");
+    this.removeExpiredUserSessions();
 
     String thisWISEVersion;
     try {
@@ -119,6 +131,19 @@ public class AdminIndexController {
       modelAndView.addObject("numUsersWhoLoggedInToday", 0);
     }
     return modelAndView;
+  }
+
+  private void removeExpiredUserSessions() {
+    Set<String> loggedInUsernames = sessionService.getLoggedInStudents();
+    loggedInUsernames.addAll(sessionService.getLoggedInTeachers());
+    for (String loggedInUsername : loggedInUsernames) {
+      UserDetails loggedInUserDetails = userDetailsService.loadUserByUsername(loggedInUsername);
+      List<SessionInformation> sessions =
+          sessionRegistry.getAllSessions(loggedInUserDetails, false);
+      if (sessions.size() == 0) {
+        sessionService.removeUser(loggedInUserDetails);
+      }
+    }
   }
 
   /**
