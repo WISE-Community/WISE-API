@@ -44,9 +44,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -69,6 +71,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @Controller
 @RequestMapping("/api/student/data")
 public class StudentDataController {
+
+  @Autowired
+  private ProjectService projectService;
 
   @Autowired
   private RunService runService;
@@ -477,25 +482,40 @@ public class StudentDataController {
     return false;
   }
 
-  private boolean canSaveAnnotation(JSONObject jsonObject, Workgroup workgroup) {
-    return isMatchingRunAndPeriod(jsonObject, workgroup) &&
-        isValidFromWorkgroupId(jsonObject, workgroup) &&
-        isToWorkgroupInSameRun(jsonObject, workgroup);
+  private boolean canSaveAnnotation(JSONObject annotation, Workgroup workgroup) {
+    return isMatchingRunAndPeriod(annotation, workgroup) &&
+        (isAutoGradedAnnotation(annotation, workgroup) ||
+        isValidFromWorkgroupId(annotation, workgroup)) &&
+        isToWorkgroupInSameRun(annotation, workgroup);
   }
 
-  private boolean isToWorkgroupInSameRun(JSONObject jsonObject, Workgroup workgroup) {
+  private boolean isAutoGradedAnnotation(JSONObject annotation, Workgroup workgroup) {
     try {
-      Workgroup toWorkgroup = workgroupService.retrieveById(jsonObject.getLong("toWorkgroupId"));
-      return toWorkgroup.getRun().equals(workgroup.getRun());
-    } catch (ObjectNotFoundException | JSONException e) {
+      if (annotation.get("type").equals("autoComment") ||
+          annotation.get("type").equals("autoScore")) {
+          ProjectComponent component = projectService.getProjectComponent(
+              workgroup.getRun().getProject(), annotation.getString("nodeId"),
+              annotation.getString("componentId"));
+          return component != null && component.hasField("cRater");
+      }
+    } catch (JSONException | IOException e) {
     }
     return false;
   }
 
-  private boolean isValidFromWorkgroupId(JSONObject jsonObject, Workgroup workgroup) {
+  private boolean isValidFromWorkgroupId(JSONObject annotation, Workgroup workgroup) {
     try {
-      return jsonObject.getLong("fromWorkgroupId") == workgroup.getId();
+      return annotation.getLong("fromWorkgroupId") == workgroup.getId();
     } catch (JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean isToWorkgroupInSameRun(JSONObject annotation, Workgroup workgroup) {
+    try {
+      Workgroup toWorkgroup = workgroupService.retrieveById(annotation.getLong("toWorkgroupId"));
+      return toWorkgroup.getRun().equals(workgroup.getRun());
+    } catch (ObjectNotFoundException | JSONException e) {
     }
     return false;
   }
