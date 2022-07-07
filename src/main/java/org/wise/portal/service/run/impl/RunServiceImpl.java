@@ -82,16 +82,18 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @Service
 public class RunServiceImpl implements RunService {
 
-  private String DEFAULT_RUNCODE_PREFIXES = "Tiger,Lion,Fox,Owl,Panda,Hawk,Mole,"
-      + "Falcon,Orca,Eagle,Manta,Otter,Cat,Zebra,Flea,Wolf,Dragon,Seal,Cobra,"
-      + "Bug,Gecko,Fish,Koala,Mouse,Wombat,Shark,Whale,Sloth,Slug,Ant,Mantis,"
-      + "Bat,Rhino,Gator,Monkey,Swan,Ray,Crow,Goat,Marmot,Dog,Finch,Puffin,Fly,"
-      + "Camel,Kiwi,Spider,Lizard,Robin,Bear,Boa,Cow,Crab,Mule,Moth,Lynx,Moose,"
-      + "Skunk,Mako,Liger,Llama,Shrimp,Parrot,Pig,Clam,Urchin,Toucan,Frog,Toad,"
-      + "Turtle,Viper,Trout,Hare,Bee,Krill,Dodo,Tuna,Loon,Leech,Python,Wasp,Yak,"
-      + "Snake,Duck,Worm,Yeti";
+  private String DEFAULT_RUNCODE_PREFIXES = "Ant,Ape,Asp,Bear,Boa,Bee,Bat,Bug,Badger,Beetle,Bird,"
+      + "Bison,Bobcat,Camel,Cow,Crab,Clam,Crow,Cat,Cobra,Carp,Cicada,Cougar,Crane,Coyote,Dog,Duck,"
+      + "Dodo,Dragon,Deer,Dingo,Donkey,Eagle,Emu,Eel,Elk,Finch,Fly,Frog,Fox,Falcon,Flea,Fish,"
+      + "Ferret,Goat,Gator,Gecko,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Iguana,Ibex,Impala,"
+      + "Jackal,Jaguar,Kiwi,Krill,Koala,Lizard,Liger,Llama,Loon,Leech,Lion,Lynx,Lemur,Mule,Moth,"
+      + "Moose,Mako,Marmot,Monkey,Mantis,Mole,Manta,Mouse,Mink,Newt,Nutria,Owl,Orca,Otter,Ox,"
+      + "Oyster,Puffin,Parrot,Pig,Python,Panda,Pika,Pigeon,Poodle,Prawn,Pug,Puma,Quail,Robin,Ray,"
+      + "Rhino,Rabbit,Spider,Skunk,Shrimp,Snake,Swan,Sloth,Slug,Shark,Seal,Sable,Salmon,Snail,"
+      + "Squid,Sheep,Stork,Stoat,Toucan,Toad,Turtle,Trout,Tuna,Tiger,Tapir,Turkey,Thrush,Urchin,"
+      + "Viper,Wasp,Worm,Whale,Wombat,Wolf,Yak,Yeti,Zebra";
 
-  private static final int MAX_RUNCODE_DIGIT = 1000;
+  private static final int MAX_RUNCODE_DIGIT = 10000;
 
   @Autowired
   private PortalService portalService;
@@ -177,8 +179,7 @@ public class RunServiceImpl implements RunService {
     }
     String[] runcodePrefixes = runcodePrefixesStr.split(",");
     String word = runcodePrefixes[rand.nextInt(runcodePrefixes.length)];
-    String runCode = (word + sb.toString());
-    return runCode;
+    return (word + sb.toString());
   }
 
   /**
@@ -490,17 +491,17 @@ public class RunServiceImpl implements RunService {
   }
 
   private String generateUniqueRunCode(Locale locale) {
-    String tempRunCode = generateRunCode(locale);
+    String runCode = generateRunCode(locale);
     while (true) {
       try {
-        checkForRunCodeDuplicate(tempRunCode);
+        checkForRunCodeDuplicate(runCode);
       } catch (DuplicateRunCodeException e) {
-        tempRunCode = generateRunCode(locale);
+        runCode = generateRunCode(locale);
         continue;
       }
       break;
     }
-    return tempRunCode;
+    return runCode;
   }
 
   /**
