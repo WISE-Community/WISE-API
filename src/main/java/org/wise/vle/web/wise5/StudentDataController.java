@@ -37,16 +37,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
-import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -66,9 +68,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Hiroki Terashima
  */
 @Secured("ROLE_STUDENT")
-@Controller("wise5StudentDataController")
-@RequestMapping("/api")
+@Controller
+@RequestMapping("/api/student/data")
 public class StudentDataController {
+
+  @Autowired
+  private ProjectService projectService;
 
   @Autowired
   private RunService runService;
@@ -88,9 +93,8 @@ public class StudentDataController {
   @Autowired
   private BroadcastStudentWorkService broadcastStudentWorkService;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/student/data")
-  public void getWISE5StudentData(HttpServletResponse response,
-      Authentication authentication,
+  @GetMapping
+  public void getWISE5StudentData(HttpServletResponse response, Authentication authentication,
       @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
       @RequestParam(value = "getEvents", defaultValue = "false") boolean getEvents,
       @RequestParam(value = "getAnnotations", defaultValue = "false") boolean getAnnotations,
@@ -224,10 +228,10 @@ public class StudentDataController {
    * @param annotations
    *                          JSON string containing annotations
    */
-  @PostMapping("/student/data")
+  @PostMapping
   public void postWISE5StudentData(HttpServletResponse response,
-      @RequestBody ObjectNode postedParams) throws JSONException {
-    User signedInUser = ControllerUtil.getSignedInUser();
+      @RequestBody ObjectNode postedParams, Authentication auth) throws JSONException {
+    User user = userService.retrieveUserByUsername(auth.getName());
     Integer runId = postedParams.get("runId").asInt();
     String studentWorkList = postedParams.get("studentWorkList").asText();
     String events = postedParams.get("events").asText();
@@ -235,7 +239,12 @@ public class StudentDataController {
     JSONObject result = new JSONObject();
     try {
       Run run = runService.retrieveById(new Long(runId));
-      if (run.isActive() && run.isStudentAssociatedToThisRun(signedInUser)) {
+      if (run.isActive() && run.isStudentAssociatedToThisRun(user)) {
+        List<Workgroup> workgroups = workgroupService.getWorkgroupListByRunAndUser(run, user);
+        if (workgroups.size() == 0) {
+          return;
+        }
+        Workgroup workgroup = workgroups.get(0);
         // maps nodeId_componentId to StudentWork.
         HashMap<String, StudentWork> savedStudentWorkList = new HashMap<>();
         // Used later for handling simultaneous POST of CRater annotation
@@ -246,7 +255,9 @@ public class StudentDataController {
           for (int c = 0; c < studentWorkJSONArray.length(); c++) {
             try {
               JSONObject studentWorkJSONObject = studentWorkJSONArray.getJSONObject(c);
-              String requestToken = studentWorkJSONObject.getString("requestToken");
+              if (!canSaveStudentWorkOrEvent(studentWorkJSONObject, workgroup)) {
+                continue;
+              }
               StudentWork studentWork = vleService.saveStudentWork(
                   studentWorkJSONObject.isNull("id") ? null : studentWorkJSONObject.getInt("id"),
                   studentWorkJSONObject.isNull("runId") ? null
@@ -283,7 +294,7 @@ public class StudentDataController {
               // serverSaveTime to minimize response size
               JSONObject savedStudentWorkJSONObject = new JSONObject();
               savedStudentWorkJSONObject.put("id", studentWork.getId());
-              savedStudentWorkJSONObject.put("requestToken", requestToken);
+              savedStudentWorkJSONObject.put("requestToken", studentWorkJSONObject.getString("requestToken"));
               savedStudentWorkJSONObject.put("serverSaveTime",
                   studentWork.getServerSaveTime().getTime());
               studentWorkResultJSONArray.put(savedStudentWorkJSONObject);
@@ -305,7 +316,9 @@ public class StudentDataController {
           for (int e = 0; e < eventsJSONArray.length(); e++) {
             try {
               JSONObject eventJSONObject = eventsJSONArray.getJSONObject(e);
-              String requestToken = eventJSONObject.getString("requestToken");
+              if (!canSaveStudentWorkOrEvent(eventJSONObject, workgroup)) {
+                continue;
+              }
               Event event = vleService.saveEvent(
                   eventJSONObject.isNull("id") ? null : eventJSONObject.getInt("id"),
                   eventJSONObject.isNull("runId") ? null : eventJSONObject.getInt("runId"),
@@ -324,13 +337,13 @@ public class StudentDataController {
                   eventJSONObject.isNull("clientSaveTime") ? null
                     : eventJSONObject.getString("clientSaveTime"),
                   eventJSONObject.isNull("projectId") ? null : eventJSONObject.getInt("projectId"),
-                  eventJSONObject.isNull("userId") ? null : eventJSONObject.getInt("userId"));
+                  null);
 
               // before returning saved Event, strip all fields except id, responseToken, and
               // serverSaveTime to minimize response size
               JSONObject savedEventJSONObject = new JSONObject();
               savedEventJSONObject.put("id", event.getId());
-              savedEventJSONObject.put("requestToken", requestToken);
+              savedEventJSONObject.put("requestToken", eventJSONObject.getString("requestToken"));
               savedEventJSONObject.put("serverSaveTime", event.getServerSaveTime().getTime());
               eventsResultJSONArray.put(savedEventJSONObject);
             } catch (Exception exception) {
@@ -345,7 +358,9 @@ public class StudentDataController {
           for (int a = 0; a < annotationsJSONArray.length(); a++) {
             try {
               JSONObject annotationJSONObject = annotationsJSONArray.getJSONObject(a);
-              String requestToken = annotationJSONObject.getString("requestToken");
+              if (!canSaveAnnotation(annotationJSONObject, workgroup)) {
+                continue;
+              }
               Annotation annotation;
               // check to see if this Annotation was posted along with a StudentWork (e.g. CRater)
               if (annotationJSONObject.isNull("studentWorkId")
@@ -421,7 +436,7 @@ public class StudentDataController {
               // serverSaveTime to minimize response size
               JSONObject savedAnnotationJSONObject = new JSONObject();
               savedAnnotationJSONObject.put("id", annotation.getId());
-              savedAnnotationJSONObject.put("requestToken", requestToken);
+              savedAnnotationJSONObject.put("requestToken", annotationJSONObject.getString("requestToken"));
               savedAnnotationJSONObject.put("serverSaveTime",
                   annotation.getServerSaveTime().getTime());
               annotationsResultJSONArray.put(savedAnnotationJSONObject);
@@ -444,5 +459,66 @@ public class StudentDataController {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private boolean canSaveStudentWorkOrEvent(JSONObject jsonObject, Workgroup workgroup) {
+    return isMatchingRunAndPeriod(jsonObject, workgroup) && isMatchingWorkgroup(jsonObject, workgroup);
+  }
+
+  private boolean isMatchingRunAndPeriod(JSONObject jsonObject, Workgroup workgroup) {
+    try {
+      return jsonObject.getInt("runId") == workgroup.getRun().getId() &&
+          jsonObject.getLong("periodId") == workgroup.getPeriod().getId();
+    } catch (JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean isMatchingWorkgroup(JSONObject jsonObject, Workgroup workgroup) {
+    try {
+      return jsonObject.getLong("workgroupId") == workgroup.getId();
+    } catch (JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean canSaveAnnotation(JSONObject annotation, Workgroup workgroup) {
+    return isMatchingRunAndPeriod(annotation, workgroup) &&
+        (isValidAutoGradedAnnotation(annotation, workgroup) ||
+        isValidFromWorkgroupId(annotation, workgroup)) &&
+        isToWorkgroupInSameRun(annotation, workgroup);
+  }
+
+  private boolean isValidAutoGradedAnnotation(JSONObject annotation, Workgroup workgroup) {
+    try {
+      if (annotation.get("type").equals("autoComment") ||
+          annotation.get("type").equals("autoScore")) {
+          ProjectComponent component = projectService.getProjectComponent(
+              workgroup.getRun().getProject(), annotation.getString("nodeId"),
+              annotation.getString("componentId"));
+          return component != null &&
+            component.getBoolean("enableCRater") &&
+            annotation.getLong("toWorkgroupId") == workgroup.getId();
+      }
+    } catch (JSONException | IOException e) {
+    }
+    return false;
+  }
+
+  private boolean isValidFromWorkgroupId(JSONObject annotation, Workgroup workgroup) {
+    try {
+      return annotation.getLong("fromWorkgroupId") == workgroup.getId();
+    } catch (JSONException e) {
+    }
+    return false;
+  }
+
+  private boolean isToWorkgroupInSameRun(JSONObject annotation, Workgroup workgroup) {
+    try {
+      Workgroup toWorkgroup = workgroupService.retrieveById(annotation.getLong("toWorkgroupId"));
+      return toWorkgroup.getRun().equals(workgroup.getRun());
+    } catch (ObjectNotFoundException | JSONException e) {
+    }
+    return false;
   }
 }

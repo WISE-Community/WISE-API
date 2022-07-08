@@ -74,6 +74,8 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.project.impl.PreviewProjectParameters;
+import org.wise.portal.domain.project.impl.ProjectComponent;
+import org.wise.portal.domain.project.impl.ProjectContent;
 import org.wise.portal.domain.project.impl.ProjectMetadataImpl;
 import org.wise.portal.domain.project.impl.ProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectPermission;
@@ -930,6 +932,15 @@ public class ProjectServiceImpl implements ProjectService {
     String projectFilePath = appProperties.getProperty("curriculum_base_dir")
         + project.getModulePath();
     return FileUtils.readFileToString(new File(projectFilePath));
+  }
+
+  @Override
+  public ProjectComponent getProjectComponent(Project project, String nodeId, String componentId)
+      throws IOException, JSONException {
+    String projectString = this.getProjectContent(project);
+    JSONObject projectJSON = new JSONObject(projectString);
+    ProjectContent projectContent = new ProjectContent(projectJSON);
+    return projectContent.getComponent(nodeId, componentId);
   }
 
   @CacheEvict(value = "projectContent", key = "#projectId", beforeInvocation = true)
