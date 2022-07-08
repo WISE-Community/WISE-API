@@ -484,19 +484,21 @@ public class StudentDataController {
 
   private boolean canSaveAnnotation(JSONObject annotation, Workgroup workgroup) {
     return isMatchingRunAndPeriod(annotation, workgroup) &&
-        (isAutoGradedAnnotation(annotation, workgroup) ||
+        (isValidAutoGradedAnnotation(annotation, workgroup) ||
         isValidFromWorkgroupId(annotation, workgroup)) &&
         isToWorkgroupInSameRun(annotation, workgroup);
   }
 
-  private boolean isAutoGradedAnnotation(JSONObject annotation, Workgroup workgroup) {
+  private boolean isValidAutoGradedAnnotation(JSONObject annotation, Workgroup workgroup) {
     try {
       if (annotation.get("type").equals("autoComment") ||
           annotation.get("type").equals("autoScore")) {
           ProjectComponent component = projectService.getProjectComponent(
               workgroup.getRun().getProject(), annotation.getString("nodeId"),
               annotation.getString("componentId"));
-          return component != null && component.getBoolean("enableCRater");
+          return component != null &&
+            component.getBoolean("enableCRater") &&
+            annotation.getLong("toWorkgroupId") == workgroup.getId();
       }
     } catch (JSONException | IOException e) {
     }
