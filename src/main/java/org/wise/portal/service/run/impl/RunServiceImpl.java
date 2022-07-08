@@ -82,16 +82,16 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @Service
 public class RunServiceImpl implements RunService {
 
-  private String DEFAULT_RUNCODE_PREFIXES = "Ant,Ape,Asp,Bear,Boa,Bee,Bat,Bug,Badger,Beetle,Bird,"
-      + "Bison,Bobcat,Camel,Cow,Crab,Clam,Crow,Cat,Cobra,Carp,Cicada,Cougar,Crane,Coyote,Dog,Duck,"
-      + "Dodo,Dragon,Deer,Dingo,Donkey,Eagle,Emu,Eel,Elk,Finch,Fly,Frog,Fox,Falcon,Flea,Fish,"
-      + "Ferret,Goat,Gator,Gecko,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Iguana,Ibex,Impala,"
-      + "Jackal,Jaguar,Kiwi,Krill,Koala,Lizard,Liger,Llama,Loon,Leech,Lion,Lynx,Lemur,Mule,Moth,"
-      + "Moose,Mako,Marmot,Monkey,Mantis,Mole,Manta,Mouse,Mink,Newt,Nutria,Owl,Orca,Otter,Ox,"
-      + "Oyster,Puffin,Parrot,Pig,Python,Panda,Pika,Pigeon,Poodle,Prawn,Pug,Puma,Quail,Robin,Ray,"
-      + "Rhino,Rabbit,Spider,Skunk,Shrimp,Snake,Swan,Sloth,Slug,Shark,Seal,Sable,Salmon,Snail,"
-      + "Squid,Sheep,Stork,Stoat,Toucan,Toad,Turtle,Trout,Tuna,Tiger,Tapir,Turkey,Thrush,Urchin,"
-      + "Viper,Wasp,Worm,Whale,Wombat,Wolf,Yak,Yeti,Zebra";
+  private String DEFAULT_RUNCODE_PREFIXES = "Ant,Ape,Asp,Badger,Bat,Bear,Bee,Beetle,Bird,Bison,Boa,"
+      + "Bobcat,Bug,Camel,Carp,Cat,Cicada,Clam,Cobra,Cougar,Cow,Coyote,Crab,Crane,Crow,Deer,Dingo,"
+      + "Dodo,Dog,Donkey,Dragon,Duck,Eagle,Eel,Elk,Emu,Falcon,Ferret,Finch,Fish,Flea,Fly,Fox,Frog,"
+      + "Gator,Gecko,Goat,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Ibex,Iguana,Impala,Jackal,"
+      + "Jaguar,Kiwi,Koala,Krill,Leech,Lemur,Liger,Lion,Lizard,Llama,Loon,Lynx,Mako,Manta,Mantis,"
+      + "Marmot,Mink,Mole,Monkey,Moose,Moth,Mouse,Mule,Newt,Nutria,Orca,Otter,Owl,Ox,Oyster,Panda,"
+      + "Parrot,Pig,Pigeon,Pika,Poodle,Prawn,Puffin,Pug,Puma,Python,Quail,Rabbit,Ray,Rhino,Robin,"
+      + "Sable,Salmon,Seal,Shark,Sheep,Shrimp,Skunk,Sloth,Slug,Snail,Snake,Spider,Squid,Stoat,"
+      + "Stork,Swan,Tapir,Thrush,Tiger,Toad,Toucan,Trout,Tuna,Turkey,Turtle,Urchin,Viper,Wasp,"
+      + "Whale,Wolf,Wombat,Worm,Yak,Yeti,Zebra";
 
   private static final int MAX_RUNCODE_DIGIT = 10000;
 
