@@ -58,6 +58,10 @@ public class ProjectComponent {
     return this.componentJSON.has(key);
   }
 
+  public boolean getBoolean(String key) throws JSONException {
+    return this.componentJSON.getBoolean(key);
+  }
+
   public int getInt(String key) throws JSONException {
     return this.componentJSON.getInt(key);
   }

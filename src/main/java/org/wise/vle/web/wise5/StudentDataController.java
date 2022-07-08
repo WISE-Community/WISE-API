@@ -496,7 +496,7 @@ public class StudentDataController {
           ProjectComponent component = projectService.getProjectComponent(
               workgroup.getRun().getProject(), annotation.getString("nodeId"),
               annotation.getString("componentId"));
-          return component != null && component.hasField("cRater");
+          return component != null && component.getBoolean("enableCRater");
       }
     } catch (JSONException | IOException e) {
     }
