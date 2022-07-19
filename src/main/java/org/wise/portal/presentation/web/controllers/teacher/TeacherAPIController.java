@@ -64,7 +64,7 @@ public class TeacherAPIController extends UserAPIController {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<Run> runs = runService.getRunListByOwner(user);
     runs.addAll(runService.getRunListBySharedOwner(user));
-    runs.sort((a,b) -> a.getStarttime().compareTo(b.getStarttime()));
+    runs.sort((a,b) -> b.getStarttime().compareTo(a.getStarttime()));
     return getRunsList(user, runs);
   }
 

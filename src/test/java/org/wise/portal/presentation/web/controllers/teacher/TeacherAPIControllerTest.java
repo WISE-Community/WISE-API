@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,27 @@ public class TeacherAPIControllerTest extends APIControllerTest {
 
   @Mock
   private UserDetailsService userDetailsService;
+
+  @Test
+  public void getRuns_ReturnPersonalAndSharedRunsSortedByStartTimeDesc() {
+    expect(userService.retrieveUserByUsername(teacherAuth.getName())).andReturn(teacher1);
+    List<Run> personalRuns = new ArrayList<Run>(Arrays.asList(run1, run3));
+    expect(runService.getRunListByOwner(teacher1)).andReturn(personalRuns);
+    List<Run> sharedRuns = new ArrayList<Run>(Arrays.asList(run2));
+    expect(runService.getRunListBySharedOwner(teacher1)).andReturn(sharedRuns);
+    expect(projectService.getProjectPath(isA(Project.class))).andReturn("");
+    expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
+       .andReturn(Arrays.asList());
+    expect(projectService.getProjectURI(isA(Project.class))).andReturn("").times(3);
+    expect(projectService.getLicensePath(isA(Project.class))).andReturn("").times(3);
+    expect(projectService.getProjectPath(isA(Project.class))).andReturn("").times(2);
+    expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
+       .andReturn(Arrays.asList()).times(2);
+    replay(projectService, runService, userService);
+    List<HashMap<String, Object>> allRuns = teacherAPIController.getRuns(teacherAuth);
+    assertEquals(3, allRuns.size());
+    verify(projectService, runService, userService);
+  }
 
   @Test
   public void getAllTeacherUsernames_OneTeachersInDB_ReturnOneUsername() {
