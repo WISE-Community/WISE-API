@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.annotation.PostConstruct;
 import javax.management.timer.Timer;
 
 import org.apache.commons.io.FileUtils;
@@ -122,7 +123,20 @@ public class ProjectServiceImpl implements ProjectService {
   @Autowired
   private RunService runService;
 
+  private String curriculumBaseDir;
+
+  private String curriculumBaseWWW;
+
+  private String hostname;
+
   private static final String LICENSE_PATH = "/license.txt";
+
+  @PostConstruct
+  public void init() {
+    this.curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
+    this.curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
+    this.hostname = appProperties.getProperty("wise.hostname");
+  }
 
   public void addBookmarkerToProject(Project project, User bookmarker) {
     project.getBookmarkers().add(bookmarker);
@@ -332,14 +346,12 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   private ModelAndView previewProjectWISE4(PreviewProjectParameters params, Project project) {
-    String wise4URL = appProperties.getProperty("wise.hostname")
-        + "/legacy/previewproject.html?projectId=" + project.getId();
+    String wise4URL = hostname + "/legacy/previewproject.html?projectId=" + project.getId();
     return new ModelAndView(new RedirectView(wise4URL));
   }
 
   private ModelAndView previewProjectWISE5(PreviewProjectParameters params, Project project) {
-    String wise5URL = appProperties.getProperty("wise.hostname") + "/preview/unit/"
-        + project.getId();
+    String wise5URL = hostname + "/preview/unit/" + project.getId();
     return new ModelAndView(new RedirectView(wise5URL));
   }
 
@@ -513,7 +525,6 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   public long getNextAvailableProjectId() {
-    String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
     File curriculumBaseDirFile = new File(curriculumBaseDir);
     long nextId = Math.max(projectDao.getMaxProjectId(), runDao.getMaxRunId()) + 1;
     while (true) {
@@ -532,7 +543,6 @@ public class ProjectServiceImpl implements ProjectService {
     Project parentProject = getById(projectId);
     long newProjectId = getNextAvailableProjectId();
     File parentProjectDir = new File(getProjectLocalPath(parentProject));
-    String curriculumBaseDir = appProperties.getProperty("curriculum_base_dir");
     File newProjectDir = new File(curriculumBaseDir, String.valueOf(newProjectId));
     FileManager.copy(parentProjectDir, newProjectDir);
     String projectModulePath = parentProject.getModulePath();
@@ -700,21 +710,14 @@ public class ProjectServiceImpl implements ProjectService {
 
   public String getProjectPath(Project project) {
     String modulePath = project.getModulePath();
-    int lastIndexOfSlash = modulePath.lastIndexOf("/");
-    if (lastIndexOfSlash != -1) {
-      String hostname = appProperties.getProperty("wise.hostname");
-      String curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
-      return hostname + curriculumBaseWWW + modulePath.substring(0, lastIndexOfSlash);
-    }
-    return "";
+    return hostname + curriculumBaseWWW + modulePath.substring(0, modulePath.lastIndexOf("/"));
   }
 
   public String getProjectURI(Project project) {
     if (project.getWiseVersion().equals(4)) {
-      return appProperties.getProperty("wise4.hostname") + "/previewproject.html?projectId="
-          + project.getId();
+      return hostname + "/legacy/previewproject.html?projectId=" + project.getId();
     } else {
-      return appProperties.getProperty("wise.hostname") + "/preview/unit/" + project.getId();
+      return hostname + "/preview/unit/" + project.getId();
     }
   }
 
@@ -740,8 +743,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   public String getLicensePath(Project project) {
     String licensePath = getProjectLocalPath(project) + LICENSE_PATH;
-    File licenseFile = new File(licensePath);
-    if (licenseFile.isFile()) {
+    if (new File(licensePath).isFile()) {
       return getProjectPath(project) + LICENSE_PATH;
     } else {
       return "";
@@ -750,12 +752,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   public String getProjectLocalPath(Project project) {
     String modulePath = project.getModulePath();
-    int lastIndexOfSlash = modulePath.lastIndexOf("/");
-    if (lastIndexOfSlash != -1) {
-      String curriculumBaseWWW = appProperties.getProperty("curriculum_base_dir");
-      return curriculumBaseWWW + modulePath.substring(0, lastIndexOfSlash);
-    }
-    return "";
+    return curriculumBaseDir + modulePath.substring(0, modulePath.lastIndexOf("/"));
   }
 
   public void writeProjectLicenseFile(Project project) throws JSONException {
@@ -841,8 +838,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   public void saveProjectContentToDisk(String projectJSONString, Project project)
       throws FileNotFoundException, IOException {
-    String projectJSONPath = appProperties.getProperty("curriculum_base_dir")
-        + project.getModulePath();
+    String projectJSONPath = curriculumBaseDir + project.getModulePath();
     Writer writer = new BufferedWriter(
         new OutputStreamWriter(new FileOutputStream(new File(projectJSONPath)), "UTF-8"));
     writer.write(projectJSONString);
@@ -929,8 +925,7 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Cacheable(value = "projectContent", key = "#project.getId()")
   public String getProjectContent(Project project) throws IOException {
-    String projectFilePath = appProperties.getProperty("curriculum_base_dir")
-        + project.getModulePath();
+    String projectFilePath = curriculumBaseDir + project.getModulePath();
     return FileUtils.readFileToString(new File(projectFilePath));
   }
 

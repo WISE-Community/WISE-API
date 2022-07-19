@@ -106,6 +106,12 @@ public class ProjectServiceImplTest {
     File tempProjectFolder = new File(tempProjectFolderPath);
     tempProjectFolder.mkdir();
     tempProjectFolder.deleteOnExit();
+    expect(appProperties.getProperty("curriculum_base_dir"))
+        .andReturn("src/test/webapp/curriculum");
+    expect(appProperties.getProperty("curriculum_base_www")).andReturn("/curriculum");
+    expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
+    replay(appProperties);
+    projectServiceImpl.init();
   }
 
   @After
@@ -120,7 +126,7 @@ public class ProjectServiceImplTest {
     expect(projectDao.getById(EXISTING_PROJECT_ID)).andReturn(expectedProject);
     replay(projectDao);
     assertEquals(expectedProject, projectServiceImpl.getById(EXISTING_PROJECT_ID));
-    verify(projectDao);
+    verify(appProperties, projectDao);
   }
 
   @Test
@@ -133,7 +139,7 @@ public class ProjectServiceImplTest {
       fail("ObjectNotFoundException expected but was not thrown");
     } catch (ObjectNotFoundException e) {
     }
-    verify(projectDao);
+    verify(appProperties, projectDao);
   }
 
   @Test
@@ -146,7 +152,6 @@ public class ProjectServiceImplTest {
     replay(projectDao);
     FileUtils fileUtils = mock(FileUtils.class);
     replay(fileUtils);
-    replay(appProperties);
 
     ProjectParameters projectParameters = new ProjectParameters();
     projectParameters.setProjectname("Airbags");
@@ -155,9 +160,7 @@ public class ProjectServiceImplTest {
     projectParameters.setMetadata(new ProjectMetadataImpl());
     Project createdProject = projectServiceImpl.createProject(projectParameters);
     assertEquals("Airbags", createdProject.getName());
-    verify(projectDao);
-    verify(fileUtils);
-    verify(appProperties);
+    verify(appProperties, fileUtils, projectDao);
   }
 
   @Test
@@ -165,8 +168,6 @@ public class ProjectServiceImplTest {
     Project project = new ProjectImpl();
     project.setId(12L);
     project.setWISEVersion(4);
-    expect(appProperties.getProperty("wise4.hostname")).andReturn("http://localhost:8080/legacy");
-    replay(appProperties);
     String uri = projectServiceImpl.getProjectURI(project);
     assertEquals("http://localhost:8080/legacy/previewproject.html?projectId=12", uri);
     verify(appProperties);
@@ -177,8 +178,6 @@ public class ProjectServiceImplTest {
     Project project = new ProjectImpl();
     project.setId(155L);
     project.setWISEVersion(5);
-    expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
-    replay(appProperties);
     String uri = projectServiceImpl.getProjectURI(project);
     assertEquals("http://localhost:8080/preview/unit/155", uri);
     verify(appProperties);
@@ -188,9 +187,6 @@ public class ProjectServiceImplTest {
   public void saveProjectFile_shouldWriteTheProjectFile() {
     Project project = new ProjectImpl();
     project.setModulePath("/temp/project.json");
-    expect(appProperties.getProperty("curriculum_base_dir"))
-        .andReturn("src/test/webapp/curriculum");
-    replay(appProperties);
     String projectJSONString = "{\"metadata\":{\"title\":\"New Title\"}}";
     String projectFilePath = tempProjectFolderPath + "/project.json";
     File projectFile = new File(projectFilePath);
@@ -203,6 +199,7 @@ public class ProjectServiceImplTest {
       fail();
     }
     projectFile.deleteOnExit();
+    verify(appProperties);
   }
 
   @Test
@@ -230,7 +227,7 @@ public class ProjectServiceImplTest {
     replay(projectDao);
     try {
       projectServiceImpl.saveProjectToDatabase(project, user, projectJSONString);
-      verify(projectDao);
+      verify(appProperties, projectDao);
     } catch (Exception e) {
       fail();
     }
@@ -260,10 +257,6 @@ public class ProjectServiceImplTest {
       metadata.put("authors", newAuthors);
       metadata.put("title", "New Title");
       projectJSON.put("metadata", metadata);
-      expect(appProperties.getProperty("curriculum_base_dir"))
-        .andReturn("src/test/webapp/curriculum");
-      expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
-      replay(appProperties);
       projectServiceImpl.updateMetadataAndLicenseIfNecessary(project, projectJSON.toString());
       assertEquals(metadata.get("title"), project.getMetadata().getTitle());
       String licenseText = FileUtils.readFileToString(new File(licenseFilePath), "UTF-8");
@@ -275,6 +268,7 @@ public class ProjectServiceImplTest {
       fail();
     }
     projectFile.deleteOnExit();
+    verify(appProperties);
   }
 
   @Test
@@ -290,5 +284,6 @@ public class ProjectServiceImplTest {
     } catch (JSONException e) {
       fail();
     }
+    verify(appProperties);
   }
 }
