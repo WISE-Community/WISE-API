@@ -63,13 +63,8 @@ public class TeacherAPIController extends UserAPIController {
   List<HashMap<String, Object>> getRuns(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<Run> runs = runService.getRunListByOwner(user);
-    return getRunsList(user, runs);
-  }
-
-  @GetMapping("/sharedruns")
-  List<HashMap<String, Object>> getSharedRuns(Authentication auth) {
-    User user = userService.retrieveUserByUsername(auth.getName());
-    List<Run> runs = runService.getRunListBySharedOwner(user);
+    runs.addAll(runService.getRunListBySharedOwner(user));
+    runs.sort((a,b) -> a.getStarttime().compareTo(b.getStarttime()));
     return getRunsList(user, runs);
   }
 
