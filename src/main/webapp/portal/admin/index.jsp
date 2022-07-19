@@ -107,13 +107,13 @@
                                 <spring:message code='admin.index.allUsersWhoLoggedIn' />
                                 <a href="${contextPath}/admin/account/show-online-users">
                                     <spring:message code='now' /> (${numCurrentlyLoggedInUsers})</a> |
-                                <a href="${contextPath}/admin/account/manageusers?onlyShowUsersWhoLoggedIn=today">
+                                <a href="${contextPath}/admin/account/show-recent-users?duration=today">
                                     <spring:message code='today' /> (${numUsersWhoLoggedInToday})</a> |
-                                <a href="${contextPath}/admin/account/manageusers?onlyShowUsersWhoLoggedIn=thisWeek">
+                                <a href="${contextPath}/admin/account/show-recent-users?duration=thisWeek">
                                     <spring:message code='thisWeek' /></a> |
-                                <a href="${contextPath}/admin/account/manageusers?onlyShowUsersWhoLoggedIn=thisMonth">
+                                <a href="${contextPath}/admin/account/show-recent-users?duration=thisMonth">
                                     <spring:message code='thisMonth' /></a> |
-                                <a href="${contextPath}/admin/account/manageusers?onlyShowUsersWhoLoggedIn=thisYear">
+                                <a href="${contextPath}/admin/account/show-recent-users?duration=thisYear">
                                     <spring:message code='thisYear' /></a>
                             </sec:authorize>
                         </h5>
@@ -126,9 +126,9 @@
                         </h5>
                         <h5>
                             <spring:message code='admin.index.list' />
-                            <a href="${contextPath}/admin/account/manageusers?userType=teacher">
+                            <a href="${contextPath}/admin/account/show-all-users?userType=teacher">
                                 <spring:message code='admin.index.allTeachers' /></a> |
-                            <a href="${contextPath}/admin/account/manageusers?userType=student">
+                            <a href="${contextPath}/admin/account/show-all-users?userType=student">
                                 <spring:message code='admin.index.allStudents' /></a>
 
                         </h5>
