@@ -58,6 +58,8 @@ import java.util.Set;
  */
 public interface ProjectService {
 
+  void init();
+
   /**
    * Get a <code>List</code> of <code>Project</code> that the specified user owns.
    *
