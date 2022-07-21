@@ -1,4 +1,4 @@
-package org.wise.vle.web.wise5;
+package org.wise.vle.web.wise5.student;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -28,10 +28,10 @@ import org.wise.vle.domain.work.StudentWork;
 
 @SpringBootTest
 @RunWith(EasyMockRunner.class)
-public class StudentDataControllerTest extends APIControllerTest {
+public class StudentGetDataControllerTest extends APIControllerTest {
 
   @TestSubject
-  private StudentDataController controller = new StudentDataController(); 
+  private StudentGetDataController controller = new StudentGetDataController();
 
   private HttpServletResponse response;
   private boolean getStudentWork;
@@ -97,7 +97,7 @@ public class StudentDataControllerTest extends APIControllerTest {
       expectRetrieveWorkgroup(workgroup2Id, workgroup2);
       expectIsUserInWorkgroupForRun(student1, run1, workgroup2, false);
       replayAll();
-      controller.getWISE5StudentData(response, studentAuth, getStudentWork, getEvents,
+      controller.getStudentData(response, studentAuth, getStudentWork, getEvents,
           getAnnotations, id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
           componentId, componentType, context, category, event, fromWorkgroupId, toWorkgroupId,
           studentWorkId, localNotebookItemId, notebookItemId, annotationType, components,
@@ -122,7 +122,7 @@ public class StudentDataControllerTest extends APIControllerTest {
       expectGetStudentWorkList(id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
           componentId, componentType, components, onlyGetLatest, studentWorkList);
       replayAll();
-      controller.getWISE5StudentData(response, studentAuth, getStudentWork, getEvents,
+      controller.getStudentData(response, studentAuth, getStudentWork, getEvents,
           getAnnotations, id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
           componentId, componentType, context, category, event, fromWorkgroupId, toWorkgroupId,
           studentWorkId, localNotebookItemId, notebookItemId, annotationType, components,
@@ -166,5 +166,4 @@ public class StudentDataControllerTest extends APIControllerTest {
   private void verifyAll() {
     verify(runService, userService, vleService, workgroupService);
   }
-
 }
