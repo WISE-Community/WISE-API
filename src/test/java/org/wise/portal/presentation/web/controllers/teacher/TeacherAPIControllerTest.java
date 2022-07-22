@@ -44,7 +44,27 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   private UserDetailsService userDetailsService;
 
   @Test
-  public void getRuns_ReturnPersonalAndSharedRunsSortedByStartTimeDesc() {
+  public void getRuns_Max0_ReturnPersonalAndSharedRunsSortedByStartTimeDesc() {
+    expectRuns();
+    List<HashMap<String, Object>> allRuns = teacherAPIController.getRuns(teacherAuth, null);
+    assertEquals(3, allRuns.size());
+    assertEquals(runId3, allRuns.get(0).get("id"));
+    assertEquals(runId2, allRuns.get(1).get("id"));
+    assertEquals(runId1, allRuns.get(2).get("id"));
+    verify(projectService, runService, userService);
+  }
+
+  @Test
+  public void getRuns_Max2_ReturnPersonalAndSharedRunsSortedByStartTimeDesc() {
+    expectRuns();
+    List<HashMap<String, Object>> twoRecentRuns = teacherAPIController.getRuns(teacherAuth, 2);
+    assertEquals(2, twoRecentRuns.size());
+    assertEquals(runId3, twoRecentRuns.get(0).get("id"));
+    assertEquals(runId2, twoRecentRuns.get(1).get("id"));
+    verify(projectService, runService, userService);
+  }
+
+  private void expectRuns() {
     expect(userService.retrieveUserByUsername(teacherAuth.getName())).andReturn(teacher1);
     List<Run> personalRuns = new ArrayList<Run>(Arrays.asList(run1, run3));
     expect(runService.getRunListByOwner(teacher1)).andReturn(personalRuns);
@@ -53,15 +73,12 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     expect(projectService.getProjectPath(isA(Project.class))).andReturn("");
     expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
        .andReturn(Arrays.asList());
-    expect(projectService.getProjectURI(isA(Project.class))).andReturn("").times(3);
-    expect(projectService.getLicensePath(isA(Project.class))).andReturn("").times(3);
-    expect(projectService.getProjectPath(isA(Project.class))).andReturn("").times(2);
+    expect(projectService.getProjectURI(isA(Project.class))).andReturn("").anyTimes();
+    expect(projectService.getLicensePath(isA(Project.class))).andReturn("").anyTimes();
+    expect(projectService.getProjectPath(isA(Project.class))).andReturn("").anyTimes();
     expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
-       .andReturn(Arrays.asList()).times(2);
+       .andReturn(Arrays.asList()).anyTimes();
     replay(projectService, runService, userService);
-    List<HashMap<String, Object>> allRuns = teacherAPIController.getRuns(teacherAuth);
-    assertEquals(3, allRuns.size());
-    verify(projectService, runService, userService);
   }
 
   @Test
