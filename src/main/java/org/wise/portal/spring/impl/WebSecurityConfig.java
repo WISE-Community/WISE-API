@@ -55,9 +55,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -70,9 +68,6 @@ import org.wise.portal.service.authentication.UserDetailsService;
 @EnableWebSecurity(debug = false)
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerAdapter {
-
-  @Autowired
-  private FindByIndexNameSessionRepository<S> sessionRepository;
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -100,7 +95,6 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/sso/discourse").hasAnyRole("TEACHER","STUDENT")
         .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
-    http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
     http.logout().logoutSuccessHandler((request, response, authentication) -> {
@@ -173,11 +167,6 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
   @Bean
   public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
     return new ServletListenerRegistrationBean<HttpSessionListener>(new WISESessionListener());
-  }
-
-  @Bean
-  public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
-    return new SpringSessionBackedSessionRegistry<>(this.sessionRepository);
   }
 
   @Bean

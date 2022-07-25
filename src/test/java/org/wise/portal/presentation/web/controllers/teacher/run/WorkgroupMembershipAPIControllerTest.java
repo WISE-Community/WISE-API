@@ -30,7 +30,7 @@ public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
     expect(workgroupService.updateWorkgroupMembership(isA(ChangeWorkgroupParameters.class)))
       .andReturn(new WorkgroupImpl());
     replay(userService, workgroupService);
-    controller.moveUserBetweenWorkgroups(runId1, student1Id, postedParams);
+    controller.moveUserBetweenWorkgroups(run1, student1Id, postedParams);
     verify(userService, workgroupService);
   }
 }
