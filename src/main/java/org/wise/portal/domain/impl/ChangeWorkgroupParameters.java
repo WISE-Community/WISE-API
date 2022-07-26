@@ -27,6 +27,8 @@ import java.io.Serializable;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 
@@ -47,7 +49,7 @@ public class ChangeWorkgroupParameters implements Serializable {
 
   private Long workgroupToId;
 
-  private Long runId;
+  private Run run;
 
   private Long periodId;
 }

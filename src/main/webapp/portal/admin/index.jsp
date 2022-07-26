@@ -43,45 +43,6 @@
                 window.location.href="${contextPath}/admin/mergeProjectMetadata";
             }
         }
-
-        $(document).ready(function() {
-            $.ajax("${contextPath}/admin/latestWISEVersion").success(function(response) {
-                if (response === "null") {
-                    $("#globalWISEVersion").html("Error retrieving global WISE version.");
-                } else {
-                    var globalWISEVersion = response;
-                    $("#globalWISEVersion").html(globalWISEVersion);
-                    var thisWISEVersion = $("#thisWISEVersion").html();
-                    if (thisWISEVersion != null && thisWISEVersion != "") {
-                        if (thisWISEVersion < globalWISEVersion) {
-                            $("#versionNotes").html("<a target=_blank href=\"${updateWISEURL}\">A new version of WISE is available. Please update!</a>");
-                        } else {
-                            $("#versionNotes").html("WISE is up-to-date. :)");
-                        }
-                    }
-                }
-            });
-            $.ajax("${contextPath}/admin/recentCommitHistory").success(function(response) {
-                if (response === "null" || response === "error") {
-                    $("#globalWISEVersion").html("Error retrieving recent commits.");
-                } else {
-                    var recentCommitHistoryArray = JSON.parse(response);
-                    if (recentCommitHistoryArray != null) {
-                        var commitsUL = $("<ul>");
-                        for (var i=0; i<recentCommitHistoryArray.length; i++) {
-                            var commitHistory = recentCommitHistoryArray[i];
-                            var commitLI = $("<li>").css("margin","0").css("padding","4px 8px");
-                            var commitA = $("<a>").attr("href",commitHistory.html_url).html(commitHistory.commit.message);
-                            var commitBy = $("<div>").html("by <span style='font-weight:bold'>" + commitHistory.commit.committer.name + "</span> - " + commitHistory.commit.committer.date);
-                            commitLI.append(commitA);
-                            commitLI.append(commitBy);
-                            commitsUL.append(commitLI);
-                        }
-                        $("#recentCommitHistory").html(commitsUL);
-                    }
-                }
-            });
-        })
     </script>
 </head>
 <body>
@@ -240,30 +201,6 @@
                                 <a href="${contextPath}/admin/memorymonitor.html">
                                     <spring:message code='admin.index.memoryMonitor' /></a>
                             </h5>
-                            <table class="table table-condensed table-hover">
-                                <thead style="background-color: antiquewhite">
-                                <tr>
-                                    <th>&nbsp;</th>
-                                    <th>Installed</th>
-                                    <th>Latest</th>
-                                    <th>&nbsp;</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td class="title">Version</td>
-                                    <td class="version-number" id="thisWISEVersion">${thisWISEVersion}</td>
-                                    <td class="version-number" id="globalWISEVersion"></td>
-                                    <td class="version-notes" id="versionNotes"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-                            <div style="font-weight:bold;padding:10px;background-color:antiquewhite;margin:10px 0px 0px 0px"><a href="https://github.com/WISE-Community/WISE">Latest Changes: please update often!</a></div>
-                            <div style="height:150px; overflow:auto; border: 1px solid lightgray; margin:0">
-                                <div id="recentCommitHistory"></div>
-                            </div>
-
                         </div>
 
                     </sec:authorize>

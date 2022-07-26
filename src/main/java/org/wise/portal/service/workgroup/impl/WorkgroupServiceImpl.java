@@ -40,7 +40,6 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.group.GroupService;
-import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
@@ -59,9 +58,6 @@ public class WorkgroupServiceImpl implements WorkgroupService {
 
   @Autowired
   private GroupService groupService;
-
-  @Autowired
-  protected RunService runService;
 
   @Autowired
   protected UserService userService;
@@ -112,7 +108,7 @@ public class WorkgroupServiceImpl implements WorkgroupService {
     Workgroup toGroup;
     Workgroup fromGroup;
     User user = params.getStudent();
-    Run run = runService.retrieveById(params.getRunId());
+    Run run = params.getRun();
     Group period = groupService.retrieveById(params.getPeriodId());
     fromGroup = params.getWorkgroupFrom();
     Set<User> addMemberSet = new HashSet<User>();

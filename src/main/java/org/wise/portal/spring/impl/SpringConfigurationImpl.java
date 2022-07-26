@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -43,9 +42,6 @@ import org.wise.portal.spring.SpringConfiguration;
 public class SpringConfigurationImpl implements SpringConfiguration {
 
   @Autowired
-  RunAsImplAuthenticationProvider runAsAuthenticationProvider;
-
-  @Autowired
   PasswordEncoder passwordEncoder;
 
   @Autowired
@@ -55,7 +51,6 @@ public class SpringConfigurationImpl implements SpringConfiguration {
   public ProviderManager authenticationManager() {
     ArrayList<AuthenticationProvider> providers = new ArrayList<>();
     providers.add(daoAuthenticationProvider());
-    providers.add(runAsAuthenticationProvider);
     return new ProviderManager(providers);
   }
 

@@ -56,7 +56,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.model.AlreadyExistsException;
 import org.springframework.security.acls.model.NotFoundException;
@@ -90,7 +89,6 @@ import org.wise.portal.presentation.web.response.SharedOwner;
 import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.project.ProjectService;
-import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.tag.TagService;
 import org.wise.portal.service.user.UserService;
 import org.wise.vle.utils.FileManager;
@@ -119,9 +117,6 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Autowired
   private TagService tagService;
-
-  @Autowired
-  private RunService runService;
 
   private String curriculumBaseDir;
 
@@ -297,7 +292,6 @@ public class ProjectServiceImpl implements ProjectService {
     return project;
   }
 
-  @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
   public List<Project> getProjectList(User user) {
     return projectDao.getProjectListByOwner(user);
   }
@@ -362,15 +356,7 @@ public class ProjectServiceImpl implements ProjectService {
   }
 
   public void updateProject(Project project, User user) throws NotAuthorizedException {
-    List<Run> runList = runService.getProjectRuns((Long) project.getId());
-    Run run = null;
-    if (!runList.isEmpty()) {
-      // since a project can now only be run once, just use the first run in the list
-      run = runList.get(0);
-    }
-
-    if (canAuthorProject(project, user)
-        || (run != null && runService.hasRunPermission(run, user, BasePermission.WRITE))) {
+    if (canAuthorProject(project, user)) {
       projectDao.save(project);
     } else {
       throw new NotAuthorizedException("You are not authorized to update this project");
