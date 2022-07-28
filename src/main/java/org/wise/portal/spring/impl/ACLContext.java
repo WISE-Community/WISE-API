@@ -98,7 +98,7 @@ public class ACLContext {
     JdbcMutableAclService aclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
     if (appProperties.containsProperty("spring.datasource.driver-class-name")) {
       String driverClass = (String) appProperties.getProperty("spring.datasource.driver-class-name");
-      if ("com.mysql.jdbc.Driver".equals(driverClass)) {
+      if ("com.mysql.cj.jdbc.Driver".equals(driverClass)) {
         aclService.setClassIdentityQuery("SELECT @@IDENTITY");
         aclService.setSidIdentityQuery("SELECT @@IDENTITY");
       }
