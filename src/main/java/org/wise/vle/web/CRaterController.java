@@ -23,40 +23,31 @@
  */
 package org.wise.vle.web;
 
-import java.util.HashMap;
-
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.vle.domain.webservice.crater.CRaterHttpClient;
-import org.wise.vle.domain.webservice.crater.CRaterScoringResponse;
 import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
-import org.wise.vle.domain.webservice.crater.CRaterVerificationResponse;
+import org.wise.vle.domain.webservice.crater.CRaterService;
 
 @RestController
 @RequestMapping("/api/c-rater")
 public class CRaterController {
 
+  @Autowired
+  private CRaterService cRaterService;
+
   @GetMapping("/verify")
-  boolean verifyItemId(CRaterVerificationRequest request) {
-    CRaterVerificationResponse cRaterResponse = CRaterHttpClient.getVerificationResponse(request);
-    return cRaterResponse.isVerified();
+  String verifyItemId(CRaterVerificationRequest request) throws JSONException {
+    return cRaterService.getVerificationResponse(request);
   }
 
   @PostMapping("/score")
-  HashMap<String, Object> scoreItem(@RequestBody CRaterScoringRequest request) {
-    CRaterScoringResponse cRaterResponse = CRaterHttpClient.getScoringResponse(request);
-    HashMap<String, Object> response = new HashMap<String, Object>();
-    if (cRaterResponse.isSingleScore()) {
-      response.put("score", cRaterResponse.getScore());
-    } else {
-      response.put("scores", cRaterResponse.getScores());
-    }
-    response.put("ideas", cRaterResponse.getIdeas());
-    response.put("cRaterResponse", cRaterResponse.getResponse());
-    return response;
+  String scoreItem(@RequestBody CRaterScoringRequest request) throws JSONException {
+    return cRaterService.getScoringResponse(request);
   }
 }
