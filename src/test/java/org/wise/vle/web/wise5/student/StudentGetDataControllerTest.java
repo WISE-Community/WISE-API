@@ -3,21 +3,16 @@ package org.wise.vle.web.wise5.student;
 import static org.easymock.EasyMock.*;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.easymock.EasyMockRunner;
 import org.easymock.TestSubject;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.run.Run;
@@ -33,7 +28,6 @@ public class StudentGetDataControllerTest extends APIControllerTest {
   @TestSubject
   private StudentGetDataController controller = new StudentGetDataController();
 
-  private HttpServletResponse response;
   private boolean getStudentWork;
   private boolean getEvents;
   private boolean getAnnotations;
@@ -60,7 +54,6 @@ public class StudentGetDataControllerTest extends APIControllerTest {
 
   @Before
   public void init() {
-    response = new MockHttpServletResponse();
     getStudentWork = false;
     getEvents = false;
     getAnnotations = false;
@@ -97,12 +90,11 @@ public class StudentGetDataControllerTest extends APIControllerTest {
       expectRetrieveWorkgroup(workgroup2Id, workgroup2);
       expectIsUserInWorkgroupForRun(student1, run1, workgroup2, false);
       replayAll();
-      controller.getStudentData(response, studentAuth, getStudentWork, getEvents,
-          getAnnotations, id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
-          componentId, componentType, context, category, event, fromWorkgroupId, toWorkgroupId,
-          studentWorkId, localNotebookItemId, notebookItemId, annotationType, components,
-          onlyGetLatest);
-    } catch(ObjectNotFoundException | IOException | JSONException e) {
+      controller.getStudentData(studentAuth, getStudentWork, getEvents, getAnnotations, id, runId,
+          periodId, workgroupId, isAutoSave, isSubmit, nodeId, componentId, componentType, context,
+          category, event, fromWorkgroupId, toWorkgroupId, studentWorkId, localNotebookItemId,
+          notebookItemId, annotationType, components, onlyGetLatest);
+    } catch (ObjectNotFoundException e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
     }
     verifyAll();
@@ -122,12 +114,11 @@ public class StudentGetDataControllerTest extends APIControllerTest {
       expectGetStudentWorkList(id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
           componentId, componentType, components, onlyGetLatest, studentWorkList);
       replayAll();
-      controller.getStudentData(response, studentAuth, getStudentWork, getEvents,
-          getAnnotations, id, runId, periodId, workgroupId, isAutoSave, isSubmit, nodeId,
-          componentId, componentType, context, category, event, fromWorkgroupId, toWorkgroupId,
-          studentWorkId, localNotebookItemId, notebookItemId, annotationType, components,
-          onlyGetLatest);
-    } catch(ObjectNotFoundException | IOException | JSONException e) {
+      controller.getStudentData(studentAuth, getStudentWork, getEvents, getAnnotations, id, runId,
+          periodId, workgroupId, isAutoSave, isSubmit, nodeId, componentId, componentType, context,
+          category, event, fromWorkgroupId, toWorkgroupId, studentWorkId, localNotebookItemId,
+          notebookItemId, annotationType, components, onlyGetLatest);
+    } catch (ObjectNotFoundException e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
     }
     verifyAll();
@@ -142,7 +133,7 @@ public class StudentGetDataControllerTest extends APIControllerTest {
   }
 
   private void expectRetrieveWorkgroup(Long workgroupId, Workgroup workgroup)
-      throws ObjectNotFoundException{
+      throws ObjectNotFoundException {
     expect(workgroupService.retrieveById(workgroupId)).andReturn(workgroup);
   }
 
