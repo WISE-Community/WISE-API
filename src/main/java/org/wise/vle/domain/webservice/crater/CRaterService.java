@@ -57,8 +57,7 @@ public class CRaterService {
    * @param CRaterScoringRequest scoring request from client
    * @return CRaterScoringResponse scoring response from CRater
    */
-  public String getScoringResponse(CRaterScoringRequest request)
-      throws JSONException {
+  public String getScoringResponse(CRaterScoringRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
     request.setCRaterUrl(appProperties.getProperty("cRater_scoring_url"));
     return post(request);
@@ -70,8 +69,7 @@ public class CRaterService {
    * @param CRaterVerificationRequest request with item id to verify
    * @return CRaterVerificationResponse verify response from CRater
    */
-  public String getVerificationResponse(
-      CRaterVerificationRequest request) throws JSONException {
+  public String getVerificationResponse(CRaterVerificationRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
     request.setCRaterUrl(appProperties.getProperty("cRater_verification_url"));
     return post(request);
@@ -87,9 +85,8 @@ public class CRaterService {
     HttpClient client = HttpClientBuilder.create().build();
     HttpPost post = new HttpPost(request.getCRaterUrl());
     try {
-      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
-          .printBase64Binary(("extsyscrtr02dev:" + appProperties.getProperty("cRater_password"))
-          .getBytes());
+      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
+          ("extsyscrtr02dev:" + appProperties.getProperty("cRater_password")).getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
       post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
       post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));

@@ -31,8 +31,8 @@ public class CRaterControllerTest {
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId(itemId);
     try {
-      expect(cRaterService.getVerificationResponse(request)).andReturn(
-          createVerificationResponseString(itemId, true, trackingId, clientId));
+      expect(cRaterService.getVerificationResponse(request))
+          .andReturn(createVerificationResponseString(itemId, true, trackingId, clientId));
       replay(cRaterService);
       String response = controller.verifyItemId(request);
       assertNotNull(response);
@@ -42,8 +42,8 @@ public class CRaterControllerTest {
     }
   }
 
-  private String createVerificationResponseString(String itemId, Boolean available,
-      Long trackingId, String clientId) {
+  private String createVerificationResponseString(String itemId, Boolean available, Long trackingId,
+      String clientId) {
     StringBuffer responseBuffer = new StringBuffer();
     responseBuffer.append("{");
     responseBuffer.append("  \"item_id\": \"" + itemId + "\",");
@@ -59,8 +59,8 @@ public class CRaterControllerTest {
     CRaterScoringRequest request = new CRaterScoringRequest();
     request.setItemId(itemId);
     try {
-      expect(cRaterService.getScoringResponse(request)).andReturn(
-          createScoringResponseString(itemId, trackingId, clientId));
+      expect(cRaterService.getScoringResponse(request))
+          .andReturn(createScoringResponseString(itemId, trackingId, clientId));
       replay(cRaterService);
       String response = controller.scoreItem(request);
       assertNotNull(response);
@@ -69,7 +69,7 @@ public class CRaterControllerTest {
 
     }
   }
-  
+
   private String createScoringResponseString(String itemId, Long trackingId, String clientId) {
     StringBuffer responseBuffer = new StringBuffer();
     responseBuffer.append("{");
@@ -80,5 +80,4 @@ public class CRaterControllerTest {
     responseBuffer.append("}");
     return responseBuffer.toString();
   }
-
 }
