@@ -89,7 +89,7 @@ sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 echo "Copying application.properties file to the build folder"
 cp $BUILD_FILES/api/$ENV/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
 
-echo "Copying application-legacy.properties file to the build folder"
+echo "Copying application-legacy.properties file to the legacy build folder"
 cp $BUILD_FILES/api/$ENV/application-legacy.properties $LEGACY_BUILD_DIR/WEB-INF/classes/application.properties
 
 echo "Installing network drive package"
