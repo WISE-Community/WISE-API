@@ -87,6 +87,9 @@ sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 echo "Copying application.properties file to the build folder"
 cp $BUILD_FILES/api/$ENV/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
 
+echo "Copying application-legacy.properties file to the build folder"
+cp $BUILD_FILES/api/$ENV/application-legacy.properties $BUILD_DIR/WEB-INF/classes/application-legacy.properties
+
 echo "Installing network drive package"
 apt-get install nfs-common -y
 
