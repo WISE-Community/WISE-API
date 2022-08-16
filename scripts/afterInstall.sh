@@ -20,8 +20,8 @@ chown tomcat:tomcat $CATALINA_HOME/webapps/ROOT.war
 echo "Copying legacy.war to $BUILD_DIR"
 cp $BUILD_FILES/legacy.war $BUILD_DIR
 
-echo "Injecting application.properties into legacy.war"
-zip -g legacy.war WEB-INF/classes/application.properties
+echo "Injecting application-legacy.properties into legacy.war"
+zip -g legacy.war WEB-INF/classes/application-legacy.properties
 
 echo "Moving legacy.war to $CATALINA_HOME/webapps/legacy.war"
 mv legacy.war $CATALINA_HOME/webapps/legacy.war
