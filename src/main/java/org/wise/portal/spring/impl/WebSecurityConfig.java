@@ -103,6 +103,7 @@ public class WebSecurityConfig<S extends Session>
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/score/**/**").permitAll()
         .antMatchers("/sso/discourse").hasAnyRole("TEACHER","STUDENT")
+        .antMatchers("/sso/ckboard").hasAnyRole("TEACHER","STUDENT")
         .antMatchers("/teachingassistant/**/**").permitAll()
         .antMatchers("/api/**/**").permitAll()
         .antMatchers("/").permitAll();

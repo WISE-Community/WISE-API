@@ -23,6 +23,8 @@
  */
 package org.wise.portal.presentation.web.filters;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
@@ -47,7 +49,9 @@ import org.wise.portal.service.portal.PortalService;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -72,7 +76,7 @@ public class WISEAuthenticationSuccessHandler
       Authentication authentication) throws ServletException, IOException {
     MutableUserDetails userDetails = (MutableUserDetails) authentication.getPrincipal();
     boolean userIsAdmin = false;
-    
+
     if (userDetails instanceof StudentUserDetails) {
       String accessCode = (String) request.getAttribute("accessCode");
       String studentHome = appProperties.getProperty("wise.hostname") + "/student";
@@ -164,12 +168,22 @@ public class WISEAuthenticationSuccessHandler
     request.getSession().setAttribute(SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME, locale);
 
     // redirect if specified in the login request
-    SavedRequest savedRequest =
-      new HttpSessionRequestCache().getRequest(request, response);
+    SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
     if (savedRequest != null) {
       String redirectUrl = savedRequest.getRedirectUrl();
-      if (StringUtils.hasText(redirectUrl) && !redirectUrl.contains("login")) {
+      if (StringUtils.hasText(redirectUrl)) {
         this.setDefaultTargetUrl(redirectUrl);
+        PrintWriter writer = response.getWriter();
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        JSONObject responseObject = new JSONObject();
+        try {
+          responseObject.put("redirectUrl", redirectUrl);
+        } catch (JSONException e) {
+          e.printStackTrace();
+        }
+        writer.print(responseObject);
+        writer.close();
       }
     }
 

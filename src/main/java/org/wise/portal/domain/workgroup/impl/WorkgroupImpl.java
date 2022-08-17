@@ -159,7 +159,10 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   public String generateWorkgroupName() {
     String workgroupName = "";
     for (User member : group.getMembers()) {
-      workgroupName += " " + member.getUserDetails().getUsername();
+      if (!workgroupName.equals("")) {
+        workgroupName += " ";
+      }
+      workgroupName += member.getUserDetails().getUsername();
     }
     return workgroupName;
   }
