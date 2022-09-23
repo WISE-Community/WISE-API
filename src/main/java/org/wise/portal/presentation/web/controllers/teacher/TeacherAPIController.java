@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
@@ -65,7 +67,7 @@ public class TeacherAPIController extends UserAPIController {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<Run> runs = runService.getRunListByOwner(user);
     runs.addAll(runService.getRunListBySharedOwner(user));
-    runs.sort((a,b) -> b.getStarttime().compareTo(a.getStarttime()));
+    runs.sort((a, b) -> b.getStarttime().compareTo(a.getStarttime()));
     if (max != null && max > 0) {
       runs = runs.subList(0, Math.min(max, runs.size()));
     }
@@ -121,8 +123,9 @@ public class TeacherAPIController extends UserAPIController {
 
   @PostMapping("/register")
   @Secured({ "ROLE_ANONYMOUS" })
-  HashMap<String, Object> createTeacherAccount(@RequestBody Map<String, String> teacherFields,
-      HttpServletRequest request) throws DuplicateUsernameException, InvalidNameException {
+  ResponseEntity<Map<String, Object>> createTeacherAccount(
+      @RequestBody Map<String, String> teacherFields, HttpServletRequest request)
+      throws DuplicateUsernameException, InvalidNameException {
     TeacherUserDetails tud = new TeacherUserDetails();
     String firstName = teacherFields.get("firstName");
     String lastName = teacherFields.get("lastName");
@@ -142,7 +145,14 @@ public class TeacherAPIController extends UserAPIController {
       tud.setGoogleUserId(googleUserId);
       tud.setPassword(RandomStringUtils.random(10, true, true));
     } else {
-      tud.setPassword(teacherFields.get("password"));
+      String password = teacherFields.get("password");
+      if (!passwordService.isValidLength(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordLength");
+      } else if (!passwordService.isValidPattern(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordPattern");
+      } else {
+        tud.setPassword(password);
+      }
     }
     String displayName = firstName + " " + lastName;
     tud.setDisplayname(displayName);
