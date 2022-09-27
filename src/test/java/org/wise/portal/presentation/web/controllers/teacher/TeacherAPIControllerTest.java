@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.easymock.EasyMockRunner;
@@ -23,6 +24,8 @@ import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -33,12 +36,16 @@ import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.password.PasswordService;
 
 @RunWith(EasyMockRunner.class)
 public class TeacherAPIControllerTest extends APIControllerTest {
 
   @TestSubject
   private TeacherAPIController teacherAPIController = new TeacherAPIController();
+
+  @Mock
+  private PasswordService passwordService;
 
   @Mock
   private UserDetailsService userDetailsService;
@@ -72,12 +79,12 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     expect(runService.getRunListBySharedOwner(teacher1)).andReturn(sharedRuns);
     expect(projectService.getProjectPath(isA(Project.class))).andReturn("");
     expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
-       .andReturn(Arrays.asList());
+        .andReturn(Arrays.asList());
     expect(projectService.getProjectURI(isA(Project.class))).andReturn("").anyTimes();
     expect(projectService.getLicensePath(isA(Project.class))).andReturn("").anyTimes();
     expect(projectService.getProjectPath(isA(Project.class))).andReturn("").anyTimes();
-    expect(projectService.getProjectSharedOwnersList(isA(Project.class)))
-       .andReturn(Arrays.asList()).anyTimes();
+    expect(projectService.getProjectSharedOwnersList(isA(Project.class))).andReturn(Arrays.asList())
+        .anyTimes();
     replay(projectService, runService, userService);
   }
 
@@ -356,6 +363,37 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   }
 
   @Test
+  public void createTeacherAccount_InvalidPasswordLength_ReturnError()
+      throws DuplicateUsernameException, InvalidNameException {
+    String password = "1234567";
+    expect(passwordService.isValidLength(password)).andReturn(false);
+    replay(passwordService);
+    HashMap<String, String> teacherFields = createDefaultTeacherFields();
+    teacherFields.put("password", password);
+    ResponseEntity<Map<String, Object>> response = teacherAPIController
+        .createTeacherAccount(teacherFields, request);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("invalidPasswordLength", response.getBody().get("messageCode"));
+    verify(passwordService);
+  }
+
+  @Test
+  public void createTeacherAccount_InvalidPasswordPattern_ReturnError()
+      throws DuplicateUsernameException, InvalidNameException {
+    String password = "abcd1234";
+    expect(passwordService.isValidLength(password)).andReturn(true);
+    expect(passwordService.isValidPattern(password)).andReturn(false);
+    replay(passwordService);
+    HashMap<String, String> teacherFields = createDefaultTeacherFields();
+    teacherFields.put("password", password);
+    ResponseEntity<Map<String, Object>> response = teacherAPIController
+        .createTeacherAccount(teacherFields, request);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("invalidPasswordPattern", response.getBody().get("messageCode"));
+    verify(passwordService);
+  }
+
+  @Test
   public void createTeacherAccount_WithGoogleUserId_CreateUser()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> teacherFields = createDefaultTeacherFields();
@@ -364,9 +402,9 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
     replay(userService);
-    HashMap<String, Object> response = teacherAPIController.createTeacherAccount(teacherFields,
-        request);
-    assertEquals(TEACHER_USERNAME, response.get("username"));
+    ResponseEntity<Map<String, Object>> response = teacherAPIController
+        .createTeacherAccount(teacherFields, request);
+    assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
   }

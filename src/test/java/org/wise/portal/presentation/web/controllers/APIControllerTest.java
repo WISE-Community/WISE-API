@@ -53,9 +53,11 @@ public abstract class APIControllerTest {
   protected final String STUDENT_PASSWORD = "studentPass";
   protected final String STUDENT_USERNAME = "SpongeBobS0101";
   protected final String STUDENT1_GOOGLE_ID = "google-user-12345";
+  protected final String STUDENT1_ACCOUNT_ANSWER = "Pineapple";
   protected final String STUDENT2_FIRSTNAME = "Patrick";
   protected final String STUDENT2_LASTNAME = "Starr";
   protected final String STUDENT2_USERNAME = "PatrickS0101";
+  protected final String STUDENT2_ACCOUNT_ANSWER = "Rock";
   protected final String TEACHER_FIRSTNAME = "Squidward";
   protected final String TEACHER_LASTNAME = "Tentacles";
   protected final String TEACHER_USERNAME = "SquidwardTentacles";
@@ -135,11 +137,11 @@ public abstract class APIControllerTest {
 
   private void createStudents() {
     student1UserDetails = createStudentUserDetails(STUDENT_FIRSTNAME, STUDENT_LASTNAME,
-        STUDENT_USERNAME, Gender.MALE, 5, STUDENT1_GOOGLE_ID);
+        STUDENT_USERNAME, Gender.MALE, 5, STUDENT1_GOOGLE_ID, STUDENT1_ACCOUNT_ANSWER);
     student1 = createStudent(student1Id, student1UserDetails);
     studentAuth = createAuthentication(student1UserDetails);
     student2UserDetails = createStudentUserDetails(STUDENT2_FIRSTNAME, STUDENT2_LASTNAME,
-        STUDENT2_USERNAME, Gender.MALE, 10, null);
+        STUDENT2_USERNAME, Gender.MALE, 10, null, STUDENT2_ACCOUNT_ANSWER);
     student2 = createStudent(student2Id, student2UserDetails);
     studentAuth2 = createAuthentication(student2UserDetails);
   }
@@ -235,13 +237,15 @@ public abstract class APIControllerTest {
   }
 
   protected StudentUserDetails createStudentUserDetails(String firstName, String lastName,
-      String username, Gender gender, Integer numberOfLogins, String googleUserId) {
+      String username, Gender gender, Integer numberOfLogins, String googleUserId,
+      String accountAnswer) {
     StudentUserDetails studentUserDetails = new StudentUserDetails();
     studentUserDetails.setFirstname(firstName);
     studentUserDetails.setLastname(lastName);
     studentUserDetails.setUsername(username);
     studentUserDetails.setGender(gender);
     studentUserDetails.setNumberOfLogins(numberOfLogins);
+    studentUserDetails.setAccountAnswer(accountAnswer);
     PersistentGrantedAuthority studentAuthority = new PersistentGrantedAuthority();
     studentAuthority.setAuthority(UserDetailsService.STUDENT_ROLE);
     studentUserDetails.setAuthorities(new GrantedAuthority[] { studentAuthority });
@@ -303,7 +307,8 @@ public abstract class APIControllerTest {
     return run;
   }
 
-  protected ProjectImpl createProject(Long id, String modulePath, User teacher, Integer wiseVersion) {
+  protected ProjectImpl createProject(Long id, String modulePath, User teacher,
+      Integer wiseVersion) {
     ProjectImpl project = new ProjectImpl();
     project.setId(id);
     project.setModulePath(modulePath);

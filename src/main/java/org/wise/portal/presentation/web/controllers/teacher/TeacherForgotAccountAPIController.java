@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.mail.IMailFacade;
+import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.user.UserService;
 
 import javax.mail.MessagingException;
@@ -21,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/teacher/forgot")
@@ -28,6 +32,9 @@ public class TeacherForgotAccountAPIController {
 
   @Autowired
   private Environment appProperties;
+
+  @Autowired
+  private PasswordService passwordService;
 
   @Autowired
   private UserService userService;
@@ -49,13 +56,13 @@ public class TeacherForgotAccountAPIController {
       User user = users.get(0);
       String username = user.getUserDetails().getUsername();
       String from = appProperties.getProperty("portalemailaddress");
-      String [] to = new String[] {email};
+      String[] to = new String[] { email };
       String subject = messageSource.getMessage("forgotaccount.teacher.username.email.subject",
           new Object[] {}, Locale.US);
       String signInUrl = getSignInUrl(request);
       String contactUrl = getContactUrl(request);
       String body = messageSource.getMessage("forgotaccount.teacher.username.email.body",
-          new Object[] {username, signInUrl, contactUrl}, Locale.US);
+          new Object[] { username, signInUrl, contactUrl }, Locale.US);
       boolean successfullySentEmail = sendEmail(to, subject, body, from);
       if (successfullySentEmail) {
         response = getEmailSentSuccessResponse();
@@ -82,7 +89,7 @@ public class TeacherForgotAccountAPIController {
 
   @GetMapping("/password/verification-code")
   protected String sendVerificationCodeEmail(HttpServletRequest request,
-        @RequestParam("username") String username) throws JSONException {
+      @RequestParam("username") String username) throws JSONException {
     JSONObject response;
     User user = userService.retrieveUserByUsername(username);
     if (user != null && user.isTeacher()) {
@@ -105,28 +112,28 @@ public class TeacherForgotAccountAPIController {
   private boolean sendVerificationCodeEmail(HttpServletRequest request, User user) {
     String from = appProperties.getProperty("portalemailaddress");
     String email = user.getUserDetails().getEmailAddress();
-    String [] to = new String[] {email};
+    String[] to = new String[] { email };
     String subject = messageSource.getMessage(
         "forgotaccount.teacher.verificationcode.email.subject", new Object[] {}, Locale.US);
     String verificationCode = getVerificationCode(user);
     String contactUrl = getContactUrl(request);
     String body = messageSource.getMessage("forgotaccount.teacher.verificationcode.email.body",
-        new Object[] {verificationCode, contactUrl}, Locale.US);
+        new Object[] { verificationCode, contactUrl }, Locale.US);
     boolean successfullySentEmail = sendEmail(to, subject, body, from);
     return successfullySentEmail;
   }
 
   private boolean isTooManyVerificationCodeAttempts(User user) {
-    Date recentFailedVerificationCodeAttemptTime =
-        user.getUserDetails().getRecentFailedVerificationCodeAttemptTime();
-    Integer numberOfRecentFailedVerificationCodeAttempts =
-        user.getUserDetails().getNumberOfRecentFailedVerificationCodeAttempts();
-    if (recentFailedVerificationCodeAttemptTime == null ||
-        numberOfRecentFailedVerificationCodeAttempts == null) {
+    Date recentFailedVerificationCodeAttemptTime = user.getUserDetails()
+        .getRecentFailedVerificationCodeAttemptTime();
+    Integer numberOfRecentFailedVerificationCodeAttempts = user.getUserDetails()
+        .getNumberOfRecentFailedVerificationCodeAttempts();
+    if (recentFailedVerificationCodeAttemptTime == null
+        || numberOfRecentFailedVerificationCodeAttempts == null) {
       return false;
     } else {
-      return isWithinLast10Minutes(recentFailedVerificationCodeAttemptTime) &&
-          numberOfRecentFailedVerificationCodeAttempts >= 5;
+      return isWithinLast10Minutes(recentFailedVerificationCodeAttemptTime)
+          && numberOfRecentFailedVerificationCodeAttempts >= 5;
     }
   }
 
@@ -142,7 +149,7 @@ public class TeacherForgotAccountAPIController {
 
   @PostMapping("/password/verification-code")
   protected String checkVerificationCode(@RequestParam("username") String username,
-        @RequestParam("verificationCode") String verificationCode) throws JSONException {
+      @RequestParam("verificationCode") String verificationCode) throws JSONException {
     JSONObject response = new JSONObject();
     User user = userService.retrieveUserByUsername(username);
     if (user != null) {
@@ -158,8 +165,8 @@ public class TeacherForgotAccountAPIController {
         } else {
           response = getVerificationCodeIncorrectErrorResponse();
         }
-      } else if (!isVerificationCodeExpired(user) &&
-          isVerificationCodeCorrect(user, verificationCode)) {
+      } else if (!isVerificationCodeExpired(user)
+          && isVerificationCodeCorrect(user, verificationCode)) {
         response = getVerificationCodeCorrectSuccessResponse();
       }
     } else {
@@ -169,8 +176,8 @@ public class TeacherForgotAccountAPIController {
   }
 
   private void resetVerificationCodeAttemptsIfNecessary(User user) {
-    Date recentFailedVerificationCodeAttemptTime =
-        user.getUserDetails().getRecentFailedVerificationCodeAttemptTime();
+    Date recentFailedVerificationCodeAttemptTime = user.getUserDetails()
+        .getRecentFailedVerificationCodeAttemptTime();
     if (!isWithinLast10Minutes(recentFailedVerificationCodeAttemptTime)) {
       user.getUserDetails().clearNumberOfRecentFailedVerificationCodeAttempts();
     }
@@ -183,35 +190,33 @@ public class TeacherForgotAccountAPIController {
   }
 
   @PostMapping("/password/change")
-  protected String changePassword(@RequestParam("username") String username,
-        @RequestParam("verificationCode") String verificationCode,
-        @RequestParam("password") String password,
-        @RequestParam("confirmPassword") String confirmPassword) throws JSONException {
-    JSONObject response = new JSONObject();
+  protected ResponseEntity<Map<String, Object>> changePassword(
+      @RequestParam("username") String username,
+      @RequestParam("verificationCode") String verificationCode,
+      @RequestParam("password") String password,
+      @RequestParam("confirmPassword") String confirmPassword) throws JSONException {
     User user = userService.retrieveUserByUsername(username);
-    if (user != null) {
-      if (isTooManyVerificationCodeAttempts(user)) {
-        response = getVerificationCodeTooManyAttemptsErrorResponse();
-      } else if (isVerificationCodeExpired(user)) {
-        response = getVerificationCodeExpiredErrorResponse();
-      } else if (!isVerificationCodeCorrect(user, verificationCode)) {
-        response = getVerificationCodeIncorrectErrorResponse();
-      } else if (isPasswordBlank(password, confirmPassword)) {
-        response = getPasswordIsBlankErrorResponse();
-      } else if (!isPasswordsMatch(password, confirmPassword)) {
-        response = getPasswordsDoNotMatchErrorResponse();
-      } else if (!isVerificationCodeExpired(user) &&
-          isVerificationCodeCorrect(user, verificationCode) &&
-          !isPasswordBlank(password, confirmPassword) &&
-          isPasswordsMatch(password, confirmPassword)) {
-        userService.updateUserPassword(user, password);
-        response = getVerificationCodeCorrectSuccessResponse();
-        clearVerificationCodeData(user);
-      }
+    if (user == null) {
+      return ResponseEntityGenerator.createError("usernameNotFound");
     } else {
-      response = getUsernameNotFoundErrorResponse();
+      if (isTooManyVerificationCodeAttempts(user)) {
+        return ResponseEntityGenerator.createError("tooManyVerificationCodeAttempts");
+      } else if (isVerificationCodeExpired(user)) {
+        return ResponseEntityGenerator.createError("verificationCodeExpired");
+      } else if (!isVerificationCodeCorrect(user, verificationCode)) {
+        return ResponseEntityGenerator.createError("verificationCodeIncorrect");
+      } else if (!passwordService.isValidLength(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordLength");
+      } else if (!passwordService.isValidPattern(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordPattern");
+      } else if (!isPasswordsMatch(password, confirmPassword)) {
+        return ResponseEntityGenerator.createError("passwordsDoNotMatch");
+      } else {
+        userService.updateUserPassword(user, password);
+        clearVerificationCodeData(user);
+        return ResponseEntityGenerator.createSuccess("emailSent");
+      }
     }
-    return response.toString();
   }
 
   private boolean isVerificationCodeCorrect(User user, String verificationCode) {
@@ -226,11 +231,11 @@ public class TeacherForgotAccountAPIController {
   }
 
   private boolean isVerificationCodeExpired(User user) {
-    Date verificationCodeCreationTime =
-        user.getUserDetails().getResetPasswordVerificationCodeRequestTime();
+    Date verificationCodeCreationTime = user.getUserDetails()
+        .getResetPasswordVerificationCodeRequestTime();
     Date now = new Date();
-    long timeDifferenceInMilliseconds =
-        getTimeDifferenceInMilliseconds(now, verificationCodeCreationTime);
+    long timeDifferenceInMilliseconds = getTimeDifferenceInMilliseconds(now,
+        verificationCodeCreationTime);
     long expirationInMilliseconds = ControllerUtil.convertMinutesToMilliseconds(10);
     return timeDifferenceInMilliseconds > expirationInMilliseconds;
   }
@@ -246,9 +251,6 @@ public class TeacherForgotAccountAPIController {
     user.getUserDetails().setResetPasswordVerificationCodeRequestTime(now);
     userService.updateUser(user);
     return verificationCode;
-  }
-  private boolean isPasswordBlank(String password1, String password2) {
-    return password1 == null || password2 == null || password1.equals("") || password2.equals("");
   }
 
   private boolean isPasswordsMatch(String password, String confirmPassword) {
@@ -293,14 +295,6 @@ public class TeacherForgotAccountAPIController {
 
   private JSONObject getVerificationCodeCorrectSuccessResponse() throws JSONException {
     return ControllerUtil.createSuccessResponse("verificationCodeCorrect");
-  }
-
-  private JSONObject getPasswordIsBlankErrorResponse() throws JSONException {
-    return ControllerUtil.createErrorResponse("passwordIsBlank");
-  }
-
-  private JSONObject getPasswordsDoNotMatchErrorResponse() throws JSONException {
-    return ControllerUtil.createErrorResponse("passwordsDoNotMatch");
   }
 
   private String getContactUrl(HttpServletRequest request) {

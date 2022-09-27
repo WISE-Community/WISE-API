@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -33,8 +35,9 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
-import org.wise.portal.presentation.web.response.SimpleResponse;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.mail.IMailFacade;
+import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.student.StudentService;
@@ -63,6 +66,9 @@ public class UserAPIController {
 
   @Autowired
   protected WorkgroupService workgroupService;
+
+  @Autowired
+  protected PasswordService passwordService;
 
   @Autowired
   protected ProjectService projectService;
@@ -196,15 +202,20 @@ public class UserAPIController {
   }
 
   @PostMapping("/password")
-  SimpleResponse changePassword(Authentication auth,
+  ResponseEntity<Map<String, Object>> changePassword(Authentication auth,
       @RequestParam("oldPassword") String oldPassword,
       @RequestParam("newPassword") String newPassword) {
+    if (!passwordService.isValidLength(newPassword)) {
+      return ResponseEntityGenerator.createError("invalidPasswordLength");
+    } else if (!passwordService.isValidPattern(newPassword)) {
+      return ResponseEntityGenerator.createError("invalidPasswordPattern");
+    }
     User user = userService.retrieveUserByUsername(auth.getName());
     try {
       userService.updateUserPassword(user, oldPassword, newPassword);
-      return new SimpleResponse("success", "passwordUpdated");
+      return ResponseEntityGenerator.createSuccess("passwordUpdated");
     } catch (IncorrectPasswordException e) {
-      return new SimpleResponse("error", "incorrectPassword");
+      return ResponseEntityGenerator.createError("incorrectPassword");
     }
   }
 
@@ -337,10 +348,9 @@ public class UserAPIController {
     return messageCode;
   }
 
-  protected HashMap<String, Object> createRegisterSuccessResponse(String username) {
-    HashMap<String, Object> response = new HashMap<String, Object>();
-    response.put("status", "success");
-    response.put("username", username);
-    return response;
+  protected ResponseEntity<Map<String, Object>> createRegisterSuccessResponse(String username) {
+    HashMap<String, Object> body = new HashMap<String, Object>();
+    body.put("username", username);
+    return ResponseEntityGenerator.createSuccess(body);
   }
 }

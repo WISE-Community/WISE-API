@@ -40,6 +40,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.orm.hibernate5.HibernateOptimisticLockingFailureException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -66,9 +67,11 @@ import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.ErrorResponse;
 import org.wise.portal.presentation.web.response.LaunchRunErrorResponse;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.attendance.StudentAttendanceService;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
+import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.student.StudentService;
 
 /**
@@ -82,6 +85,9 @@ import org.wise.portal.service.student.StudentService;
 @RequestMapping("/api/student")
 @Secured({ "ROLE_STUDENT" })
 public class StudentAPIController extends UserAPIController {
+
+  @Autowired
+  protected PasswordService passwordService;
 
   @Autowired
   private StudentService studentService;
@@ -326,8 +332,9 @@ public class StudentAPIController extends UserAPIController {
 
   @PostMapping("/register")
   @Secured({ "ROLE_ANONYMOUS" })
-  HashMap<String, Object> createStudentAccount(@RequestBody Map<String, String> studentFields,
-      HttpServletRequest request) throws DuplicateUsernameException, InvalidNameException {
+  ResponseEntity<Map<String, Object>> createStudentAccount(
+      @RequestBody Map<String, String> studentFields, HttpServletRequest request)
+      throws DuplicateUsernameException, InvalidNameException {
     StudentUserDetails sud = new StudentUserDetails();
     String firstName = studentFields.get("firstName");
     String lastName = studentFields.get("lastName");
@@ -346,7 +353,14 @@ public class StudentAPIController extends UserAPIController {
       sud.setGoogleUserId(studentFields.get("googleUserId"));
       sud.setPassword(RandomStringUtils.random(10, true, true));
     } else {
-      sud.setPassword(studentFields.get("password"));
+      String password = studentFields.get("password");
+      if (!passwordService.isValidLength(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordLength");
+      } else if (!passwordService.isValidPattern(password)) {
+        return ResponseEntityGenerator.createError("invalidPasswordPattern");
+      } else {
+        sud.setPassword(password);
+      }
     }
     Locale locale = request.getLocale();
     sud.setLanguage(locale.getLanguage());

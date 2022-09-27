@@ -6,12 +6,14 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.easymock.TestSubject;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.wise.portal.presentation.web.exception.InvalidPasswordException;
 
 public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
@@ -82,27 +84,42 @@ public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
   }
 
   @Test
-  public void unlinkGoogleAccount_InvalidNewPassword_ThrowException() {
-    expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
-    replay(userService);
-    String newPass = "";
-    try {
-      controller.unlinkGoogleAccount(studentAuth, newPass);
-      fail("InvalidPasswordException was expected");
-    } catch (Exception e) {
-    }
+  public void unlinkGoogleAccount_InvalidPasswordLength_ReturnError() {
+    String newPassword = "1234567";
+    expect(passwordService.isValidLength(newPassword)).andReturn(false);
+    replay(passwordService);
+    ResponseEntity<Map<String, Object>> response = controller.unlinkGoogleAccount(studentAuth,
+        newPassword);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("invalidPasswordLength", response.getBody().get("messageCode"));
+    verify(passwordService);
+  }
+
+  @Test
+  public void unlinkGoogleAccount_InvalidPasswordPattern_ReturnError() {
+    String newPassword = "abcd1234";
+    expect(passwordService.isValidLength(newPassword)).andReturn(true);
+    expect(passwordService.isValidPattern(newPassword)).andReturn(false);
+    replay(passwordService);
+    ResponseEntity<Map<String, Object>> response = controller.unlinkGoogleAccount(studentAuth,
+        newPassword);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("invalidPasswordPattern", response.getBody().get("messageCode"));
+    verify(passwordService);
   }
 
   @Test
   public void unlinkGoogleAccount_ValidNewPassword_ReturnUpdatedUserMap()
       throws InvalidPasswordException {
-    String newPassword = "my new pass";
+    String newPassword = "Abcd1234";
+    expect(passwordService.isValidLength(newPassword)).andReturn(true);
+    expect(passwordService.isValidPattern(newPassword)).andReturn(true);
     assertTrue(student1.getUserDetails().isGoogleUser());
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1).times(2);
     expect(userService.updateUserPassword(student1, newPassword)).andReturn(student1);
     expect(appProperties.getProperty("send_email_enabled", "false")).andReturn("false");
-    replay(userService, appProperties);
+    replay(appProperties, passwordService, userService);
     controller.unlinkGoogleAccount(studentAuth, newPassword);
-    verify(userService, appProperties);
+    verify(appProperties, passwordService, userService);
   }
 }
