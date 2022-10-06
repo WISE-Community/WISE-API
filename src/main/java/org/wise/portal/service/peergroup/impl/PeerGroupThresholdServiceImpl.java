@@ -35,9 +35,6 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.run.RunService;
 
-/**
- * @author Hiroki Terashima
- */
 @Service
 public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService {
 
@@ -47,15 +44,15 @@ public class PeerGroupThresholdServiceImpl implements PeerGroupThresholdService 
   @Autowired
   private PeerGroupDao<PeerGroup> peerGroupDao;
 
-  public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period) {
-    int numWorkgroupsNotInPeerGroup = getNumNonEmptyWorkgroupsInPeriod(peerGrouping, period) -
-        getNumNonEmptyWorkgroupsInPeerGroup(peerGrouping, period);
+  public boolean isThresholdSatisfied(PeerGrouping peerGrouping, Group period) {
+    int numWorkgroupsNotInPeerGroup = getNumNonEmptyWorkgroupsInPeriod(peerGrouping, period)
+        - getNumNonEmptyWorkgroupsInPeerGroup(peerGrouping, period);
     return numWorkgroupsNotInPeerGroup > 1;
   }
 
   private int getNumNonEmptyWorkgroupsInPeriod(PeerGrouping peerGrouping, Group period) {
-    List<Workgroup> workgroupsInPeriod = runService.getWorkgroups(
-        peerGrouping.getRun().getId(), period.getId());
+    List<Workgroup> workgroupsInPeriod = runService.getWorkgroups(peerGrouping.getRun().getId(),
+        period.getId());
     workgroupsInPeriod.removeIf(workgroupInPeriod -> workgroupInPeriod.getMembers().size() == 0);
     return workgroupsInPeriod.size();
   }

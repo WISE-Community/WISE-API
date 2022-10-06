@@ -42,9 +42,6 @@ import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
 
-/**
- * @author Hiroki Terashima
- */
 @RunWith(EasyMockRunner.class)
 public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
 
@@ -65,7 +62,7 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectTwoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
     replayAll();
-    assertFalse(service.canCreatePeerGroup(peerGrouping, run1Period1));
+    assertFalse(service.isThresholdSatisfied(randomPeerGrouping, run1Period1));
     verifyAll();
   }
 
@@ -74,21 +71,22 @@ public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
     expectNoWorkgroupsInPeerGroup();
     expectThreeWorkgroupsInPeriod();
     replayAll();
-    assertTrue(service.canCreatePeerGroup(peerGrouping, run1Period1));
+    assertTrue(service.isThresholdSatisfied(randomPeerGrouping, run1Period1));
     verifyAll();
   }
 
   private void expectNoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(Arrays.asList());
+    expect(peerGroupDao.getListByPeerGrouping(randomPeerGrouping)).andReturn(Arrays.asList());
   }
 
   private void expectTwoWorkgroupsInPeerGroup() {
-    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(Arrays.asList(peerGroup1));
+    expect(peerGroupDao.getListByPeerGrouping(randomPeerGrouping))
+        .andReturn(Arrays.asList(peerGroup1));
   }
 
   private void expectThreeWorkgroupsInPeriod() {
-    expect(runService.getWorkgroups(run1Id, run1Period1.getId())).andReturn(Arrays.asList(
-        run1Workgroup1, run1Workgroup2, run1Workgroup3));
+    expect(runService.getWorkgroups(run1Id, run1Period1.getId()))
+        .andReturn(Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3));
   }
 
   private void verifyAll() {

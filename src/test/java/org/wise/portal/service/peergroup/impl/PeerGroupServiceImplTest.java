@@ -24,14 +24,12 @@
 package org.wise.portal.service.peergroup.impl;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,19 +45,18 @@ import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.peergrouping.PeerGroupingDao;
 import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.work.StudentWorkDao;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
+import org.wise.portal.service.peergrouping.logic.impl.DifferentIdeasLogicServiceImpl;
+import org.wise.portal.service.peergrouping.logic.impl.RandomLogicServiceImpl;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
 
-/**
- * @author Hiroki Terashima
- */
 @RunWith(EasyMockRunner.class)
 public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
 
@@ -84,11 +81,17 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   @Mock
   private StudentWorkDao<StudentWork> studentWorkDao;
 
+  @Mock
+  private RandomLogicServiceImpl randomLogicService;
+
+  @Mock
+  private DifferentIdeasLogicServiceImpl differentIdeasLogicService;
+
   @Test
   public void getPeerGroup_PeerGroupInDB_ReturnPeerGroup() throws Exception {
     expectPeerGroupFromDB(peerGroup1);
     replayAll();
-    assertNotNull(service.getPeerGroup(run1Workgroup1, peerGrouping));
+    assertNotNull(service.getPeerGroup(run1Workgroup1, randomPeerGrouping));
     verifyAll();
   }
 
@@ -97,33 +100,27 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
     expectPeerGroupFromDB(null);
     expectWorkgroupCountThresholdSatisfied(false);
     replayAll();
-    assertNull(service.getPeerGroup(run1Workgroup1, peerGrouping));
+    assertNull(service.getPeerGroup(run1Workgroup1, randomPeerGrouping));
     verifyAll();
   }
 
-  @Test(timeout = 250)
-  public void getPeerGroup_AllThresholdsSatisfied3WorkgroupsLeft_Create3WorkgroupPeerGroup()
-      throws Exception {
+  @Test
+  public void getPeerGroup_ThresholdSatisfiedRandomLogic_CallThrough() throws Exception {
     expectAllThresholdsSatisfied();
-    expectWorkgroupsInPeerGroup(Arrays.asList());
-    expectIsLastOnesLeftToPair();
-    peerGroupDao.save(isA(PeerGroupImpl.class));
-    expectLastCall();
+    expect(randomLogicService.createPeerGroup(run1Workgroup1, randomPeerGrouping))
+        .andReturn(new PeerGroupImpl());
     replayAll();
-    assertEquals(3, service.getPeerGroup(run1Workgroup1, peerGrouping).getMembers().size());
+    service.getPeerGroup(run1Workgroup1, randomPeerGrouping);
     verifyAll();
   }
 
-  @Test(timeout = 250)
-  public void getPeerGroup_AllThresholdsSatisfiedMoreThan3WorkgroupsLeft_Create2WorkgroupPeerGroup()
-      throws Exception {
+  @Test
+  public void getPeerGroup_ThresholdSatisfiedDifferentIdeasLogic_CallThrough() throws Exception {
     expectAllThresholdsSatisfied();
-    expectWorkgroupsInPeerGroup(Arrays.asList());
-    expectIsMultiplePairingsLeft();
-    peerGroupDao.save(isA(PeerGroupImpl.class));
-    expectLastCall();
+    expect(differentIdeasLogicService.createPeerGroup(run1Workgroup1, differentIdeasPeergrouping))
+        .andReturn(new PeerGroupImpl());
     replayAll();
-    assertEquals(2, service.getPeerGroup(run1Workgroup1, peerGrouping).getMembers().size());
+    service.getPeerGroup(run1Workgroup1, differentIdeasPeergrouping);
     verifyAll();
   }
 
@@ -149,7 +146,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   public void getPeerGroups_ReturnPeerGroupList() {
     expectGetPeerGroupsByPeerGrouping();
     replayAll();
-    assertEquals(1, service.getPeerGroups(peerGrouping).size());
+    assertEquals(1, service.getPeerGroups(randomPeerGrouping).size());
     verifyAll();
   }
 
@@ -161,8 +158,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
         true);
     expectGetWorkForComponent(peerGroup1, run1Node1Id, run1Component1Id,
         createStudentWorkList(studentWork1, studentWork2));
-    expectGetWorkForComponent(peerGroup1, run1Node2Id, run1Component2Id,
-        createStudentWorkList());
+    expectGetWorkForComponent(peerGroup1, run1Node2Id, run1Component2Id, createStudentWorkList());
     replayAll();
     assertEquals(2, service.getStudentWork(peerGroup1, run1Node1Id, run1Component1Id).size());
     assertEquals(0, service.getStudentWork(peerGroup1, run1Node2Id, run1Component2Id).size());
@@ -170,7 +166,7 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   }
 
   private void expectGetPeerGroupsByPeerGrouping() {
-    expect(peerGroupDao.getListByPeerGrouping(peerGrouping)).andReturn(peerGroups);
+    expect(peerGroupDao.getListByPeerGrouping(randomPeerGrouping)).andReturn(peerGroups);
   }
 
   private void expectAllThresholdsSatisfied() throws JSONException {
@@ -184,50 +180,29 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
         .andReturn(studentWorkList);
   }
 
-  private void expectWorkgroupsInPeerGroup(List<Object> asList) {
-    expect(peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping, run1Period1)).andReturn(Arrays.asList());
-  }
-
   private void expectWorkgroupCountThresholdSatisfied(boolean isSatisfied) {
-    expect(peerGroupThresholdService.canCreatePeerGroup(peerGrouping, run1Period1))
+    expect(
+        peerGroupThresholdService.isThresholdSatisfied(isA(PeerGrouping.class), isA(Group.class)))
         .andReturn(isSatisfied);
   }
 
-  private void expectWorkForLogicComponent(List<StudentWork> workForLogicComponent) {
-    expect(studentWorkDao.getWorkForComponentByPeriod(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(workForLogicComponent);
-  }
-
   private void expectPeerGroupFromDB(PeerGroup peerGroup) {
-    expectPeerGroupFromDB(peerGroup, peerGrouping);
+    expectPeerGroupFromDB(peerGroup, randomPeerGrouping);
   }
 
   private void expectPeerGroupFromDB(PeerGroup peerGroup, PeerGrouping peerGrouping) {
-    expect(peerGroupDao.getByWorkgroupAndPeerGrouping(run1Workgroup1, peerGrouping))
-      .andReturn(peerGroup);
-  }
-
-  private void expectWorkForComponentByWorkgroup(List<StudentWork> expectedWork)
-      throws JSONException {
-    expect(studentWorkDao.getWorkForComponentByWorkgroup(run1Workgroup1,
-        peerGrouping.getLogicNodeId(), peerGrouping.getLogicComponentId())).andReturn(expectedWork);
-  }
-
-  private void expectIsLastOnesLeftToPair() {
-    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId()))
-        .andReturn(Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3));
-  }
-
-  private void expectIsMultiplePairingsLeft() {
-    expect(runDao.getWorkgroupsForRunAndPeriod(run1Id, run1Period1.getId()))
-        .andReturn(Arrays.asList(run1Workgroup1, run1Workgroup2, run1Workgroup3, run1Workgroup4));
+    expect(
+        peerGroupDao.getByWorkgroupAndPeerGrouping(isA(Workgroup.class), isA(PeerGrouping.class)))
+        .andReturn(peerGroup);
   }
 
   private void verifyAll() {
-    verify(peerGroupDao, peerGroupThresholdService, runDao, runService, studentWorkDao);
+    verify(differentIdeasLogicService, peerGroupDao, peerGroupThresholdService, randomLogicService,
+        runDao, runService, studentWorkDao);
   }
 
   private void replayAll() {
-    replay(peerGroupDao, peerGroupThresholdService, runDao, runService, studentWorkDao);
+    replay(differentIdeasLogicService, peerGroupDao, peerGroupThresholdService, randomLogicService,
+        runDao, runService, studentWorkDao);
   }
 }

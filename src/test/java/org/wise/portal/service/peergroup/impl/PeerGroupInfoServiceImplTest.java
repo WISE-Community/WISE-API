@@ -42,9 +42,6 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.run.RunService;
 
-/**
- * @author Hiroki Terashima
- */
 @SuppressWarnings("unchecked")
 @RunWith(EasyMockRunner.class)
 public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
@@ -63,14 +60,14 @@ public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
     expectGetPeerGroups();
     expectGetWorkgroups();
     replay(peerGroupService, runService);
-    Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(peerGrouping);
+    Map<String, Object> peerGroupInfo = service.getPeerGroupInfo(randomPeerGrouping);
     assertEquals(1, ((List<PeerGroup>) peerGroupInfo.get("peerGroups")).size());
     assertEquals(4, ((List<Workgroup>) peerGroupInfo.get("workgroupsNotInPeerGroup")).size());
     verify(peerGroupService, runService);
   }
 
   private void expectGetPeerGroups() {
-    expect(peerGroupService.getPeerGroups(peerGrouping)).andReturn(peerGroups);
+    expect(peerGroupService.getPeerGroups(randomPeerGrouping)).andReturn(peerGroups);
   }
 
   private void expectGetWorkgroups() {
