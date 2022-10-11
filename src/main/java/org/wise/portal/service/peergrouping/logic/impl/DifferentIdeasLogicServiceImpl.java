@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.SetUtils;
 import org.json.JSONArray;
@@ -38,28 +37,30 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupLogicServiceImpl {
 
   private List<Annotation> getIdeaDetectedAnnotations(PeerGrouping peerGrouping, Group period) {
     DifferentIdeasLogic logic = new DifferentIdeasLogic(peerGrouping.getLogic());
-    List<Annotation> annotations = annotationDao
-        .getAnnotations(peerGrouping.getRun(), logic.getNodeId(), logic.getComponentId()).stream()
-        .filter(annotation -> annotation.getPeriod().equals(period)
-            && annotation.getType().equals("autoScore"))
-        .collect(Collectors.toList());
-    return annotations;
+    return annotationDao.getAnnotationsByParams(null, peerGrouping.getRun(), period, null, null,
+        logic.getNodeId(), logic.getComponentId(), null, null, null, "autoScore");
   }
 
   private boolean hasWorkgroupAnnotation(Workgroup workgroup, List<Annotation> annotations) {
-    return getWorkgroupAnnotation(workgroup, annotations).isPresent();
+    return getLatestWorkgroupAnnotation(workgroup, annotations).isPresent();
   }
 
-  private Optional<Annotation> getWorkgroupAnnotation(Workgroup workgroup,
+  private Optional<Annotation> getLatestWorkgroupAnnotation(Workgroup workgroup,
       List<Annotation> annotations) {
-    return annotations.stream().filter(annotation -> annotation.getToWorkgroup().equals(workgroup))
-        .findFirst();
+    for (int i = annotations.size() - 1; i >= 0; i--) {
+      Annotation annotation = annotations.get(i);
+      if (annotation.getToWorkgroup().equals(workgroup)) {
+        return Optional.of(annotation);
+      }
+    }
+    return Optional.empty();
   }
 
   private boolean hasEnoughUnpairedMembersIdeasAnnotation(PeerGrouping peerGrouping,
       List<Annotation> annotations, Set<Workgroup> workgroupsNotInPeerGroup) {
     return workgroupsNotInPeerGroup.stream()
-        .filter(workgroup -> hasWorkgroupAnnotation(workgroup, annotations)).count() >= 2;
+        .filter(workgroup -> hasWorkgroupAnnotation(workgroup, annotations))
+        .count() >= peerGrouping.getMaxMembershipCount();
   }
 
   Set<Workgroup> groupMembersUpToMaxMembership(Workgroup workgroup, PeerGrouping peerGrouping,
@@ -69,7 +70,8 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupLogicServiceImpl {
     possibleMembers.remove(workgroup);
     TreeSet<WorkgroupWithDifferentIdeas> workgroupsWithDifferentIdeas = getWorkgroupsWithDifferentIdeas(
         possibleMembers, workgroup, peerGrouping);
-    Iterator<WorkgroupWithDifferentIdeas> iterator = workgroupsWithDifferentIdeas.iterator();
+    Iterator<WorkgroupWithDifferentIdeas> iterator = workgroupsWithDifferentIdeas
+        .descendingIterator();
     while (members.size() < peerGrouping.getMaxMembershipCount()) {
       members.add(iterator.next().getWorkgroup());
     }
@@ -84,7 +86,7 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupLogicServiceImpl {
   }
 
   private Set<String> getDetectedIdeas(Workgroup workgroup, List<Annotation> annotations) {
-    Optional<Annotation> workgroupAnnotation = getWorkgroupAnnotation(workgroup, annotations);
+    Optional<Annotation> workgroupAnnotation = getLatestWorkgroupAnnotation(workgroup, annotations);
     return workgroupAnnotation.isPresent() ? getDetectedIdeas(workgroupAnnotation.get())
       : new HashSet<String>();
   }

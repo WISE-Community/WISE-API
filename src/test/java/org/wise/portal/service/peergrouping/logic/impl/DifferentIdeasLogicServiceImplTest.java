@@ -49,7 +49,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
   public void setup() throws Exception {
     super.setup();
     peerGrouping.setRun(run);
-    peerGrouping.setLogic("differentIdeas(\"" + nodeId + "\", \"" + componentId + "\"");
+    peerGrouping.setLogic("differentIdeas(\"" + nodeId + "\", \"" + componentId + "\")");
+    peerGrouping.setMaxMembershipCount(2);
     workgroupsNotInPeerGroup = new HashSet<Workgroup>();
     workgroupsNotInPeerGroup.add(workgroup1);
     workgroupsNotInPeerGroup.add(workgroup2);
@@ -86,7 +87,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
 
   @Test
   public void canCreatePeerGroup_WorkgroupHasNoIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotations(run, nodeId, componentId)).andReturn(emptyAnnotations);
+    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
+        componentId, null, null, null, "autoScore")).andReturn(emptyAnnotations);
     replay(annotationDao);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
@@ -94,7 +96,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
 
   @Test
   public void canCreatePeerGroup_NotEnoughUnpairedMembersWithIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotations(run, nodeId, componentId)).andReturn(workgroup1IdeasOnly);
+    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
+        componentId, null, null, null, "autoScore")).andReturn(workgroup1IdeasOnly);
     replay(annotationDao);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
@@ -102,8 +105,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
 
   @Test
   public void canCreatePeerGroup_EnoughUnpairedMembersWithIdeas_ReturnTrue() {
-    expect(annotationDao.getAnnotations(run, nodeId, componentId))
-        .andReturn(classroomIdeaAnnotations);
+    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
+        componentId, null, null, null, "autoScore")).andReturn(classroomIdeaAnnotations);
     replay(annotationDao);
     assertTrue(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
@@ -111,8 +114,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
 
   @Test
   public void groupMembersUpToMaxMembership_MaximizeDifferentIdeas() {
-    expect(annotationDao.getAnnotations(run, nodeId, componentId))
-        .andReturn(classroomIdeaAnnotations);
+    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
+        componentId, null, null, null, "autoScore")).andReturn(classroomIdeaAnnotations);
     replay(annotationDao);
     int maxMembers = peerGrouping.getMaxMembershipCount();
     Set<Workgroup> peerGroupMembers = service.groupMembersUpToMaxMembership(workgroup1,

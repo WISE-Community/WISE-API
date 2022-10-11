@@ -26,13 +26,13 @@ public abstract class PeerGroupLogicServiceImpl implements PeerGroupLogicService
   public PeerGroup createPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupCreationException {
     List<Workgroup> workgroupsInPeriod = getWorkgroupsInSamePeriod(workgroup);
-    List<Workgroup> workgroupsInPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping,
+    List<Workgroup> workgroupsInAPeerGroup = peerGroupDao.getWorkgroupsInPeerGroup(peerGrouping,
         workgroup.getPeriod());
-    Set<Workgroup> workgroupsNotInPeerGroup = getWorkgroupsNotInPeerGroup(workgroupsInPeriod,
-        workgroupsInPeerGroup);
-    if (canCreatePeerGroup(workgroup, workgroupsNotInPeerGroup, peerGrouping)) {
+    Set<Workgroup> workgroupsNotInAPeerGroup = getWorkgroupsNotInPeerGroup(workgroupsInPeriod,
+        workgroupsInAPeerGroup);
+    if (canCreatePeerGroup(workgroup, workgroupsNotInAPeerGroup, peerGrouping)) {
       Set<Workgroup> members = getPeerGroupMembers(workgroup, peerGrouping, workgroupsInPeriod,
-          workgroupsInPeerGroup, workgroupsNotInPeerGroup);
+          workgroupsInAPeerGroup, workgroupsNotInAPeerGroup);
       PeerGroup peerGroup = new PeerGroupImpl(peerGrouping, workgroup.getPeriod(), members);
       peerGroupDao.save(peerGroup);
       return peerGroup;
@@ -41,25 +41,25 @@ public abstract class PeerGroupLogicServiceImpl implements PeerGroupLogicService
   }
 
   Set<Workgroup> getPeerGroupMembers(Workgroup workgroup, PeerGrouping peerGrouping,
-      List<Workgroup> workgroupsInPeriod, List<Workgroup> workgroupsInPeerGroup,
-      Set<Workgroup> workgroupsNotInPeerGroup) throws PeerGroupCreationException {
-    if (isLastOnesLeftToPair(workgroupsInPeerGroup, workgroupsInPeriod,
+      List<Workgroup> workgroupsInPeriod, List<Workgroup> workgroupsInAPeerGroup,
+      Set<Workgroup> workgroupsNotInAPeerGroup) throws PeerGroupCreationException {
+    if (isLastOnesLeftToPair(workgroupsInAPeerGroup, workgroupsInPeriod,
         peerGrouping.getMaxMembershipCount())) {
-      return workgroupsNotInPeerGroup;
+      return workgroupsNotInAPeerGroup;
     } else {
-      return groupMembersUpToMaxMembership(workgroup, peerGrouping, workgroupsNotInPeerGroup);
+      return groupMembersUpToMaxMembership(workgroup, peerGrouping, workgroupsNotInAPeerGroup);
     }
   }
 
   Set<Workgroup> getWorkgroupsNotInPeerGroup(List<Workgroup> workgroupsInPeriod,
-      List<Workgroup> workgroupsInPeerGroup) {
-    Set<Workgroup> workgroupsNotInPeerGroup = new HashSet<Workgroup>();
+      List<Workgroup> workgroupsInAPeerGroup) {
+    Set<Workgroup> workgroupsNotInAPeerGroup = new HashSet<Workgroup>();
     for (Workgroup workgroup : workgroupsInPeriod) {
-      if (!workgroupsInPeerGroup.contains(workgroup)) {
-        workgroupsNotInPeerGroup.add(workgroup);
+      if (!workgroupsInAPeerGroup.contains(workgroup)) {
+        workgroupsNotInAPeerGroup.add(workgroup);
       }
     }
-    return workgroupsNotInPeerGroup;
+    return workgroupsNotInAPeerGroup;
   }
 
   List<Workgroup> getWorkgroupsInSamePeriod(Workgroup workgroup) {
@@ -69,20 +69,20 @@ public abstract class PeerGroupLogicServiceImpl implements PeerGroupLogicService
     return workgroups;
   }
 
-  private boolean isLastOnesLeftToPair(List<Workgroup> workgroupsInPeerGroup,
+  private boolean isLastOnesLeftToPair(List<Workgroup> workgroupsInAPeerGroup,
       List<Workgroup> workgroupsInPeriod, int maxMembers) {
-    int numWorkgroupsNotInPeerGroup = workgroupsInPeriod.size() - workgroupsInPeerGroup.size();
-    return (numWorkgroupsNotInPeerGroup - maxMembers) <= 1;
+    int numWorkgroupsNotInAPeerGroup = workgroupsInPeriod.size() - workgroupsInAPeerGroup.size();
+    return (numWorkgroupsNotInAPeerGroup - maxMembers) <= 1;
   }
 
   /**
    * Return true iff a new PeerGroup can be created
    * @param workgroup Workgroup requesting to create PeerGroup
-   * @param workgroupsNotInPeerGroup Set of workgroups that can be paired
+   * @param workgroupsNotInAPeerGroup Set of workgroups that can be paired
    * @param peerGrouping PeerGrouping activity to create PeerGroup for
    * @return true if there are enough workgroups that can be paired
    */
-  abstract boolean canCreatePeerGroup(Workgroup workgroup, Set<Workgroup> workgroupsNotInPeerGroup,
+  abstract boolean canCreatePeerGroup(Workgroup workgroup, Set<Workgroup> workgroupsNotInAPeerGroup,
       PeerGrouping peerGrouping);
 
   /**

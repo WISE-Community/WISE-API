@@ -16,12 +16,6 @@ public class WorkgroupWithDifferentIdeas implements Comparable<WorkgroupWithDiff
 
   @Override
   public int compareTo(WorkgroupWithDifferentIdeas o) {
-    if (this.numDifferentIdeas > o.numDifferentIdeas) {
-      return -1;
-    } else if (this.numDifferentIdeas < o.numDifferentIdeas) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return this.numDifferentIdeas - o.numDifferentIdeas;
   }
 }

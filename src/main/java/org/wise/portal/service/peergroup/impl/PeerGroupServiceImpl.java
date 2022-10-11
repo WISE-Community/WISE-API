@@ -32,6 +32,7 @@ import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
@@ -64,11 +65,20 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   public PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupCreationException {
+    validatePeerGroupingLogic(peerGrouping);
     PeerGroup peerGroup = peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup, peerGrouping);
     if (peerGrouping.getLogic().equals("manual")) {
       return peerGroup;
     } else {
       return peerGroup != null ? peerGroup : createPeerGroup(workgroup, peerGrouping);
+    }
+  }
+
+  private void validatePeerGroupingLogic(PeerGrouping peerGrouping) {
+    String logic = peerGrouping.getLogic();
+    if (!(logic.equals("manual") || logic.equals("random")
+        || logic.matches(DifferentIdeasLogic.regex))) {
+      throw new IllegalArgumentException("Invalid PeerGrouping logic");
     }
   }
 

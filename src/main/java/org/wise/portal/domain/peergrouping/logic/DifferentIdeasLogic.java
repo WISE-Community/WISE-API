@@ -5,16 +5,16 @@ import java.util.regex.Pattern;
 
 public class DifferentIdeasLogic {
 
+  public static String regex = "differentIdeas\\(\"(\\w+)\",\\s*\"(\\w+)\"\\)";
   private String componentId;
   private String nodeId;
 
   public DifferentIdeasLogic(String logic) {
-    Pattern pattern = Pattern.compile("\"(\\w+)\"");
+    Pattern pattern = Pattern.compile(DifferentIdeasLogic.regex);
     Matcher matcher = pattern.matcher(logic);
     matcher.find();
     this.nodeId = matcher.group(1);
-    matcher.find();
-    this.componentId = matcher.group(1);
+    this.componentId = matcher.group(2);
   }
 
   public String getComponentId() {
