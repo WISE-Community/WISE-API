@@ -39,7 +39,7 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
   PeerGrouping peerGrouping = new PeerGroupingImpl();
   private Run run = new RunImpl();
   Set<Workgroup> workgroupsNotInPeerGroup;
-  Annotation workgroup1Ideas, workgroup2Ideas, workgroup3Ideas, workgroup4Ideas;
+  Annotation workgroup1Ideas, workgroup2Ideas, workgroup3Ideas, workgroup4Ideas, workgroup5Ideas;
   String ideas1And2 = createIdeaString(true, true, false, false);
   String ideas3 = createIdeaString(false, false, true, false);
   String ideas3And4 = createIdeaString(false, false, true, true);
@@ -56,10 +56,12 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
     workgroupsNotInPeerGroup.add(workgroup2);
     workgroupsNotInPeerGroup.add(workgroup3);
     workgroupsNotInPeerGroup.add(workgroup4);
+    workgroupsNotInPeerGroup.add(workgroup5);
     workgroup1Ideas = createIdeasAnnotation(workgroup1, ideas1And2);
     workgroup2Ideas = createIdeasAnnotation(workgroup2, ideas3);
     workgroup3Ideas = createIdeasAnnotation(workgroup3, ideas3And4);
     workgroup4Ideas = createIdeasAnnotation(workgroup4, ideas4);
+    workgroup5Ideas = createIdeasAnnotation(workgroup5, ideas3And4);
     workgroup1IdeasOnly = new ArrayList<Annotation>();
     workgroup1IdeasOnly.add(workgroup1Ideas);
     classroomIdeaAnnotations = new ArrayList<Annotation>();
@@ -67,6 +69,7 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
     classroomIdeaAnnotations.add(workgroup2Ideas);
     classroomIdeaAnnotations.add(workgroup3Ideas);
     classroomIdeaAnnotations.add(workgroup4Ideas);
+    classroomIdeaAnnotations.add(workgroup5Ideas);
   }
 
   private String createIdeaString(boolean idea1Detected, boolean idea2Detected,
@@ -123,7 +126,7 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
     assertEquals(maxMembers, peerGroupMembers.size());
     Iterator<Workgroup> iterator = peerGroupMembers.iterator();
     assertEquals(1, iterator.next().getId().longValue());
-    assertEquals(3, iterator.next().getId().longValue());
+    assertEquals(5, iterator.next().getId().longValue());
     verify(annotationDao);
   }
 }

@@ -14,7 +14,7 @@ public class PeerGroupLogicServiceImplTest extends PeerGroupServiceTest {
   HashSet<Workgroup> members = new HashSet<Workgroup>();
   Group period1 = new PersistentGroup();
   HashSet<Workgroup> possibleMembers = new HashSet<Workgroup>();
-  Workgroup workgroup1, workgroup2, workgroup3, workgroup4;
+  Workgroup workgroup1, workgroup2, workgroup3, workgroup4, workgroup5;
 
   @Before
   public void setup() throws Exception {
@@ -23,10 +23,12 @@ public class PeerGroupLogicServiceImplTest extends PeerGroupServiceTest {
     workgroup2 = createWorkgroup(2L);
     workgroup3 = createWorkgroup(3L);
     workgroup4 = createWorkgroup(4L);
+    workgroup5 = createWorkgroup(5L);
     members.add(workgroup1);
     possibleMembers.add(workgroup2);
     possibleMembers.add(workgroup3);
     possibleMembers.add(workgroup4);
+    possibleMembers.add(workgroup5);
   }
 
   private Workgroup createWorkgroup(Long id) {
