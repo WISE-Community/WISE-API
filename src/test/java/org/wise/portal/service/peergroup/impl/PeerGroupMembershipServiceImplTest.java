@@ -17,9 +17,6 @@ import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 
-/**
- * @author Hiroki Terashima
- */
 @RunWith(EasyMockRunner.class)
 public class PeerGroupMembershipServiceImplTest extends PeerGroupServiceTest {
 
@@ -66,7 +63,7 @@ public class PeerGroupMembershipServiceImplTest extends PeerGroupServiceTest {
   }
 
   private void expectPeerGroup(Workgroup workgroup, PeerGroup peerGroup) {
-    expect(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup, peerGrouping)).andReturn(
-        peerGroup);
+    expect(peerGroupDao.getByWorkgroupAndPeerGrouping(workgroup, randomPeerGrouping))
+        .andReturn(peerGroup);
   }
 }

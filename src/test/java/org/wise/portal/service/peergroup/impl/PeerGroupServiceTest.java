@@ -38,13 +38,9 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.WISEServiceTest;
 
-/**
- * @author Hiroki Terashima
- * @author Geoffrey Kwan
- */
 public class PeerGroupServiceTest extends WISEServiceTest {
 
-  PeerGrouping peerGrouping, manualPeerGrouping;
+  protected PeerGrouping differentIdeasPeergrouping, manualPeerGrouping, randomPeerGrouping;
 
   PeerGroup peerGroup1, peerGroup2, peerGroup3;
 
@@ -53,12 +49,14 @@ public class PeerGroupServiceTest extends WISEServiceTest {
   @Before
   public void setUp() throws Exception {
     super.setUp();
-    peerGrouping = createPeerGrouping(run1, "tag1", "random", 3, 50, 2);
-    peerGroup1 = new PeerGroupImpl(peerGrouping, run1Period1,
+    differentIdeasPeergrouping = createPeerGrouping(run1, "tag1",
+        "differentIdeas(\"node1\",\"componentA\")", 2, 50, 2);
+    manualPeerGrouping = createPeerGrouping(run1, "tag1", "manual", 2, 50, 2);
+    randomPeerGrouping = createPeerGrouping(run1, "tag1", "random", 3, 50, 2);
+    peerGroup1 = new PeerGroupImpl(randomPeerGrouping, run1Period1,
         new HashSet<Workgroup>(Arrays.asList(run1Workgroup1, run1Workgroup2)));
     peerGroups.add(peerGroup1);
-    peerGroup2 = new PeerGroupImpl(peerGrouping, run1Period1, new HashSet<Workgroup>());
-    manualPeerGrouping = createPeerGrouping(run1, "tag1", "manual", 2, 50, 2);
+    peerGroup2 = new PeerGroupImpl(randomPeerGrouping, run1Period1, new HashSet<Workgroup>());
   }
 
   private PeerGrouping createPeerGrouping(Run run, String peerGroupingTag, String logicName,

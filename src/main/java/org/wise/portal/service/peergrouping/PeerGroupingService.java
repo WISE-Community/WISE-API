@@ -31,9 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
 
-/**
- * @author Hiroki Terashima
- */
 public interface PeerGroupingService {
 
   /**
@@ -46,16 +43,16 @@ public interface PeerGroupingService {
    * @throws PeerGroupingNotFoundException if PeerGrouping is not found in the
    *   database or curriculum unit for the specified component
    */
-  PeerGrouping getByComponent(Run run, String nodeId, String componentId) throws
-      PeerGroupingNotFoundException;
+  PeerGrouping getByComponent(Run run, String nodeId, String componentId)
+      throws PeerGroupingNotFoundException;
 
   /**
    * Retrieves PeerGrouping from the database for the specified run and tag. If none is found,
-   * creates a new one.
+   * returns null
    *
    * @param run
    * @param tag
-   * @return PeerGrouping
+   * @return PeerGrouping or null
    */
   PeerGrouping getByTag(Run run, String tag);
 

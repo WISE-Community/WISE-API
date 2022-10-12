@@ -13,9 +13,6 @@ import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 
-/**
- * @author Hiroki Terashima
- */
 @RunWith(EasyMockRunner.class)
 public class PeerGroupCreateServiceImplTest extends PeerGroupServiceTest {
 
@@ -30,7 +27,7 @@ public class PeerGroupCreateServiceImplTest extends PeerGroupServiceTest {
     peerGroupDao.save(isA(PeerGroupImpl.class));
     expectLastCall();
     replay(peerGroupDao);
-    PeerGroup peerGroup = service.create(peerGrouping, run1Period1);
+    PeerGroup peerGroup = service.create(randomPeerGrouping, run1Period1);
     assertEquals(0, peerGroup.getMembers().size());
     verify(peerGroupDao);
   }

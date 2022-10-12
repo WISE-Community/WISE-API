@@ -26,9 +26,6 @@ package org.wise.portal.service.peergroup;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 
-/**
- * @author Hiroki Terashima
- */
 public interface PeerGroupThresholdService {
 
   /**
@@ -38,5 +35,5 @@ public interface PeerGroupThresholdService {
    * @param period Group subset of workgroups in the run to test for PeerGroup members
    * @return boolean
    */
-  public boolean canCreatePeerGroup(PeerGrouping peerGrouping, Group period);
+  public boolean isThresholdSatisfied(PeerGrouping peerGrouping, Group period);
 }

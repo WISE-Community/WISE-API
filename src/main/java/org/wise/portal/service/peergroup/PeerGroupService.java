@@ -25,16 +25,12 @@ package org.wise.portal.service.peergroup;
 
 import java.util.List;
 
-import org.json.JSONException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.work.StudentWork;
 
-/**
- * @author Hiroki Terashima
- */
 public interface PeerGroupService {
 
   /**
@@ -55,8 +51,8 @@ public interface PeerGroupService {
    * @throws PeerGroupCreationException the PeerGroup cannot be created for other reasons
    * like an error occurred while grouping members
    */
-  PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping) throws JSONException,
-      PeerGroupCreationException;
+  PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
+      throws PeerGroupCreationException;
 
   /**
    * Gets all the PeerGroups for the specified PeerGrouping
