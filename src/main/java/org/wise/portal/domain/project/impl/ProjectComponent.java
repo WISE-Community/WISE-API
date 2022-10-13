@@ -32,7 +32,6 @@ import lombok.Getter;
 /**
  * ProjectComponent defines activities that students work on, like MultipleChoice, OpenResponse,
  * etc.
- * @author Hiroki Terashima
  */
 public class ProjectComponent {
 
@@ -72,5 +71,9 @@ public class ProjectComponent {
 
   public JSONArray getJSONArray(String key) throws JSONException {
     return this.componentJSON.getJSONArray(key);
+  }
+
+  public JSONObject getJSONObject(String key) throws JSONException {
+    return this.componentJSON.getJSONObject(key);
   }
 }

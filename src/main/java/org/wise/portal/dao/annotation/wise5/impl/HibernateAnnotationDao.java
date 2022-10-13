@@ -2,6 +2,7 @@ package org.wise.portal.dao.annotation.wise5.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,9 +25,6 @@ import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.NotebookItem;
 import org.wise.vle.domain.work.StudentWork;
 
-/**
- * @author Hiroki Terashima
- */
 @Repository("wise5AnnotationDao")
 public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     implements AnnotationDao<Annotation> {
@@ -115,5 +113,21 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<Annotation> query = entityManager.createQuery(cq);
     return (List<Annotation>) (Object) query.getResultList();
+  }
+
+  public List<Annotation> getAnnotationsToWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId) {
+    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
+    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
+    Root<Annotation> annotationRoot = cq.from(Annotation.class);
+    List<Predicate> predicates = new ArrayList<Predicate>();
+    predicates.add(cb.in(annotationRoot.get("toWorkgroup")).value(workgroups));
+    predicates.add(cb.equal(annotationRoot.get("nodeId"), nodeId));
+    predicates.add(cb.equal(annotationRoot.get("componentId"), componentId));
+    cq.select(annotationRoot).where(predicates.toArray(new Predicate[predicates.size()]))
+        .orderBy(cb.asc(annotationRoot.get("serverSaveTime")));
+    TypedQuery<Annotation> query = entityManager.createQuery(cq);
+    return (List<Annotation>) query.getResultList();
   }
 }

@@ -12,14 +12,15 @@ import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.presentation.web.controllers.APIControllerTest;
+import org.wise.portal.presentation.web.controllers.student.AbstractClassmateDataControllerTest;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupInfoService;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
 import org.wise.portal.service.peergrouping.PeerGroupingService;
 
-public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTest {
+public abstract class AbstractPeerGroupAPIControllerTest
+    extends AbstractClassmateDataControllerTest {
 
   @Mock
   protected PeerGroupService peerGroupService;
@@ -70,8 +71,7 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
   }
 
   protected void expectPeerGroupingByTagFound() {
-    expect(peerGroupingService.getByTag(run1, peerGrouping1Tag))
-        .andReturn(peerGrouping);
+    expect(peerGroupingService.getByTag(run1, peerGrouping1Tag)).andReturn(peerGrouping);
   }
 
   protected void expectPeerGroupCreationException() throws Exception {
@@ -79,17 +79,25 @@ public abstract class AbstractPeerGroupAPIControllerTest extends APIControllerTe
         .andThrow(new PeerGroupCreationException());
   }
 
+  protected void expectUserNotInPeerGroup() {
+    expect(userService.retrieveUserByUsername(studentAuth.getName())).andReturn(student2);
+  }
+
+  protected void expectUserInPeerGroup() {
+    expect(userService.retrieveUserByUsername(studentAuth.getName())).andReturn(student1);
+  }
+
   protected void expectUserHasRunWritePermission(boolean hasPermission) {
     expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(hasPermission);
   }
 
   protected void verifyAll() {
-    verify(peerGroupingService, peerGroupInfoService, peerGroupService, runService,
-       userService, workgroupService);
+    verify(peerGroupingService, peerGroupInfoService, peerGroupService, projectService, runService,
+        userService, workgroupService);
   }
 
   protected void replayAll() {
-    replay(peerGroupingService, peerGroupInfoService, peerGroupService, runService,
+    replay(peerGroupingService, peerGroupInfoService, peerGroupService, projectService, runService,
         userService, workgroupService);
   }
 }

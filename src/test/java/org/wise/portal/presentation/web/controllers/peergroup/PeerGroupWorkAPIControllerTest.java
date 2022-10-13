@@ -31,7 +31,7 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectUserNotInPeerGroup();
     replayAll();
     try {
-      controller.getPeerGroupWork(peerGroup1, run1Node1Id, run1Component1Id,  studentAuth);
+      controller.getPeerGroupWork(peerGroup1, run1Node1Id, run1Component1Id, studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     }
@@ -44,8 +44,8 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectUserInPeerGroup();
     expectGetStudentWork();
     replayAll();
-    assertNotNull(controller.getPeerGroupWork(peerGroup1,  run1Node1Id, run1Component1Id,
-        studentAuth));
+    assertNotNull(
+        controller.getPeerGroupWork(peerGroup1, run1Node1Id, run1Component1Id, studentAuth));
     verifyAll();
   }
 
@@ -70,10 +70,10 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectPeerGroupingNotFound();
     replayAll();
     try {
-      controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id,
-          teacherAuth);
+      controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id, teacherAuth);
       fail("PeerGroupingNotFoundException expected, but was not thrown");
-    } catch (PeerGroupingNotFoundException e) {}
+    } catch (PeerGroupingNotFoundException e) {
+    }
     verifyAll();
   }
 
@@ -85,10 +85,10 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectPeerGroupCreationException();
     replayAll();
     try {
-      controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id,
-          teacherAuth);
+      controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id, teacherAuth);
       fail("PeerGroupCreationException expected, but was not thrown");
-    } catch (PeerGroupCreationException e) {}
+    } catch (PeerGroupCreationException e) {
+    }
     verifyAll();
   }
 
@@ -100,14 +100,14 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
     expectPeerGroupFound();
     expectGetStudentWork();
     replayAll();
-    assertNotNull(controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id,
-        teacherAuth));
+    assertNotNull(
+        controller.getPeerGroupWork(run1, workgroup1, run1Node1Id, run1Component1Id, teacherAuth));
     verifyAll();
   }
 
   private void expectRetrieveTeacherUser() {
-    expect(userService.retrieveUserByUsername(teacher1UserDetails.getUsername())).andReturn(
-        teacher1);
+    expect(userService.retrieveUserByUsername(teacher1UserDetails.getUsername()))
+        .andReturn(teacher1);
   }
 
   private void expectPeerGroupFound() throws Exception {
@@ -126,13 +126,5 @@ public class PeerGroupWorkAPIControllerTest extends AbstractPeerGroupAPIControll
   private void expectGetStudentWork() {
     expect(peerGroupService.getStudentWork(peerGroup1, run1Node1Id, run1Component1Id))
         .andReturn(peerGroup1StudentWork);
-  }
-
-  private void expectUserNotInPeerGroup() {
-    expect(userService.retrieveUserByUsername(studentAuth.getName())).andReturn(student2);
-  }
-
-  private void expectUserInPeerGroup() {
-    expect(userService.retrieveUserByUsername(studentAuth.getName())).andReturn(student1);
   }
 }

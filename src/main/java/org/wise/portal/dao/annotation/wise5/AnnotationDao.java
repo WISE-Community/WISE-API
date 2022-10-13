@@ -9,6 +9,7 @@ import org.wise.vle.domain.work.NotebookItem;
 import org.wise.vle.domain.work.StudentWork;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Hiroki Terashima
@@ -25,4 +26,7 @@ public interface AnnotationDao<T extends Annotation> extends SimpleDao<T> {
   List<Annotation> getAnnotations(Run run, String nodeId, String componentId);
 
   List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId);
+
+  List<Annotation> getAnnotationsToWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId);
 }
