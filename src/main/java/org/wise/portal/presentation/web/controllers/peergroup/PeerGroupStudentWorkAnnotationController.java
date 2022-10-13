@@ -27,14 +27,14 @@ import lombok.Getter;
 
 @RestController
 @Secured("ROLE_USER")
-@RequestMapping("/api/peer-group/{peerGroupId}/{nodeId}/{componentId}/student-work-annotation")
+@RequestMapping("/api/peer-group/{peerGroupId}/{nodeId}/{componentId}/student-data")
 public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupWorkController {
 
   @Autowired
   private AnnotationService annotationService;
 
-  @GetMapping("/dynamic-prompt/reference-component/latest-auto-score")
-  List<StudentWorkAnnotation> getListWithLatestAutoScoreForDynamicPromptReferenceComponent(
+  @GetMapping("/dynamic-prompt")
+  List<StudentWorkAnnotation> getStudentDataForDynamicPrompt(
       @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
     if (isUserInPeerGroup(auth, peerGroup)) {

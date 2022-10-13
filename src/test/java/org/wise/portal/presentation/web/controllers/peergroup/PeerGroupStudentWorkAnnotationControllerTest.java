@@ -34,8 +34,8 @@ public class PeerGroupStudentWorkAnnotationControllerTest
     expectUserNotInPeerGroup();
     replayAll();
     try {
-      controller.getListWithLatestAutoScoreForDynamicPromptReferenceComponent(peerGroup1,
-          run1Node2Id, run1Component2Id, studentAuth);
+      controller.getStudentDataForDynamicPrompt(peerGroup1, run1Node2Id, run1Component2Id,
+          studentAuth);
       fail("Expected AccessDeniedException, but was not thrown");
     } catch (AccessDeniedException e) {
     } catch (Exception e) {
@@ -51,8 +51,8 @@ public class PeerGroupStudentWorkAnnotationControllerTest
     expectInvalidDynamicPromptContent();
     replayAll();
     try {
-      controller.getListWithLatestAutoScoreForDynamicPromptReferenceComponent(peerGroup1,
-          run1Node2Id, run1Component2Id, studentAuth);
+      controller.getStudentDataForDynamicPrompt(peerGroup1, run1Node2Id, run1Component2Id,
+          studentAuth);
       fail("Expected Exception, but was not thrown");
     } catch (Exception e) {
     }
@@ -75,8 +75,7 @@ public class PeerGroupStudentWorkAnnotationControllerTest
         .andReturn(Arrays.asList(createAnnotation(workgroup1), createAnnotation(workgroup2)));
     replayAll();
     List<StudentWorkAnnotation> studentWorkAnnotation = controller
-        .getListWithLatestAutoScoreForDynamicPromptReferenceComponent(peerGroup1, run1Node2Id,
-            run1Component2Id, studentAuth);
+        .getStudentDataForDynamicPrompt(peerGroup1, run1Node2Id, run1Component2Id, studentAuth);
     assertEquals(2, studentWorkAnnotation.size());
     assertEquals(workgroup1, studentWorkAnnotation.get(0).getWorkgroup());
     assertEquals(workgroup2, studentWorkAnnotation.get(1).getWorkgroup());
