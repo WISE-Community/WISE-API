@@ -95,8 +95,9 @@ public abstract class APIControllerTest {
   protected Long workgroup3Id = 3L;
 
   protected String run1Node1Id = "run1Node1";
-
+  protected String run1Node2Id = "run1Node2";
   protected String run1Component1Id = "run1Component1";
+  protected String run1Component2Id = "run1Component2";
 
   @Mock
   protected Environment appProperties;

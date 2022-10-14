@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +56,22 @@ public class HibernateAnnotationDaoTest extends WISEHibernateTest {
     assertTrue(annotations.contains(annotation2));
   }
 
+  @Test
+  public void getAnnotationsToWorkgroup_ShouldReturnAnnotations() {
+    Annotation annotation1 = createAnnotation(run1, run1Period1, teacherWorkgroup1, workgroup1,
+        COMMENT_TYPE, NODE_ID1, COMPONENT_ID1, DUMMY_ANNOTATION_DATA);
+    Annotation annotation2 = createAnnotation(run1, run1Period1, teacherWorkgroup1, workgroup2,
+        COMMENT_TYPE, NODE_ID1, COMPONENT_ID1, DUMMY_ANNOTATION_DATA);
+    Set<Workgroup> workgroups = new HashSet<Workgroup>();
+    workgroups.add(workgroup1);
+    workgroups.add(workgroup2);
+    List<Annotation> annotations = annotationDao.getAnnotationsToWorkgroups(workgroups, NODE_ID1,
+        COMPONENT_ID1);
+    assertEquals(2, annotations.size());
+    assertTrue(annotations.contains(annotation1));
+    assertTrue(annotations.contains(annotation2));
+  }
+
   private void createAndRetrieveAnnotations(String createAnnotationNodeId,
       String createAnnotationComponentId, String retrieveAnnotationNodeId,
       String retrieveAnnotationComponentId, Integer expectedCount) {
@@ -82,5 +100,4 @@ public class HibernateAnnotationDaoTest extends WISEHibernateTest {
     annotationDao.save(annotation);
     return annotation;
   }
-
 }
