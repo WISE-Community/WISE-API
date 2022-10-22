@@ -33,11 +33,13 @@ import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
+import org.wise.portal.domain.peergrouping.logic.DifferentKIScoreLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.peergrouping.logic.impl.DifferentIdeasLogicServiceImpl;
+import org.wise.portal.service.peergrouping.logic.impl.DifferentKIScoreLogicServiceImpl;
 import org.wise.portal.service.peergrouping.logic.impl.RandomLogicServiceImpl;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -46,6 +48,9 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   @Autowired
   private DifferentIdeasLogicServiceImpl differentIdeasLogicService;
+
+  @Autowired
+  private DifferentKIScoreLogicServiceImpl differentKIScoreLogicService;
 
   @Autowired
   private PeerGroupDao<PeerGroup> peerGroupDao;
@@ -77,7 +82,8 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   private void validatePeerGroupingLogic(PeerGrouping peerGrouping) {
     String logic = peerGrouping.getLogic();
     if (!(logic.equals("manual") || logic.equals("random")
-        || logic.matches(DifferentIdeasLogic.regex))) {
+        || logic.matches(DifferentIdeasLogic.regex)
+        || logic.matches(DifferentKIScoreLogic.regex))) {
       throw new IllegalArgumentException("Invalid PeerGrouping logic");
     }
   }
@@ -85,9 +91,15 @@ public class PeerGroupServiceImpl implements PeerGroupService {
   private PeerGroup createPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupCreationException {
     if (peerGroupThresholdService.isThresholdSatisfied(peerGrouping, workgroup.getPeriod())) {
-      return peerGrouping.getLogic().equals("random")
-        ? randomLogicService.createPeerGroup(workgroup, peerGrouping)
-        : differentIdeasLogicService.createPeerGroup(workgroup, peerGrouping);
+      CreatePeerGroupContext context = new CreatePeerGroupContext();
+      if (peerGrouping.getLogic().equals("random")) {
+        context.setStrategy(randomLogicService);
+      } else if (peerGrouping.getLogic().matches(DifferentIdeasLogic.regex)) {
+        context.setStrategy(differentIdeasLogicService);
+      } else {
+        context.setStrategy(differentKIScoreLogicService);
+      }
+      return context.execute(workgroup, peerGrouping);
     }
     return null;
   }
