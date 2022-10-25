@@ -27,7 +27,7 @@ public class DifferentKIScoreLogicServiceImpl extends PeerGroupAnnotationLogicSe
     Map<Workgroup, Annotation> workgroupToAnnotation = getWorkgroupToAnnotation(peerGrouping,
         workgroup.getPeriod());
     int workgroupScore = getKIScore(workgroup, workgroupToAnnotation);
-    return getWorkgroupWithDifferentScore(possibleMembers, workgroupScore, workgroupToAnnotation,
+    return getWorkgroupsWithScoreDifferences(possibleMembers, workgroupScore, workgroupToAnnotation,
         new DifferentKIScoreLogic(peerGrouping.getLogic()));
   }
 
@@ -52,7 +52,7 @@ public class DifferentKIScoreLogicServiceImpl extends PeerGroupAnnotationLogicSe
     }
   }
 
-  private TreeSet<WorkgroupLogicComparable> getWorkgroupWithDifferentScore(
+  private TreeSet<WorkgroupLogicComparable> getWorkgroupsWithScoreDifferences(
       Set<Workgroup> possibleMembers, int workgroupScore,
       Map<Workgroup, Annotation> workgroupToAnnotation, DifferentKIScoreLogic logic) {
     TreeSet<WorkgroupLogicComparable> workgroups = new TreeSet<WorkgroupLogicComparable>();
