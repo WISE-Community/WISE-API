@@ -40,7 +40,7 @@ import org.wise.portal.service.WISEServiceTest;
 
 public class PeerGroupServiceTest extends WISEServiceTest {
 
-  protected PeerGrouping differentIdeasPeerGrouping, differentKIScorePeerGrouping,
+  protected PeerGrouping differentIdeasPeerGrouping, differentKIScoresPeerGrouping,
       manualPeerGrouping, randomPeerGrouping;
 
   PeerGroup peerGroup1, peerGroup2, peerGroup3;
@@ -52,8 +52,8 @@ public class PeerGroupServiceTest extends WISEServiceTest {
     super.setUp();
     differentIdeasPeerGrouping = createPeerGrouping(run1, "tag1",
         "differentIdeas(\"node1\",\"componentA\")", 2, 50, 2);
-    differentKIScorePeerGrouping = createPeerGrouping(run1, "tag1",
-        "differentKIScore(\"node1\",\"componentA\",\"any\")", 2, 50, 2);
+    differentKIScoresPeerGrouping = createPeerGrouping(run1, "tag1",
+        "differentKIScores(\"node1\",\"componentA\",\"any\")", 2, 50, 2);
     manualPeerGrouping = createPeerGrouping(run1, "tag1", "manual", 2, 50, 2);
     randomPeerGrouping = createPeerGrouping(run1, "tag1", "random", 3, 50, 2);
     peerGroup1 = new PeerGroupImpl(randomPeerGrouping, run1Period1,

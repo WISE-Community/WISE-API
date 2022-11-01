@@ -8,16 +8,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(EasyMockRunner.class)
-public class DifferentKIScoreLogicTest {
+public class DifferentKIScoresLogicTest {
 
-  private DifferentKIScoreLogic logicBasic, logicWithMode;
-  private String logicStringBasic = "differentKIScore(\"node1\", \"componentX\")";
-  private String logicStringWithMode = "differentKIScore(\"node1\", \"componentX\", \"maximize\")";
+  private DifferentKIScoresLogic logicBasic, logicWithMode;
+  private String logicStringBasic = "differentKIScores(\"node1\", \"componentX\")";
+  private String logicStringWithMode = "differentKIScores(\"node1\", \"componentX\", \"maximize\")";
 
   @Before
   public void setup() {
-    this.logicBasic = new DifferentKIScoreLogic(logicStringBasic);
-    this.logicWithMode = new DifferentKIScoreLogic(logicStringWithMode);
+    this.logicBasic = new DifferentKIScoresLogic(logicStringBasic);
+    this.logicWithMode = new DifferentKIScoresLogic(logicStringWithMode);
   }
 
   @Test
@@ -34,7 +34,7 @@ public class DifferentKIScoreLogicTest {
 
   @Test
   public void getMode() {
-    assertEquals(DifferentKIScoreLogicMode.ANY, logicBasic.getMode());
-    assertEquals(DifferentKIScoreLogicMode.MAXIMIZE, logicWithMode.getMode());
+    assertEquals(DifferentKIScoresLogicMode.ANY, logicBasic.getMode());
+    assertEquals(DifferentKIScoresLogicMode.MAXIMIZE, logicWithMode.getMode());
   }
 }

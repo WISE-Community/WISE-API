@@ -1,5 +1,5 @@
 package org.wise.portal.domain.peergrouping.logic;
 
-public enum DifferentKIScoreLogicMode {
+public enum DifferentKIScoresLogicMode {
   ANY, MAXIMIZE
 }

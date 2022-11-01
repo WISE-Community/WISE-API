@@ -18,10 +18,10 @@ import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @RunWith(EasyMockRunner.class)
-public class DifferentKIScoreLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
+public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
 
   @TestSubject
-  private DifferentKIScoreLogicServiceImpl service = new DifferentKIScoreLogicServiceImpl();
+  private DifferentKIScoresLogicServiceImpl service = new DifferentKIScoresLogicServiceImpl();
 
   List<Annotation> classroomAnnotations;
   Annotation workgroup1Score, workgroup2Score, workgroup3Score, workgroup4Score, workgroup5Score;
@@ -99,6 +99,6 @@ public class DifferentKIScoreLogicServiceImplTest extends PeerGroupAnnotationLog
 
   private void setLogic(String logic) {
     peerGrouping.setLogic(
-        "differentKIScore(\"" + nodeId + "\", \"" + componentId + "\", \"" + logic + "\")");
+        "differentKIScores(\"" + nodeId + "\", \"" + componentId + "\", \"" + logic + "\")");
   }
 }

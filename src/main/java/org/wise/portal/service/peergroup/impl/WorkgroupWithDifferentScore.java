@@ -1,26 +1,26 @@
 package org.wise.portal.service.peergroup.impl;
 
-import org.wise.portal.domain.peergrouping.logic.DifferentKIScoreLogic;
-import org.wise.portal.domain.peergrouping.logic.DifferentKIScoreLogicMode;
+import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
+import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogicMode;
 import org.wise.portal.domain.workgroup.Workgroup;
 import lombok.Getter;
 
 @Getter
 public class WorkgroupWithDifferentScore
     implements Comparable<WorkgroupWithDifferentScore>, WorkgroupLogicComparable {
-  private DifferentKIScoreLogic logic;
+  private DifferentKIScoresLogic logic;
   private int scoreDifference;
   private Workgroup workgroup;
 
   public WorkgroupWithDifferentScore(Workgroup workgroup, int scoreDifference,
-      DifferentKIScoreLogic logic) {
+      DifferentKIScoresLogic logic) {
     this.logic = logic;
     this.workgroup = workgroup;
     this.scoreDifference = scoreDifference;
   }
 
   public int compareTo(WorkgroupWithDifferentScore o) {
-    return this.logic.getMode().equals(DifferentKIScoreLogicMode.ANY) ? compareToAnyMode(o)
+    return this.logic.getMode().equals(DifferentKIScoresLogicMode.ANY) ? compareToAnyMode(o)
       : compareToMaximizeMode(o);
   }
 

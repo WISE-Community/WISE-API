@@ -9,17 +9,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
-import org.wise.portal.domain.peergrouping.logic.DifferentKIScoreLogic;
+import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.portal.service.peergroup.impl.WorkgroupWithDifferentScore;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @Service
-public class DifferentKIScoreLogicServiceImpl extends PeerGroupAnnotationLogicServiceImpl {
+public class DifferentKIScoresLogicServiceImpl extends PeerGroupAnnotationLogicServiceImpl {
 
-  DifferentKIScoreLogic getLogic(PeerGrouping peerGrouping) {
-    return new DifferentKIScoreLogic(peerGrouping.getLogic());
+  DifferentKIScoresLogic getLogic(PeerGrouping peerGrouping) {
+    return new DifferentKIScoresLogic(peerGrouping.getLogic());
   }
 
   TreeSet<WorkgroupLogicComparable> getPossibleMembersInOrder(Set<Workgroup> possibleMembers,
@@ -28,7 +28,7 @@ public class DifferentKIScoreLogicServiceImpl extends PeerGroupAnnotationLogicSe
         workgroup.getPeriod());
     int workgroupScore = getKIScore(workgroup, workgroupToAnnotation);
     return getWorkgroupsWithScoreDifferences(possibleMembers, workgroupScore, workgroupToAnnotation,
-        new DifferentKIScoreLogic(peerGrouping.getLogic()));
+        new DifferentKIScoresLogic(peerGrouping.getLogic()));
   }
 
   private int getKIScore(Workgroup workgroup, Map<Workgroup, Annotation> workgroupToAnnotation) {
@@ -54,7 +54,7 @@ public class DifferentKIScoreLogicServiceImpl extends PeerGroupAnnotationLogicSe
 
   private TreeSet<WorkgroupLogicComparable> getWorkgroupsWithScoreDifferences(
       Set<Workgroup> possibleMembers, int workgroupScore,
-      Map<Workgroup, Annotation> workgroupToAnnotation, DifferentKIScoreLogic logic) {
+      Map<Workgroup, Annotation> workgroupToAnnotation, DifferentKIScoresLogic logic) {
     TreeSet<WorkgroupLogicComparable> workgroups = new TreeSet<WorkgroupLogicComparable>();
     for (Workgroup possibleMember : possibleMembers) {
       if (workgroupToAnnotation.containsKey(possibleMember)) {

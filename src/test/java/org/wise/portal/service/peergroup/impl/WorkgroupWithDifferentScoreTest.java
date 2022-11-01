@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.easymock.EasyMockRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wise.portal.domain.peergrouping.logic.DifferentKIScoreLogic;
+import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 
@@ -18,8 +18,8 @@ public class WorkgroupWithDifferentScoreTest {
 
   @Test
   public void compareTo_AnyMode() {
-    DifferentKIScoreLogic logicAny = new DifferentKIScoreLogic(
-        "differentKIScore(\"node1\", \"componentX\", \"any\")");
+    DifferentKIScoresLogic logicAny = new DifferentKIScoresLogic(
+        "differentKIScores(\"node1\", \"componentX\", \"any\")");
     wwds1 = new WorkgroupWithDifferentScore(workgroup, 1, logicAny);
     wwds2 = new WorkgroupWithDifferentScore(workgroup, 2, logicAny);
     wwds3 = new WorkgroupWithDifferentScore(workgroup, 1, logicAny);
@@ -34,8 +34,8 @@ public class WorkgroupWithDifferentScoreTest {
 
   @Test
   public void compareTo_MaximizeMode() {
-    DifferentKIScoreLogic logicMaximize = new DifferentKIScoreLogic(
-        "differentKIScore(\"node1\", \"componentX\", \"maximize\")");
+    DifferentKIScoresLogic logicMaximize = new DifferentKIScoresLogic(
+        "differentKIScores(\"node1\", \"componentX\", \"maximize\")");
     wwds1 = new WorkgroupWithDifferentScore(workgroup, 1, logicMaximize);
     wwds2 = new WorkgroupWithDifferentScore(workgroup, 2, logicMaximize);
     wwds3 = new WorkgroupWithDifferentScore(workgroup, 1, logicMaximize);
