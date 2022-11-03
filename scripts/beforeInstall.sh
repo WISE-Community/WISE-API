@@ -136,3 +136,8 @@ systemctl enable sysstat
 
 echo "Starting sysstat"
 systemctl start sysstat
+
+echo "Set log file max size to 1G"
+sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/rsyslog
+sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/tomcat9
+sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/nginx
