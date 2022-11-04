@@ -12,6 +12,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.tika.detect.Detector;
+import org.apache.tika.io.TikaInputStream;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.mime.MimeTypes;
+import org.apache.tika.parser.AutoDetectParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
@@ -116,7 +121,20 @@ public class ProjectAssetAPIController {
       allowedTypes += ","
           + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
     }
-    return allowedTypes.contains(file.getContentType());
+    return allowedTypes.contains(getRealMimeType(file));
+  }
+
+  public String getRealMimeType(MultipartFile file) {
+    AutoDetectParser parser = new AutoDetectParser();
+    Detector detector = parser.getDetector();
+    try {
+      Metadata metadata = new Metadata();
+      TikaInputStream stream = TikaInputStream.get(file.getInputStream());
+      org.apache.tika.mime.MediaType mediaType = detector.detect(stream, metadata);
+      return mediaType.toString();
+    } catch (IOException e) {
+      return MimeTypes.OCTET_STREAM;
+    }
   }
 
   @PostMapping("/{projectId}/delete")
