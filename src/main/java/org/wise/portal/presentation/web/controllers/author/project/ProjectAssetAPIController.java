@@ -31,6 +31,7 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.user.UserService;
+import org.wise.vle.utils.FileManager;
 
 /**
  * Project Asset API endpoint
@@ -128,12 +129,13 @@ public class ProjectAssetAPIController {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       String projectAssetsDirPath = getProjectAssetsDirectoryPath(project);
-      File asset = new File(projectAssetsDirPath, assetFileName);
-      asset.delete();
-      return projectService.getDirectoryInfo(new File(projectAssetsDirPath));
-    } else {
-      return null;
+      if (FileManager.isFilePathInFolder(projectAssetsDirPath, assetFileName)) {
+        File asset = new File(projectAssetsDirPath, assetFileName);
+        asset.delete();
+        return projectService.getDirectoryInfo(new File(projectAssetsDirPath));
+      }
     }
+    return null;
   }
 
   private String getProjectAssetsDirectoryPath(Project project) {
@@ -152,9 +154,13 @@ public class ProjectAssetAPIController {
     Project project = projectService.getById(projectId);
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
-      response.setHeader("Content-Disposition", "attachment;filename=\"" + assetFileName + "\"");
-      return new FileSystemResource(getProjectAssetsDirectoryPath(project) + "/" + assetFileName);
+      String folderPath = getProjectAssetsDirectoryPath(project);
+      if (FileManager.isFilePathInFolder(folderPath, assetFileName)) {
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + assetFileName + "\"");
+        return new FileSystemResource(getProjectAssetsDirectoryPath(project) + "/" + assetFileName);
+      }
     }
     return null;
   }
+
 }
