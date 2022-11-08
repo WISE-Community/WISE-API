@@ -85,10 +85,8 @@ public class FileManager {
    *                                  content in the fromAssetFileName needs to be modified such as
    *                                  when file name references in the content need to be changed
    *                                  due to file name conflicts.
-   * @param fromProjectAssetsFolderPath
-   *                                  the asset folder path in the from project
-   * @param toProjectAssetsFolderPath
-   *                                  the asset folder path in the to project
+   * @param fromProjectAssetsFolderPath the asset folder path in the from project
+   * @param toProjectAssetsFolderPath the asset folder path in the to project
    * @return the name of the asset file that was created in the to project asset folder or null if
    *         we were unable to create the asset in the to project asset folder
    */

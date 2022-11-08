@@ -19,7 +19,7 @@ public class FileManagerTest {
   }
 
   @Test
-  public void isFilePathInFolder_FilePathIsNotInFolder_ShouldReturnTrue() {
+  public void isFilePathInFolder_FilePathIsNotInFolder_ShouldReturnFalse() {
     assertIsFilePathInFolder("/src/main/webapp/curriculum/15/assets", "../my-image.jpg", false);
   }
 
