@@ -121,20 +121,20 @@ public class ProjectAssetAPIController {
       allowedTypes += ","
           + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
     }
-    return allowedTypes.contains(getRealMimeType(file));
+    try {
+      return allowedTypes.contains(getRealMimeType(file));
+    } catch (IOException e) {
+      return false;
+    }
   }
 
-  public String getRealMimeType(MultipartFile file) {
+  private String getRealMimeType(MultipartFile file) throws IOException {
     AutoDetectParser parser = new AutoDetectParser();
     Detector detector = parser.getDetector();
-    try {
-      Metadata metadata = new Metadata();
-      TikaInputStream stream = TikaInputStream.get(file.getInputStream());
-      org.apache.tika.mime.MediaType mediaType = detector.detect(stream, metadata);
-      return mediaType.toString();
-    } catch (IOException e) {
-      return MimeTypes.OCTET_STREAM;
-    }
+    Metadata metadata = new Metadata();
+    TikaInputStream stream = TikaInputStream.get(file.getInputStream());
+    org.apache.tika.mime.MediaType mediaType = detector.detect(stream, metadata);
+    return mediaType.toString();
   }
 
   @PostMapping("/{projectId}/delete")
