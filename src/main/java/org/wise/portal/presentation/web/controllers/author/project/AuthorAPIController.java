@@ -268,8 +268,8 @@ public class AuthorAPIController {
   @ResponseBody
   @SuppressWarnings("unchecked")
   protected HashMap<String, Object> getDefaultAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request) throws ObjectNotFoundException, JsonMappingException,
-      JsonProcessingException {
+      HttpServletRequest request)
+      throws ObjectNotFoundException, JsonMappingException, JsonProcessingException {
     HashMap<String, Object> config = new HashMap<String, Object>();
     User user = userService.retrieveUserByUsername(auth.getName());
     String contextPath = request.getContextPath();
@@ -399,7 +399,8 @@ public class AuthorAPIController {
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
-    config.put("importStepsURL", contextPath + "/api/author/project/importSteps/" + project.getId());
+    config.put("importStepsURL",
+        contextPath + "/api/author/project/importSteps/" + project.getId());
     config.put("featuredProjectIconsURL", contextPath + "/api/author/project/featured/icons");
     config.put("projectIconURL", contextPath + "/api/author/project/icon");
     config.put("mode", "author");
@@ -506,19 +507,17 @@ public class AuthorAPIController {
         + toProjectUrl.substring(0, toProjectUrlLastIndexOfSlash);
 
     String fromProjectAssetsUrl = fullFromProjectFolderUrl + "/assets";
-    File fromProjectAssetsFolder = new File(fromProjectAssetsUrl);
 
     String toProjectAssetsUrl = fullToProjectFolderUrl + "/assets";
-    File toProjectAssetsFolder = new File(toProjectAssetsUrl);
 
     for (String fileName : getAssetFileNames(steps)) {
       /*
-       * Import the asset to the project we are importing to. If the project already contains a file
-       * with the same file name and does not have the same file content, it will be given a new
-       * file name. The file name that is used will be returned by importAssetInContent().
+       * Import the asset to the project we are importing to. If the project already contains a
+       * file with the same file name and does not have the same file content, it will be given a
+       * new file name. The file name that is used will be returned by importAssetInContent().
        */
-      String newFileName = FileManager.importAssetInContent(fileName, null, fromProjectAssetsFolder,
-          toProjectAssetsFolder);
+      String newFileName = FileManager.importAssetInContent(fileName, null, fromProjectAssetsUrl,
+          toProjectAssetsUrl);
 
       if (newFileName != null && !fileName.equals(newFileName)) {
         // the file name was changed so we need to update the step content by replacing

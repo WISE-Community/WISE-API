@@ -85,21 +85,22 @@ public class FileManager {
    *                                  content in the fromAssetFileName needs to be modified such as
    *                                  when file name references in the content need to be changed
    *                                  due to file name conflicts.
-   * @param fromProjectAssetsFolder
-   *                                  the asset folder in the from project
-   * @param toProjectAssetsFolder
-   *                                  the asset folder in the to project
+   * @param fromProjectAssetsFolderPath the asset folder path in the from project
+   * @param toProjectAssetsFolderPath the asset folder path in the to project
    * @return the name of the asset file that was created in the to project asset folder or null if
    *         we were unable to create the asset in the to project asset folder
    */
   public static String importAssetInContent(String fromAssetFileName, String fromAssetFileContent,
-      File fromProjectAssetsFolder, File toProjectAssetsFolder) {
+      String fromProjectAssetsFolderPath, String toProjectAssetsFolderPath) {
     String toAssetFileName = null;
     String toAssetFileContent = null;
-    File fromAsset = new File(fromProjectAssetsFolder, fromAssetFileName);
+    File fromAsset = new File(fromProjectAssetsFolderPath, fromAssetFileName);
+    if (!FileManager.isFilePathInFolder(fromProjectAssetsFolderPath, fromAssetFileName)) {
+      return null;
+    }
     if (fromAsset.exists()) {
       toAssetFileName = fromAssetFileName;
-      File toAsset = new File(toProjectAssetsFolder, toAssetFileName);
+      File toAsset = new File(toProjectAssetsFolderPath, toAssetFileName);
 
       boolean assetCompleted = false;
       int counter = 1;
@@ -138,7 +139,7 @@ public class FileManager {
               assetCompleted = true;
             } else {
               toAssetFileName = createNewFileName(fromAssetFileName, counter);
-              toAsset = new File(toProjectAssetsFolder, toAssetFileName);
+              toAsset = new File(toProjectAssetsFolderPath, toAssetFileName);
               counter++;
             }
           } catch (IOException e) {
@@ -181,5 +182,33 @@ public class FileManager {
     String fileNameEnding = fileName.substring(lastDot);
     newFileName = fileNameBeginning + "-" + counter + fileNameEnding;
     return newFileName;
+  }
+
+  /**
+   * Make sure the file is actually in the folder to prevent file path traversal exploits. If the
+   * file path is something like "../../../../password.txt" then we will see that the file is not
+   * actually in the folder.
+   * @param folderPath The path to the folder
+   * Example
+   * "src/main/webapp/curriculum/15/assets"
+   * @param filePath The file name or path relative to the folder
+   * Example
+   * "my-image.jpg"
+   * "model/my-image.jpg"
+   * "../my-image.jpg"
+   * "../../my-image.jpg"
+   * @return Boolean whether the file is actually in the folder.
+   */
+  public static boolean isFilePathInFolder(String folderPath, String filePath) {
+    try {
+      File folder = new File(folderPath);
+      File file = new File(folderPath, filePath);
+      String folderCononicalPath = folder.getCanonicalPath();
+      String fileCononicalPath = file.getCanonicalPath();
+      return fileCononicalPath.startsWith(folderCononicalPath);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return false;
   }
 }
