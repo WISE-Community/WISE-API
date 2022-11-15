@@ -117,10 +117,10 @@ public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
   @Test
   public void getPeerGroup_ThresholdSatisfiedDifferentIdeasLogic_CallThrough() throws Exception {
     expectAllThresholdsSatisfied();
-    expect(differentIdeasLogicService.createPeerGroup(run1Workgroup1, differentIdeasPeergrouping))
+    expect(differentIdeasLogicService.createPeerGroup(run1Workgroup1, differentIdeasPeerGrouping))
         .andReturn(new PeerGroupImpl());
     replayAll();
-    service.getPeerGroup(run1Workgroup1, differentIdeasPeergrouping);
+    service.getPeerGroup(run1Workgroup1, differentIdeasPeerGrouping);
     verifyAll();
   }
 

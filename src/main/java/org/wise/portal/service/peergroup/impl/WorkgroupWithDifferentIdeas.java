@@ -5,7 +5,8 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import lombok.Getter;
 
 @Getter
-public class WorkgroupWithDifferentIdeas implements Comparable<WorkgroupWithDifferentIdeas> {
+public class WorkgroupWithDifferentIdeas
+    implements Comparable<WorkgroupWithDifferentIdeas>, WorkgroupLogicComparable {
   private Workgroup workgroup;
   private int numDifferentIdeas;
 

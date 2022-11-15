@@ -1,7 +1,6 @@
 package org.wise.portal.service.peergrouping.logic.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -10,35 +9,20 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import org.easymock.EasyMockRunner;
-import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.wise.portal.dao.annotation.wise5.AnnotationDao;
-import org.wise.portal.domain.peergrouping.PeerGrouping;
-import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
-import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @RunWith(EasyMockRunner.class)
-public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImplTest {
+public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
 
   @TestSubject
   private PeerGroupLogicServiceImpl service = new DifferentIdeasLogicServiceImpl();
 
-  @Mock
-  private AnnotationDao<Annotation> annotationDao;
-
   List<Annotation> workgroup1IdeasOnly, classroomIdeaAnnotations;
-  private String componentId = "componentA";
-  List<Annotation> emptyAnnotations = new ArrayList<Annotation>();
-  private String nodeId = "node1";
-  PeerGrouping peerGrouping = new PeerGroupingImpl();
-  private Run run = new RunImpl();
-  Set<Workgroup> workgroupsNotInPeerGroup;
   Annotation workgroup1Ideas, workgroup2Ideas, workgroup3Ideas, workgroup4Ideas, workgroup5Ideas;
   String ideas1And2 = createIdeaString(true, true, false, false);
   String ideas3 = createIdeaString(false, false, true, false);
@@ -48,15 +32,7 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
   @Before
   public void setup() throws Exception {
     super.setup();
-    peerGrouping.setRun(run);
     peerGrouping.setLogic("differentIdeas(\"" + nodeId + "\", \"" + componentId + "\")");
-    peerGrouping.setMaxMembershipCount(2);
-    workgroupsNotInPeerGroup = new HashSet<Workgroup>();
-    workgroupsNotInPeerGroup.add(workgroup1);
-    workgroupsNotInPeerGroup.add(workgroup2);
-    workgroupsNotInPeerGroup.add(workgroup3);
-    workgroupsNotInPeerGroup.add(workgroup4);
-    workgroupsNotInPeerGroup.add(workgroup5);
     workgroup1Ideas = createIdeasAnnotation(workgroup1, ideas1And2);
     workgroup2Ideas = createIdeasAnnotation(workgroup2, ideas3);
     workgroup3Ideas = createIdeasAnnotation(workgroup3, ideas3And4);
@@ -125,8 +101,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupLogicServiceImp
         peerGrouping, possibleMembers);
     assertEquals(maxMembers, peerGroupMembers.size());
     Iterator<Workgroup> iterator = peerGroupMembers.iterator();
-    assertEquals(1, iterator.next().getId().longValue());
-    assertEquals(5, iterator.next().getId().longValue());
+    assertEquals(workgroup1, iterator.next());
+    assertEquals(workgroup5, iterator.next());
     verify(annotationDao);
   }
 }
