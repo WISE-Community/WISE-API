@@ -137,13 +137,14 @@ public class ProjectAssetAPIController {
   }
 
   private boolean isScanOk(ClamavClient clamavClient, MultipartFile file) throws IOException {
-    boolean result = false;
     try {
-      result = clamavClient.scan(file.getInputStream()) instanceof ScanResult.OK;
+      return clamavClient.scan(file.getInputStream()) instanceof ScanResult.OK;
     } catch (ClamavException e) {
       e.printStackTrace();
+      // There was an exception which could be caused by not being able to connect to the Clam AV
+      // server so we will say the scan is OK to prevent blocking the author from uploading
+      return true;
     }
-    return result;
   }
 
   private boolean isUserAllowedToUpload(User user, MultipartFile file) {
@@ -167,7 +168,7 @@ public class ProjectAssetAPIController {
       projectMaxTotalAssetsSize = Long
           .parseLong(appProperties.getProperty("project_max_total_assets_size", "15728640"));
     }
-    return sizeOfAssetsDirectory + file.getSize() > projectMaxTotalAssetsSize;
+    return sizeOfAssetsDirectory + file.getSize() < projectMaxTotalAssetsSize;
   }
 
   private String getRealMimeType(MultipartFile file) throws IOException {
