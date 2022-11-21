@@ -127,7 +127,7 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   private String accountAnswer;
 
   public String getCoreUsername() {
-    String firstname = getFirstname();
+    String firstname = getFirstname().replaceAll("[\\s-]+", "");
     String lastnameInitial = getLastname().substring(0, 1);
 
     Calendar birthday = Calendar.getInstance();

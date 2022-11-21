@@ -325,7 +325,7 @@ public class UserAPIController {
   }
 
   protected Boolean isNameValid(String name) {
-    Pattern p = Pattern.compile("[a-zA-Z]+");
+    Pattern p = Pattern.compile("^(?![ -])[a-zA-Z -]+(?<![ -])$");
     Matcher m = p.matcher(name);
     return m.matches();
   }
