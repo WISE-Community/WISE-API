@@ -37,11 +37,25 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
   List<StudentWorkAnnotation> getStudentDataForDynamicPrompt(
       @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
+    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, auth,
+        "dynamicPrompt");
+  }
+
+  @GetMapping("/question-bank")
+  List<StudentWorkAnnotation> getStudentDataForQuestionBank(
+      @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
+      @PathVariable String componentId, Authentication auth) throws Exception {
+    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, auth,
+        "questionBank");
+  }
+
+  private List<StudentWorkAnnotation> getStudentDataForReferenceComponent(PeerGroupImpl peerGroup,
+      String nodeId, String componentId, Authentication auth, String fieldName) throws Exception {
     if (isUserInPeerGroup(auth, peerGroup)) {
-      DynamicPrompt dynamicPrompt = getDynamicPrompt(peerGroup.getPeerGrouping().getRun(), nodeId,
-          componentId);
+      ReferenceComponent component = getReferenceComponent(peerGroup.getPeerGrouping().getRun(),
+          nodeId, componentId, fieldName);
       List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
-          dynamicPrompt.getReferenceNodeId(), dynamicPrompt.getReferenceComponentId(), "autoScore");
+          component.getNodeId(), component.getComponentId(), "autoScore");
       return annotations.stream().map(annotation -> new StudentWorkAnnotation(annotation))
           .collect(Collectors.toList());
     } else {
@@ -49,24 +63,24 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
     }
   }
 
-  private DynamicPrompt getDynamicPrompt(Run run, String nodeId, String componentId)
-      throws IOException, JSONException, ObjectNotFoundException {
+  private ReferenceComponent getReferenceComponent(Run run, String nodeId, String componentId,
+      String fieldName) throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    JSONObject dynamicPromptJSON = projectComponent.getJSONObject("dynamicPrompt");
-    return new DynamicPrompt(dynamicPromptJSON);
+    JSONObject referenceComponentJSON = projectComponent.getJSONObject(fieldName);
+    return new ReferenceComponent(referenceComponentJSON);
   }
 }
 
 @Getter
-class DynamicPrompt {
+class ReferenceComponent {
   String peerGroupingTag;
-  String referenceComponentId;
-  String referenceNodeId;
+  String componentId;
+  String nodeId;
 
-  public DynamicPrompt(JSONObject content) throws JSONException {
+  public ReferenceComponent(JSONObject content) throws JSONException {
     this.peerGroupingTag = content.getString("peerGroupingTag");
     JSONObject referenceComponentJSON = content.getJSONObject("referenceComponent");
-    this.referenceNodeId = referenceComponentJSON.getString("nodeId");
-    this.referenceComponentId = referenceComponentJSON.getString("componentId");
+    this.nodeId = referenceComponentJSON.getString("nodeId");
+    this.componentId = referenceComponentJSON.getString("componentId");
   }
 }

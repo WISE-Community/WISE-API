@@ -30,7 +30,7 @@ public class PeerGroupStudentWorkAnnotationControllerTest
   private AnnotationService annotationService;
 
   @Test
-  public void getListForDynamicPromptReferenceComponent_UserNotInPeerGroup_AccessDenied() {
+  public void getStudentDataForDynamicPrompt_UserNotInPeerGroup_AccessDenied() {
     expectUserNotInPeerGroup();
     replayAll();
     try {
@@ -45,7 +45,7 @@ public class PeerGroupStudentWorkAnnotationControllerTest
   }
 
   @Test
-  public void getListForDynamicPromptReferenceComponent_InvalidDynamicPromptContent_Exception()
+  public void getStudentDataForDynamicPrompt_InvalidDynamicPromptContent_Exception()
       throws IOException {
     expectUserInPeerGroup();
     expectInvalidDynamicPromptContent();
@@ -66,8 +66,7 @@ public class PeerGroupStudentWorkAnnotationControllerTest
   }
 
   @Test
-  public void getListForDynamicPromptReferenceComponent_ReturnReferenceComponentWork()
-      throws Exception {
+  public void getStudentDataForDynamicPrompt_ReturnReferenceComponentWork() throws Exception {
     expectUserInPeerGroup();
     expectValidDynamicPromptContent();
     expect(annotationService.getLatest(peerGroup1.getMembers(), run1Node1Id, run1Component1Id,
