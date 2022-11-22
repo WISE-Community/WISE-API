@@ -61,7 +61,6 @@ public class ProjectAssetAPIController {
   @Autowired
   protected Environment appProperties;
 
-  private String CLAMAV_ADDRESS = "127.0.0.1";
   private String EXCEEDED_MAX_PROJECT_SIZE_MESSAGE = "Exceeded project max asset size.\n"
       + "Please delete unused assets.\n\nContact WISE if your project needs more disk space.";
   private String UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE = "Uploading this file is not allowed.";
@@ -102,10 +101,13 @@ public class ProjectAssetAPIController {
 
   private ClamavClient getClamavClient() {
     ClamavClient clamavClient = null;
-    try {
-      clamavClient = new ClamavClient(CLAMAV_ADDRESS);
-    } catch (ClamavException e) {
-      e.printStackTrace();
+    String clamavServerAddress = appProperties.getProperty("clamav.server.address");
+    if (clamavServerAddress != null) {
+      try {
+        clamavClient = new ClamavClient(clamavServerAddress);
+      } catch (ClamavException e) {
+        e.printStackTrace();
+      }
     }
     return clamavClient;
   }
@@ -116,24 +118,38 @@ public class ProjectAssetAPIController {
     HashMap<String, String> fileObject = new HashMap<String, String>();
     fileObject.put("filename", file.getOriginalFilename());
     boolean isSuccess = false;
-    if (clamavClient == null || isScanOk(clamavClient, file)) {
-      if (!isUserAllowedToUpload(user, file)) {
-        fileObject.put("message", UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE);
-      } else if (!isEnoughProjectDiskSpace(project, projectAssetsDir, file)) {
-        fileObject.put("message", EXCEEDED_MAX_PROJECT_SIZE_MESSAGE);
-      } else {
-        Path path = Paths.get(projectAssetsDir.getPath(), file.getOriginalFilename());
-        file.transferTo(path);
-        isSuccess = true;
-      }
-    } else {
+    if (!isUserAllowedToUpload(user, file, clamavClient)) {
       fileObject.put("message", UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE);
+    } else if (!isEnoughProjectDiskSpace(project, projectAssetsDir, file)) {
+      fileObject.put("message", EXCEEDED_MAX_PROJECT_SIZE_MESSAGE);
+    } else {
+      Path path = Paths.get(projectAssetsDir.getPath(), file.getOriginalFilename());
+      file.transferTo(path);
+      isSuccess = true;
     }
     if (isSuccess) {
       ((ArrayList<HashMap<String, String>>) result.get("success")).add(fileObject);
     } else {
       ((ArrayList<HashMap<String, String>>) result.get("error")).add(fileObject);
     }
+  }
+
+  private boolean isUserAllowedToUpload(User user, MultipartFile file, ClamavClient clamavClient)
+      throws IOException {
+    if (clamavClient == null || isScanOk(clamavClient, file)) {
+      String allowedTypes = appProperties
+          .getProperty("normalAuthorAllowedProjectAssetContentTypes");
+      if (user.isTrustedAuthor()) {
+        allowedTypes += ","
+            + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
+      }
+      try {
+        return allowedTypes.contains(getRealMimeType(file));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    return false;
   }
 
   private boolean isScanOk(ClamavClient clamavClient, MultipartFile file) throws IOException {
@@ -144,19 +160,6 @@ public class ProjectAssetAPIController {
       // There was an exception which could be caused by not being able to connect to the Clam AV
       // server so we will say the scan is OK to prevent blocking the author from uploading
       return true;
-    }
-  }
-
-  private boolean isUserAllowedToUpload(User user, MultipartFile file) {
-    String allowedTypes = appProperties.getProperty("normalAuthorAllowedProjectAssetContentTypes");
-    if (user.isTrustedAuthor()) {
-      allowedTypes += ","
-          + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
-    }
-    try {
-      return allowedTypes.contains(getRealMimeType(file));
-    } catch (IOException e) {
-      return false;
     }
   }
 
