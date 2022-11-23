@@ -141,3 +141,19 @@ echo "Set log file max size to 1G"
 sed 's/{/{\n        maxsize 1G/g' -i /etc/logrotate.d/rsyslog
 sed 's/{/{\n        maxsize 1G/g' -i /etc/logrotate.d/nginx
 sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/tomcat9
+
+echo "Installing Clam AV"
+apt-get install clamav clamav-daemon -y
+systemctl stop clamav-freshclam
+
+echo "Updating Clam AV database"
+freshclam
+
+echo "Updating Clam AV configuration"
+echo -e "TCPSocket 3310\nTCPAddr 127.0.0.1" | tee -a /etc/clamav/clamd.conf
+
+echo "Starting Clam AV"
+systemctl enable clamav-freshclam
+systemctl start clamav-freshclam
+systemctl enable clamav-daemon
+systemctl start clamav-daemon

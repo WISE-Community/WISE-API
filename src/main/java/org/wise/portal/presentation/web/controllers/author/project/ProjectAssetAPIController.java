@@ -15,7 +15,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.detect.Detector;
 import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.mime.MimeTypes;
 import org.apache.tika.parser.AutoDetectParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -38,6 +37,10 @@ import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.user.UserService;
 import org.wise.vle.utils.FileManager;
 
+import xyz.capybara.clamav.ClamavClient;
+import xyz.capybara.clamav.ClamavException;
+import xyz.capybara.clamav.commands.scan.result.ScanResult;
+
 /**
  * Project Asset API endpoint
  *
@@ -57,6 +60,10 @@ public class ProjectAssetAPIController {
 
   @Autowired
   protected Environment appProperties;
+
+  private String EXCEEDED_MAX_PROJECT_SIZE_MESSAGE = "Exceeded project max asset size.\n"
+      + "Please delete unused assets.\n\nContact WISE if your project needs more disk space.";
+  private String UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE = "Uploading this file is not allowed.";
 
   @GetMapping("/{projectId}")
   @ResponseBody
@@ -82,8 +89,9 @@ public class ProjectAssetAPIController {
       result.put("error", new ArrayList<Object>());
       String projectAssetsDirPath = getProjectAssetsDirectoryPath(project);
       File projectAssetsDir = new File(projectAssetsDirPath);
+      ClamavClient clamavClient = getClamavClient();
       for (MultipartFile file : files) {
-        addAsset(project, projectAssetsDir, file, user, result);
+        addAsset(project, projectAssetsDir, file, user, result, clamavClient);
       }
       result.put("assetDirectoryInfo", projectService.getDirectoryInfo(projectAssetsDir));
       return result;
@@ -91,42 +99,79 @@ public class ProjectAssetAPIController {
     return null;
   }
 
+  private ClamavClient getClamavClient() {
+    ClamavClient clamavClient = null;
+    String clamavServerAddress = appProperties.getProperty("clamav.server.address");
+    if (clamavServerAddress != null) {
+      try {
+        clamavClient = new ClamavClient(clamavServerAddress);
+      } catch (ClamavException e) {
+        e.printStackTrace();
+      }
+    }
+    return clamavClient;
+  }
+
   @SuppressWarnings("unchecked")
   private void addAsset(Project project, File projectAssetsDir, MultipartFile file, User user,
-      Map<String, Object> result) throws IOException {
-    long sizeOfAssetsDirectory = FileUtils.sizeOfDirectory(projectAssetsDir);
-    Long projectMaxTotalAssetsSize = project.getMaxTotalAssetsSize();
-    if (projectMaxTotalAssetsSize == null) {
-      projectMaxTotalAssetsSize = new Long(
-          appProperties.getProperty("project_max_total_assets_size", "15728640"));
-    }
+      Map<String, Object> result, ClamavClient clamavClient) throws IOException {
     HashMap<String, String> fileObject = new HashMap<String, String>();
     fileObject.put("filename", file.getOriginalFilename());
-    if (!isUserAllowedToUpload(user, file)) {
-      fileObject.put("message", "Upload file not allowed.");
-      ((ArrayList<HashMap<String, String>>) result.get("error")).add(fileObject);
-    } else if (sizeOfAssetsDirectory + file.getSize() > projectMaxTotalAssetsSize) {
-      fileObject.put("message", "Exceeded project max asset size.\n"
-          + "Please delete unused assets.\n\nContact WISE if your project needs more disk space.");
-      ((ArrayList<HashMap<String, String>>) result.get("error")).add(fileObject);
+    boolean isSuccess = false;
+    if (!isUserAllowedToUpload(user, file, clamavClient)) {
+      fileObject.put("message", UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE);
+    } else if (!isEnoughProjectDiskSpace(project, projectAssetsDir, file)) {
+      fileObject.put("message", EXCEEDED_MAX_PROJECT_SIZE_MESSAGE);
     } else {
       Path path = Paths.get(projectAssetsDir.getPath(), file.getOriginalFilename());
       file.transferTo(path);
+      isSuccess = true;
+    }
+    if (isSuccess) {
       ((ArrayList<HashMap<String, String>>) result.get("success")).add(fileObject);
+    } else {
+      ((ArrayList<HashMap<String, String>>) result.get("error")).add(fileObject);
     }
   }
 
-  private boolean isUserAllowedToUpload(User user, MultipartFile file) {
-    String allowedTypes = appProperties.getProperty("normalAuthorAllowedProjectAssetContentTypes");
-    if (user.isTrustedAuthor()) {
-      allowedTypes += ","
-          + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
+  private boolean isUserAllowedToUpload(User user, MultipartFile file, ClamavClient clamavClient)
+      throws IOException {
+    if (clamavClient == null || isScanOk(clamavClient, file)) {
+      String allowedTypes = appProperties
+          .getProperty("normalAuthorAllowedProjectAssetContentTypes");
+      if (user.isTrustedAuthor()) {
+        allowedTypes += ","
+            + appProperties.getProperty("trustedAuthorAllowedProjectAssetContentTypes");
+      }
+      try {
+        return allowedTypes.contains(getRealMimeType(file));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+    return false;
+  }
+
+  private boolean isScanOk(ClamavClient clamavClient, MultipartFile file) throws IOException {
     try {
-      return allowedTypes.contains(getRealMimeType(file));
-    } catch (IOException e) {
-      return false;
+      return clamavClient.scan(file.getInputStream()) instanceof ScanResult.OK;
+    } catch (ClamavException e) {
+      e.printStackTrace();
+      // There was an exception which could be caused by not being able to connect to the Clam AV
+      // server so we will say the scan is OK to prevent blocking the author from uploading
+      return true;
     }
+  }
+
+  private boolean isEnoughProjectDiskSpace(Project project, File projectAssetsDir,
+      MultipartFile file) {
+    long sizeOfAssetsDirectory = FileUtils.sizeOfDirectory(projectAssetsDir);
+    Long projectMaxTotalAssetsSize = project.getMaxTotalAssetsSize();
+    if (projectMaxTotalAssetsSize == null) {
+      projectMaxTotalAssetsSize = Long
+          .parseLong(appProperties.getProperty("project_max_total_assets_size", "15728640"));
+    }
+    return sizeOfAssetsDirectory + file.getSize() < projectMaxTotalAssetsSize;
   }
 
   private String getRealMimeType(MultipartFile file) throws IOException {
