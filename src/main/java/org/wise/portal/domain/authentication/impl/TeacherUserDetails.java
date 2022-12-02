@@ -165,7 +165,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   private String howDidYouHearAboutUs;
 
   public String getCoreUsername() {
-    return firstname + lastname;
+    return (firstname + lastname).replaceAll("[\\s-]+", "");
   }
 
   public String[] getUsernameSuffixes() {
