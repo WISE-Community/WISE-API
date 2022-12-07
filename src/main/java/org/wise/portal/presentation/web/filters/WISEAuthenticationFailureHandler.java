@@ -75,15 +75,14 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         Integer numberOfRecentFailedLoginAttempts = 1;
         Date currentTime = new Date();
         if (ControllerUtil.isRecentFailedLoginWithinTimeLimit(user)) {
-          numberOfRecentFailedLoginAttempts =
-            userDetails.getNumberOfRecentFailedLoginAttempts() + 1;
+          numberOfRecentFailedLoginAttempts = userDetails.getNumberOfRecentFailedLoginAttempts() + 1;
         }
         userDetails.setNumberOfRecentFailedLoginAttempts(numberOfRecentFailedLoginAttempts);
         userDetails.setRecentFailedLoginTime(currentTime);
         userService.updateUser(user);
       }
     } else if (request.getServletPath().contains("google-login")) {
-      response.sendRedirect(appProperties.getProperty("wise.hostname") + "/login/googleUserNotFound");
+      response.sendRedirect(appProperties.getProperty("wise.hostname") + "/join?googleUserNotFound=true");
       return;
     }
 
@@ -119,7 +118,7 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
     if (isReCaptchaRequired) {
       if (failedMessage.equals("Please verify that you are not a robot.")) {
         url = authenticationFailureUrl + "&requireCaptcha=true&reCaptchaFailed=true";
-      }  else {
+      } else {
         url = authenticationFailureUrl + "&requireCaptcha=true";
       }
     }
