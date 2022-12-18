@@ -1,8 +1,11 @@
 package org.wise.vle.web.wise5;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +19,8 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.vle.wise5.VLEService;
 
+import rufus.lzstring4java.LZString;
+
 @Secured("ROLE_TEACHER")
 @RestController
 public class TeacherGetDataController {
@@ -24,8 +29,7 @@ public class TeacherGetDataController {
   private VLEService vleService;
 
   @GetMapping("/api/teacher/data")
-  protected HashMap<String, Object> getData(
-      @RequestParam("runId") RunImpl run,
+  protected HashMap<String, Object> getData(@RequestParam("runId") RunImpl run,
       @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
       @RequestParam(value = "getEvents", defaultValue = "false") boolean getEvents,
       @RequestParam(value = "getAnnotations", defaultValue = "false") boolean getAnnotations,
@@ -46,28 +50,46 @@ public class TeacherGetDataController {
       @RequestParam(value = "localNotebookItemId", required = false) String localNotebookItemId,
       @RequestParam(value = "notebookItemId", required = false) Integer notebookItemId,
       @RequestParam(value = "annotationType", required = false) String annotationType,
-      @RequestParam(value = "components", required = false) List<JSONObject> components,
+      @RequestParam(value = "components", required = false) String components,
       @RequestParam(value = "onlyGetLatest", required = false) Boolean onlyGetLatest) {
     if (canGetData(run)) {
       HashMap<String, Object> data = new HashMap<String, Object>();
       int runId = run.getId().intValue();
       if (getStudentWork) {
-        data.put("studentWorkList", vleService.getStudentWorkList(id, runId, periodId, workgroupId,
-            isAutoSave, isSubmit, nodeId, componentId, componentType, components, onlyGetLatest));
+        data.put("studentWorkList",
+            vleService.getStudentWorkList(id, runId, periodId, workgroupId, isAutoSave, isSubmit,
+                nodeId, componentId, componentType, getComponentsList(components), onlyGetLatest));
       }
       if (getEvents) {
         data.put("events", vleService.getEvents(id, runId, periodId, workgroupId, nodeId,
-            componentId, componentType, context, category, event, components));
+            componentId, componentType, context, category, event, getComponentsList(components)));
       }
       if (getAnnotations) {
-        data.put("annotations", vleService.getAnnotations(id, runId, periodId, fromWorkgroupId,
-            toWorkgroupId, nodeId, componentId, studentWorkId, localNotebookItemId, notebookItemId,
-            annotationType));
+        data.put("annotations",
+            vleService.getAnnotations(id, runId, periodId, fromWorkgroupId, toWorkgroupId, nodeId,
+                componentId, studentWorkId, localNotebookItemId, notebookItemId, annotationType));
       }
       return data;
     } else {
       throw new AccessDeniedException("Not permitted");
     }
+  }
+
+  private List<JSONObject> getComponentsList(String components) {
+    if (components == null) {
+      return null;
+    }
+    String decompressedComponents = LZString.decompressFromEncodedURIComponent(components);
+    List<JSONObject> componentsList = new ArrayList<>();
+    try {
+      JSONArray componentsJSONArray = new JSONArray(decompressedComponents);
+      for (int c = 0; c < componentsJSONArray.length(); c++) {
+        componentsList.add(componentsJSONArray.getJSONObject(c));
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return componentsList;
   }
 
   private boolean canGetData(Run run) {
