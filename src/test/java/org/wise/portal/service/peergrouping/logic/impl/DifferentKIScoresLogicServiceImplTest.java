@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
@@ -29,6 +30,7 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   @Before
   public void setup() throws Exception {
     super.setup();
+    setLogic("any");
     workgroup1Score = createKIScoreAnnotation(workgroup1, 3);
     workgroup2Score = createKIScoreAnnotation(workgroup2, 2);
     workgroup3Score = createKIScoreAnnotation(workgroup3, 3);
@@ -53,7 +55,6 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
 
   @Test
   public void getPossibleMembersInOrder_RunHasNoAutoScoreAnnotation_EmptySet() {
-    setLogic("any");
     expectAnnotations(emptyAnnotations);
     assertEquals(0,
         service.getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping).size());
@@ -62,7 +63,6 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
 
   @Test
   public void getPossibleMembersInOrder_AnyMode_RandomOrder() {
-    setLogic("any");
     expectAnnotations(classroomAnnotations);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
@@ -78,21 +78,10 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
     expectAnnotations(classroomAnnotations);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
-    assertEquals(4, possibleMembersInOrder.size());
-    Iterator<WorkgroupLogicComparable> iterator = possibleMembersInOrder.iterator();
-    assertEquals(workgroup3, iterator.next().getWorkgroup());
-    Workgroup nextWorkgroup = iterator.next().getWorkgroup();
-    assertTrue(nextWorkgroup.equals(workgroup2) || nextWorkgroup.equals(workgroup4));
-    nextWorkgroup = iterator.next().getWorkgroup();
-    assertTrue(nextWorkgroup.equals(workgroup2) || nextWorkgroup.equals(workgroup4));
-    assertEquals(workgroup5, iterator.next().getWorkgroup());
+    assertOneMatch(getWorkgroups(possibleMembersInOrder),
+        Arrays.asList(workgroup3, workgroup2, workgroup4, workgroup5),
+        Arrays.asList(workgroup3, workgroup4, workgroup2, workgroup5));
     verify(annotationDao);
-  }
-
-  private void expectAnnotations(List<Annotation> classroomAnnotations) {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(classroomAnnotations);
-    replay(annotationDao);
   }
 
   protected String getLogicFunctionName() {

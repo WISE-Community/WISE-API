@@ -1,7 +1,6 @@
 package org.wise.portal.service.peergrouping.logic.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -40,14 +39,9 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
     workgroup3Ideas = createIdeasAnnotation(workgroup3, ideas1);
     workgroup4Ideas = createIdeasAnnotation(workgroup4, ideas4);
     workgroup5Ideas = createIdeasAnnotation(workgroup5, ideas3And4);
-    workgroup1IdeasOnly = new ArrayList<Annotation>();
-    workgroup1IdeasOnly.add(workgroup1Ideas);
-    classroomIdeaAnnotations = new ArrayList<Annotation>();
-    classroomIdeaAnnotations.add(workgroup1Ideas);
-    classroomIdeaAnnotations.add(workgroup2Ideas);
-    classroomIdeaAnnotations.add(workgroup3Ideas);
-    classroomIdeaAnnotations.add(workgroup4Ideas);
-    classroomIdeaAnnotations.add(workgroup5Ideas);
+    workgroup1IdeasOnly = Arrays.asList(workgroup1Ideas);
+    classroomIdeaAnnotations = Arrays.asList(workgroup1Ideas, workgroup2Ideas, workgroup3Ideas,
+        workgroup4Ideas, workgroup5Ideas);
   }
 
   private String createIdeaString(boolean idea1Detected, boolean idea2Detected,
@@ -68,27 +62,21 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
 
   @Test
   public void canCreatePeerGroup_WorkgroupHasNoIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(emptyAnnotations);
-    replay(annotationDao);
+    expectAnnotations(emptyAnnotations);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
 
   @Test
   public void canCreatePeerGroup_NotEnoughUnpairedMembersWithIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(workgroup1IdeasOnly);
-    replay(annotationDao);
+    expectAnnotations(workgroup1IdeasOnly);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
 
   @Test
   public void canCreatePeerGroup_EnoughUnpairedMembersWithIdeas_ReturnTrue() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(classroomIdeaAnnotations);
-    replay(annotationDao);
+    expectAnnotations(classroomIdeaAnnotations);
     assertTrue(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
@@ -100,7 +88,8 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
     assertEquals(4, possibleMembersInOrder.size());
-    // the workgroups can be in any random order since they all have at least one different idea
+    // there's nothing else that we can test here, since the workgroups all have at least
+    // one different idea and can be in any random order
     verify(annotationDao);
   }
 
@@ -109,21 +98,10 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
     expectAnnotations(classroomIdeaAnnotations);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
-    assertEquals(4, possibleMembersInOrder.size());
-    Iterator<WorkgroupLogicComparable> iterator = possibleMembersInOrder.iterator();
-    assertEquals(workgroup3, iterator.next().getWorkgroup());
-    Workgroup nextWorkgroup = iterator.next().getWorkgroup();
-    assertTrue(nextWorkgroup.equals(workgroup2) || nextWorkgroup.equals(workgroup4));
-    nextWorkgroup = iterator.next().getWorkgroup();
-    assertTrue(nextWorkgroup.equals(workgroup2) || nextWorkgroup.equals(workgroup4));
-    assertEquals(workgroup5, iterator.next().getWorkgroup());
+    assertOneMatch(getWorkgroups(possibleMembersInOrder),
+        Arrays.asList(workgroup3, workgroup2, workgroup4, workgroup5),
+        Arrays.asList(workgroup3, workgroup4, workgroup2, workgroup5));
     verify(annotationDao);
-  }
-
-  private void expectAnnotations(List<Annotation> classroomAnnotations) {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(classroomAnnotations);
-    replay(annotationDao);
   }
 
   protected String getLogicFunctionName() {

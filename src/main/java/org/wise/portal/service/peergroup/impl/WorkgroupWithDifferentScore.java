@@ -1,7 +1,7 @@
 package org.wise.portal.service.peergroup.impl;
 
 import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
-import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogicMode;
+import org.wise.portal.domain.peergrouping.logic.LogicMode;
 import org.wise.portal.domain.workgroup.Workgroup;
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ public class WorkgroupWithDifferentScore
   }
 
   public int compareTo(WorkgroupWithDifferentScore o) {
-    return this.logic.getMode().equals(DifferentKIScoresLogicMode.ANY) ? compareToAnyMode(o)
+    return this.logic.getMode().equals(LogicMode.ANY) ? compareToAnyMode(o)
       : compareToMaximizeMode(o);
   }
 

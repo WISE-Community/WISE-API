@@ -1,7 +1,7 @@
 package org.wise.portal.service.peergroup.impl;
 
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
-import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogicMode;
+import org.wise.portal.domain.peergrouping.logic.LogicMode;
 import org.wise.portal.domain.workgroup.Workgroup;
 
 import lombok.Getter;
@@ -22,7 +22,7 @@ public class WorkgroupWithDifferentIdeas
 
   @Override
   public int compareTo(WorkgroupWithDifferentIdeas o) {
-    return this.logic.getMode().equals(DifferentIdeasLogicMode.ANY) ? compareToAnyMode(o)
+    return this.logic.getMode().equals(LogicMode.ANY) ? compareToAnyMode(o)
       : compareToMaximizeMode(o);
   }
 
