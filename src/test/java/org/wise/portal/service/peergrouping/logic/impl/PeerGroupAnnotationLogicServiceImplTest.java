@@ -15,7 +15,8 @@ import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
-public class PeerGroupAnnotationLogicServiceImplTest extends PeerGroupLogicServiceImplTest {
+public abstract class PeerGroupAnnotationLogicServiceImplTest
+    extends PeerGroupLogicServiceImplTest {
 
   @Mock
   AnnotationDao<Annotation> annotationDao;
@@ -38,4 +39,11 @@ public class PeerGroupAnnotationLogicServiceImplTest extends PeerGroupLogicServi
     peerGrouping.setRun(run);
     peerGrouping.setMaxMembershipCount(2);
   }
+
+  protected void setLogic(String mode) {
+    peerGrouping.setLogic(
+        getLogicFunctionName() + "(\"" + nodeId + "\", \"" + componentId + "\", \"" + mode + "\")");
+  }
+
+  abstract protected String getLogicFunctionName();
 }

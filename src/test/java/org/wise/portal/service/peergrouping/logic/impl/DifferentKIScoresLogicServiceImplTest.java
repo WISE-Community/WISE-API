@@ -55,7 +55,6 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   public void getPossibleMembersInOrder_RunHasNoAutoScoreAnnotation_EmptySet() {
     setLogic("any");
     expectAnnotations(emptyAnnotations);
-    replay(annotationDao);
     assertEquals(0,
         service.getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping).size());
     verify(annotationDao);
@@ -65,7 +64,6 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   public void getPossibleMembersInOrder_AnyMode_RandomOrder() {
     setLogic("any");
     expectAnnotations(classroomAnnotations);
-    replay(annotationDao);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
     assertEquals(4, possibleMembersInOrder.size());
@@ -78,7 +76,6 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   public void getPossibleMembersInOrder_MaximizeMode_MaximizeOrder() {
     setLogic("maximize");
     expectAnnotations(classroomAnnotations);
-    replay(annotationDao);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
         .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
     assertEquals(4, possibleMembersInOrder.size());
@@ -95,10 +92,10 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   private void expectAnnotations(List<Annotation> classroomAnnotations) {
     expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
         componentId, null, null, null, "autoScore")).andReturn(classroomAnnotations);
+    replay(annotationDao);
   }
 
-  private void setLogic(String logic) {
-    peerGrouping.setLogic(
-        "differentKIScores(\"" + nodeId + "\", \"" + componentId + "\", \"" + logic + "\")");
+  protected String getLogicFunctionName() {
+    return "differentKIScores";
   }
 }

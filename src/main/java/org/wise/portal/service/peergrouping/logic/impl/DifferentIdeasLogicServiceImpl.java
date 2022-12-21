@@ -29,7 +29,8 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
     Map<Workgroup, Annotation> workgroupToAnnotation = getWorkgroupToAnnotation(peerGrouping,
         workgroup.getPeriod());
     Set<String> workgroupIdeas = getDetectedIdeas(workgroup, workgroupToAnnotation);
-    return getWorkgroupsWithDifferentIdeas(possibleMembers, workgroupIdeas, workgroupToAnnotation);
+    return getWorkgroupsWithDifferentIdeas(possibleMembers, workgroupIdeas, workgroupToAnnotation,
+        new DifferentIdeasLogic(peerGrouping.getLogic()));
   }
 
   private Set<String> getDetectedIdeas(Workgroup workgroup,
@@ -57,13 +58,14 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
 
   private TreeSet<WorkgroupLogicComparable> getWorkgroupsWithDifferentIdeas(
       Set<Workgroup> possibleMembers, Set<String> workgroupIdeas,
-      Map<Workgroup, Annotation> workgroupToAnnotation) {
+      Map<Workgroup, Annotation> workgroupToAnnotation, DifferentIdeasLogic logic) {
     TreeSet<WorkgroupLogicComparable> workgroups = new TreeSet<WorkgroupLogicComparable>();
     for (Workgroup possibleMember : possibleMembers) {
       if (workgroupToAnnotation.containsKey(possibleMember)) {
         Set<String> possibleMemberIdeas = getDetectedIdeas(possibleMember, workgroupToAnnotation);
         Set<String> differentIdeas = SetUtils.disjunction(workgroupIdeas, possibleMemberIdeas);
-        workgroups.add(new WorkgroupWithDifferentIdeas(possibleMember, differentIdeas.size()));
+        workgroups
+            .add(new WorkgroupWithDifferentIdeas(possibleMember, differentIdeas.size(), logic));
       }
     }
     return workgroups;
