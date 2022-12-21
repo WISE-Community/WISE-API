@@ -12,7 +12,7 @@ import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
-import org.wise.portal.service.peergroup.impl.WorkgroupWithDifferentScore;
+import org.wise.portal.service.peergroup.impl.WorkgroupWithDifference;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @Service
@@ -60,7 +60,7 @@ public class DifferentKIScoresLogicServiceImpl extends PeerGroupAnnotationLogicS
       if (workgroupToAnnotation.containsKey(possibleMember)) {
         int possibleMemberScore = getKIScore(possibleMember, workgroupToAnnotation);
         int scoreDifference = Math.abs(workgroupScore - possibleMemberScore);
-        workgroups.add(new WorkgroupWithDifferentScore(possibleMember, scoreDifference, logic));
+        workgroups.add(new WorkgroupWithDifference(possibleMember, scoreDifference, logic));
       }
     }
     return workgroups;

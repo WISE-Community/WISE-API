@@ -14,7 +14,7 @@ import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
-import org.wise.portal.service.peergroup.impl.WorkgroupWithDifferentIdeas;
+import org.wise.portal.service.peergroup.impl.WorkgroupWithDifference;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @Service
@@ -64,8 +64,7 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
       if (workgroupToAnnotation.containsKey(possibleMember)) {
         Set<String> possibleMemberIdeas = getDetectedIdeas(possibleMember, workgroupToAnnotation);
         Set<String> differentIdeas = SetUtils.disjunction(workgroupIdeas, possibleMemberIdeas);
-        workgroups
-            .add(new WorkgroupWithDifferentIdeas(possibleMember, differentIdeas.size(), logic));
+        workgroups.add(new WorkgroupWithDifference(possibleMember, differentIdeas.size(), logic));
       }
     }
     return workgroups;
