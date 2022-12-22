@@ -12,6 +12,7 @@ import org.easymock.TestSubject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.vle.domain.annotation.wise5.Annotation;
@@ -42,6 +43,11 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
     workgroup1IdeasOnly = Arrays.asList(workgroup1Ideas);
     classroomIdeaAnnotations = Arrays.asList(workgroup1Ideas, workgroup2Ideas, workgroup3Ideas,
         workgroup4Ideas, workgroup5Ideas);
+    workgroupToAnnotation.put(workgroup1, workgroup1Ideas);
+    workgroupToAnnotation.put(workgroup2, workgroup2Ideas);
+    workgroupToAnnotation.put(workgroup3, workgroup3Ideas);
+    workgroupToAnnotation.put(workgroup4, workgroup4Ideas);
+    workgroupToAnnotation.put(workgroup5, workgroup5Ideas);
   }
 
   private String createIdeaString(boolean idea1Detected, boolean idea2Detected,
@@ -82,29 +88,29 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
   }
 
   @Test
-  public void getPossibleMembersInOrder_AnyMode_RandomOrder() {
-    setLogic("any");
-    expectAnnotations(classroomIdeaAnnotations);
-    TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
-        .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
-    assertEquals(4, possibleMembersInOrder.size());
-    // there's nothing else that we can test here, since the workgroups all have at least
-    // one different idea and can be in any random order
-    verify(annotationDao);
-  }
-
-  @Test
   public void getPossibleMembersInOrder_MaximizeMode_MaximizeOrder() {
-    expectAnnotations(classroomIdeaAnnotations);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
-        .getPossibleMembersInOrder(possibleMembers, workgroup1, peerGrouping);
+        .getPossibleMembersInOrder(possibleMembers, workgroup1, getLogic(), workgroupToAnnotation);
     assertOneMatch(getWorkgroups(possibleMembersInOrder),
         Arrays.asList(workgroup3, workgroup2, workgroup4, workgroup5),
         Arrays.asList(workgroup3, workgroup4, workgroup2, workgroup5));
-    verify(annotationDao);
+  }
+
+  @Test
+  public void getPossibleMembersInOrder_AnyMode_RandomOrder() {
+    setLogic("any");
+    TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
+        .getPossibleMembersInOrder(possibleMembers, workgroup1, getLogic(), workgroupToAnnotation);
+    assertEquals(4, possibleMembersInOrder.size());
+    // there's nothing else that we can test here, since the workgroups all have at least
+    // one different idea and can be in any random order
   }
 
   protected String getLogicFunctionName() {
     return "differentIdeas";
+  }
+
+  protected DifferentIdeasLogic getLogic() {
+    return new DifferentIdeasLogic(peerGrouping.getLogic());
   }
 }

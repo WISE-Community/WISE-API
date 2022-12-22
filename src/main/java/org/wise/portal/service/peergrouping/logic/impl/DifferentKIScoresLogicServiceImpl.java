@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.logic.AbstractPairingLogic;
 import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
@@ -23,12 +24,10 @@ public class DifferentKIScoresLogicServiceImpl extends PeerGroupAnnotationLogicS
   }
 
   TreeSet<WorkgroupLogicComparable> getPossibleMembersInOrder(Set<Workgroup> possibleMembers,
-      Workgroup workgroup, PeerGrouping peerGrouping) {
-    Map<Workgroup, Annotation> workgroupToAnnotation = getWorkgroupToAnnotation(peerGrouping,
-        workgroup.getPeriod());
-    int workgroupScore = getKIScore(workgroup, workgroupToAnnotation);
-    return getWorkgroupsWithScoreDifferences(possibleMembers, workgroupScore, workgroupToAnnotation,
-        new DifferentKIScoresLogic(peerGrouping.getLogic()));
+      Workgroup workgroup, AbstractPairingLogic logic,
+      Map<Workgroup, Annotation> workgroupToAnnotation) {
+    return getWorkgroupsWithScoreDifferences(possibleMembers,
+        getKIScore(workgroup, workgroupToAnnotation), workgroupToAnnotation, logic);
   }
 
   private int getKIScore(Workgroup workgroup, Map<Workgroup, Annotation> workgroupToAnnotation) {
@@ -54,7 +53,7 @@ public class DifferentKIScoresLogicServiceImpl extends PeerGroupAnnotationLogicS
 
   private TreeSet<WorkgroupLogicComparable> getWorkgroupsWithScoreDifferences(
       Set<Workgroup> possibleMembers, int workgroupScore,
-      Map<Workgroup, Annotation> workgroupToAnnotation, DifferentKIScoresLogic logic) {
+      Map<Workgroup, Annotation> workgroupToAnnotation, AbstractPairingLogic logic) {
     TreeSet<WorkgroupLogicComparable> workgroups = new TreeSet<WorkgroupLogicComparable>();
     for (Workgroup possibleMember : possibleMembers) {
       if (workgroupToAnnotation.containsKey(possibleMember)) {

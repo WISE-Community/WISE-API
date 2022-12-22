@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
+import org.wise.portal.domain.peergrouping.logic.AbstractPairingLogic;
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
@@ -25,12 +26,10 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
   }
 
   TreeSet<WorkgroupLogicComparable> getPossibleMembersInOrder(Set<Workgroup> possibleMembers,
-      Workgroup workgroup, PeerGrouping peerGrouping) {
-    Map<Workgroup, Annotation> workgroupToAnnotation = getWorkgroupToAnnotation(peerGrouping,
-        workgroup.getPeriod());
-    Set<String> workgroupIdeas = getDetectedIdeas(workgroup, workgroupToAnnotation);
-    return getWorkgroupsWithDifferentIdeas(possibleMembers, workgroupIdeas, workgroupToAnnotation,
-        new DifferentIdeasLogic(peerGrouping.getLogic()));
+      Workgroup workgroup, AbstractPairingLogic logic,
+      Map<Workgroup, Annotation> workgroupToAnnotation) {
+    return getWorkgroupsWithDifferentIdeas(possibleMembers,
+        getDetectedIdeas(workgroup, workgroupToAnnotation), workgroupToAnnotation, logic);
   }
 
   private Set<String> getDetectedIdeas(Workgroup workgroup,
@@ -58,7 +57,7 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
 
   private TreeSet<WorkgroupLogicComparable> getWorkgroupsWithDifferentIdeas(
       Set<Workgroup> possibleMembers, Set<String> workgroupIdeas,
-      Map<Workgroup, Annotation> workgroupToAnnotation, DifferentIdeasLogic logic) {
+      Map<Workgroup, Annotation> workgroupToAnnotation, AbstractPairingLogic logic) {
     TreeSet<WorkgroupLogicComparable> workgroups = new TreeSet<WorkgroupLogicComparable>();
     for (Workgroup possibleMember : possibleMembers) {
       if (workgroupToAnnotation.containsKey(possibleMember)) {
