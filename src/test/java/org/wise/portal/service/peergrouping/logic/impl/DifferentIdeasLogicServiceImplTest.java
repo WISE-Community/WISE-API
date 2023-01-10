@@ -1,9 +1,8 @@
 package org.wise.portal.service.peergrouping.logic.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.TreeSet;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
@@ -13,17 +12,20 @@ import org.easymock.TestSubject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @RunWith(EasyMockRunner.class)
 public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
 
   @TestSubject
-  private PeerGroupLogicServiceImpl service = new DifferentIdeasLogicServiceImpl();
+  private DifferentIdeasLogicServiceImpl service = new DifferentIdeasLogicServiceImpl();
 
   List<Annotation> workgroup1IdeasOnly, classroomIdeaAnnotations;
   Annotation workgroup1Ideas, workgroup2Ideas, workgroup3Ideas, workgroup4Ideas, workgroup5Ideas;
+  String ideas1 = createIdeaString(true, false, false, false);
   String ideas1And2 = createIdeaString(true, true, false, false);
   String ideas3 = createIdeaString(false, false, true, false);
   String ideas3And4 = createIdeaString(false, false, true, true);
@@ -32,20 +34,20 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
   @Before
   public void setup() throws Exception {
     super.setup();
-    peerGrouping.setLogic("differentIdeas(\"" + nodeId + "\", \"" + componentId + "\")");
+    setLogic("maximize");
     workgroup1Ideas = createIdeasAnnotation(workgroup1, ideas1And2);
     workgroup2Ideas = createIdeasAnnotation(workgroup2, ideas3);
-    workgroup3Ideas = createIdeasAnnotation(workgroup3, ideas3And4);
+    workgroup3Ideas = createIdeasAnnotation(workgroup3, ideas1);
     workgroup4Ideas = createIdeasAnnotation(workgroup4, ideas4);
     workgroup5Ideas = createIdeasAnnotation(workgroup5, ideas3And4);
-    workgroup1IdeasOnly = new ArrayList<Annotation>();
-    workgroup1IdeasOnly.add(workgroup1Ideas);
-    classroomIdeaAnnotations = new ArrayList<Annotation>();
-    classroomIdeaAnnotations.add(workgroup1Ideas);
-    classroomIdeaAnnotations.add(workgroup2Ideas);
-    classroomIdeaAnnotations.add(workgroup3Ideas);
-    classroomIdeaAnnotations.add(workgroup4Ideas);
-    classroomIdeaAnnotations.add(workgroup5Ideas);
+    workgroup1IdeasOnly = Arrays.asList(workgroup1Ideas);
+    classroomIdeaAnnotations = Arrays.asList(workgroup1Ideas, workgroup2Ideas, workgroup3Ideas,
+        workgroup4Ideas, workgroup5Ideas);
+    workgroupToAnnotation.put(workgroup1, workgroup1Ideas);
+    workgroupToAnnotation.put(workgroup2, workgroup2Ideas);
+    workgroupToAnnotation.put(workgroup3, workgroup3Ideas);
+    workgroupToAnnotation.put(workgroup4, workgroup4Ideas);
+    workgroupToAnnotation.put(workgroup5, workgroup5Ideas);
   }
 
   private String createIdeaString(boolean idea1Detected, boolean idea2Detected,
@@ -66,43 +68,49 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
 
   @Test
   public void canCreatePeerGroup_WorkgroupHasNoIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(emptyAnnotations);
-    replay(annotationDao);
+    expectAnnotations(emptyAnnotations);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
 
   @Test
   public void canCreatePeerGroup_NotEnoughUnpairedMembersWithIdeas_ReturnFalse() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(workgroup1IdeasOnly);
-    replay(annotationDao);
+    expectAnnotations(workgroup1IdeasOnly);
     assertFalse(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
 
   @Test
   public void canCreatePeerGroup_EnoughUnpairedMembersWithIdeas_ReturnTrue() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(classroomIdeaAnnotations);
-    replay(annotationDao);
+    expectAnnotations(classroomIdeaAnnotations);
     assertTrue(service.canCreatePeerGroup(workgroup1, workgroupsNotInPeerGroup, peerGrouping));
     verify(annotationDao);
   }
 
   @Test
-  public void groupMembersUpToMaxMembership_MaximizeDifferentIdeas() {
-    expect(annotationDao.getAnnotationsByParams(null, run, run1Period1, null, null, nodeId,
-        componentId, null, null, null, "autoScore")).andReturn(classroomIdeaAnnotations);
-    replay(annotationDao);
-    int maxMembers = peerGrouping.getMaxMembershipCount();
-    Set<Workgroup> peerGroupMembers = service.groupMembersUpToMaxMembership(workgroup1,
-        peerGrouping, possibleMembers);
-    assertEquals(maxMembers, peerGroupMembers.size());
-    Iterator<Workgroup> iterator = peerGroupMembers.iterator();
-    assertEquals(workgroup1, iterator.next());
-    assertEquals(workgroup5, iterator.next());
-    verify(annotationDao);
+  public void getPossibleMembersInOrder_MaximizeMode_MaximizeOrder() {
+    TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
+        .getPossibleMembersInOrder(possibleMembers, workgroup1, getLogic(), workgroupToAnnotation);
+    assertOneMatch(getWorkgroups(possibleMembersInOrder),
+        Arrays.asList(workgroup3, workgroup2, workgroup4, workgroup5),
+        Arrays.asList(workgroup3, workgroup4, workgroup2, workgroup5));
+  }
+
+  @Test
+  public void getPossibleMembersInOrder_AnyMode_RandomOrder() {
+    setLogic("any");
+    TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = service
+        .getPossibleMembersInOrder(possibleMembers, workgroup1, getLogic(), workgroupToAnnotation);
+    assertEquals(4, possibleMembersInOrder.size());
+    // there's nothing else that we can test here, since the workgroups all have at least
+    // one different idea and can be in any random order
+  }
+
+  protected String getLogicFunctionName() {
+    return "differentIdeas";
+  }
+
+  protected DifferentIdeasLogic getLogic() {
+    return new DifferentIdeasLogic(peerGrouping.getLogic());
   }
 }

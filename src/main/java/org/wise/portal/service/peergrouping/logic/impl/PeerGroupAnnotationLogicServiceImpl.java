@@ -61,7 +61,8 @@ public abstract class PeerGroupAnnotationLogicServiceImpl extends PeerGroupLogic
     members.add(workgroup);
     possibleMembers.remove(workgroup);
     TreeSet<WorkgroupLogicComparable> possibleMembersInOrder = getPossibleMembersInOrder(
-        possibleMembers, workgroup, peerGrouping);
+        possibleMembers, workgroup, getLogic(peerGrouping),
+        getWorkgroupToAnnotation(peerGrouping, workgroup.getPeriod()));
     Iterator<WorkgroupLogicComparable> iterator = possibleMembersInOrder.descendingIterator();
     while (members.size() < peerGrouping.getMaxMembershipCount()) {
       members.add(iterator.next().getWorkgroup());
@@ -70,5 +71,6 @@ public abstract class PeerGroupAnnotationLogicServiceImpl extends PeerGroupLogic
   }
 
   abstract TreeSet<WorkgroupLogicComparable> getPossibleMembersInOrder(
-      Set<Workgroup> possibleMembers, Workgroup workgroup, PeerGrouping peerGrouping);
+      Set<Workgroup> possibleMembers, Workgroup workgroup, AbstractPairingLogic logic,
+      Map<Workgroup, Annotation> workgroupToAnnotation);
 }

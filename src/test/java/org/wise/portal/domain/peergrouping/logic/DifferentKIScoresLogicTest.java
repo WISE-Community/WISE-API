@@ -34,7 +34,7 @@ public class DifferentKIScoresLogicTest {
 
   @Test
   public void getMode() {
-    assertEquals(DifferentKIScoresLogicMode.ANY, logicBasic.getMode());
-    assertEquals(DifferentKIScoresLogicMode.MAXIMIZE, logicWithMode.getMode());
+    assertEquals(LogicMode.ANY, logicBasic.getMode());
+    assertEquals(LogicMode.MAXIMIZE, logicWithMode.getMode());
   }
 }
