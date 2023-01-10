@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
@@ -68,6 +69,7 @@ public class PeerGroupServiceImpl implements PeerGroupService {
     return peerGroupDao.getById(id);
   }
 
+  @Transactional
   public PeerGroup getPeerGroup(Workgroup workgroup, PeerGrouping peerGrouping)
       throws PeerGroupCreationException {
     validatePeerGroupingLogic(peerGrouping);
