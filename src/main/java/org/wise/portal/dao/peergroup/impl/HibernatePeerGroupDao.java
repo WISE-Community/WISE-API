@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -76,15 +77,14 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
-        peerGrouping.getId()));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>>get("members")));
+        peerGroupImplRoot.<Set<Workgroup>> get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
+    query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
     return (PeerGroup) query.getResultStream().findFirst().orElse(null);
   }
-
 
   @Override
   public List<PeerGroup> getListByPeerGrouping(PeerGrouping peerGrouping) {
@@ -99,8 +99,7 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run.getId()));
     predicates.add(cb.equal(peerGroupingImplRoot.get("tag"), tag));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
-        peerGroupingImplRoot.get("id")));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGroupingImplRoot.get("id")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
@@ -117,7 +116,7 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>>get("members")));
+        peerGroupImplRoot.<Set<Workgroup>> get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
@@ -132,11 +131,10 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"),
-        peerGrouping.getId()));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping.getId()));
     predicates.add(cb.equal(workgroupImplRoot.get("period"), period.getId()));
     predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>>get("members")));
+        peerGroupImplRoot.<Set<Workgroup>> get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> resultList = query.getResultList();
