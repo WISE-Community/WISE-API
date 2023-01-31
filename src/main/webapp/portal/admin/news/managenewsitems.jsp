@@ -108,8 +108,8 @@ function editNewsItem(newsItemId) {
 			<tr>
 				<td><fmt:formatDate value="${news.date}" type="both" dateStyle="short" timeStyle="short" /></td>
 				<td>${news.type}</td>
-				<td>${news.title}</td>
-				<td>${news.news}</td>
+				<td>${fn:escapeXml(news.title)}</td>
+				<td>${fn:escapeXml(news.news)}</td>
 				<td>
 					<a onclick="editNewsItem('${news.id}');"><spring:message code="edit" /></a>
 					<a onclick="removeNewsItem('${news.id}','${news.title}');"><spring:message code="remove" /></a>

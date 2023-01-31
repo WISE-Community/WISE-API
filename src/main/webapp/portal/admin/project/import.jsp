@@ -33,11 +33,20 @@
 				importableProjects.map(function(importableProject) {
 					$("#importableWISEProjects").append(
 							"<option value='" + importableProject.id + "'>"
-							+ importableProject.name
+							+ escapeCharacters(importableProject.name)
 							+ "</option>");
 				});
 			});
 		});
+
+		function escapeCharacters(str) {
+			return str
+					.replaceAll("<", "&lt;")
+					.replaceAll(">", "&gt;")
+					.replaceAll('"', "&quot;")
+					.replaceAll("'", "&apos;")
+		}
+
 		function importableWISEProjectSubmit() {
 			var importableWISEProjectId = $("#importableWISEProjects option:selected").attr("id");
 			$.ajax({});
@@ -55,16 +64,16 @@
 		<c:if test="${msg != null}">
 			<div style="width:500px;font-size:1.2em;font-weight:bold;border:2px solid lightgreen">
 					${msg}<br/><br/>
-				Project Name: ${newProject.name}<br/>
+				Project Name: ${fn:escapeXml(newProject.name)}<br/>
 				Project ID: ${newProject.id}<br/>
 				<c:if test="${newProject.metadata != null && newProject.metadata.author != null}">
-					Author: ${newProject.metadata.author}<br/>
+					Author: ${fn:escapeXml(newProject.metadata.author)}<br/>
 				</c:if>
 				<c:if test="${newProject.metadata != null && newProject.metadata.subject != null}">
-					Subject: ${newProject.metadata.subject}<br/>
+					Subject: ${fn:escapeXml(newProject.metadata.subject)}<br/>
 				</c:if>
 				<c:if test="${newProject.metadata != null && newProject.metadata.keywords != null}">
-					Keywords: ${newProject.metadata.keywords}<br/>
+					Keywords: ${fn:escapeXml(newProject.metadata.keywords)}<br/>
 				</c:if>
 				<br/><br/>
 				<a href="${contextPath}/admin/project/manageallprojects.html?projectLookupType=id&projectLookupValue=${newProject.id}">Manage Project</a>

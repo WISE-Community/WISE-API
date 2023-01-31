@@ -73,7 +73,7 @@
 <body style="background:#FFFFFF;">
 <div class="projectSummary">
 	<div class="projectInfoDisplay">
-		<div class="panelHeader">${project.name} (<spring:message code="id_label" /> ${project.id})
+		<div class="panelHeader">${fn:escapeXml(project.name)} (<spring:message code="id_label" /> ${project.id})
 			<span class="basicPreview"><a href="<c:url value="/previewproject.html"><c:param name="projectId" value="${project.id}"/></c:url>" target="_blank"><img class="icon" alt="preview" src="${contextPath}/<spring:theme code="screen"/>" /><span><spring:message code="preview"/></span></a></span>
 		</div>
 		<div class="projectThumb" thumbUrl="${projectThumbPath}"><img src='${contextPath}/<spring:theme code="project_thumb"/>' alt='thumb'></div>

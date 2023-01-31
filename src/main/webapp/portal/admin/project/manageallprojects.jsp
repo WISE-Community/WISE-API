@@ -106,7 +106,7 @@ function updateMaxTotalAssetsSize(projectId, newMaxTotalAssetsSize) {
 	<c:forEach var="project" items="${internal_project_list}">
 	<tr>
 		<td>${project.id}</td>
-		<td><a target=_blank href="${contextPath}/previewproject.html?projectId=${project.id}">${project.name}</a><br/>
+		<td><a target=_blank href="${contextPath}/previewproject.html?projectId=${project.id}">${fn:escapeXml(project.name)}</a><br/>
 			<span style="font-size:.4em">${project.modulePath}</span>
 		</td>
 	    <td>Is Current:
