@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -45,12 +47,16 @@ import org.wise.portal.service.group.GroupService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.workgroup.WorkgroupService;
+import org.wise.portal.spring.data.redis.MessagePublisher;
 
 /**
  * @author Hiroki Terashima
  */
 @Service
 public class StudentServiceImpl implements StudentService {
+
+  @Autowired
+  private MessagePublisher redisPublisher;
 
   @Autowired
   private RunService runService;
@@ -82,9 +88,21 @@ public class StudentServiceImpl implements StudentService {
         Set<User> members = new HashSet<User>();
         members.add(studentUser);
         workgroupService.createWorkgroup(name, members, run, period);
+        sendNewWorkgroupJoinedRunMessage(run, period);
       }
     } else {
       throw new StudentUserAlreadyAssociatedWithRunException(studentUser, run);
+    }
+  }
+
+  public void sendNewWorkgroupJoinedRunMessage(Run run, Group period) {
+    try {
+      JSONObject message = new JSONObject();
+      message.put("type", "newWorkgroupJoinedRun");
+      message.put("topic", String.format("/topic/classroom/%s/%s", run.getId(), period.getId()));
+      redisPublisher.publish(message.toString());
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
   }
 
@@ -125,8 +143,8 @@ public class StudentServiceImpl implements StudentService {
     studentRunInfo.setStudentUser(studentUser);
     studentRunInfo.setGroup(run.getPeriodOfStudent(studentUser));
 
-    List<Workgroup> workgroupsForThisRun =
-        workgroupService.getWorkgroupListByRunAndUser(run, studentUser);
+    List<Workgroup> workgroupsForThisRun = workgroupService.getWorkgroupListByRunAndUser(run,
+        studentUser);
     if (workgroupsForThisRun.size() > 0) {
       Workgroup workgroupForThisRun = workgroupsForThisRun.get(0);
       studentRunInfo.setWorkgroup(workgroupForThisRun);

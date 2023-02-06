@@ -30,6 +30,7 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.RunHasEndedException;
 import org.wise.portal.domain.StudentUserAlreadyAssociatedWithRunException;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.impl.Projectcode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.StudentRunInfo;
@@ -57,9 +58,8 @@ public interface StudentService {
    * is already associated with the run in any of the periods that the run has been set up for
    */
   @Transactional
-  void addStudentToRun(User studentUser, Projectcode projectcode)
-      throws ObjectNotFoundException, PeriodNotFoundException,
-      StudentUserAlreadyAssociatedWithRunException, RunHasEndedException;
+  void addStudentToRun(User studentUser, Projectcode projectcode) throws ObjectNotFoundException,
+      PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException;
 
   /**
    * Returns a list of teachers that this student is associated with through runs.
@@ -94,4 +94,6 @@ public interface StudentService {
    * @param run <code>Run</code> run to lookup
    */
   StudentRunInfo getStudentRunInfo(User studentUser, Run run);
+
+  void sendNewWorkgroupJoinedRunMessage(Run run, Group period);
 }
