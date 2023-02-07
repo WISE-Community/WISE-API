@@ -302,7 +302,7 @@
                             <c:forEach var="run" items="${runList}">
                                 <tr id="runTitleRow_${run.id}" class="runRow">
                                     <td>
-                                        <div class="runTitle">${run.name}</div>
+                                        <div class="runTitle">${fn:escapeXml(run.name)}</div>
                                         <c:set var="ownership" value="owned" />
                                         <c:forEach var="sharedowner" items="${run.sharedowners}">
                                             <c:if test="${sharedowner == user}">
