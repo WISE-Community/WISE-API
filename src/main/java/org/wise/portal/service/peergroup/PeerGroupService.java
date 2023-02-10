@@ -29,6 +29,7 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
 public interface PeerGroupService {
@@ -67,4 +68,7 @@ public interface PeerGroupService {
    * @return List of StudentWork by members in the PeerGroup for the component
    */
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId);
+
+  public List<Annotation> getStudentAnnotations(PeerGroup peerGroup, String nodeId,
+      String componentId, List<Workgroup> teacherWorkgroups);
 }
