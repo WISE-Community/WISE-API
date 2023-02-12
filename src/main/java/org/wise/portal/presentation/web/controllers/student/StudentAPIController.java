@@ -172,6 +172,7 @@ public class StudentAPIController extends UserAPIController {
         Group period = run.getPeriodOfStudent(user);
         String name = "Workgroup for user: " + user.getUserDetails().getUsername();
         workgroup = workgroupService.createWorkgroup(name, presentMembers, run, period);
+        studentService.sendNewWorkgroupJoinedRunMessage(run, period);
         return getLaunchRunMap(runId, workgroupId, presentUserIds, absentUserIds, request, run,
             presentMembers, workgroup);
       } else {
