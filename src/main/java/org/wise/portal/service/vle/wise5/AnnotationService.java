@@ -13,4 +13,7 @@ public interface AnnotationService {
    */
   List<Annotation> getLatest(Set<Workgroup> workgroups, String nodeId, String componentId,
       String type);
+
+  List<Annotation> getAnnotationsToWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId);
 }

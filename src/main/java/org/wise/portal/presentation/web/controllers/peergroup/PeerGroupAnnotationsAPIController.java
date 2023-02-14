@@ -2,6 +2,7 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
+import org.wise.portal.service.vle.wise5.AnnotationService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
@@ -30,16 +32,18 @@ import org.wise.vle.domain.annotation.wise5.Annotation;
 @RequestMapping("/api/peer-group")
 public class PeerGroupAnnotationsAPIController extends AbstractPeerGroupAPIController {
   @Autowired
+  private AnnotationService annotationService;
+
+  @Autowired
   private WorkgroupService workgroupService;
 
   @GetMapping("/{peerGroupId}/{nodeId}/{componentId}/annotations")
   List<Annotation> getPeerGroupAnnotations(@PathVariable("peerGroupId") PeerGroupImpl peerGroup,
       @PathVariable String nodeId, @PathVariable String componentId, Authentication auth) {
     if (isUserInPeerGroup(peerGroup, auth)) {
-      List<Workgroup> teacherWorkgroups = getTeacherWorkgroups(
-          peerGroup.getPeerGrouping().getRun());
-      return peerGroupService.getStudentAnnotations(peerGroup, nodeId, componentId,
-          teacherWorkgroups);
+      Set<Workgroup> workgroups = peerGroup.getMembers();
+      workgroups.addAll(getTeacherWorkgroups(peerGroup.getPeerGrouping().getRun()));
+      return annotationService.getAnnotationsToWorkgroups(workgroups, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }
@@ -55,9 +59,9 @@ public class PeerGroupAnnotationsAPIController extends AbstractPeerGroupAPIContr
     if (runService.isAllowedToViewStudentWork(run, user)) {
       PeerGrouping peerGrouping = peerGroupingService.getByComponent(run, nodeId, componentId);
       PeerGroup peerGroup = peerGroupService.getPeerGroup(workgroup, peerGrouping);
-      List<Workgroup> teacherWorkgroups = getTeacherWorkgroups(run);
-      return peerGroupService.getStudentAnnotations(peerGroup, nodeId, componentId,
-          teacherWorkgroups);
+      Set<Workgroup> workgroups = peerGroup.getMembers();
+      workgroups.addAll(getTeacherWorkgroups(run));
+      return annotationService.getAnnotationsToWorkgroups(workgroups, nodeId, componentId);
     } else {
       throw new AccessDeniedException("Not permitted");
     }

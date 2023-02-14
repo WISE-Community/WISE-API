@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
@@ -43,14 +42,10 @@ import org.wise.portal.service.peergroup.PeerGroupThresholdService;
 import org.wise.portal.service.peergrouping.logic.impl.DifferentIdeasLogicServiceImpl;
 import org.wise.portal.service.peergrouping.logic.impl.DifferentKIScoresLogicServiceImpl;
 import org.wise.portal.service.peergrouping.logic.impl.RandomLogicServiceImpl;
-import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
 @Service
 public class PeerGroupServiceImpl implements PeerGroupService {
-
-  @Autowired
-  private AnnotationDao<Annotation> annotationDao;
 
   @Autowired
   private DifferentIdeasLogicServiceImpl differentIdeasLogicService;
@@ -117,10 +112,5 @@ public class PeerGroupServiceImpl implements PeerGroupService {
 
   public List<StudentWork> getStudentWork(PeerGroup peerGroup, String nodeId, String componentId) {
     return studentWorkDao.getStudentWork(peerGroup, nodeId, componentId);
-  }
-
-  public List<Annotation> getStudentAnnotations(PeerGroup peerGroup, String nodeId,
-      String componentId, List<Workgroup> teacherWorkgroups) {
-    return annotationDao.getAnnotations(peerGroup, nodeId, componentId, teacherWorkgroups);
   }
 }

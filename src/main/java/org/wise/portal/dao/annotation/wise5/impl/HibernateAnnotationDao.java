@@ -18,7 +18,6 @@ import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
-import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -130,12 +129,5 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
         .orderBy(cb.asc(annotationRoot.get("serverSaveTime")));
     TypedQuery<Annotation> query = entityManager.createQuery(cq);
     return (List<Annotation>) query.getResultList();
-  }
-
-  public List<Annotation> getAnnotations(PeerGroup peerGroup, String nodeId, String componentId,
-      List<Workgroup> teacherWorkgroups) {
-    Set<Workgroup> workgroups = peerGroup.getMembers();
-    workgroups.addAll(teacherWorkgroups);
-    return getAnnotationsToWorkgroups(workgroups, nodeId, componentId);
   }
 }
