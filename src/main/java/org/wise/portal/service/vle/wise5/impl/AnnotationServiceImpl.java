@@ -31,4 +31,9 @@ public class AnnotationServiceImpl implements AnnotationService {
     }
     return new ArrayList<Annotation>(workgroupToAnnotation.values());
   }
+
+  public List<Annotation> getAnnotationsToWorkgroups(Set<Workgroup> workgroups, String nodeId,
+      String componentId) {
+    return annotationDao.getAnnotationsToWorkgroups(workgroups, nodeId, componentId);
+  }
 }
