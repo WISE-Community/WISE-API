@@ -380,6 +380,7 @@ public class RunServiceImpl implements RunService {
     aclService.removePermission(run, BasePermission.ADMINISTRATION, user);
   }
 
+  @Transactional
   public SharedOwner addSharedTeacher(Long runId, String username)
       throws ObjectNotFoundException, TeacherAlreadySharedWithRunException {
     User user = userDao.retrieveByUsername(username);
@@ -423,6 +424,7 @@ public class RunServiceImpl implements RunService {
     return null;
   }
 
+  @Transactional
   public void addSharedTeacherPermission(Long runId, Long userId, Integer permissionId)
       throws ObjectNotFoundException {
     User user = userDao.getById(userId);
@@ -432,6 +434,7 @@ public class RunServiceImpl implements RunService {
     }
   }
 
+  @Transactional
   public void removeSharedTeacherPermission(Long runId, Long userId, Integer permissionId)
       throws ObjectNotFoundException {
     User user = userDao.getById(userId);
@@ -441,6 +444,7 @@ public class RunServiceImpl implements RunService {
     }
   }
 
+  @Transactional
   public void removeSharedTeacher(String username, Long runId) throws ObjectNotFoundException {
     Run run = retrieveById(runId);
     User user = userDao.retrieveByUsername(username);
