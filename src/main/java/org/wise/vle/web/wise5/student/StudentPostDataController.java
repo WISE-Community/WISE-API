@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -60,8 +61,8 @@ public class StudentPostDataController {
   private BroadcastStudentWorkService broadcastStudentWorkService;
 
   @PostMapping("/api/student/data")
-  public void postStudentData(HttpServletResponse response,
-      @RequestBody ObjectNode postedParams, Authentication auth) throws JSONException {
+  public void postStudentData(HttpServletResponse response, @RequestBody ObjectNode postedParams,
+      Authentication auth) throws JSONException {
     User user = userService.retrieveUserByUsername(auth.getName());
     Integer runId = postedParams.get("runId").asInt();
     String studentWorkList = postedParams.get("studentWorkList").asText();
@@ -125,7 +126,8 @@ public class StudentPostDataController {
               // serverSaveTime to minimize response size
               JSONObject savedStudentWorkJSONObject = new JSONObject();
               savedStudentWorkJSONObject.put("id", studentWork.getId());
-              savedStudentWorkJSONObject.put("requestToken", studentWorkJSONObject.getString("requestToken"));
+              savedStudentWorkJSONObject.put("requestToken",
+                  studentWorkJSONObject.getString("requestToken"));
               savedStudentWorkJSONObject.put("serverSaveTime",
                   studentWork.getServerSaveTime().getTime());
               studentWorkResultJSONArray.put(savedStudentWorkJSONObject);
@@ -267,7 +269,8 @@ public class StudentPostDataController {
               // serverSaveTime to minimize response size
               JSONObject savedAnnotationJSONObject = new JSONObject();
               savedAnnotationJSONObject.put("id", annotation.getId());
-              savedAnnotationJSONObject.put("requestToken", annotationJSONObject.getString("requestToken"));
+              savedAnnotationJSONObject.put("requestToken",
+                  annotationJSONObject.getString("requestToken"));
               savedAnnotationJSONObject.put("serverSaveTime",
                   annotation.getServerSaveTime().getTime());
               annotationsResultJSONArray.put(savedAnnotationJSONObject);
@@ -293,13 +296,14 @@ public class StudentPostDataController {
   }
 
   private boolean canSaveStudentWorkOrEvent(JSONObject jsonObject, Workgroup workgroup) {
-    return isMatchingRunAndPeriod(jsonObject, workgroup) && isMatchingWorkgroup(jsonObject, workgroup);
+    return isMatchingRunAndPeriod(jsonObject, workgroup)
+        && isMatchingWorkgroup(jsonObject, workgroup);
   }
 
   private boolean isMatchingRunAndPeriod(JSONObject jsonObject, Workgroup workgroup) {
     try {
-      return jsonObject.getInt("runId") == workgroup.getRun().getId() &&
-          jsonObject.getLong("periodId") == workgroup.getPeriod().getId();
+      return jsonObject.getInt("runId") == workgroup.getRun().getId()
+          && jsonObject.getLong("periodId") == workgroup.getPeriod().getId();
     } catch (JSONException e) {
     }
     return false;
@@ -314,26 +318,36 @@ public class StudentPostDataController {
   }
 
   private boolean canSaveAnnotation(JSONObject annotation, Workgroup workgroup) {
-    return isMatchingRunAndPeriod(annotation, workgroup) &&
-        (isValidAutoGradedAnnotation(annotation, workgroup) ||
-        isValidFromWorkgroupId(annotation, workgroup)) &&
-        isToWorkgroupInSameRun(annotation, workgroup);
+    return isMatchingRunAndPeriod(annotation, workgroup)
+        && (isValidAutoGradedAnnotation(annotation, workgroup)
+            || isValidFromWorkgroupId(annotation, workgroup))
+        && isToWorkgroupInSameRun(annotation, workgroup);
   }
 
   private boolean isValidAutoGradedAnnotation(JSONObject annotation, Workgroup workgroup) {
     try {
-      if (annotation.get("type").equals("autoComment") ||
-          annotation.get("type").equals("autoScore")) {
-          ProjectComponent component = projectService.getProjectComponent(
-              workgroup.getRun().getProject(), annotation.getString("nodeId"),
-              annotation.getString("componentId"));
-          return component != null &&
-            component.getBoolean("enableCRater") &&
-            annotation.getLong("toWorkgroupId") == workgroup.getId();
+      if (annotation.get("type").equals("autoComment")
+          || annotation.get("type").equals("autoScore")) {
+        return isComponentAllowedToAutoGrade(workgroup.getRun().getProject(),
+            annotation.getString("nodeId"), annotation.getString("componentId"))
+            && annotation.getLong("toWorkgroupId") == workgroup.getId();
       }
-    } catch (JSONException | IOException e) {
+    } catch (JSONException e) {
     }
     return false;
+  }
+
+  private boolean isComponentAllowedToAutoGrade(Project project, String nodeId,
+      String componentId) {
+    boolean result = false;
+    try {
+      ProjectComponent component = projectService.getProjectComponent(project, nodeId, componentId);
+      result = component != null
+          && ((component.hasField("enableCRater") && component.getBoolean("enableCRater"))
+              || component.getString("type").equals("Embedded"));
+    } catch (JSONException | IOException e) {
+    }
+    return result;
   }
 
   private boolean isValidFromWorkgroupId(JSONObject annotation, Workgroup workgroup) {
