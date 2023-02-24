@@ -63,6 +63,7 @@ import org.wise.portal.domain.project.impl.Projectcode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.ErrorResponse;
@@ -338,9 +339,13 @@ public class StudentAPIController extends UserAPIController {
     StudentUserDetails sud = new StudentUserDetails();
     String firstName = studentFields.get("firstName");
     String lastName = studentFields.get("lastName");
+    String token = studentFields.get("token");
     if (!isFirstNameAndLastNameValid(firstName, lastName)) {
       String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
       throw new InvalidNameException(messageCode);
+    }
+    if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+      return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
     }
     sud.setFirstname(firstName);
     sud.setLastname(lastName);
