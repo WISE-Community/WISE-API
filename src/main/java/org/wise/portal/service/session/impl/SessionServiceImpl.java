@@ -1,9 +1,17 @@
 package org.wise.portal.service.session.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.session.Session;
@@ -14,6 +22,9 @@ import org.wise.portal.service.session.SessionService;
 
 @Service
 public class SessionServiceImpl<S extends Session> implements SessionService {
+
+  @Autowired
+  private Environment appProperties;
 
   @Autowired
   private StringRedisTemplate stringRedisTemplate;
@@ -63,8 +74,8 @@ public class SessionServiceImpl<S extends Session> implements SessionService {
 
   @Override
   public void removeCurrentAuthor(UserDetails author) {
-    Set<String> currentlyAuthoredProjects =
-        stringRedisTemplate.opsForSet().members("currentlyAuthoredProjects");
+    Set<String> currentlyAuthoredProjects = stringRedisTemplate.opsForSet()
+        .members("currentlyAuthoredProjects");
     for (String projectId : currentlyAuthoredProjects) {
       removeCurrentAuthor(projectId, author.getUsername());
     }
@@ -72,8 +83,8 @@ public class SessionServiceImpl<S extends Session> implements SessionService {
 
   public void removeCurrentAuthor(Serializable projectId, String authorUsername) {
     stringRedisTemplate.opsForSet().remove("currentAuthors:" + projectId, authorUsername);
-    Long numCurrentAuthorsForProject =
-        stringRedisTemplate.opsForSet().size("currentAuthors:" + projectId);
+    Long numCurrentAuthorsForProject = stringRedisTemplate.opsForSet()
+        .size("currentAuthors:" + projectId);
     if (numCurrentAuthorsForProject == 0) {
       stringRedisTemplate.opsForSet().remove("currentlyAuthoredProjects", projectId.toString());
     }
@@ -90,4 +101,48 @@ public class SessionServiceImpl<S extends Session> implements SessionService {
   public Set<String> getCurrentAuthors(Serializable projectId) {
     return stringRedisTemplate.opsForSet().members("currentAuthors:" + projectId);
   }
+
+  public boolean isCkBoardAvailable() {
+    String ckBoardUrl = appProperties.getProperty("ck_board_url");
+    return ckBoardUrl != null && !ckBoardUrl.equals("");
+  }
+
+  public void signOutOfCkBoard(HttpServletRequest request) {
+    String ckSessionCookie = getCkSessionCookie(request);
+    HttpClient client = HttpClientBuilder.create().build();
+    HttpPost ckBoardLogoutRequest = new HttpPost(getCkBoardLogoutUrl());
+    ckBoardLogoutRequest.setHeader("Authorization", "Bearer " + ckSessionCookie);
+    try {
+      client.execute(ckBoardLogoutRequest);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private String getCkBoardLogoutUrl() {
+    String ckBoardUrl = appProperties.getProperty("ck_board_url");
+
+    // The CK Board local backend url is only used for local development and should only be set in
+    // local development environments. When we are running locally, we need the local IP and port of
+    // the CK Board backend because the SCORE API is served using Docker. If the SCORE API makes a
+    // request to localhost:8001, it won't be able to access the CK Board backend. This is because
+    // the SCORE API expects localhost to be within the container but the CK Board backend is not in
+    // the container.
+    String ckBoardLocalBackendUrl = appProperties.getProperty("ck_board_local_backend_url");
+    if (ckBoardLocalBackendUrl != null && !ckBoardLocalBackendUrl.equals("")) {
+      ckBoardUrl = ckBoardLocalBackendUrl;
+    }
+    return ckBoardUrl + "/api/auth/logout";
+  }
+
+  private String getCkSessionCookie(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    for (Cookie cookie : cookies) {
+      if (cookie.getName().equals("CK_SESSION")) {
+        return cookie.getValue();
+      }
+    }
+    return null;
+  }
+
 }

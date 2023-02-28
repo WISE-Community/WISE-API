@@ -3,6 +3,8 @@ package org.wise.portal.service.session;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface SessionService {
@@ -28,4 +30,8 @@ public interface SessionService {
   void removeCurrentAuthor(Serializable projectdId, String authorUsername);
 
   void removeUser(UserDetails user);
+
+  boolean isCkBoardAvailable();
+
+  void signOutOfCkBoard(HttpServletRequest request);
 }
