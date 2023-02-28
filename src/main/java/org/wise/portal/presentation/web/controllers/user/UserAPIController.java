@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -235,7 +234,7 @@ public class UserAPIController {
     }
   }
 
-  protected HashMap<String, Object> getProjectMap(Project project) {
+  private HashMap<String, Object> getProjectMap(Project project) {
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", project.getId());
     map.put("name", project.getName());
@@ -254,29 +253,14 @@ public class UserAPIController {
 
   protected HashMap<String, Object> getRunMap(User user, Run run) {
     HashMap<String, Object> map = new HashMap<String, Object>();
-    Project project = run.getProject();
-    String curriculumBaseWWW = appProperties.getProperty("curriculum_base_www");
-    String projectThumb = "";
-    String modulePath = project.getModulePath();
-    int lastIndexOfSlash = modulePath.lastIndexOf("/");
-    if (lastIndexOfSlash != -1) {
-      /*
-       * The project thumb url by default is the same (/assets/project_thumb.png) for all projects,
-       * but this could be overwritten in the future e.g. /253/assets/projectThumb.png
-       */
-      projectThumb = curriculumBaseWWW + modulePath.substring(0, lastIndexOfSlash)
-          + PROJECT_THUMB_PATH;
-    }
-
     map.put("id", run.getId());
     map.put("name", run.getName());
     map.put("maxStudentsPerTeam", run.getMaxWorkgroupSize());
-    map.put("projectThumb", projectThumb);
     map.put("runCode", run.getRuncode());
     map.put("startTime", run.getStartTimeMilliseconds());
     map.put("endTime", run.getEndTimeMilliseconds());
     map.put("isLockedAfterEndDate", run.isLockedAfterEndDate());
-    map.put("project", getProjectMap(project));
+    map.put("project", getProjectMap(run.getProject()));
     map.put("owner", convertUserToMap(run.getOwner()));
     map.put("numStudents", run.getNumStudents());
     map.put("wiseVersion", run.getProject().getWiseVersion());

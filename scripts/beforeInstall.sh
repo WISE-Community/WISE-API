@@ -2,6 +2,7 @@
 
 export HOME=/home/ubuntu
 export BUILD_DIR=$HOME/build-folder
+export LEGACY_BUILD_DIR=$HOME/legacy-build-folder
 export BUILD_FILES=$HOME/wise-build-files
 export CATALINA_HOME=/var/lib/tomcat9
 
@@ -80,12 +81,16 @@ cp $BUILD_FILES/api/$ENV/wise.conf /etc/nginx/sites-enabled/wise.conf
 systemctl restart nginx
 
 echo "Creating additional folders for WISE"
-mkdir -p $HOME/build-folder/WEB-INF/classes
+mkdir -p $BUILD_DIR/WEB-INF/classes
+mkdir -p $LEGACY_BUILD_DIR/WEB-INF/classes
 sudo -u ubuntu -g ubuntu mkdir $HOME/backup
 sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 
 echo "Copying application.properties file to the build folder"
 cp $BUILD_FILES/api/$ENV/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
+
+echo "Copying application-legacy.properties file to the legacy build folder"
+cp $BUILD_FILES/api/$ENV/application-legacy.properties $LEGACY_BUILD_DIR/WEB-INF/classes/application.properties
 
 echo "Installing network drive package"
 apt-get install nfs-common -y
@@ -109,11 +114,25 @@ echo "Copying backup-nginx-logs script to /etc/cron.daily folder"
 cp $BUILD_FILES/api/backup-nginx-logs /etc/cron.daily
 chmod +x /etc/cron.daily/backup-nginx-logs
 
-echo "Install mysql client"
+echo "Installing mysql client"
 apt-get install mysql-client-core-8.0 -y
 
-echo "Install redis client"
+echo "Installing redis client"
 apt-get install redis-tools -y
 
 echo "Installing tree"
 apt-get install tree -y
+
+echo "Installing sysstat"
+apt-get install sysstat -y
+
+echo "Configuring sysstat parameters"
+sed 's/ENABLED="false"/ENABLED="true"/' -i /etc/default/sysstat
+sed 's/HISTORY=7/HISTORY=30/' -i /etc/sysstat/sysstat
+sed 's/SADC_OPTIONS="-S DISK"/SADC_OPTIONS="-D -S DISK"/' -i /etc/sysstat/sysstat
+
+echo "Enabling sysstat on startup"
+systemctl enable sysstat
+
+echo "Starting sysstat"
+systemctl start sysstat

@@ -17,7 +17,6 @@ import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.core.env.Environment;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.RunHasEndedException;
@@ -47,9 +46,6 @@ public class StudentAPIControllerTest extends APIControllerTest {
 
   @Mock
   private StudentAttendanceService studentAttendanceService;
-
-  @Mock(fieldName = "appProperties")
-  private Environment appProperties;
 
   @Mock(fieldName = "i18nProperties")
   private Properties i18nProperties;
@@ -198,16 +194,12 @@ public class StudentAPIControllerTest extends APIControllerTest {
     expect(workgroupService.getWorkgroupListByRunAndUser(isA(Run.class), isA(User.class)))
         .andReturn(workgroups).times(3);
     replay(workgroupService);
-    expect(appProperties.getProperty("curriculum_base_www"))
-        .andReturn("http://localhost:8080/curriculum").times(3);
-    replay(appProperties);
     List<HashMap<String, Object>> runs = studentAPIController.getRuns(studentAuth);
     assertEquals(3, runs.size());
     verify(userService);
     verify(runService);
     verify(projectService);
     verify(workgroupService);
-    verify(appProperties);
   }
 
   @Test

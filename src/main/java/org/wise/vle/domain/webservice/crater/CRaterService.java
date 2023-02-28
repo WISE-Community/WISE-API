@@ -34,9 +34,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * Controller for using the CRater scoring servlet via HTTP
@@ -44,15 +45,11 @@ import org.springframework.stereotype.Component;
  * @author Hiroki Terashima
  * @author Geoffrey Kwan
  */
-@Component
-public class CRaterHttpClient {
-
-  private static Environment appProperties;
+@Service
+public class CRaterService {
 
   @Autowired
-  public void setAppProperties(Environment appProperties) {
-    CRaterHttpClient.appProperties = appProperties;
-  }
+  private Environment appProperties;
 
   /**
    * Sends student work to the CRater server and receives the score as the response
@@ -60,10 +57,10 @@ public class CRaterHttpClient {
    * @param CRaterScoringRequest scoring request from client
    * @return CRaterScoringResponse scoring response from CRater
    */
-  public static CRaterScoringResponse getScoringResponse(CRaterScoringRequest request) {
+  public String getScoringResponse(CRaterScoringRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
     request.setCRaterUrl(appProperties.getProperty("cRater_scoring_url"));
-    return new CRaterScoringResponse(post(request));
+    return post(request);
   }
 
   /**
@@ -72,11 +69,10 @@ public class CRaterHttpClient {
    * @param CRaterVerificationRequest request with item id to verify
    * @return CRaterVerificationResponse verify response from CRater
    */
-  public static CRaterVerificationResponse getVerificationResponse(
-      CRaterVerificationRequest request) {
+  public String getVerificationResponse(CRaterVerificationRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
     request.setCRaterUrl(appProperties.getProperty("cRater_verification_url"));
-    return new CRaterVerificationResponse(post(request));
+    return post(request);
   }
 
   /**
@@ -85,15 +81,15 @@ public class CRaterHttpClient {
    * @param CRaterRequest request to send to CRater
    * @return the response string from the CRater server
    */
-  private static String post(CRaterRequest request) {
+  private String post(CRaterRequest request) throws JSONException {
     HttpClient client = HttpClientBuilder.create().build();
     HttpPost post = new HttpPost(request.getCRaterUrl());
     try {
-      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
-          .printBase64Binary(("extsyscrtr02dev:" + appProperties.getProperty("cRater_password"))
-          .getBytes());
+      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
+          ("extsyscrtr02dev:" + appProperties.getProperty("cRater_password")).getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-      post.setEntity(new StringEntity(request.generateBodyData(), ContentType.TEXT_XML));
+      post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
+      post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));
       HttpResponse response = client.execute(post);
       if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
         System.err.println("Method failed: " + response.getStatusLine());

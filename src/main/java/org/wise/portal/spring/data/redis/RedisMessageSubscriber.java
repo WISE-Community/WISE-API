@@ -79,6 +79,10 @@ public class RedisMessageSubscriber implements MessageListener {
       } else if (messageJSON.get("type").equals("tagsToWorkgroup")) {
         WebSocketMessage webSockeMessage = new WebSocketMessage("tagsToWorkgroup", messageJSON.getString("tags"));
         simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
+      } else if (messageJSON.get("type").equals("classmateStudentWork")) {
+        WebSocketMessage webSockeMessage = new WebSocketMessage("classmateStudentWork",
+            messageJSON.getString("studentWork"));
+        simpMessagingTemplate.convertAndSend(messageJSON.getString("topic"), webSockeMessage);
       }
     } catch (JSONException e) {
       e.printStackTrace();

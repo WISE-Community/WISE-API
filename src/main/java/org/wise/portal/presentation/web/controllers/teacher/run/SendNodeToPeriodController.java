@@ -46,9 +46,9 @@ public class SendNodeToPeriodController {
   }
 
   @MessageMapping("/api/teacher/run/{runId}/workgroup-to-node/{workgroupId}/{nodeId}")
-  public void sendWorkgroupToNode(Authentication auth,
-      @DestinationVariable Long runId, @DestinationVariable String workgroupId,
-      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
+  public void sendWorkgroupToNode(Authentication auth, @DestinationVariable Long runId,
+      @DestinationVariable String workgroupId, @DestinationVariable String nodeId)
+      throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       this.publishWorkgroupToNodeMessage(workgroupId, nodeId);
@@ -57,9 +57,9 @@ public class SendNodeToPeriodController {
 
   @MessageMapping("/api/teacher/run/{runId}/group-to-node/{groupId}/{nodeId}")
   @Transactional
-  public void sendGroupToNode(Authentication auth,
-      @DestinationVariable Long runId, @DestinationVariable Integer groupId,
-      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
+  public void sendGroupToNode(Authentication auth, @DestinationVariable Long runId,
+      @DestinationVariable Integer groupId, @DestinationVariable String nodeId)
+      throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       Tag tag = tagService.getTagById(groupId);
@@ -71,7 +71,8 @@ public class SendNodeToPeriodController {
     }
   }
 
-  private void publishWorkgroupToNodeMessage(String workgroupId, String nodeId) throws JSONException {
+  private void publishWorkgroupToNodeMessage(String workgroupId, String nodeId)
+      throws JSONException {
     JSONObject msg = new JSONObject();
     msg.put("type", "goToNode");
     msg.put("nodeId", nodeId);
@@ -80,9 +81,8 @@ public class SendNodeToPeriodController {
   }
 
   @MessageMapping("/api/teacher/run/{runId}/workgroup-to-next-node/{workgroupId}")
-  public void sendWorkgroupToNextNode(Authentication auth,
-      @DestinationVariable Long runId, @DestinationVariable String workgroupId)
-      throws ObjectNotFoundException, JSONException {
+  public void sendWorkgroupToNextNode(Authentication auth, @DestinationVariable Long runId,
+      @DestinationVariable String workgroupId) throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();
@@ -93,9 +93,9 @@ public class SendNodeToPeriodController {
   }
 
   @MessageMapping("/api/teacher/run/{runId}/period-to-node/{periodId}/{nodeId}")
-  public void sendPeriodToNode(Authentication auth,
-      @DestinationVariable Long runId, @DestinationVariable Long periodId,
-      @DestinationVariable String nodeId) throws ObjectNotFoundException, JSONException {
+  public void sendPeriodToNode(Authentication auth, @DestinationVariable Long runId,
+      @DestinationVariable Long periodId, @DestinationVariable String nodeId)
+      throws ObjectNotFoundException, JSONException {
     Run run = runService.retrieveById(runId);
     if (runService.hasReadPermission(auth, run)) {
       JSONObject msg = new JSONObject();

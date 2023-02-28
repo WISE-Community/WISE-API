@@ -28,9 +28,9 @@ public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
     expect(workgroupService.retrieveById(1L)).andReturn(workgroup1);
     expect(workgroupService.retrieveById(2L)).andReturn(workgroup2);
     expect(workgroupService.updateWorkgroupMembership(isA(ChangeWorkgroupParameters.class)))
-      .andReturn(new WorkgroupImpl());
+        .andReturn(new WorkgroupImpl());
     replay(userService, workgroupService);
-    controller.moveUserBetweenWorkgroups(runId1, student1Id, postedParams);
+    controller.moveUserBetweenWorkgroups(run1, student1Id, postedParams);
     verify(userService, workgroupService);
   }
 }

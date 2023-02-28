@@ -224,7 +224,7 @@ public class DailyAdminJob {
       String username = appProperties.getProperty("spring.datasource.username");
       String password = appProperties.getProperty("spring.datasource.password");
       String url = appProperties.getProperty("spring.datasource.url");
-      Class.forName("com.mysql.jdbc.Driver").newInstance();
+      Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
       Connection conn = DriverManager.getConnection(url, username, password);
       Statement statement = conn.createStatement();
       JSONObject vleStatistics = new JSONObject();

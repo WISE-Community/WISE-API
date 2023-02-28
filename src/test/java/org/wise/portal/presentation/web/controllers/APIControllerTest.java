@@ -47,6 +47,7 @@ public abstract class APIControllerTest {
   protected final String RUN3_RUNCODE = "giraffe123";
   protected final String RUN1_PERIOD1_NAME = "1";
   protected final String RUN1_PERIOD2_NAME = "2";
+  protected final String SHOULD_NOT_HAVE_THROWN_EXCEPTION = "Should not have thrown an exception";
   protected final String STUDENT_FIRSTNAME = "SpongeBob";
   protected final String STUDENT_LASTNAME = "Squarepants";
   protected final String STUDENT_PASSWORD = "studentPass";
@@ -63,7 +64,7 @@ public abstract class APIControllerTest {
   protected final String TEACHER2_USERNAME = "SandyCheeks";
   protected final String USERNAME_NOT_IN_DB = "usernameNotInDB";
 
-  protected Authentication adminAuth, studentAuth, studentAuth2, teacherAuth;
+  protected Authentication adminAuth, studentAuth, studentAuth2, teacherAuth, teacherAuth2;
   protected ProjectImpl project1, project2, project3;
   protected Long projectId1 = 1L;
   protected Long projectId2 = 2L;
@@ -151,6 +152,7 @@ public abstract class APIControllerTest {
     teacher2UserDetails = createTeacherUserDetails(TEACHER2_FIRSTNAME, TEACHER2_LASTNAME,
         TEACHER2_USERNAME, Schoollevel.COLLEGE, 5);
     teacher2 = createTeacher(teacher2Id, teacher2UserDetails);
+    teacherAuth2 = createAuthentication(teacher2UserDetails);
   }
 
   private void createAdmin() {
@@ -169,15 +171,15 @@ public abstract class APIControllerTest {
     run1Period1 = createPeriod(run1Period1Id, RUN1_PERIOD1_NAME, student1);
     run1Period2 = createPeriod(run1Period2Id, RUN1_PERIOD2_NAME);
     HashSet<Group> run1Periods = new HashSet<Group>(Arrays.asList(run1Period1, run1Period2));
-    run1 = createRun(runId1, teacher1, new Date(), new Date(), 3, RUN1_RUNCODE, project1,
+    run1 = createRun(runId1, teacher1, new Date(100), new Date(101), 3, RUN1_RUNCODE, project1,
         run1Periods);
     run2Period2 = createPeriod(run2Period2Id, "Run2Period2", student1);
     HashSet<Group> run2Periods = new HashSet<Group>(Arrays.asList(run2Period2));
-    run2 = createRun(runId2, teacher1, new Date(), new Date(), 3, RUN2_RUNCODE, project2,
+    run2 = createRun(runId2, teacher1, new Date(200), new Date(201), 3, RUN2_RUNCODE, project2,
         run2Periods);
     run3Period4 = createPeriod(run3Period4Id, "Run3Period4", student1);
     HashSet<Group> run3Periods = new HashSet<Group>(Arrays.asList(run3Period4));
-    run3 = createRun(runId3, teacher2, new Date(), new Date(), 3, RUN3_RUNCODE, project3,
+    run3 = createRun(runId3, teacher2, new Date(300), new Date(301), 3, RUN3_RUNCODE, project3,
         run3Periods);
     runs = Arrays.asList(run1, run2, run3);
   }
@@ -301,7 +303,8 @@ public abstract class APIControllerTest {
     return run;
   }
 
-  protected ProjectImpl createProject(Long id, String modulePath, User teacher, Integer wiseVersion) {
+  protected ProjectImpl createProject(Long id, String modulePath, User teacher,
+      Integer wiseVersion) {
     ProjectImpl project = new ProjectImpl();
     project.setId(id);
     project.setModulePath(modulePath);

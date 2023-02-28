@@ -84,15 +84,12 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
   }
 
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
+  public Authentication attemptAuthentication(HttpServletRequest request,
+      HttpServletResponse response) throws AuthenticationException, IOException {
+    saveRequestParameter(request, "accessCode");
+    saveRequestParameter(request, "redirectUrl");
     OAuth2AccessToken accessToken;
     try {
-      String accessCodeFromParameter = request.getParameter("accessCode");
-      String accessCodeFromState = (String) googleOpenIdRestTemplate.getOAuth2ClientContext()
-          .removePreservedState("accessCode");
-      googleOpenIdRestTemplate.getOAuth2ClientContext()
-          .setPreservedState("accessCode", accessCodeFromParameter);
-      request.setAttribute("accessCode", accessCodeFromState);
       accessToken = googleOpenIdRestTemplate.getAccessToken();
     } catch (final OAuth2Exception e) {
       throw new BadCredentialsException("Could not obtain access token", e);
@@ -101,7 +98,8 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
       final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();
       String kid = JwtHelper.headers(idToken).get("kid");
       final Jwt tokenDecoded = JwtHelper.decodeAndVerify(idToken, verifier(kid));
-      final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(), Map.class);
+      final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(),
+          Map.class);
       verifyClaims(authInfo);
       String googleUserId = authInfo.get("sub");
       final UserDetails user = userDetailsService.loadUserByGoogleUserId(googleUserId);
@@ -116,16 +114,25 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
     }
   }
 
+  private void saveRequestParameter(HttpServletRequest request, String parameterName) {
+    String parameterValue = request.getParameter(parameterName);
+    String parameterFromState = (String) googleOpenIdRestTemplate.getOAuth2ClientContext()
+        .removePreservedState(parameterName);
+    googleOpenIdRestTemplate.getOAuth2ClientContext().setPreservedState(parameterName,
+        parameterValue);
+    request.setAttribute(parameterName, parameterFromState);
+  }
+
   private void invalidateAccesToken() {
-    googleOpenIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken)null);
+    googleOpenIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken) null);
   }
 
   public void verifyClaims(Map claims) {
     int exp = (int) claims.get("exp");
     Date expireDate = new Date(exp * 1000L);
     Date now = new Date();
-    if (expireDate.before(now) || !claims.get("iss").equals(googleIssuer) ||
-        !claims.get("aud").equals(googleClientId)) {
+    if (expireDate.before(now) || !claims.get("iss").equals(googleIssuer)
+        || !claims.get("aud").equals(googleClientId)) {
       throw new RuntimeException("Invalid claims");
     }
   }
@@ -143,8 +150,10 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
   private static class NoopAuthenticationManager implements AuthenticationManager {
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-      throw new UnsupportedOperationException("No authentication should be done with this AuthenticationManager");
+    public Authentication authenticate(Authentication authentication)
+        throws AuthenticationException {
+      throw new UnsupportedOperationException(
+          "No authentication should be done with this AuthenticationManager");
     }
   }
 

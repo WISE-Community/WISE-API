@@ -256,11 +256,12 @@ public class AuthorAPIControllerTest extends APIControllerTest {
         projectJSONString);
     assertEquals("success", response.getStatus());
     assertEquals("projectSaved", response.getMessageCode());
-    verify(userService, projectService, runService);
+    verify(userService, projectService);
   }
 
   @Test
-  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupingsAndReturnProjectSaved() throws Exception {
+  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupingsAndReturnProjectSaved()
+      throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     project1.setMetadata("{\"title\":\"Old Title\"}");
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
@@ -280,7 +281,6 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     assertEquals("projectSaved", response.getMessageCode());
     verify(userService, projectService);
   }
-
 
   @Test
   public void getAssetFileNames_withDuplicateReferences_shouldReturnUniqueFileNames()

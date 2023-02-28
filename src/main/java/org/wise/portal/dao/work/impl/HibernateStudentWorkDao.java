@@ -102,7 +102,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
@@ -118,7 +118,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
@@ -133,7 +133,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
@@ -149,7 +149,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }

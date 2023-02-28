@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.project.impl.ProjectContent;
@@ -37,14 +38,27 @@ public abstract class ClassmateDataController {
   @Autowired
   protected VLEService vleService;
 
-  protected boolean isUserInRun(Authentication auth, Run run) {
-    User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
-    return run.isStudentAssociatedToThisRun(user);
+  protected boolean isStudent(Authentication auth) {
+    return auth.getPrincipal() instanceof StudentUserDetails;
   }
 
-  protected boolean isUserInRunAndPeriod(Authentication auth, Run run, Group period) {
+  protected boolean isTeacher(Authentication auth) {
+    return auth.getPrincipal() instanceof TeacherUserDetails;
+  }
+
+  protected boolean isStudentInRun(Authentication auth, Run run) {
     User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
-    return run.isStudentAssociatedToThisRunAndPeriod(user, period);
+    return user != null && run.isStudentAssociatedToThisRun(user);
+  }
+
+  protected boolean isStudentInRunAndPeriod(Authentication auth, Run run, Group period) {
+    User user = userService.retrieveUser((StudentUserDetails) auth.getPrincipal());
+    return user != null && run.isStudentAssociatedToThisRunAndPeriod(user, period);
+  }
+
+  protected boolean isTeacherOfRun(Authentication auth, Run run) {
+    User user = userService.retrieveUser((TeacherUserDetails) auth.getPrincipal());
+    return user != null && run.isTeacherAssociatedToThisRun(user);
   }
 
   protected boolean isComponentType(Run run, String nodeId, String componentId,
@@ -61,8 +75,7 @@ public abstract class ClassmateDataController {
     return projectContent.getComponent(nodeId, componentId);
   }
 
-  protected List<ProjectComponent> getProjectComponents(Run run)
-      throws IOException, JSONException {
+  protected List<ProjectComponent> getProjectComponents(Run run) throws IOException, JSONException {
     String projectString = projectService.getProjectContent(run.getProject());
     JSONObject projectJSON = new JSONObject(projectString);
     ProjectContent projectContent = new ProjectContent(projectJSON);
@@ -78,8 +91,7 @@ public abstract class ClassmateDataController {
     return vleService.getStudentWork(run, period, nodeId, componentId);
   }
 
-  protected List<StudentWork> getLatestStudentWork(Run run, String nodeId,
-      String componentId) {
+  protected List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId) {
     return vleService.getLatestStudentWork(run, nodeId, componentId);
   }
 

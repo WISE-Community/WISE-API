@@ -61,16 +61,15 @@ public class TeacherAPIController extends UserAPIController {
   private String googleClientSecret;
 
   @GetMapping("/runs")
-  List<HashMap<String, Object>> getRuns(Authentication auth) {
+  List<HashMap<String, Object>> getRuns(Authentication auth,
+      @RequestParam(required = false) Integer max) {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<Run> runs = runService.getRunListByOwner(user);
-    return getRunsList(user, runs);
-  }
-
-  @GetMapping("/sharedruns")
-  List<HashMap<String, Object>> getSharedRuns(Authentication auth) {
-    User user = userService.retrieveUserByUsername(auth.getName());
-    List<Run> runs = runService.getRunListBySharedOwner(user);
+    runs.addAll(runService.getRunListBySharedOwner(user));
+    runs.sort((a,b) -> b.getStarttime().compareTo(a.getStarttime()));
+    if (max != null && max > 0) {
+      runs = runs.subList(0, Math.min(max, runs.size()));
+    }
     return getRunsList(user, runs);
   }
 

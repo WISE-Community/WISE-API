@@ -82,16 +82,18 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @Service
 public class RunServiceImpl implements RunService {
 
-  private String DEFAULT_RUNCODE_PREFIXES = "Tiger,Lion,Fox,Owl,Panda,Hawk,Mole,"
-      + "Falcon,Orca,Eagle,Manta,Otter,Cat,Zebra,Flea,Wolf,Dragon,Seal,Cobra,"
-      + "Bug,Gecko,Fish,Koala,Mouse,Wombat,Shark,Whale,Sloth,Slug,Ant,Mantis,"
-      + "Bat,Rhino,Gator,Monkey,Swan,Ray,Crow,Goat,Marmot,Dog,Finch,Puffin,Fly,"
-      + "Camel,Kiwi,Spider,Lizard,Robin,Bear,Boa,Cow,Crab,Mule,Moth,Lynx,Moose,"
-      + "Skunk,Mako,Liger,Llama,Shrimp,Parrot,Pig,Clam,Urchin,Toucan,Frog,Toad,"
-      + "Turtle,Viper,Trout,Hare,Bee,Krill,Dodo,Tuna,Loon,Leech,Python,Wasp,Yak,"
-      + "Snake,Duck,Worm,Yeti";
+  private String DEFAULT_RUNCODE_PREFIXES = "Ant,Ape,Asp,Badger,Bat,Bear,Bee,Beetle,Bird,Bison,Boa,"
+      + "Bobcat,Bug,Camel,Carp,Cat,Cicada,Clam,Cobra,Cougar,Cow,Coyote,Crab,Crane,Crow,Deer,Dingo,"
+      + "Dodo,Dog,Donkey,Dragon,Duck,Eagle,Eel,Elk,Emu,Falcon,Ferret,Finch,Fish,Flea,Fly,Fox,Frog,"
+      + "Gator,Gecko,Goat,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Ibex,Iguana,Impala,Jackal,"
+      + "Jaguar,Kiwi,Koala,Krill,Leech,Lemur,Liger,Lion,Lizard,Llama,Loon,Lynx,Mako,Manta,Mantis,"
+      + "Marmot,Mink,Mole,Monkey,Moose,Moth,Mouse,Mule,Newt,Nutria,Orca,Otter,Owl,Ox,Oyster,Panda,"
+      + "Parrot,Pig,Pigeon,Pika,Poodle,Prawn,Puffin,Pug,Puma,Python,Quail,Rabbit,Ray,Rhino,Robin,"
+      + "Sable,Salmon,Seal,Shark,Sheep,Shrimp,Skunk,Sloth,Slug,Snail,Snake,Spider,Squid,Stoat,"
+      + "Stork,Swan,Tapir,Thrush,Tiger,Toad,Toucan,Trout,Tuna,Turkey,Turtle,Urchin,Viper,Wasp,"
+      + "Whale,Wolf,Wombat,Worm,Yak,Yeti,Zebra";
 
-  private static final int MAX_RUNCODE_DIGIT = 1000;
+  private static final int MAX_RUNCODE_DIGIT = 10000;
 
   @Autowired
   private PortalService portalService;
@@ -177,8 +179,7 @@ public class RunServiceImpl implements RunService {
     }
     String[] runcodePrefixes = runcodePrefixesStr.split(",");
     String word = runcodePrefixes[rand.nextInt(runcodePrefixes.length)];
-    String runCode = (word + sb.toString());
-    return runCode;
+    return (word + sb.toString());
   }
 
   /**
@@ -239,9 +240,9 @@ public class RunServiceImpl implements RunService {
   }
 
   @Transactional()
-  public Run createRun(Long projectId, User user, Set<String> periodNames, boolean isRandomPeriodAssignment,
-      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-      Locale locale) throws Exception {
+  public Run createRun(Long projectId, User user, Set<String> periodNames,
+      boolean isRandomPeriodAssignment, Integer maxStudentsPerTeam, Long startDate, Long endDate,
+      Boolean isLockedAfterEndDate, Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
     RunParameters runParameters = createRunParameters(project, user, periodNames,
         isRandomPeriodAssignment, maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate,
@@ -253,8 +254,8 @@ public class RunServiceImpl implements RunService {
   }
 
   public RunParameters createRunParameters(Project project, User user, Set<String> periodNames,
-        boolean isRandomPeriodAssignment, Integer maxStudentsPerTeam, Long startDate, Long endDate,
-        Boolean isLockedAfterEndDate, Locale locale) {
+      boolean isRandomPeriodAssignment, Integer maxStudentsPerTeam, Long startDate, Long endDate,
+      Boolean isLockedAfterEndDate, Locale locale) {
     RunParameters runParameters = new RunParameters();
     runParameters.setOwner(user);
     runParameters.setName(project.getName());
@@ -493,17 +494,17 @@ public class RunServiceImpl implements RunService {
   }
 
   private String generateUniqueRunCode(Locale locale) {
-    String tempRunCode = generateRunCode(locale);
+    String runCode = generateRunCode(locale);
     while (true) {
       try {
-        checkForRunCodeDuplicate(tempRunCode);
+        checkForRunCodeDuplicate(runCode);
       } catch (DuplicateRunCodeException e) {
-        tempRunCode = generateRunCode(locale);
+        runCode = generateRunCode(locale);
         continue;
       }
       break;
     }
-    return tempRunCode;
+    return runCode;
   }
 
   /**

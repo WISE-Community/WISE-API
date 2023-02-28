@@ -55,9 +55,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -69,11 +67,7 @@ import org.wise.portal.service.authentication.UserDetailsService;
 @Configuration
 @EnableWebSecurity(debug = false)
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-public class WebSecurityConfig<S extends Session>
-    extends WebSecurityConfigurerAdapter {
-
-  @Autowired
-  private FindByIndexNameSessionRepository<S> sessionRepository;
+public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerAdapter {
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -84,31 +78,21 @@ public class WebSecurityConfig<S extends Session>
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().disable()
-        .addFilterAfter(openSessionInViewFilter(),
-            SecurityContextHolderAwareRequestFilter.class)
-        .addFilterAfter(oAuth2ClientContextFilter(),
-            OpenSessionInViewFilter.class)
-        .addFilterAfter(googleOpenIdConnectFilter(),
-            OAuth2ClientContextFilter.class)
-        .addFilterAfter(authenticationProcessingFilter(),
-            GoogleOpenIdConnectFilter.class)
-        .authorizeRequests()
-        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR","RESEARCHER")
-        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR","RESEARCHER")
-        .antMatchers("/author/**").hasAnyRole("TEACHER")
+        .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
+        .addFilterAfter(oAuth2ClientContextFilter(), OpenSessionInViewFilter.class)
+        .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
+        .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
+        .authorizeRequests().antMatchers("/api/login/impersonate")
+        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/admin/**")
+        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
-        .antMatchers("/student/account/info").hasAnyRole("TEACHER")
-        .antMatchers("/student/**").hasAnyRole("STUDENT")
-        .antMatchers("/studentStatus").hasAnyRole("TEACHER","STUDENT")
-        .antMatchers("/teacher/**").hasAnyRole("TEACHER")
-        .antMatchers("/score/**/**").permitAll()
-        .antMatchers("/sso/discourse").hasAnyRole("TEACHER","STUDENT")
-        .antMatchers("/sso/ckboard").hasAnyRole("TEACHER","STUDENT")
-        .antMatchers("/teachingassistant/**/**").permitAll()
-        .antMatchers("/api/**/**").permitAll()
-        .antMatchers("/").permitAll();
+        .antMatchers("/student/account/info").hasAnyRole("TEACHER").antMatchers("/student/**")
+        .hasAnyRole("STUDENT").antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/teacher/**").hasAnyRole("TEACHER").antMatchers("/score/**/**").permitAll()
+        .antMatchers("/sso/discourse").hasAnyRole("TEACHER", "STUDENT").antMatchers("/sso/ckboard")
+        .hasAnyRole("TEACHER", "STUDENT").antMatchers("/teachingassistant/**/**").permitAll()
+        .antMatchers("/api/**/**").permitAll().antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
-    http.sessionManagement().maximumSessions(2).sessionRegistry(sessionRegistry());
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
     http.logout().logoutSuccessHandler((request, response, authentication) -> {
@@ -167,8 +151,7 @@ public class WebSecurityConfig<S extends Session>
 
   @Bean
   public LogoutFilter logoutFilter() {
-    LogoutHandler[] handlers = new LogoutHandler[] {
-        new SecurityContextLogoutHandler() };
+    LogoutHandler[] handlers = new LogoutHandler[] { new SecurityContextLogoutHandler() };
     return new LogoutFilter("/", handlers);
   }
 
@@ -179,13 +162,7 @@ public class WebSecurityConfig<S extends Session>
 
   @Bean
   public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
-    return new ServletListenerRegistrationBean<HttpSessionListener>(
-        new WISESessionListener());
-  }
-
-  @Bean
-  public SpringSessionBackedSessionRegistry<S> sessionRegistry() {
-    return new SpringSessionBackedSessionRegistry<>(this.sessionRepository);
+    return new ServletListenerRegistrationBean<HttpSessionListener>(new WISESessionListener());
   }
 
   @Bean

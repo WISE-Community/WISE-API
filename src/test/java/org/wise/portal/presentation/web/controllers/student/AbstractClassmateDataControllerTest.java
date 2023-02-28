@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -23,7 +24,6 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
   String OTHER_COMPONENT_ID_NOT_ALLOWED = "component3";
   String OTHER_NODE_ID = "node2";
   String OTHER_NODE_ID_NOT_ALLOWED = "node3";
-  String SHOULD_NOT_HAVE_THROWN_EXCEPTION = "Should not have thrown an exception";
 
   protected void expectStudentWork(List<StudentWork> studentWork) {
     expectStudentWork(run1, run1Period1, NODE_ID1, COMPONENT_ID1, studentWork);
@@ -41,7 +41,8 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
 
   protected void expectLatestStudentWork(Run run, Group period, String nodeId, String componentId,
       List<StudentWork> studentWork) {
-    expect(vleService.getLatestStudentWork(run, period, nodeId, componentId)).andReturn(studentWork);
+    expect(vleService.getLatestStudentWork(run, period, nodeId, componentId))
+        .andReturn(studentWork);
   }
 
   protected void expectLatestStudentWork(Run run, String nodeId, String componentId,
@@ -69,6 +70,10 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
 
   protected void expectUser(StudentUserDetails studentUserDetails, User student) {
     expect(userService.retrieveUser(studentUserDetails)).andReturn(student);
+  }
+
+  protected void expectUser(TeacherUserDetails teacherUserDetails, User teacher) {
+    expect(userService.retrieveUser(teacherUserDetails)).andReturn(teacher);
   }
 
   protected void expectPeriodAndUser(User student, StudentUserDetails studentUserDetails,
@@ -102,24 +107,22 @@ public abstract class AbstractClassmateDataControllerTest extends APIControllerT
     expectComponentType(NODE_ID1, COMPONENT_ID1, componentType);
   }
 
+  protected void setupTeacher1() throws ObjectNotFoundException {
+    expectUser(teacher1UserDetails, teacher1);
+  }
+
+  protected void setupTeacher2() throws ObjectNotFoundException {
+    expectUser(teacher2UserDetails, teacher2);
+  }
+
   protected void expectComponentType(String nodeId, String componentId, String componentType)
       throws IOException, ObjectNotFoundException {
-    String projectJSONString = new StringBuilder()
-        .append("{")
-        .append("  \"nodes\": [")
-        .append("    {")
-        .append("      \"id\": \"" + nodeId + "\",")
-        .append("      \"type\": \"node\",")
-        .append("      \"components\": [")
-        .append("        {")
+    String projectJSONString = new StringBuilder().append("{").append("  \"nodes\": [")
+        .append("    {").append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",").append("      \"components\": [").append("        {")
         .append("          \"id\": \"" + componentId + "\",")
-        .append("          \"type\": \"" + componentType + "\"")
-        .append("        }")
-        .append("      ]")
-        .append("    }")
-        .append("  ]")
-        .append("}")
-        .toString();
+        .append("          \"type\": \"" + componentType + "\"").append("        }")
+        .append("      ]").append("    }").append("  ]").append("}").toString();
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 

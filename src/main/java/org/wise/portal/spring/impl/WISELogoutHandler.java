@@ -34,12 +34,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.session.SessionDestroyedEvent;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.session.Session;
 import org.wise.portal.service.session.SessionService;
 
-public class WISELogoutHandler<S extends Session>
-    implements LogoutHandler, ApplicationListener<SessionDestroyedEvent> {
+public class WISELogoutHandler<S extends Session> extends SecurityContextLogoutHandler
+    implements ApplicationListener<SessionDestroyedEvent> {
 
   @Autowired
   protected SessionService sessionService;
@@ -53,6 +53,7 @@ public class WISELogoutHandler<S extends Session>
         sessionService.signOutOfCkBoard(request);
       }
     }
+    super.logout(request, response, authentication);
   }
 
   @Override

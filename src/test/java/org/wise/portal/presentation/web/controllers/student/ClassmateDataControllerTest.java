@@ -33,7 +33,7 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
       throws NoSuchMethodException, ObjectNotFoundException {
     setupStudent2NotInRun();
     replayAll();
-    assertFalse(controller.isUserInRun(studentAuth2, run3));
+    assertFalse(controller.isStudentInRun(studentAuth2, run3));
     verifyAll();
   }
 
@@ -42,7 +42,7 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
       throws NoSuchMethodException, ObjectNotFoundException {
     setupStudent1InRun();
     replayAll();
-    assertTrue(controller.isUserInRun(studentAuth, run1));
+    assertTrue(controller.isStudentInRun(studentAuth, run1));
     verifyAll();
   }
 
@@ -51,7 +51,7 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
       throws NoSuchMethodException, ObjectNotFoundException {
     setupStudent2NotInRun();
     replayAll();
-    assertFalse(controller.isUserInRunAndPeriod(studentAuth2, run3, run3Period4));
+    assertFalse(controller.isStudentInRunAndPeriod(studentAuth2, run3, run3Period4));
     verifyAll();
   }
 
@@ -60,7 +60,7 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
       throws NoSuchMethodException, ObjectNotFoundException {
     setupStudent1InRun();
     replayAll();
-    assertTrue(controller.isUserInRunAndPeriod(studentAuth, run1, run1Period1));
+    assertTrue(controller.isStudentInRunAndPeriod(studentAuth, run1, run1Period1));
     verifyAll();
   }
 
@@ -102,22 +102,12 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
 
   private void expectGetProjectContent(String nodeId, String componentId, String componentType)
       throws IOException {
-    String projectJSONString = new StringBuilder()
-        .append("{")
-        .append("  \"nodes\": [")
-        .append("    {")
-        .append("      \"id\": \"" + nodeId + "\",")
-        .append("      \"type\": \"node\",")
-        .append("      \"components\": [")
-        .append("        {")
+    String projectJSONString = new StringBuilder().append("{").append("  \"nodes\": [")
+        .append("    {").append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",").append("      \"components\": [").append("        {")
         .append("          \"id\": \"" + componentId + "\",")
-        .append("          \"type\": \"" + componentType + "\"")
-        .append("        }")
-        .append("      ]")
-        .append("    }")
-        .append("  ]")
-        .append("}")
-        .toString();
+        .append("          \"type\": \"" + componentType + "\"").append("        }")
+        .append("      ]").append("    }").append("  ]").append("}").toString();
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 }
