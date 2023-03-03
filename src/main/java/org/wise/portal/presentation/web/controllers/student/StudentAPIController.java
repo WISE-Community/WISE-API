@@ -340,12 +340,12 @@ public class StudentAPIController extends UserAPIController {
     String firstName = studentFields.get("firstName");
     String lastName = studentFields.get("lastName");
     String token = studentFields.get("token");
+    if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+      return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
+    }
     if (!isFirstNameAndLastNameValid(firstName, lastName)) {
       String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
       throw new InvalidNameException(messageCode);
-    }
-    if (!ControllerUtil.isReCaptchaResponseValid(token)) {
-      return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
     }
     sud.setFirstname(firstName);
     sud.setLastname(lastName);
