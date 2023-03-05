@@ -18,7 +18,7 @@ import org.wise.portal.domain.run.Run;
 import org.wise.vle.domain.work.StudentWork;
 
 @RestController
-@Secured("ROLE_STUDENT")
+@Secured({ "ROLE_STUDENT", "ROLE_TEACHER" })
 @RequestMapping("/api/classmate/peer-group-work")
 public class PeerGroupWorkController extends AbstractPeerGroupWorkController {
 
@@ -31,7 +31,7 @@ public class PeerGroupWorkController extends AbstractPeerGroupWorkController {
       @PathVariable String showPeerGroupWorkComponentId, @PathVariable String showWorkNodeId,
       @PathVariable String showWorkComponentId)
       throws ObjectNotFoundException, JSONException, IOException {
-    if (isUserInPeerGroup(auth, peerGroup)) {
+    if (isUserInPeerGroup(auth, peerGroup) || isUserTeacherOfPeerGroup(auth, peerGroup)) {
       Run run = peerGroup.getPeerGrouping().getRun();
       if (isValidShowPeerGroupWorkComponent(run, showPeerGroupWorkNodeId,
           showPeerGroupWorkComponentId, showWorkNodeId, showWorkComponentId)) {
