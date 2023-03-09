@@ -417,8 +417,8 @@ public class ControllerUtil {
   public static void checkReCaptchaEnabled() {
     String reCaptchaPublicKey = appProperties.getProperty("recaptcha_public_key");
     String reCaptchaPrivateKey = appProperties.getProperty("recaptcha_private_key");
-    isReCaptchaEnabled = reCaptchaPublicKey != null && reCaptchaPublicKey != ""
-        && reCaptchaPrivateKey != null && reCaptchaPrivateKey != "";
+    isReCaptchaEnabled = reCaptchaPublicKey != null && !reCaptchaPublicKey.equals("")
+        && reCaptchaPrivateKey != null && !reCaptchaPrivateKey.equals("");
   }
 
   /**
