@@ -72,9 +72,15 @@ public class StudentForgotAccountAPIController {
 
   @PostMapping("/password/security-question")
   protected String checkSecurityAnswer(@RequestParam("username") String username,
-      @RequestParam("answer") String answer) throws JSONException {
-    User user = userService.retrieveUserByUsername(username);
+      @RequestParam("answer") String answer, @RequestParam("token") String token)
+      throws JSONException {
     JSONObject response;
+    if (ControllerUtil.isReCaptchaEnabled()) {
+      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+        return ControllerUtil.createErrorResponse("recaptchaResponseInvalid").toString();
+      }
+    }
+    User user = userService.retrieveUserByUsername(username);
     if (user != null) {
       if (isAnswerCorrect(user, answer)) {
         response = ControllerUtil.createSuccessResponse("correctAnswer");
@@ -84,6 +90,7 @@ public class StudentForgotAccountAPIController {
     } else {
       response = ControllerUtil.createErrorResponse("invalidUsername");
     }
+
     return response.toString();
   }
 

@@ -89,8 +89,14 @@ public class TeacherForgotAccountAPIController {
 
   @GetMapping("/password/verification-code")
   protected String sendVerificationCodeEmail(HttpServletRequest request,
-      @RequestParam("username") String username) throws JSONException {
+      @RequestParam("username") String username, @RequestParam("token") String token)
+      throws JSONException {
     JSONObject response;
+    if (ControllerUtil.isReCaptchaEnabled()) {
+      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+        return getInvalidRecaptchaErrorResponse().toString();
+      }
+    }
     User user = userService.retrieveUserByUsername(username);
     if (user != null && user.isTeacher()) {
       if (isTooManyVerificationCodeAttempts(user)) {
@@ -106,6 +112,7 @@ public class TeacherForgotAccountAPIController {
     } else {
       response = getUsernameNotFoundErrorResponse();
     }
+
     return response.toString();
   }
 
@@ -287,6 +294,10 @@ public class TeacherForgotAccountAPIController {
 
   private JSONObject getVerificationCodeIncorrectErrorResponse() throws JSONException {
     return ControllerUtil.createErrorResponse("verificationCodeIncorrect");
+  }
+
+  private JSONObject getInvalidRecaptchaErrorResponse() throws JSONException {
+    return ControllerUtil.createErrorResponse("recaptchaResponseInvalid");
   }
 
   private JSONObject getVerificationCodeTooManyAttemptsErrorResponse() throws JSONException {
