@@ -92,27 +92,27 @@ public class ControllerUtil {
   private static final String LICENSE_PATH = "/license.txt";
 
   @Autowired
-  public void setAppProperties(Environment appProperties){
+  public void setAppProperties(Environment appProperties) {
     ControllerUtil.appProperties = appProperties;
   }
 
   @Autowired
-  public void setProjectService(ProjectService projectService){
+  public void setProjectService(ProjectService projectService) {
     ControllerUtil.projectService = projectService;
   }
 
   @Autowired
-  public void setRunService(RunService runService){
+  public void setRunService(RunService runService) {
     ControllerUtil.runService = runService;
   }
 
   @Autowired
-  public void setUserService(UserService userService){
+  public void setUserService(UserService userService) {
     ControllerUtil.userService = userService;
   }
 
   @Autowired
-  public void setPortalService(PortalService portalService){
+  public void setPortalService(PortalService portalService) {
     ControllerUtil.portalService = portalService;
   }
 
@@ -140,8 +140,8 @@ public class ControllerUtil {
    */
   public static String getBaseUrlString(HttpServletRequest request) {
     String host = request.getHeader("Host");
-    String portalUrl = request.getScheme() + "://" + request.getServerName() + ":" +
-        request.getServerPort();
+    String portalUrl = request.getScheme() + "://" + request.getServerName() + ":"
+        + request.getServerPort();
     if (host != null) {
       portalUrl = request.getScheme() + "://" + host;
     }
@@ -170,13 +170,16 @@ public class ControllerUtil {
   public static String getPortalUrlString(HttpServletRequest request) {
     return getBaseUrlString(request) + request.getContextPath();
   }
+
   public static String getBaseUrlString() {
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+        .currentRequestAttributes()).getRequest();
     return getBaseUrlString(request);
   }
 
   public static String getPortalUrlString() {
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+        .currentRequestAttributes()).getRequest();
     return getBaseUrlString(request) + request.getContextPath();
   }
 
@@ -271,7 +274,7 @@ public class ControllerUtil {
       ownerJSON.put("username", ownerUserDetails.getUsername());
       ownerJSON.put("firstName", ownerUserDetails.getFirstname());
       ownerJSON.put("lastName", ownerUserDetails.getLastname());
-    } catch(org.hibernate.ObjectNotFoundException e) {
+    } catch (org.hibernate.ObjectNotFoundException e) {
       System.out.println(e);
     }
     return ownerJSON;
@@ -285,7 +288,8 @@ public class ControllerUtil {
     return sharedOwners;
   }
 
-  public static JSONObject getSharedOwnerJSON(User sharedOwner, Project project) throws JSONException {
+  public static JSONObject getSharedOwnerJSON(User sharedOwner, Project project)
+      throws JSONException {
     JSONObject sharedOwnerJSON = new JSONObject();
     sharedOwnerJSON.put("id", sharedOwner.getId());
     sharedOwnerJSON.put("username", sharedOwner.getUserDetails().getUsername());
@@ -307,7 +311,8 @@ public class ControllerUtil {
 
   private static JSONArray getSharedOwnerPermissions(Run projectRun, User sharedOwner) {
     JSONArray sharedOwnerPermissions = new JSONArray();
-    List<Permission> sharedTeacherPermissions = ControllerUtil.runService.getSharedTeacherPermissions(projectRun, sharedOwner);
+    List<Permission> sharedTeacherPermissions = ControllerUtil.runService
+        .getSharedTeacherPermissions(projectRun, sharedOwner);
     for (Permission permission : sharedTeacherPermissions) {
       sharedOwnerPermissions.put(permission.getMask());
     }
@@ -316,7 +321,8 @@ public class ControllerUtil {
 
   public static JSONArray getSharedOwnerPermissions(Project project, User sharedOwner) {
     JSONArray sharedOwnerPermissions = new JSONArray();
-    List<Permission> sharedTeacherPermissions = ControllerUtil.projectService.getSharedTeacherPermissions(project, sharedOwner);
+    List<Permission> sharedTeacherPermissions = ControllerUtil.projectService
+        .getSharedTeacherPermissions(project, sharedOwner);
     for (Permission permission : sharedTeacherPermissions) {
       sharedOwnerPermissions.put(permission.getMask());
     }
@@ -363,8 +369,8 @@ public class ControllerUtil {
     if (isReCaptchaEnabled()) {
       String username = request.getParameter("username");
       User user = userService.retrieveUserByUsername(username);
-      if (user != null && isRecentFailedLoginWithinTimeLimit(user) &&
-          isRecentNumberOfFailedLoginAttemptsOverLimit(user)) {
+      if (user != null && isRecentFailedLoginWithinTimeLimit(user)
+          && isRecentNumberOfFailedLoginAttemptsOverLimit(user)) {
         return true;
       }
     }
@@ -393,9 +399,10 @@ public class ControllerUtil {
   public static boolean isRecentNumberOfFailedLoginAttemptsOverLimit(User user) {
     MutableUserDetails mutableUserDetails = user.getUserDetails();
     if (mutableUserDetails != null) {
-      Integer numberOfRecentFailedLoginAttempts = mutableUserDetails.getNumberOfRecentFailedLoginAttempts();
-      if (numberOfRecentFailedLoginAttempts != null &&
-        numberOfRecentFailedLoginAttempts >= recentFailedLoginAttemptsLimit) {
+      Integer numberOfRecentFailedLoginAttempts = mutableUserDetails
+          .getNumberOfRecentFailedLoginAttempts();
+      if (numberOfRecentFailedLoginAttempts != null
+          && numberOfRecentFailedLoginAttempts >= recentFailedLoginAttemptsLimit) {
         return true;
       }
     }
@@ -410,7 +417,8 @@ public class ControllerUtil {
   public static void checkReCaptchaEnabled() {
     String reCaptchaPublicKey = appProperties.getProperty("recaptcha_public_key");
     String reCaptchaPrivateKey = appProperties.getProperty("recaptcha_private_key");
-    isReCaptchaEnabled = reCaptchaPublicKey != null && reCaptchaPrivateKey != null;
+    isReCaptchaEnabled = reCaptchaPublicKey != null && !reCaptchaPublicKey.equals("")
+        && reCaptchaPrivateKey != null && !reCaptchaPrivateKey.equals("");
   }
 
   /**
@@ -421,9 +429,7 @@ public class ControllerUtil {
   public static boolean isReCaptchaResponseValid(String gRecaptchaResponse) {
     String reCaptchaPrivateKey = appProperties.getProperty("recaptcha_private_key");
     boolean isValid = false;
-    if (isReCaptchaEnabled &&
-        gRecaptchaResponse != null &&
-        !gRecaptchaResponse.equals("")) {
+    if (isReCaptchaEnabled && gRecaptchaResponse != null && !gRecaptchaResponse.equals("")) {
       try {
         URL verifyURL = new URL("https://www.google.com/recaptcha/api/siteverify");
         HttpsURLConnection connection = (HttpsURLConnection) verifyURL.openConnection();
@@ -435,11 +441,12 @@ public class ControllerUtil {
         outputStream.flush();
         outputStream.close();
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        BufferedReader bufferedReader = new BufferedReader(
+            new InputStreamReader(connection.getInputStream()));
         String inputLine = null;
         StringBuffer responseString = new StringBuffer();
 
-        while((inputLine = bufferedReader.readLine()) != null) {
+        while ((inputLine = bufferedReader.readLine()) != null) {
           responseString.append(inputLine);
         }
 
@@ -464,7 +471,7 @@ public class ControllerUtil {
     JSONObject response = new JSONObject();
     try {
       response.put("status", "success");
-    } catch(JSONException e) {
+    } catch (JSONException e) {
     }
     return response;
   }
@@ -473,7 +480,7 @@ public class ControllerUtil {
     JSONObject response = createSuccessResponse();
     try {
       response.put("messageCode", messageCode);
-    } catch(JSONException e) {
+    } catch (JSONException e) {
     }
     return response;
   }
@@ -482,7 +489,7 @@ public class ControllerUtil {
     JSONObject response = new JSONObject();
     try {
       response.put("status", "error");
-    } catch(JSONException e) {
+    } catch (JSONException e) {
     }
     return response;
   }
@@ -491,7 +498,7 @@ public class ControllerUtil {
     JSONObject response = createErrorResponse();
     try {
       response.put("messageCode", messageCode);
-    } catch(JSONException e) {
+    } catch (JSONException e) {
     }
     return response;
   }

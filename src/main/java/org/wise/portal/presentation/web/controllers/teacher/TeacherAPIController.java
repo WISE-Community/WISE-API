@@ -126,6 +126,12 @@ public class TeacherAPIController extends UserAPIController {
   ResponseEntity<Map<String, Object>> createTeacherAccount(
       @RequestBody Map<String, String> teacherFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
+    if (ControllerUtil.isReCaptchaEnabled()) {
+      String token = teacherFields.get("token");
+      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+        return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
+      }
+    }
     TeacherUserDetails tud = new TeacherUserDetails();
     String firstName = teacherFields.get("firstName");
     String lastName = teacherFields.get("lastName");

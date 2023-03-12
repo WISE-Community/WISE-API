@@ -63,6 +63,7 @@ import org.wise.portal.domain.project.impl.Projectcode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.ErrorResponse;
@@ -336,6 +337,12 @@ public class StudentAPIController extends UserAPIController {
   ResponseEntity<Map<String, Object>> createStudentAccount(
       @RequestBody Map<String, String> studentFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
+    if (ControllerUtil.isReCaptchaEnabled()) {
+      String token = studentFields.get("token");
+      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
+        return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
+      }
+    }
     StudentUserDetails sud = new StudentUserDetails();
     String firstName = studentFields.get("firstName");
     String lastName = studentFields.get("lastName");
