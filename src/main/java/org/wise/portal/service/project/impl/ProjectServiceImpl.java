@@ -138,6 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
     projectDao.save(project);
   }
 
+  @Transactional
   public void addSharedTeacherToProject(AddSharedTeacherParameters addSharedTeacherParameters) {
     Project project = addSharedTeacherParameters.getProject();
     String sharedOwnerUsername = addSharedTeacherParameters.getSharedOwnerUsername();
@@ -161,6 +162,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
+  @Transactional
   public SharedOwner addSharedTeacher(Long projectId, String username)
       throws ObjectNotFoundException, TeacherAlreadySharedWithProjectException {
     Project project = getById(projectId);
@@ -180,6 +182,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
+  @Transactional
   public void removeSharedTeacherFromProject(Project project, User user) {
     removeSharedTeacherAndPermissions(project, user);
     projectDao.save(project);
@@ -572,11 +575,13 @@ public class ProjectServiceImpl implements ProjectService {
     return new SharedOwner(userId, username, firstName, lastName, permissions);
   }
 
+  @Transactional
   public void removeSharedTeacher(Long projectId, String username) throws ObjectNotFoundException {
     removeSharedTeacherFromProject(getById(projectId),
         userService.retrieveUserByUsername(username));
   }
 
+  @Transactional
   public void addSharedTeacherPermission(Long projectId, Long userId, Integer permissionId)
       throws ObjectNotFoundException {
     User user = userService.retrieveById(userId);
@@ -586,6 +591,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
+  @Transactional
   public void removeSharedTeacherPermission(Long projectId, Long userId, Integer permissionId)
       throws ObjectNotFoundException {
     User user = userService.retrieveById(userId);
