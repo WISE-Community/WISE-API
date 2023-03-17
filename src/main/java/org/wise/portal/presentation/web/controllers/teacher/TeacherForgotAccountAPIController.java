@@ -92,10 +92,8 @@ public class TeacherForgotAccountAPIController {
       @RequestParam("username") String username, @RequestParam("token") String token)
       throws JSONException {
     JSONObject response;
-    if (ControllerUtil.isReCaptchaEnabled()) {
-      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
-        return getInvalidRecaptchaErrorResponse().toString();
-      }
+    if (ControllerUtil.isReCaptchaEnabled() && !ControllerUtil.isReCaptchaResponseValid(token)) {
+      return getInvalidRecaptchaErrorResponse().toString();
     }
     User user = userService.retrieveUserByUsername(username);
     if (user != null && user.isTeacher()) {
@@ -112,7 +110,6 @@ public class TeacherForgotAccountAPIController {
     } else {
       response = getUsernameNotFoundErrorResponse();
     }
-
     return response.toString();
   }
 

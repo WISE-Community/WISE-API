@@ -75,10 +75,8 @@ public class StudentForgotAccountAPIController {
       @RequestParam("answer") String answer, @RequestParam("token") String token)
       throws JSONException {
     JSONObject response;
-    if (ControllerUtil.isReCaptchaEnabled()) {
-      if (!ControllerUtil.isReCaptchaResponseValid(token)) {
-        return ControllerUtil.createErrorResponse("recaptchaResponseInvalid").toString();
-      }
+    if (ControllerUtil.isReCaptchaEnabled() && !ControllerUtil.isReCaptchaResponseValid(token)) {
+      return ControllerUtil.createErrorResponse("recaptchaResponseInvalid").toString();
     }
     User user = userService.retrieveUserByUsername(username);
     if (user != null) {
@@ -90,7 +88,6 @@ public class StudentForgotAccountAPIController {
     } else {
       response = ControllerUtil.createErrorResponse("invalidUsername");
     }
-
     return response.toString();
   }
 
