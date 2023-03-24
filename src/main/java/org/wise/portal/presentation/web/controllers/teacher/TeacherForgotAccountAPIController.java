@@ -91,11 +91,11 @@ public class TeacherForgotAccountAPIController {
   protected String sendVerificationCodeEmail(HttpServletRequest request,
       @RequestParam("username") String username, @RequestParam("token") String token)
       throws JSONException {
-    JSONObject response;
     if (ControllerUtil.isReCaptchaEnabled() && !ControllerUtil.isReCaptchaResponseValid(token)) {
       return getInvalidRecaptchaErrorResponse().toString();
     }
     User user = userService.retrieveUserByUsername(username);
+    JSONObject response;
     if (user != null && user.isTeacher()) {
       if (isTooManyVerificationCodeAttempts(user)) {
         response = getVerificationCodeTooManyAttemptsErrorResponse();
