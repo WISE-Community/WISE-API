@@ -151,4 +151,6 @@ public interface Project extends Persistable {
   boolean hasTag(String tag);
 
   boolean isSharedTeacher(User user);
+
+  boolean isOwner(User user);
 }

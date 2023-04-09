@@ -1,11 +1,14 @@
 package org.wise.portal.presentation.web.controllers.project;
 
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +22,8 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.presentation.web.exception.NotAuthorizedException;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.vle.web.SecurityUtils;
@@ -41,8 +46,8 @@ public class ProjectAPIController {
   ProjectService projectService;
 
   @GetMapping("/library")
-  protected String getLibraryProjects(ModelMap modelMap) throws ObjectNotFoundException,
-      JSONException {
+  protected String getLibraryProjects(ModelMap modelMap)
+      throws ObjectNotFoundException, JSONException {
     Portal portal = portalService.getById(new Integer(1));
     String projectLibraryGroups = portal.getProjectLibraryGroups();
     JSONArray projectLibraryGroupsJSON = new JSONArray(projectLibraryGroups);
@@ -154,4 +159,61 @@ public class ProjectAPIController {
     }
     return ControllerUtil.createErrorResponse("copyProjectError").toString();
   }
+
+  @Secured({ "ROLE_TEACHER" })
+  @PostMapping("/archive")
+  protected ResponseEntity<Map<String, Object>> archiveProject(
+      @RequestParam("projectId") ProjectImpl project) {
+    User user = ControllerUtil.getSignedInUser();
+    try {
+      projectService.setIsDeleted(project, user, true);
+      return ResponseEntityGenerator.createSuccess("projectArchived");
+    } catch (NotAuthorizedException e) {
+      return ResponseEntityGenerator.createError("errorArchivingProject");
+    }
+  }
+
+  @Secured({ "ROLE_TEACHER" })
+  @PostMapping("/archive/many")
+  protected ResponseEntity<Map<String, Object>> archiveProjects(
+      @RequestParam("projectIds") List<ProjectImpl> projects) {
+    User user = ControllerUtil.getSignedInUser();
+    try {
+      for (Project project : projects) {
+        projectService.setIsDeleted(project, user, true);
+      }
+      return ResponseEntityGenerator.createSuccess("projectsArchived");
+    } catch (NotAuthorizedException e) {
+      return ResponseEntityGenerator.createError("errorArchivingProjects");
+    }
+  }
+
+  @Secured({ "ROLE_TEACHER" })
+  @PostMapping("/unarchive")
+  protected ResponseEntity<Map<String, Object>> unarchiveProject(
+      @RequestParam("projectId") ProjectImpl project) {
+    User user = ControllerUtil.getSignedInUser();
+    try {
+      projectService.setIsDeleted(project, user, false);
+      return ResponseEntityGenerator.createSuccess("projectUnarchived");
+    } catch (NotAuthorizedException e) {
+      return ResponseEntityGenerator.createError("errorUnarchivingProject");
+    }
+  }
+
+  @Secured({ "ROLE_TEACHER" })
+  @PostMapping("/unarchive/many")
+  protected ResponseEntity<Map<String, Object>> unarchiveProjects(
+      @RequestParam("projectIds") List<ProjectImpl> projects) {
+    User user = ControllerUtil.getSignedInUser();
+    try {
+      for (Project project : projects) {
+        projectService.setIsDeleted(project, user, false);
+      }
+      return ResponseEntityGenerator.createSuccess("projectsUnarchived");
+    } catch (NotAuthorizedException e) {
+      return ResponseEntityGenerator.createError("errorUnarchivingProjects");
+    }
+  }
+
 }

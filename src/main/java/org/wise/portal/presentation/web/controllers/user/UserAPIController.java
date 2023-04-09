@@ -259,6 +259,7 @@ public class UserAPIController {
     map.put("wiseVersion", project.getWiseVersion());
     map.put("uri", projectService.getProjectURI(project));
     map.put("license", projectService.getLicensePath(project));
+    map.put("isDeleted", project.isDeleted());
     return map;
   }
 

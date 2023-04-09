@@ -938,4 +938,14 @@ public class ProjectServiceImpl implements ProjectService {
   @CacheEvict(value = "projectContent", allEntries = true)
   public void evictAllProjectContentCache() {
   }
+
+  public void setIsDeleted(Project project, User user, boolean isDeleted)
+      throws NotAuthorizedException {
+    if (project.isOwner(user)) {
+      project.setDeleted(isDeleted);
+      projectDao.save(project);
+    } else {
+      throw new NotAuthorizedException("You do not have permission to perform this action.");
+    }
+  }
 }
