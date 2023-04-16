@@ -99,6 +99,7 @@ public class UserAPIController {
       info.put("isPreviousAdmin", isPreviousAdmin(auth));
       info.put("language", ud.getLanguage());
       info.put("isGoogleUser", ud.isGoogleUser());
+      info.put("expiresIn", appProperties.getProperty("server.servlet.session.timeout"));
 
       if (user.isStudent()) {
         info.put("role", "student");
