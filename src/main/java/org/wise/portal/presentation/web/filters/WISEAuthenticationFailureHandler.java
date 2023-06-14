@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.presentation.web.exception.RecaptchaVerificationException;
 import org.wise.portal.service.user.UserService;
 
 import javax.servlet.ServletException;
@@ -75,33 +76,26 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         Integer numberOfRecentFailedLoginAttempts = 1;
         Date currentTime = new Date();
         if (ControllerUtil.isRecentFailedLoginWithinTimeLimit(user)) {
-          numberOfRecentFailedLoginAttempts = userDetails.getNumberOfRecentFailedLoginAttempts() + 1;
+          numberOfRecentFailedLoginAttempts = userDetails.getNumberOfRecentFailedLoginAttempts()
+              + 1;
         }
         userDetails.setNumberOfRecentFailedLoginAttempts(numberOfRecentFailedLoginAttempts);
         userDetails.setRecentFailedLoginTime(currentTime);
         userService.updateUser(user);
       }
     } else if (request.getServletPath().contains("google-login")) {
-      response.sendRedirect(appProperties.getProperty("wise.hostname") + "/join?googleUserNotFound=true");
+      response.sendRedirect(
+          appProperties.getProperty("wise.hostname") + "/join?googleUserNotFound=true");
       return;
     }
-
-    if (this.isNewSite(request)) {
+    if (exception instanceof RecaptchaVerificationException) {
       try {
         JSONObject responseJSON = ControllerUtil.createErrorResponse();
-        responseJSON.put("isRecaptchaRequired", ControllerUtil.isReCaptchaRequired(request));
+        responseJSON.put("isRecaptchaVerificationFailed", true);
         response.getWriter().write(responseJSON.toString());
       } catch (JSONException e) {
       }
-    } else {
-      //setDefaultFailureUrl(determineFailureUrl(request, response, exception));
-      //super.onAuthenticationFailure(request, response, exception);
     }
-  }
-
-  private boolean isNewSite(HttpServletRequest request) {
-    String site = request.getParameter("site");
-    return "new".equals(site);
   }
 
   /**
