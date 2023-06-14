@@ -40,6 +40,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
+import org.wise.portal.presentation.web.exception.RecaptchaVerificationException;
 import org.wise.portal.service.session.SessionService;
 import org.wise.portal.service.user.UserService;
 
@@ -75,13 +76,12 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response) throws AuthenticationException {
-    if (ControllerUtil.isReCaptchaRequired(request)) {
-      String gReCaptchaResponse = request.getParameter("g-recaptcha-response");
+    if (ControllerUtil.isReCaptchaEnabled()) {
+      String gReCaptchaResponse = request.getParameter("recaptchaResponse");
       if (!ControllerUtil.isReCaptchaResponseValid(gReCaptchaResponse)) {
-        String errorMessage = "Please verify that you are not a robot.";
         try {
-          unsuccessfulAuthentication(request, response, new AuthenticationException(errorMessage) {
-          });
+          unsuccessfulAuthentication(request, response,
+              new RecaptchaVerificationException("Recaptcha verification failed"));
         } catch (IOException e) {
 
         } catch (ServletException e) {
