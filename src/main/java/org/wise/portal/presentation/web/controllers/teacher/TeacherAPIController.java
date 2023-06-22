@@ -39,6 +39,7 @@ import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.tags.TagsService;
 
 /**
  * Teacher REST API
@@ -51,6 +52,9 @@ import org.wise.portal.service.authentication.UserDetailsService;
 @RequestMapping("/api/teacher")
 @Secured({ "ROLE_TEACHER" })
 public class TeacherAPIController extends UserAPIController {
+
+  @Autowired
+  private TagsService tagsService;
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -77,7 +81,10 @@ public class TeacherAPIController extends UserAPIController {
   private List<HashMap<String, Object>> getRunsList(User user, List<Run> runs) {
     List<HashMap<String, Object>> runsList = new ArrayList<HashMap<String, Object>>();
     for (Run run : runs) {
-      runsList.add(getRunMap(user, run));
+      HashMap<String, Object> runMap = getRunMap(user, run);
+      List<String> tags = tagsService.getTags(user, run);
+      runMap.put("tags", tags);
+      runsList.add(runMap);
     }
     return runsList;
   }

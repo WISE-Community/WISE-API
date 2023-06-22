@@ -543,6 +543,16 @@ create table workgroups (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `object_tags` (
+  id bigint not null auto_increment,
+  user_id bigint not null,
+  acl_object_identity bigint not null,
+  tags varchar(255),
+  constraint aclObjectIdentityFK foreign key (acl_object_identity) references acl_object_identity (id),
+  constraint userFK foreign key (user_id) references users (id),
+  primary key (id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 -- initial data for wise below
 
 INSERT INTO granted_authorities VALUES (1,'ROLE_USER',0),(2,'ROLE_ADMINISTRATOR',0),(3,'ROLE_TEACHER',0),(4,'ROLE_STUDENT',0),(5,'ROLE_AUTHOR',0),(6,'ROLE_RESEARCHER',0),(7,'ROLE_TRUSTED_AUTHOR',0),(8,'ROLE_TRANSLATOR',0);

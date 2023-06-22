@@ -23,14 +23,14 @@
  */
 package org.wise.portal.domain.project;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
+
 import org.wise.portal.domain.Persistable;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.project.impl.ProjectType;
 import org.wise.portal.domain.user.User;
-
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
 
 /**
  * A WISE Project domain object
@@ -152,5 +152,4 @@ public interface Project extends Persistable {
 
   boolean isSharedTeacher(User user);
 
-  boolean isOwner(User user);
 }

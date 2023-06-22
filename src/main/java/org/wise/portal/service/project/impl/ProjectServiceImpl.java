@@ -67,12 +67,12 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.project.ProjectDao;
 import org.wise.portal.dao.run.RunDao;
+import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.impl.AddSharedTeacherParameters;
 import org.wise.portal.domain.project.FamilyTag;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
-import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.project.impl.PreviewProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.project.impl.ProjectContent;
@@ -939,13 +939,4 @@ public class ProjectServiceImpl implements ProjectService {
   public void evictAllProjectContentCache() {
   }
 
-  public void setIsDeleted(Project project, User user, boolean isDeleted)
-      throws NotAuthorizedException {
-    if (project.isOwner(user)) {
-      project.setDeleted(isDeleted);
-      projectDao.save(project);
-    } else {
-      throw new NotAuthorizedException("You do not have permission to perform this action.");
-    }
-  }
 }
