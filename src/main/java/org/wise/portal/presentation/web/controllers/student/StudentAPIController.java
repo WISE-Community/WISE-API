@@ -121,36 +121,6 @@ public class StudentAPIController extends UserAPIController {
     }
   }
 
-  @GetMapping("/run/info-by-id")
-  HashMap<String, Object> getRunInfoById(@RequestParam("runId") Long runId) {
-    try {
-      return getRunInfo(runService.retrieveById(runId));
-    } catch (ObjectNotFoundException e) {
-      return createRunNotFoundInfo();
-    }
-  }
-
-  private HashMap<String, Object> createRunNotFoundInfo() {
-    HashMap<String, Object> info = new HashMap<String, Object>();
-    info.put("error", "runNotFound");
-    return info;
-  }
-
-  private HashMap<String, Object> getRunInfo(Run run) {
-    HashMap<String, Object> info = new HashMap<String, Object>();
-    info.put("id", String.valueOf(run.getId()));
-    info.put("name", run.getName());
-    info.put("runCode", run.getRuncode());
-    info.put("startTime", run.getStartTimeMilliseconds());
-    info.put("endTime", run.getEndTimeMilliseconds());
-    info.put("periods", getPeriodNames(run));
-    User owner = run.getOwner();
-    info.put("teacherFirstName", owner.getUserDetails().getFirstname());
-    info.put("teacherLastName", owner.getUserDetails().getLastname());
-    info.put("wiseVersion", run.getProject().getWiseVersion());
-    return info;
-  }
-
   @PostMapping("/run/launch")
   HashMap<String, Object> launchRun(Authentication auth, @RequestParam("runId") Long runId,
       @RequestParam(value = "workgroupId", required = false) Long workgroupId,
@@ -322,14 +292,6 @@ public class StudentAPIController extends UserAPIController {
     } catch (ObjectNotFoundException e) {
       return null;
     }
-  }
-
-  private List<String> getPeriodNames(Run run) {
-    List<String> periods = new ArrayList<String>();
-    for (Group period : run.getPeriods()) {
-      periods.add(period.getName());
-    }
-    return periods;
   }
 
   @PostMapping("/register")
