@@ -331,12 +331,8 @@ public class UserServiceImpl implements UserService {
   }
 
   public boolean isUserAssociatedWithRun(User user, Run run) throws ObjectNotFoundException {
-    if (user.isStudent() && run.isStudentAssociatedToThisRun(user)) {
-      return true;
-    } else if (user.isTeacher() && run.isTeacherAssociatedToThisRun(user)) {
-      return true;
-    }
-    return false;
+    return (user.isStudent() && run.isStudentAssociatedToThisRun(user))
+        || (user.isTeacher() && run.isTeacherAssociatedToThisRun(user));
   }
 
 }
