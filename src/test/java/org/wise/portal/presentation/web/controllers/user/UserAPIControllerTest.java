@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
 import org.wise.portal.service.password.PasswordService;
@@ -73,6 +75,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     expect(appProperties.getProperty("wise4.hostname")).andReturn("http://localhost:8080/legacy");
     expect(appProperties.getProperty("discourse_url")).andReturn("http://localhost:9292");
     expect(appProperties.getProperty("wise.hostname")).andReturn("http://localhost:8080");
+    expect(appProperties.getProperty("discourse_news_category")).andReturn("");
     replay(appProperties);
     HashMap<String, Object> config = userAPIController.getConfig(request);
     assertEquals("wise", config.get("contextPath"));
@@ -240,4 +243,30 @@ public class UserAPIControllerTest extends APIControllerTest {
     assertEquals(response.getStatusCode(), HttpStatus.OK);
     assertEquals(response.getBody().get("username"), username);
   }
+
+  @Test
+  public void getRunInfoById_RunExistsInDB_ReturnRunInfo() throws ObjectNotFoundException {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    expect(userService.isUserAssociatedWithRun(teacher1, run1)).andReturn(true);
+    replay(userService);
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    replay(runService);
+    HashMap<String, Object> info = userAPIController.getRunInfoById(teacherAuth, runId1);
+    assertEquals("1", info.get("id"));
+    assertEquals(RUN1_RUNCODE, info.get("runCode"));
+    verify(runService);
+  }
+
+  @Test
+  public void getRunInfoById_RunNotInDB_ReturnRunInfo() throws ObjectNotFoundException {
+    Long runIdNotInDB = -1L;
+    expect(runService.retrieveById(runIdNotInDB))
+        .andThrow(new ObjectNotFoundException(runIdNotInDB, Run.class));
+    replay(runService);
+    HashMap<String, Object> info = userAPIController.getRunInfoById(teacherAuth, runIdNotInDB);
+    assertEquals(1, info.size());
+    assertEquals("runNotFound", info.get("error"));
+    verify(runService);
+  }
+
 }

@@ -38,6 +38,7 @@ import org.wise.portal.domain.authentication.MutableGrantedAuthority;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
@@ -87,7 +88,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  @Transactional(rollbackFor = { DuplicateUsernameException.class})
+  @Transactional(rollbackFor = { DuplicateUsernameException.class })
   public User createUser(final MutableUserDetails userDetails) {
     MutableUserDetails details = userDetails;
     if (userDetails instanceof StudentUserDetails) {
@@ -328,4 +329,10 @@ public class UserServiceImpl implements UserService {
   public List<User> retrieveStudentUsersWhoLoggedInThisYear() {
     return userDao.retrieveStudentUsersWhoLoggedInThisYear();
   }
+
+  public boolean isUserAssociatedWithRun(User user, Run run) throws ObjectNotFoundException {
+    return (user.isStudent() && run.isStudentAssociatedToThisRun(user))
+        || (user.isTeacher() && run.isTeacherAssociatedToThisRun(user));
+  }
+
 }

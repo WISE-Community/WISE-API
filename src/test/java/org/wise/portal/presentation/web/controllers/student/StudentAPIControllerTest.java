@@ -137,28 +137,6 @@ public class StudentAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void getRunInfoById_RunExistsInDB_ReturnRunInfo() throws ObjectNotFoundException {
-    expect(runService.retrieveById(runId1)).andReturn(run1);
-    replay(runService);
-    HashMap<String, Object> info = studentAPIController.getRunInfoById(runId1);
-    assertEquals("1", info.get("id"));
-    assertEquals(RUN1_RUNCODE, info.get("runCode"));
-    verify(runService);
-  }
-
-  @Test
-  public void getRunInfoById_RunNotInDB_ReturnRunInfo() throws ObjectNotFoundException {
-    Long runIdNotInDB = -1L;
-    expect(runService.retrieveById(runIdNotInDB))
-        .andThrow(new ObjectNotFoundException(runIdNotInDB, Run.class));
-    replay(runService);
-    HashMap<String, Object> info = studentAPIController.getRunInfoById(runIdNotInDB);
-    assertEquals(1, info.size());
-    assertEquals("runNotFound", info.get("error"));
-    verify(runService);
-  }
-
-  @Test
   public void getSecurityQuestions_DefaultQuestions_ReturnSixQuestions() {
     expect(i18nProperties.getProperty("accountquestions.QUESTION_ONE"))
         .andReturn("account question 1");
