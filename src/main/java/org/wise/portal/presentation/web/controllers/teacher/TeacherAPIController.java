@@ -86,7 +86,7 @@ public class TeacherAPIController extends UserAPIController {
     for (Run run : runs) {
       HashMap<String, Object> runMap = getRunMap(user, run);
       Set<UserTag> tags = userTagsService.getTags(user, run.getProject());
-      runMap.put("tags", getTagsList(tags));
+      ((HashMap<String, Object>) runMap.get("project")).put("tags", getTagsList(tags));
       runsList.add(runMap);
     }
     return runsList;
