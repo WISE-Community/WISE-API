@@ -21,14 +21,19 @@
 package org.wise.portal.domain.authentication.impl;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -41,6 +46,8 @@ import lombok.Setter;
 import org.wise.portal.domain.authentication.MutableAclSid;
 import org.wise.portal.domain.authentication.MutableAclTargetObject;
 import org.wise.portal.domain.authentication.MutableAclTargetObjectIdentity;
+import org.wise.portal.domain.usertag.UserTag;
+import org.wise.portal.domain.usertag.impl.UserTagImpl;
 
 /**
  * Concrete implementation of <code>MutableAclTargetObjectIdentity</code>
@@ -50,9 +57,9 @@ import org.wise.portal.domain.authentication.MutableAclTargetObjectIdentity;
  * @see org.springframework.security.acls.model.ObjectIdentity
  */
 @Entity
-@Table(name = PersistentAclTargetObjectIdentity.DATA_STORE_NAME, uniqueConstraints = { @UniqueConstraint(columnNames = {
-  PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT,
-  PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT_ID }) })
+@Table(name = PersistentAclTargetObjectIdentity.DATA_STORE_NAME, uniqueConstraints = {
+    @UniqueConstraint(columnNames = { PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT,
+        PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT_ID }) })
 public class PersistentAclTargetObjectIdentity implements MutableAclTargetObjectIdentity {
 
   @Transient
@@ -108,6 +115,14 @@ public class PersistentAclTargetObjectIdentity implements MutableAclTargetObject
   @Column(name = COLUMN_NAME_INHERITING, nullable = false)
   private Boolean inheriting;
 
+  @ManyToMany(targetEntity = UserTagImpl.class, fetch = FetchType.LAZY)
+  @JoinTable(name = "acl_object_identity_to_user_tags", joinColumns = {
+      @JoinColumn(name = "acl_object_identity_fk", nullable = false) }, inverseJoinColumns = {
+          @JoinColumn(name = "user_tags_fk", nullable = false) })
+  @Getter
+  @Setter
+  private Set<UserTag> tags = new HashSet<UserTag>();
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   @Getter
@@ -116,7 +131,9 @@ public class PersistentAclTargetObjectIdentity implements MutableAclTargetObject
 
   @Version
   @Column(name = "OPTLOCK")
-  private Integer version = null;
+  @Getter
+  @Setter
+  private Integer version = 0;
 
   @Override
   public String getType() {
@@ -140,12 +157,8 @@ public class PersistentAclTargetObjectIdentity implements MutableAclTargetObject
   public int hashCode() {
     final int PRIME = 31;
     int result = 1;
-    result = PRIME * result
-      + ((aclTargetObject == null) ? 0 : aclTargetObject.hashCode());
-    result = PRIME
-      * result
-      + ((aclTargetObjectId == null) ? 0 : aclTargetObjectId
-      .hashCode());
+    result = PRIME * result + ((aclTargetObject == null) ? 0 : aclTargetObject.hashCode());
+    result = PRIME * result + ((aclTargetObjectId == null) ? 0 : aclTargetObjectId.hashCode());
     return result;
   }
 
