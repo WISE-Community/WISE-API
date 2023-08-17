@@ -938,5 +938,4 @@ public class ProjectServiceImpl implements ProjectService {
   @CacheEvict(value = "projectContent", allEntries = true)
   public void evictAllProjectContentCache() {
   }
-
 }

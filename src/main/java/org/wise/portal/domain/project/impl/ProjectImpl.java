@@ -424,8 +424,4 @@ public class ProjectImpl implements Project {
   public boolean isSharedTeacher(User user) {
     return this.getSharedowners().contains(user);
   }
-
-  public boolean isOwner(User user) {
-    return this.getOwner().equals(user);
-  }
 }

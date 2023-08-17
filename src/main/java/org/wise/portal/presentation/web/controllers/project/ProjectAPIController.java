@@ -154,5 +154,4 @@ public class ProjectAPIController {
     }
     return ControllerUtil.createErrorResponse("copyProjectError").toString();
   }
-
 }
