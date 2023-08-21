@@ -6,76 +6,79 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
+import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.usertags.UserTagsService;
 
 @RestController
-@RequestMapping(value = "/api")
-public class ArchiveController {
+@Secured({ "ROLE_TEACHER" })
+@RequestMapping("/api")
+public class ArchiveProjectController {
+
+  @Autowired
+  private ProjectService projectService;
 
   @Autowired
   private UserTagsService userTagsService;
 
-  private static final String archivedTag = "archived";
+  private static final String ARCHIVED_TAG = "archived";
 
-  @Secured({ "ROLE_TEACHER" })
-  @PostMapping("/archive/project")
+  @PutMapping("/project/{projectId}/archived")
   protected ResponseEntity<Map<String, Object>> archiveProject(
-      @RequestParam("projectId") ProjectImpl project) {
+      @PathVariable("projectId") ProjectImpl project) {
     User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, archivedTag);
+    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
     if (userTag == null) {
-      userTag = userTagsService.createTag(user, archivedTag);
+      userTag = userTagsService.createTag(user, ARCHIVED_TAG);
     }
     userTagsService.applyTag(project, (Long) userTag.getId());
     return ResponseEntityGenerator.createSuccess("projectArchived");
   }
 
-  @Secured({ "ROLE_TEACHER" })
-  @PostMapping("/archive/projects")
-  protected ResponseEntity<Map<String, Object>> archiveProjects(
-      @RequestParam("projectIds") List<ProjectImpl> projects) {
+  @PutMapping("/projects/archived")
+  protected ResponseEntity<Map<String, Object>> archiveProjects(@RequestBody List<Long> projectIds)
+      throws Exception {
     User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, archivedTag);
+    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
     if (userTag == null) {
-      userTag = userTagsService.createTag(user, archivedTag);
+      userTag = userTagsService.createTag(user, ARCHIVED_TAG);
     }
-    for (Project project : projects) {
-      userTagsService.applyTag(project, (Long) userTag.getId());
+    for (Long projectId : projectIds) {
+      userTagsService.applyTag(projectService.getById(projectId), (Long) userTag.getId());
     }
     return ResponseEntityGenerator.createSuccess("projectsArchived");
   }
 
-  @Secured({ "ROLE_TEACHER" })
-  @PostMapping("/unarchive/project")
+  @DeleteMapping("/project/{projectId}/archived")
   protected ResponseEntity<Map<String, Object>> unarchiveProject(
-      @RequestParam("projectId") ProjectImpl project) {
+      @PathVariable("projectId") ProjectImpl project) {
     User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, archivedTag);
+    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
     if (userTag != null) {
       userTagsService.removeTag(project, (Long) userTag.getId());
     }
     return ResponseEntityGenerator.createSuccess("projectUnarchived");
   }
 
-  @Secured({ "ROLE_TEACHER" })
-  @PostMapping("/unarchive/projects")
+  @DeleteMapping("/projects/archived")
   protected ResponseEntity<Map<String, Object>> unarchiveProjects(
-      @RequestParam("projectIds") List<ProjectImpl> projects) {
+      @RequestParam List<Long> projectIds) throws Exception {
     User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, archivedTag);
+    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
     if (userTag != null) {
-      for (Project project : projects) {
-        userTagsService.removeTag(project, (Long) userTag.getId());
+      for (Long projectId : projectIds) {
+        userTagsService.removeTag(projectService.getById(projectId), (Long) userTag.getId());
       }
     }
     return ResponseEntityGenerator.createSuccess("projectsUnarchived");
