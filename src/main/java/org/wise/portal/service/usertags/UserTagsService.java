@@ -25,7 +25,7 @@ public interface UserTagsService {
 
   Boolean hasTag(User user, Project project, String tag);
 
-  UserTag applyTag(Project project, Long tagId);
+  UserTag applyTag(Project project, UserTag tag);
 
-  UserTag removeTag(Project project, Long tagId);
+  UserTag removeTag(Project project, UserTag tag);
 }

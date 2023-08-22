@@ -80,17 +80,17 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public UserTag applyTag(Project project, Long tagId) {
+  public UserTag applyTag(Project project, UserTag tag) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
-    mutableObjectIdentity.getTags().add(userTagsDao.get(tagId));
+    mutableObjectIdentity.getTags().add(tag);
     aclTargetObjectIdentityDao.save(mutableObjectIdentity);
     return null;
   }
 
   @Override
-  public UserTag removeTag(Project project, Long tagId) {
+  public UserTag removeTag(Project project, UserTag tag) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
-    mutableObjectIdentity.getTags().remove(userTagsDao.get(tagId));
+    mutableObjectIdentity.getTags().remove(tag);
     aclTargetObjectIdentityDao.save(mutableObjectIdentity);
     return null;
   }

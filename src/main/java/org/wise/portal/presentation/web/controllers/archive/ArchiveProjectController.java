@@ -47,7 +47,7 @@ public class ArchiveProjectController {
     if (userTag == null) {
       userTag = userTagsService.createTag(user, ARCHIVED_TAG);
     }
-    userTagsService.applyTag(project, (Long) userTag.getId());
+    userTagsService.applyTag(project, userTag);
     return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
   }
 
@@ -61,7 +61,7 @@ public class ArchiveProjectController {
     }
     List<Project> projects = getProjects(projectIds);
     for (Project project : projects) {
-      userTagsService.applyTag(project, (Long) userTag.getId());
+      userTagsService.applyTag(project, userTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
   }
@@ -72,7 +72,7 @@ public class ArchiveProjectController {
     User user = ControllerUtil.getSignedInUser();
     UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
     if (userTag != null) {
-      userTagsService.removeTag(project, (Long) userTag.getId());
+      userTagsService.removeTag(project, userTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
   }
@@ -85,7 +85,7 @@ public class ArchiveProjectController {
     List<Project> projects = getProjects(projectIds);
     if (userTag != null) {
       for (Project project : projects) {
-        userTagsService.removeTag(project, (Long) userTag.getId());
+        userTagsService.removeTag(project, userTag);
       }
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
