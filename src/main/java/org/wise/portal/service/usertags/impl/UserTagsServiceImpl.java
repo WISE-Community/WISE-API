@@ -2,6 +2,7 @@ package org.wise.portal.service.usertags.impl;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,15 @@ public class UserTagsServiceImpl implements UserTagsService {
   @Override
   public Set<UserTag> getTags(User user, Project project) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
-    return mutableObjectIdentity.getTags();
+    return mutableObjectIdentity.getTags().stream().filter(t -> t.getUser().equals(user))
+        .collect(Collectors.toSet());
+  }
+
+  @Override
+  public Boolean hasTag(User user, Project project, String tag) {
+    MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
+    Set<UserTag> tags = mutableObjectIdentity.getTags();
+    return tags.stream().anyMatch(t -> t.getUser().equals(user) && t.getText().equals(tag));
   }
 
   @Override

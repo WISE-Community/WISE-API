@@ -23,6 +23,8 @@ public interface UserTagsService {
 
   Set<UserTag> getTags(User user, Project project);
 
+  Boolean hasTag(User user, Project project, String tag);
+
   UserTag applyTag(Project project, Long tagId);
 
   UserTag removeTag(Project project, Long tagId);
