@@ -1,6 +1,5 @@
 package org.wise.portal.service.usertags;
 
-import java.util.List;
 import java.util.Set;
 
 import org.wise.portal.domain.project.Project;
@@ -13,19 +12,11 @@ public interface UserTagsService {
 
   UserTag createTag(User user, String tag);
 
-  Boolean isOwner(User user, Long tagId);
-
-  UserTag editTag(Long tagId, String tag);
-
-  UserTag deleteTag(Long tagId);
-
-  List<UserTag> getTags(User user);
-
   Set<UserTag> getTags(User user, Project project);
 
   Boolean hasTag(User user, Project project, String tag);
 
-  UserTag applyTag(Project project, UserTag tag);
+  void applyTag(Project project, UserTag tag);
 
-  UserTag removeTag(Project project, UserTag tag);
+  void removeTag(Project project, UserTag tag);
 }

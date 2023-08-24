@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,9 +21,9 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
-import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.project.ProjectService;
+import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.usertags.UserTagsService;
 
 @RestController
@@ -35,57 +35,62 @@ public class ArchiveProjectController {
   private ProjectService projectService;
 
   @Autowired
+  private UserService userService;
+
+  @Autowired
   private UserTagsService userTagsService;
 
   private static final String ARCHIVED_TAG = "archived";
 
   @PutMapping("/project/{projectId}/archived")
-  protected ResponseEntity<Map<String, Object>> archiveProject(
-      @PathVariable("projectId") ProjectImpl project) throws JSONException {
-    User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
-    if (userTag == null) {
-      userTag = userTagsService.createTag(user, ARCHIVED_TAG);
-    }
-    userTagsService.applyTag(project, userTag);
+  protected ResponseEntity<Map<String, Object>> archiveProject(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag archivedTag = getOrCreateArchivedTag(user);
+    userTagsService.applyTag(project, archivedTag);
     return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
   }
 
   @PutMapping("/projects/archived")
-  protected ResponseEntity<List<Map<String, Object>>> archiveProjects(
+  protected ResponseEntity<List<Map<String, Object>>> archiveProjects(Authentication auth,
       @RequestBody List<Long> projectIds) throws Exception {
-    User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
-    if (userTag == null) {
-      userTag = userTagsService.createTag(user, ARCHIVED_TAG);
-    }
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag archivedTag = getOrCreateArchivedTag(user);
     List<Project> projects = getProjects(projectIds);
     for (Project project : projects) {
-      userTagsService.applyTag(project, userTag);
+      userTagsService.applyTag(project, archivedTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
   }
 
+  private UserTag getOrCreateArchivedTag(User user) {
+    UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
+    if (archivedTag == null) {
+      archivedTag = userTagsService.createTag(user, ARCHIVED_TAG);
+    }
+    return archivedTag;
+  }
+
   @DeleteMapping("/project/{projectId}/archived")
-  protected ResponseEntity<Map<String, Object>> unarchiveProject(
-      @PathVariable("projectId") ProjectImpl project) throws JSONException {
-    User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
-    if (userTag != null) {
-      userTagsService.removeTag(project, userTag);
+  protected ResponseEntity<Map<String, Object>> unarchiveProject(Authentication auth,
+      @PathVariable("projectId") ProjectImpl project) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
+    if (archivedTag != null) {
+      userTagsService.removeTag(project, archivedTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
   }
 
   @DeleteMapping("/projects/archived")
-  protected ResponseEntity<List<Map<String, Object>>> unarchiveProjects(
+  protected ResponseEntity<List<Map<String, Object>>> unarchiveProjects(Authentication auth,
       @RequestParam List<Long> projectIds) throws Exception {
-    User user = ControllerUtil.getSignedInUser();
-    UserTag userTag = userTagsService.get(user, ARCHIVED_TAG);
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
     List<Project> projects = getProjects(projectIds);
-    if (userTag != null) {
+    if (archivedTag != null) {
       for (Project project : projects) {
-        userTagsService.removeTag(project, userTag);
+        userTagsService.removeTag(project, archivedTag);
       }
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
@@ -99,16 +104,14 @@ public class ArchiveProjectController {
     return projects;
   }
 
-  private Map<String, Object> createProjectResponse(User user, Project project)
-      throws JSONException {
+  private Map<String, Object> createProjectResponse(User user, Project project) {
     Map<String, Object> response = new HashMap<String, Object>();
     response.put("id", project.getId());
     response.put("archived", userTagsService.hasTag(user, project, ARCHIVED_TAG));
     return response;
   }
 
-  private List<Map<String, Object>> createProjectsResponse(User user, List<Project> projects)
-      throws JSONException {
+  private List<Map<String, Object>> createProjectsResponse(User user, List<Project> projects) {
     List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
     for (Project project : projects) {
       response.add(createProjectResponse(user, project));

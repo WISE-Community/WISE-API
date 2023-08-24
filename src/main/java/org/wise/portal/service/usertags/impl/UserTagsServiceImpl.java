@@ -1,6 +1,5 @@
 package org.wise.portal.service.usertags.impl;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,32 +39,6 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public Boolean isOwner(User user, Long tagId) {
-    UserTag userTag = userTagsDao.get(tagId);
-    return userTag != null && userTag.getUser().getId().equals(user.getId());
-  }
-
-  @Override
-  public UserTag editTag(Long tagId, String tag) {
-    UserTag userTag = userTagsDao.get(tagId);
-    userTag.setText(tag);
-    userTagsDao.save(userTag);
-    return null;
-  }
-
-  @Override
-  public UserTag deleteTag(Long tagId) {
-    UserTag userTag = userTagsDao.get(tagId);
-    userTagsDao.delete(userTag);
-    return null;
-  }
-
-  @Override
-  public List<UserTag> getTags(User user) {
-    return userTagsDao.get(user);
-  }
-
-  @Override
   public Set<UserTag> getTags(User user, Project project) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     return mutableObjectIdentity.getTags().stream().filter(t -> t.getUser().equals(user))
@@ -80,19 +53,17 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public UserTag applyTag(Project project, UserTag tag) {
+  public void applyTag(Project project, UserTag tag) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     mutableObjectIdentity.getTags().add(tag);
     aclTargetObjectIdentityDao.save(mutableObjectIdentity);
-    return null;
   }
 
   @Override
-  public UserTag removeTag(Project project, UserTag tag) {
+  public void removeTag(Project project, UserTag tag) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     mutableObjectIdentity.getTags().remove(tag);
     aclTargetObjectIdentityDao.save(mutableObjectIdentity);
-    return null;
   }
 
   private MutableAclTargetObjectIdentity getMutableObjectIdentity(Project project) {
@@ -100,5 +71,4 @@ public class UserTagsServiceImpl implements UserTagsService {
         HibernateProxyHelper.getClassWithoutInitializingProxy(project), project.getId());
     return aclTargetObjectIdentityDao.retrieveByObjectIdentity(objectIdentity);
   }
-
 }
