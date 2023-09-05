@@ -101,10 +101,8 @@ public class StudentForgotAccountAPIController {
       return ResponseEntityGenerator.createError("invalidUsername");
     } else {
       if (isAnswerCorrect(user, answer)) {
-        if (!passwordService.isValidLength(password)) {
-          return ResponseEntityGenerator.createError("invalidPasswordLength");
-        } else if (!passwordService.isValidPattern(password)) {
-          return ResponseEntityGenerator.createError("invalidPasswordPattern");
+        if (!passwordService.isValid(password)) {
+          return ResponseEntityGenerator.createError(passwordService.getErrors(password));
         } else if (!isPasswordsMatch(password, confirmPassword)) {
           return ResponseEntityGenerator.createError("passwordsDoNotMatch");
         } else {

@@ -207,10 +207,9 @@ public class UserAPIController {
   ResponseEntity<Map<String, Object>> changePassword(Authentication auth,
       @RequestParam("oldPassword") String oldPassword,
       @RequestParam("newPassword") String newPassword) {
-    if (!passwordService.isValidLength(newPassword)) {
-      return ResponseEntityGenerator.createError("invalidPasswordLength");
-    } else if (!passwordService.isValidPattern(newPassword)) {
-      return ResponseEntityGenerator.createError("invalidPasswordPattern");
+    if (!passwordService.isValid(newPassword)) {
+      Map<String, Object> map = passwordService.getErrors(newPassword);
+      return ResponseEntityGenerator.createError(map);
     }
     User user = userService.retrieveUserByUsername(auth.getName());
     try {

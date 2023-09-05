@@ -209,10 +209,8 @@ public class TeacherForgotAccountAPIController {
         return ResponseEntityGenerator.createError("verificationCodeExpired");
       } else if (!isVerificationCodeCorrect(user, verificationCode)) {
         return ResponseEntityGenerator.createError("verificationCodeIncorrect");
-      } else if (!passwordService.isValidLength(password)) {
-        return ResponseEntityGenerator.createError("invalidPasswordLength");
-      } else if (!passwordService.isValidPattern(password)) {
-        return ResponseEntityGenerator.createError("invalidPasswordPattern");
+      } else if (!passwordService.isValid(password)) {
+        return ResponseEntityGenerator.createError(passwordService.getErrors(password));
       } else if (!isPasswordsMatch(password, confirmPassword)) {
         return ResponseEntityGenerator.createError("passwordsDoNotMatch");
       } else {

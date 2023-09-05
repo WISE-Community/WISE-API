@@ -1,7 +1,9 @@
 package org.wise.portal.service.password;
 
-public interface PasswordService {
-  public boolean isValidLength(String password);
+import java.util.Map;
 
-  public boolean isValidPattern(String password);
+public interface PasswordService {
+  public boolean isValid(String password);
+
+  public Map<String, Object> getErrors(String password);
 }

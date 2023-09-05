@@ -54,10 +54,8 @@ public class GoogleUserAPIController extends UserAPIController {
   @PostMapping("/unlink-account")
   ResponseEntity<Map<String, Object>> unlinkGoogleAccount(Authentication auth,
       @RequestParam String newPassword) {
-    if (!passwordService.isValidLength(newPassword)) {
-      return ResponseEntityGenerator.createError("invalidPasswordLength");
-    } else if (!passwordService.isValidPattern(newPassword)) {
-      return ResponseEntityGenerator.createError("invalidPasswordPattern");
+    if (!passwordService.isValid(newPassword)) {
+      return ResponseEntityGenerator.createError(passwordService.getErrors(newPassword));
     }
     String username = auth.getName();
     User user = userService.retrieveUserByUsername(username);
