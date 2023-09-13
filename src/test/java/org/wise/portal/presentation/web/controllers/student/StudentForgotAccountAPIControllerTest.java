@@ -34,7 +34,7 @@ public class StudentForgotAccountAPIControllerTest extends APIControllerTest {
   public void changePassword_InvalidPassword_ReturnError() throws JSONException {
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     replay(userService);
-    String invalidPassword = "abcd1234";
+    String invalidPassword = PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT;
     ResponseEntity<Map<String, Object>> response = studentForgotAccountAPIController.changePassword(
         STUDENT_USERNAME, STUDENT1_ACCOUNT_ANSWER, invalidPassword, invalidPassword);
     assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPassword");

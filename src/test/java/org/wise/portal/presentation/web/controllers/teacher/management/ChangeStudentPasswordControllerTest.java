@@ -48,8 +48,8 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   @TestSubject
   private ChangeStudentPasswordController controller = new ChangeStudentPasswordController();
 
-  String STUDENT_PASSWORD_INVALID = "abcd1234";
-  String STUDENT_PASSWORD_VALID = "abcd123!";
+  String STUDENT_PASSWORD_INVALID = PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT;
+  String STUDENT_PASSWORD_VALID = PasswordServiceImpl.VALID_PASSWORD;
   String TEACHER_PASSWORD_CORRECT = "correctTeacherPassword1";
   String TEACHER_PASSWORD_INCORRECT = "incorrectTeacherPassword1";
 

@@ -94,9 +94,8 @@ public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
 
   @Test
   public void unlinkGoogleAccount_InvalidPassword_ReturnError() {
-    String invalidPassword = "abcd1234";
     ResponseEntity<Map<String, Object>> response = controller.unlinkGoogleAccount(studentAuth,
-        invalidPassword);
+        PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     assertEquals("invalidPassword", response.getBody().get("messageCode"));
   }
@@ -104,7 +103,7 @@ public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
   @Test
   public void unlinkGoogleAccount_ValidNewPassword_ReturnUpdatedUserMap()
       throws InvalidPasswordException {
-    String newPassword = "abcd123!";
+    String newPassword = PasswordServiceImpl.VALID_PASSWORD;
     assertTrue(student1.getUserDetails().isGoogleUser());
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1).times(2);
     expect(userService.updateUserPassword(student1, newPassword)).andReturn(student1);

@@ -117,9 +117,8 @@ public class UserAPIControllerTest extends APIControllerTest {
 
   @Test
   public void changePassword_InvalidPassword_ReturnError() {
-    String invalidPassword = "abcd1234";
     ResponseEntity<Map<String, Object>> response = userAPIController.changePassword(studentAuth,
-        STUDENT_PASSWORD, invalidPassword);
+        STUDENT_PASSWORD, PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     Map<String, Object> body = response.getBody();
     assertEquals("invalidPassword", body.get("messageCode"));
@@ -127,7 +126,7 @@ public class UserAPIControllerTest extends APIControllerTest {
 
   @Test
   public void changePassword_CorrectOldPassword_ChangePassword() throws IncorrectPasswordException {
-    String newPassword = "abcd123!";
+    String newPassword = PasswordServiceImpl.VALID_PASSWORD;
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     expect(userService.updateUserPassword(student1, STUDENT_PASSWORD, newPassword))
         .andReturn(student1);
@@ -143,7 +142,7 @@ public class UserAPIControllerTest extends APIControllerTest {
   public void changePassword_IncorrectOldPassword_PasswordStaysSame()
       throws IncorrectPasswordException {
     String incorrectPassword = "incorrectPass";
-    String newPassword = "abcd123!";
+    String newPassword = PasswordServiceImpl.VALID_PASSWORD;
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     expect(userService.updateUserPassword(student1, incorrectPassword, newPassword))
         .andStubThrow(new IncorrectPasswordException());

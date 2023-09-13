@@ -38,7 +38,7 @@ public class TeacherForgotAccountAPIControllerTest extends APIControllerTest {
     replay(userService);
     String verificationCode = "123456";
     setVerificationCode(teacher1, verificationCode);
-    String invalidPassword = "abcd1234";
+    String invalidPassword = PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT;
     ResponseEntity<Map<String, Object>> response = teacherForgotAccountAPIController
         .changePassword(TEACHER_USERNAME, verificationCode, invalidPassword, invalidPassword);
     assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPassword");

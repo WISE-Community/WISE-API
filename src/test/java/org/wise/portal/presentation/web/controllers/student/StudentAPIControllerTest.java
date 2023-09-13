@@ -265,9 +265,8 @@ public class StudentAPIControllerTest extends APIControllerTest {
   @Test
   public void createStudentAccount_InvalidPassword_ReturnError()
       throws DuplicateUsernameException, InvalidNameException {
-    String invalidPassword = "abcd1234";
     HashMap<String, String> studentFields = createDefaultStudentFields();
-    studentFields.put("password", invalidPassword);
+    studentFields.put("password", PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
     ResponseEntity<Map<String, Object>> response = studentAPIController
         .createStudentAccount(studentFields, request);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
