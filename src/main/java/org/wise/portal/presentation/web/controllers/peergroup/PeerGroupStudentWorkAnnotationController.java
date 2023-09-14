@@ -1,6 +1,7 @@
 package org.wise.portal.presentation.web.controllers.peergroup;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.student.AbstractPeerGroupWorkController;
 import org.wise.portal.service.vle.wise5.AnnotationService;
 import org.wise.vle.domain.annotation.wise5.Annotation;
+import org.wise.vle.domain.work.StudentWork;
 import org.wise.vle.domain.work.StudentWorkAnnotation;
 
 import lombok.Getter;
@@ -52,12 +54,23 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
   private List<StudentWorkAnnotation> getStudentDataForReferenceComponent(PeerGroupImpl peerGroup,
       String nodeId, String componentId, Authentication auth, String fieldName) throws Exception {
     if (isUserInPeerGroup(auth, peerGroup)) {
-      ReferenceComponent component = getReferenceComponent(peerGroup.getPeerGrouping().getRun(),
-          nodeId, componentId, fieldName);
-      List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
-          component.getNodeId(), component.getComponentId(), "autoScore");
-      return annotations.stream().map(annotation -> new StudentWorkAnnotation(annotation))
-          .collect(Collectors.toList());
+      Run run = peerGroup.getPeerGrouping().getRun();
+      ReferenceComponent component = getReferenceComponent(run, nodeId, componentId, fieldName);
+      String referenceComponentType = getProjectComponent(run, component.nodeId,
+          component.componentId).getType();
+      if (referenceComponentType.equals("MultipleChoice")) {
+        List<StudentWork> studentWorkList = studentWorkService.getStudentWork(
+            peerGroup.getMembers(), component.getNodeId(), component.getComponentId());
+        return studentWorkList.stream().map(studentWork -> new StudentWorkAnnotation(studentWork))
+            .collect(Collectors.toList());
+      } else if (referenceComponentType.equals("OpenResponse")) {
+        List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
+            component.getNodeId(), component.getComponentId(), "autoScore");
+        return annotations.stream().map(annotation -> new StudentWorkAnnotation(annotation))
+            .collect(Collectors.toList());
+      } else {
+        return new ArrayList<StudentWorkAnnotation>();
+      }
     } else {
       throw new AccessDeniedException("Not permitted");
     }
