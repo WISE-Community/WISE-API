@@ -39,41 +39,54 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
   List<StudentWorkAnnotation> getStudentDataForDynamicPrompt(
       @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
-    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, auth,
-        "dynamicPrompt");
+    checkPermissions(auth, peerGroup);
+    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, "dynamicPrompt");
   }
 
   @GetMapping("/question-bank")
   List<StudentWorkAnnotation> getStudentDataForQuestionBank(
       @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
-    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, auth,
-        "questionBank");
+    checkPermissions(auth, peerGroup);
+    return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, "questionBank");
+  }
+
+  private void checkPermissions(Authentication auth, PeerGroupImpl peerGroup)
+      throws ObjectNotFoundException {
+    if (!isUserInPeerGroup(auth, peerGroup)) {
+      throw new AccessDeniedException("Not permitted");
+    }
   }
 
   private List<StudentWorkAnnotation> getStudentDataForReferenceComponent(PeerGroupImpl peerGroup,
-      String nodeId, String componentId, Authentication auth, String fieldName) throws Exception {
-    if (isUserInPeerGroup(auth, peerGroup)) {
-      Run run = peerGroup.getPeerGrouping().getRun();
-      ReferenceComponent component = getReferenceComponent(run, nodeId, componentId, fieldName);
-      String referenceComponentType = getProjectComponent(run, component.nodeId,
-          component.componentId).getType();
-      if (referenceComponentType.equals("MultipleChoice")) {
-        List<StudentWork> studentWorkList = studentWorkService.getStudentWork(
-            peerGroup.getMembers(), component.getNodeId(), component.getComponentId());
-        return studentWorkList.stream().map(studentWork -> new StudentWorkAnnotation(studentWork))
-            .collect(Collectors.toList());
-      } else if (referenceComponentType.equals("OpenResponse")) {
-        List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
-            component.getNodeId(), component.getComponentId(), "autoScore");
-        return annotations.stream().map(annotation -> new StudentWorkAnnotation(annotation))
-            .collect(Collectors.toList());
-      } else {
-        return new ArrayList<StudentWorkAnnotation>();
-      }
+      String nodeId, String componentId, String fieldName) throws Exception {
+    Run run = peerGroup.getPeerGrouping().getRun();
+    ReferenceComponent component = getReferenceComponent(run, nodeId, componentId, fieldName);
+    String referenceComponentType = getProjectComponent(run, component.nodeId,
+        component.componentId).getType();
+    if (referenceComponentType.equals("MultipleChoice")) {
+      return getStudentDataForMultipleChoice(peerGroup, component);
+    } else if (referenceComponentType.equals("OpenResponse")) {
+      return getStudentDataForOpenResponse(peerGroup, component);
     } else {
-      throw new AccessDeniedException("Not permitted");
+      return new ArrayList<StudentWorkAnnotation>();
     }
+  }
+
+  private List<StudentWorkAnnotation> getStudentDataForMultipleChoice(PeerGroupImpl peerGroup,
+      ReferenceComponent component) {
+    List<StudentWork> studentWorkList = studentWorkService.getStudentWork(peerGroup.getMembers(),
+        component.getNodeId(), component.getComponentId());
+    return studentWorkList.stream().map(studentWork -> new StudentWorkAnnotation(studentWork))
+        .collect(Collectors.toList());
+  }
+
+  private List<StudentWorkAnnotation> getStudentDataForOpenResponse(PeerGroupImpl peerGroup,
+      ReferenceComponent component) {
+    List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
+        component.getNodeId(), component.getComponentId(), "autoScore");
+    return annotations.stream().map(annotation -> new StudentWorkAnnotation(annotation))
+        .collect(Collectors.toList());
   }
 
   private ReferenceComponent getReferenceComponent(Run run, String nodeId, String componentId,
