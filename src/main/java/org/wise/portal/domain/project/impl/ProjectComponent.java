@@ -43,10 +43,14 @@ public class ProjectComponent {
   @Getter
   ProjectNode node;
 
+  @Getter
+  String type;
+
   public ProjectComponent(ProjectNode node, JSONObject componentJSON) throws JSONException {
     this.node = node;
     this.componentJSON = componentJSON;
     this.id = componentJSON.getString("id");
+    this.type = componentJSON.getString("type");
   }
 
   public String getString(String key) throws JSONException {
