@@ -20,12 +20,15 @@
  */
 package org.wise.portal.dao.authentication.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.hibernate.Session;
@@ -44,9 +47,9 @@ import org.wise.portal.domain.authentication.impl.PersistentAclTargetObjectIdent
  * @author Cynick Young
  */
 @Repository
-public class HibernateAclTargetObjectIdentityDao extends
-    AbstractHibernateDao<MutableAclTargetObjectIdentity> implements
-    AclTargetObjectIdentityDao<MutableAclTargetObjectIdentity> {
+public class HibernateAclTargetObjectIdentityDao
+    extends AbstractHibernateDao<MutableAclTargetObjectIdentity>
+    implements AclTargetObjectIdentityDao<MutableAclTargetObjectIdentity> {
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -56,20 +59,23 @@ public class HibernateAclTargetObjectIdentityDao extends
   public MutableAclTargetObjectIdentity retrieveByObjectIdentity(ObjectIdentity objectIdentity) {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
     CriteriaBuilder cb = session.getCriteriaBuilder();
-    CriteriaQuery<PersistentAclTargetObjectIdentity> cq = 
-        cb.createQuery(PersistentAclTargetObjectIdentity.class);
-    Root<PersistentAclTargetObjectIdentity> persistentAclTargetObjectIdentityRoot = 
-        cq.from(PersistentAclTargetObjectIdentity.class);
-    cq.select(persistentAclTargetObjectIdentityRoot).where(
-        cb.equal(persistentAclTargetObjectIdentityRoot.get("classname"), objectIdentity.getType()));
-    cq.select(persistentAclTargetObjectIdentityRoot).where(
-        cb.equal(persistentAclTargetObjectIdentityRoot.get("id"), objectIdentity.getIdentifier()));
+    CriteriaQuery<PersistentAclTargetObjectIdentity> cq = cb
+        .createQuery(PersistentAclTargetObjectIdentity.class);
+    Root<PersistentAclTargetObjectIdentity> persistentAclTargetObjectIdentityRoot = cq
+        .from(PersistentAclTargetObjectIdentity.class);
+    List<Predicate> predicates = new ArrayList<>();
+    predicates.add(cb.equal(persistentAclTargetObjectIdentityRoot.get("aclTargetObjectId"),
+        objectIdentity.getIdentifier()));
+    predicates
+        .add(cb.equal(persistentAclTargetObjectIdentityRoot.get("aclTargetObject").get("classname"),
+            objectIdentity.getType()));
+    cq.select(persistentAclTargetObjectIdentityRoot)
+        .where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PersistentAclTargetObjectIdentity> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }
 
-  public MutableAclTargetObjectIdentity[] findChildren(
-      ObjectIdentity parentIdentity) {
+  public MutableAclTargetObjectIdentity[] findChildren(ObjectIdentity parentIdentity) {
     throw new UnsupportedOperationException();
     // TODO CY - not really sure what the requirements are for this method
     // List<?> list = this

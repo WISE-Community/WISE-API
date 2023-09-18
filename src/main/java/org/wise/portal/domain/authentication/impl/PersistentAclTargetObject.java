@@ -73,8 +73,7 @@ public class PersistentAclTargetObject implements MutableAclTargetObject {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result
-      + ((classname == null) ? 0 : classname.hashCode());
+    result = prime * result + ((classname == null) ? 0 : classname.hashCode());
     return result;
   }
 

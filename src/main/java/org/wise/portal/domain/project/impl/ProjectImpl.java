@@ -128,7 +128,7 @@ public class ProjectImpl implements Project {
   protected String name;
 
   @OneToOne(targetEntity = ProjectMetadataImpl.class, fetch = FetchType.LAZY)
-  @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+  @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
   @JoinColumn(name = "metadata_fk", nullable = true, unique = true)
   protected ProjectMetadata metadataObj = null;
 
@@ -147,13 +147,15 @@ public class ProjectImpl implements Project {
   private User owner;
 
   @ManyToMany(targetEntity = UserImpl.class, fetch = FetchType.LAZY)
-  @JoinTable(name = SHARED_OWNERS_JOIN_TABLE_NAME, joinColumns = { @JoinColumn(name =  PROJECTS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = SHARED_OWNERS_JOIN_COLUMN_NAME, nullable = false))
+  @JoinTable(name = SHARED_OWNERS_JOIN_TABLE_NAME, joinColumns = {
+      @JoinColumn(name = PROJECTS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = SHARED_OWNERS_JOIN_COLUMN_NAME, nullable = false))
   @Getter
   @Setter
   private Set<User> sharedowners = new TreeSet<User>();
 
   @ManyToMany(targetEntity = UserImpl.class, fetch = FetchType.LAZY)
-  @JoinTable(name = BOOKMARKERS_JOIN_TABLE_NAME, joinColumns = { @JoinColumn(name= PROJECTS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = BOOKMARKERS_JOIN_COLUMN_NAME, nullable = false))
+  @JoinTable(name = BOOKMARKERS_JOIN_TABLE_NAME, joinColumns = {
+      @JoinColumn(name = PROJECTS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = BOOKMARKERS_JOIN_COLUMN_NAME, nullable = false))
   @Getter
   @Setter
   private Set<User> bookmarkers = new TreeSet<User>();
@@ -204,7 +206,8 @@ public class ProjectImpl implements Project {
   protected Date dateCreated;
 
   @ManyToMany(targetEntity = TagImpl.class, fetch = FetchType.LAZY)
-  @JoinTable(name = TAGS_JOIN_TABLE_NAME, joinColumns = { @JoinColumn(name = PROJECT_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = TAGS_JOIN_COLUMN_NAME, nullable = false))
+  @JoinTable(name = TAGS_JOIN_TABLE_NAME, joinColumns = {
+      @JoinColumn(name = PROJECT_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = TAGS_JOIN_COLUMN_NAME, nullable = false))
   @Getter
   @Setter
   protected Set<Tag> tags = new TreeSet<Tag>();
@@ -289,7 +292,7 @@ public class ProjectImpl implements Project {
     return name;
   }
 
-  public void populateProjectInfo(){
+  public void populateProjectInfo() {
     this.projectinfo = new ProjectInfoImpl();
     this.projectinfo.setName(this.getName());
   }
@@ -410,7 +413,7 @@ public class ProjectImpl implements Project {
 
   public boolean hasTag(String tag) {
     Set<Tag> projectTags = this.getTags();
-    for (Tag projectTag: projectTags) {
+    for (Tag projectTag : projectTags) {
       if (projectTag.getName().equals(tag)) {
         return true;
       }
