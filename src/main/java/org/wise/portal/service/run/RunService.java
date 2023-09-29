@@ -33,7 +33,6 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.impl.AddSharedTeacherParameters;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunParameters;
@@ -401,7 +400,7 @@ public interface RunService {
    * @param runId
    * @return boolean
    */
-  boolean canDecreaseMaxStudentsPerTeam(Long runId);
+  boolean canDecreaseMaxStudentsPerTeam(Long runId) throws ObjectNotFoundException;
 
   /**
    * Returns a <code>List<Run></code> list of runs that were run within the given

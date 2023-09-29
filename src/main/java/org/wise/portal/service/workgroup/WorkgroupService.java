@@ -55,6 +55,8 @@ public interface WorkgroupService {
    */
   List<Workgroup> getWorkgroupListByRunAndUser(Run run, User user);
 
+  List<Workgroup> getWorkgroupsForRun(Run run);
+
   /**
    * Adds members to an already-existing workgroup. If a member is
    * already in the group, do not add again. Also update the workgroup name.
@@ -89,8 +91,9 @@ public interface WorkgroupService {
    * @return updated workgroup
    * @throws Exception when update fails
    */
-  Workgroup updateWorkgroupMembership(ChangeWorkgroupParameters params)
-      throws Exception;
+  Workgroup updateWorkgroupMembership(ChangeWorkgroupParameters params);
+
+  void removeUserFromAllWorkgroupsInRun(Run run, User user);
 
   /**
    * Creates a <code>Workgroup</code> with given parameters

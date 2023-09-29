@@ -558,8 +558,8 @@ public class RunServiceImpl implements RunService {
     }
   }
 
-  public List<Workgroup> getWorkgroups(Long runId) {
-    return runDao.getWorkgroupsForRun(runId);
+  public List<Workgroup> getWorkgroups(Long runId) throws ObjectNotFoundException {
+    return workgroupService.getWorkgroupsForRun(retrieveById(runId));
   }
 
   public List<Workgroup> getWorkgroups(Long runId, Long periodId) {
@@ -631,7 +631,7 @@ public class RunServiceImpl implements RunService {
     return aclService.hasSpecificPermission(run, permission, user.getUserDetails());
   }
 
-  public boolean canDecreaseMaxStudentsPerTeam(Long runId) {
+  public boolean canDecreaseMaxStudentsPerTeam(Long runId) throws ObjectNotFoundException {
     List<Workgroup> workgroups = getWorkgroups(runId);
     if (workgroups != null) {
       for (Workgroup workgroup : workgroups) {
