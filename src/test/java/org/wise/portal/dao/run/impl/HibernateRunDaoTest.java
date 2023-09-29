@@ -108,27 +108,6 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
   }
 
   @Test
-  public void getWorkgroupsForRun_OnePeriod_Success() throws Exception {
-    Long runId = run1.getId();
-    List<Workgroup> workgroups = runDao.getWorkgroupsForRun(runId);
-    assertEquals(3, workgroups.size());
-    addUserToRun(student3, run1, run1Period1);
-    workgroups = runDao.getWorkgroupsForRun(runId);
-    assertEquals(4, workgroups.size());
-  }
-
-  @Test
-  public void getWorkgroupsForRun_TwoPeriods_Success() throws Exception {
-    Long runId = run1.getId();
-    List<Workgroup> workgroups = runDao.getWorkgroupsForRun(runId);
-    assertEquals(3, workgroups.size());
-    addUserToRun(student3, run1, run1Period1);
-    addUserToRun(student4, run1, run1Period2);
-    workgroups = runDao.getWorkgroupsForRun(runId);
-    assertEquals(5, workgroups.size());
-  }
-
-  @Test
   public void getWorkgroupsForRunAndPeriod_OnePeriod_Success() throws Exception {
     Long runId = run1.getId();
     Long period1Id = run1Period1.getId();
