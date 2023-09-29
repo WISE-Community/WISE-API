@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.impl.ChangeWorkgroupParameters;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.run.RunService;
@@ -36,16 +38,22 @@ public class WorkgroupMembershipAPIController {
       @PathVariable Long userId, @RequestBody JsonNode postedParams) throws Exception {
     Workgroup workgroup = null;
     if (runService.hasWritePermission(auth, run)) {
-      ChangeWorkgroupParameters params = new ChangeWorkgroupParameters();
-      params.setRun(run);
-      params.setStudent(userService.retrieveById(userId));
-      Long toWorkgroupId = postedParams.get("workgroupIdTo").asLong();
-      params.setWorkgroupTo(workgroupService.retrieveById(toWorkgroupId));
+      ChangeWorkgroupParameters params = createChangeWorkgroupParameters(run, userId, postedParams);
       workgroup = workgroupService.updateWorkgroupMembership(params);
     }
     if (workgroup == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: Could not move student");
     }
     return workgroup.getId();
+  }
+
+  private ChangeWorkgroupParameters createChangeWorkgroupParameters(Run run, Long userId,
+      JsonNode postedParams) throws ObjectNotFoundException {
+    ChangeWorkgroupParameters params = new ChangeWorkgroupParameters();
+    params.setRun(run);
+    params.setStudent(userService.retrieveById(userId));
+    Long toWorkgroupId = postedParams.get("workgroupIdTo").asLong();
+    params.setWorkgroupTo(workgroupService.retrieveById(toWorkgroupId));
+    return params;
   }
 }

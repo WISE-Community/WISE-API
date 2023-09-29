@@ -44,8 +44,7 @@ public class CreateWorkgroupController {
       @PathVariable Long periodId, @RequestBody List<Long> userIds) throws ObjectNotFoundException {
     Run run = runService.retrieveById(runId);
     Group period = groupService.retrieveById(periodId);
-    if (runService.hasWritePermission(auth, run) && isPeriodInRun(run, period)
-        && areAllStudentsInPeriod(run, period, userIds)) {
+    if (isAllowed(auth, run, period, userIds)) {
       removeUsersFromAllWorkgroupsInRun(run, userIds);
       HashSet<User> newGroupMembers = createNewGroupMembers(userIds);
       Workgroup newWorkgroup = workgroupService.createWorkgroup("Student", newGroupMembers, run,
@@ -55,6 +54,12 @@ public class CreateWorkgroupController {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "Error: Could not create workgroup");
     }
+  }
+
+  private boolean isAllowed(Authentication auth, Run run, Group period, List<Long> userIds)
+      throws ObjectNotFoundException {
+    return runService.hasWritePermission(auth, run) && isPeriodInRun(run, period)
+        && areAllStudentsInPeriod(run, period, userIds);
   }
 
   private boolean isPeriodInRun(Run run, Group period) {
