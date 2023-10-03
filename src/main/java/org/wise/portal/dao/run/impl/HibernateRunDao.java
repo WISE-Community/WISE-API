@@ -95,17 +95,6 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
   }
 
   @SuppressWarnings("unchecked")
-  public List<Workgroup> getWorkgroupsForRun(Long runId) {
-    CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
-    Root<WorkgroupImpl> workgroupRoot = cq.from(WorkgroupImpl.class);
-    cq.select(workgroupRoot).where(cb.equal(workgroupRoot.get("run").get("id"), runId));
-    TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
-    List<WorkgroupImpl> workgroupResultList = query.getResultList();
-    return (List<Workgroup>) (Object) workgroupResultList;
-  }
-
-  @SuppressWarnings("unchecked")
   public List<Workgroup> getWorkgroupsForRunAndPeriod(Long runId, Long periodId) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);

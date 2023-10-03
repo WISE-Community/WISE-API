@@ -106,8 +106,6 @@ public interface RunDao<T extends Run> extends SimpleDao<T> {
    */
   List<Run> getRunsByActivity();
 
-  List<Workgroup> getWorkgroupsForRun(Long runId);
-
   List<Workgroup> getWorkgroupsForRunAndPeriod(Long runId, Long periodId);
 
   long getMaxRunId();

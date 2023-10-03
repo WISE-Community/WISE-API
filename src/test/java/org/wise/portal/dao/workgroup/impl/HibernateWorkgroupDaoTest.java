@@ -53,6 +53,7 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
 @RunWith(SpringRunner.class)
 public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
 
+  Group period1, period2;
   Run run;
   User student1, student2;
 
@@ -67,15 +68,17 @@ public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
     Date startTime = Calendar.getInstance().getTime();
     String runCode = "Panda123";
     User teacher = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
-      "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
-      Schoollevel.COLLEGE, "1234567890");
+        "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
+        Schoollevel.COLLEGE, "1234567890");
     run = createProjectAndRun(id, projectName, teacher, startTime, runCode);
-    Group period1 = createPeriod("Period 1");
+    period1 = createPeriod("Period 1");
+    period2 = createPeriod("Period 2");
     Set<Group> periods = new TreeSet<Group>();
     periods.add(period1);
+    periods.add(period2);
     run.setPeriods(periods);
     student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
-      Gender.MALE);
+        Gender.MALE);
     Set<User> members1 = new HashSet<User>();
     members1.add(student1);
     createWorkgroup(members1, run, period1);
@@ -106,5 +109,23 @@ public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
     List<Workgroup> workgroups = workgroupDao.getListByUser(student1);
     assertEquals(1, workgroups.size());
     assertTrue(workgroups.get(0).getMembers().contains(student1));
+  }
+
+  @Test
+  public void getListByRun_OnePeriod_ReturnsAllWorkgroups() throws Exception {
+    List<Workgroup> workgroups = workgroupDao.getListByRun(run);
+    assertEquals(1, workgroups.size());
+    addUserToRun(student2, run, period1);
+    workgroups = workgroupDao.getListByRun(run);
+    assertEquals(2, workgroups.size());
+  }
+
+  @Test
+  public void getListByRun_TwoPeriods_ReturnsAllWorkgroups() throws Exception {
+    List<Workgroup> workgroups = workgroupDao.getListByRun(run);
+    assertEquals(1, workgroups.size());
+    addUserToRun(student2, run, period2);
+    workgroups = workgroupDao.getListByRun(run);
+    assertEquals(2, workgroups.size());
   }
 }

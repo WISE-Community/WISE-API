@@ -48,4 +48,6 @@ public interface WorkgroupDao<T extends Workgroup> extends SimpleDao<T> {
    * @return a <code>Workgroup</code> <code>List</code>
    */
   List<T> getListByUser(User user);
+
+  List<Workgroup> getListByRun(Run run);
 }
