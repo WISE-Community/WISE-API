@@ -781,11 +781,9 @@ public class InformationController {
   }
 
   /**
-   * Gets the workgroup for the currently-logged in user so that she may view the VLE.
-   *
+   * Gets the workgroup for the logged in user
    * @param run
-   * @return Workgroup for the currently-logged in user
-   * @throws ObjectNotFoundException
+   * @return Workgroup for the logged in user
    */
   private Workgroup getWorkgroup(Run run) {
     Workgroup workgroup = null;
@@ -793,10 +791,8 @@ public class InformationController {
     if (context.getAuthentication().getPrincipal() instanceof UserDetails) {
       UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
       User user = userService.retrieveUser(userDetails);
-
       List<Workgroup> workgroupListByRunAndUser = workgroupService.getWorkgroupListByRunAndUser(run,
           user);
-
       workgroup = workgroupListByRunAndUser.get(0);
     }
     return workgroup;
