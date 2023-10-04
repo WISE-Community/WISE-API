@@ -205,8 +205,8 @@ public class InformationController {
 
   @GetMapping("/config/studentRun/{runId}")
   public void getConfigWISE5StudentRun(HttpServletRequest request, HttpServletResponse response,
-      @PathVariable("runId") RunImpl run) throws ObjectNotFoundException, IOException,
-      JSONException {
+      @PathVariable("runId") RunImpl run)
+      throws ObjectNotFoundException, IOException, JSONException {
     JSONObject config = new JSONObject();
     config.put("mode", "studentRun");
     getRunConfigParameters(request, config, run);
@@ -411,8 +411,8 @@ public class InformationController {
       JSONArray studentsNotInWorkgroup = new JSONArray();
       for (User user : period.getMembers()) {
         if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
-          JSONObject userJSONInfo =
-              createUserJSONInfo(user, isAllowedToViewStudentNames(run, loggedInUser));
+          JSONObject userJSONInfo = createUserJSONInfo(user,
+              isAllowedToViewStudentNames(run, loggedInUser));
           studentsNotInWorkgroup.put(userJSONInfo);
         }
       }
@@ -781,11 +781,9 @@ public class InformationController {
   }
 
   /**
-   * Gets the workgroup for the currently-logged in user so that she may view the VLE.
-   *
+   * Gets the workgroup for the logged in user
    * @param run
-   * @return Workgroup for the currently-logged in user
-   * @throws ObjectNotFoundException
+   * @return Workgroup for the logged in user
    */
   private Workgroup getWorkgroup(Run run) {
     Workgroup workgroup = null;
@@ -793,16 +791,9 @@ public class InformationController {
     if (context.getAuthentication().getPrincipal() instanceof UserDetails) {
       UserDetails userDetails = (UserDetails) context.getAuthentication().getPrincipal();
       User user = userService.retrieveUser(userDetails);
-
       List<Workgroup> workgroupListByRunAndUser = workgroupService.getWorkgroupListByRunAndUser(run,
           user);
-
-      if (workgroupListByRunAndUser.size() == 1) {
-        workgroup = workgroupListByRunAndUser.get(0);
-      } else if (workgroupListByRunAndUser.size() > 1) {
-        // this user is in more than one workgroup so we will just get the last one
-        workgroup = workgroupListByRunAndUser.get(workgroupListByRunAndUser.size() - 1);
-      }
+      workgroup = workgroupListByRunAndUser.get(0);
     }
     return workgroup;
   }
