@@ -24,6 +24,7 @@
 package org.wise.portal.service.student.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -122,18 +123,21 @@ public class StudentServiceImpl implements StudentService {
   }
 
   public void removeStudentFromRun(User studentUser, Run run) {
-    if (run.isStudentAssociatedToThisRun(studentUser)) {
-      StudentRunInfo studentRunInfo = getStudentRunInfo(studentUser, run);
-      Group period = run.getPeriodOfStudent(studentUser);
-      Set<User> membersToRemove = new HashSet<User>();
-      membersToRemove.add(studentUser);
-      groupService.removeMembers(period, membersToRemove);
-      Workgroup workgroup = studentRunInfo.getWorkgroup();
-      if (workgroup != null) {
-        Set<User> membersToRemoveFromWorkgroup = new HashSet<User>();
-        membersToRemoveFromWorkgroup.add(studentUser);
-        workgroupService.removeMembers(workgroup, membersToRemoveFromWorkgroup);
-      }
+    removeStudentFromWorkgroupsInRun(studentUser, run);
+    removeStudentFromPeriodInRun(studentUser, run);
+  }
+
+  private void removeStudentFromWorkgroupsInRun(User studentUser, Run run) {
+    List<Workgroup> workgroups = workgroupService.getWorkgroupListByRunAndUser(run, studentUser);
+    for (Workgroup workgroup : workgroups) {
+      workgroupService.removeMembers(workgroup, Collections.singleton(studentUser));
+    }
+  }
+
+  private void removeStudentFromPeriodInRun(User studentUser, Run run) {
+    Group period = run.getPeriodOfStudent(studentUser);
+    if (period != null) {
+      groupService.removeMembers(period, Collections.singleton(studentUser));
     }
   }
 

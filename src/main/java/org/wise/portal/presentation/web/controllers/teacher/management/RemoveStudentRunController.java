@@ -28,7 +28,7 @@ public class RemoveStudentRunController {
   private UserService userService;
 
   @DeleteMapping("/api/teacher/run/{runId}/student/{studentId}/remove")
-  void changeWorkgroupPeriod(Authentication auth, @PathVariable Long runId,
+  public void removeStudent(Authentication auth, @PathVariable Long runId,
       @PathVariable Long studentId) throws ObjectNotFoundException {
     Run run = runService.retrieveById(runId);
     if (runService.hasWritePermission(auth, run)) {
