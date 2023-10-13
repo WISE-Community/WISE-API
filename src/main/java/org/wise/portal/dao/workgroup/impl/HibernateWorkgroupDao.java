@@ -56,11 +56,11 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
 
   @PersistenceContext
   private EntityManager entityManager;
- 
+
   private CriteriaBuilder getCriteriaBuilder() {
     Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
-  } 
+    return session.getCriteriaBuilder();
+  }
 
   private static final String FIND_ALL_QUERY = "from WorkgroupImpl";
 
@@ -87,8 +87,8 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
     predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
     predicates.add(cb.equal(runImplRoot.get("id"), workgroupImplRoot.get("run")));
     predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
-    predicates.add(
-        cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>>get("members")));
+    predicates
+        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> runResultList = query.getResultList();
@@ -105,11 +105,23 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userImplRoot.get("id"), user.getId()));
     predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
-    predicates.add(
-        cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>>get("members")));
+    predicates
+        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> runResultList = query.getResultList();
     return (List<Workgroup>) (Object) runResultList;
   }
+
+  @SuppressWarnings("unchecked")
+  public List<Workgroup> getListByRun(Run run) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
+    Root<WorkgroupImpl> workgroupRoot = cq.from(WorkgroupImpl.class);
+    cq.select(workgroupRoot).where(cb.equal(workgroupRoot.get("run").get("id"), run.getId()));
+    TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
+    List<WorkgroupImpl> workgroupResultList = query.getResultList();
+    return (List<Workgroup>) (Object) workgroupResultList;
+  }
+
 }

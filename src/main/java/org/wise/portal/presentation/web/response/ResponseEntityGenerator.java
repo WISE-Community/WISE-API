@@ -1,6 +1,7 @@
 package org.wise.portal.presentation.web.response;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,11 @@ public class ResponseEntityGenerator {
 
   public static ResponseEntity<Map<String, Object>> createSuccess(Map<String, Object> map) {
     return new ResponseEntity<>(map, HttpStatus.OK);
+  }
+
+  public static ResponseEntity<List<Map<String, Object>>> createSuccess(
+      List<Map<String, Object>> list) {
+    return new ResponseEntity<>(list, HttpStatus.OK);
   }
 
   public static ResponseEntity<Map<String, Object>> createError(String messageCode) {

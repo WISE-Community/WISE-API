@@ -178,8 +178,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public boolean hasPermission(
-      Authentication authentication, Object targetDomainObject, Object permission) {
+  public boolean hasPermission(Authentication authentication, Object targetDomainObject,
+      Object permission) {
     Collection<? extends GrantedAuthority> grantedAuthorities = authentication.getAuthorities();
     if (grantedAuthorities.size() == 1) {
       if ("[ROLE_ANONYMOUS]".equals(grantedAuthorities.toString())) {
@@ -230,8 +230,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
   }
 
   @Override
-  public boolean hasPermission(
-      Authentication authentication, Serializable targetId, String targetType, Object permission) {
+  public boolean hasPermission(Authentication authentication, Serializable targetId,
+      String targetType, Object permission) {
     // TODO Auto-generated method stub
     return false;
   }

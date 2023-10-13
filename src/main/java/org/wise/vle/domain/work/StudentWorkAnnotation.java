@@ -19,4 +19,9 @@ public class StudentWorkAnnotation {
     this.studentWork = annotation.getStudentWork();
     this.workgroup = annotation.getToWorkgroup();
   }
+
+  public StudentWorkAnnotation(StudentWork studentWork) {
+    this.studentWork = studentWork;
+    this.workgroup = studentWork.getWorkgroup();
+  }
 }

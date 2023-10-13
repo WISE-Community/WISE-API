@@ -1,20 +1,23 @@
 package org.wise.portal.presentation.web.controllers.peergroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
-import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
+import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.user.User;
+import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
+import org.wise.portal.service.acl.AclService;
 import org.wise.portal.service.peergrouping.PeerGroupingService;
+import org.wise.portal.service.user.UserService;
 
 @RestController
 @Secured("ROLE_TEACHER")
@@ -22,23 +25,40 @@ import org.wise.portal.service.peergrouping.PeerGroupingService;
 public class PeerGroupingAPIController {
 
   @Autowired
+  private AclService<Project> aclService;
+
+  @Autowired
   private PeerGroupingService peerGroupingService;
 
+  @Autowired
+  private UserService userService;
+
   @PostMapping
-  @PreAuthorize("hasPermission(#run, 'WRITE') or hasRole('ROLE_ADMINISTRATOR')")
-  PeerGrouping create(@PathVariable("runId") RunImpl run,
+  Object create(Authentication auth, @PathVariable("runId") RunImpl run,
       @RequestBody PeerGroupingImpl peerGrouping) {
-    try {
-      return peerGroupingService.createPeerGrouping(run, peerGrouping);
-    } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Duplicate Tag");
+    if (isAuthorized(auth, run)) {
+      try {
+        return peerGroupingService.createPeerGrouping(run, peerGrouping);
+      } catch (Exception e) {
+        return ResponseEntityGenerator.createError("genericError");
+      }
+    } else {
+      return ResponseEntityGenerator.createError("notAuthorized");
     }
   }
 
   @PutMapping("/{tag}")
-  @PreAuthorize("hasPermission(#run, 'WRITE') or hasRole('ROLE_ADMINISTRATOR')")
-  PeerGrouping update(@PathVariable("runId") RunImpl run, @PathVariable("tag") String tag,
-      @RequestBody PeerGroupingImpl peerGrouping) {
-    return peerGroupingService.updatePeerGrouping(run, tag, peerGrouping);
+  Object update(Authentication auth, @PathVariable("runId") RunImpl run,
+      @PathVariable("tag") String tag, @RequestBody PeerGroupingImpl peerGrouping) {
+    if (isAuthorized(auth, run)) {
+      return peerGroupingService.updatePeerGrouping(run, tag, peerGrouping);
+    } else {
+      return ResponseEntityGenerator.createError("notAuthorized");
+    }
+  }
+
+  Boolean isAuthorized(Authentication auth, RunImpl run) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    return aclService.hasPermission(run.getProject(), BasePermission.WRITE, user) || user.isAdmin();
   }
 }

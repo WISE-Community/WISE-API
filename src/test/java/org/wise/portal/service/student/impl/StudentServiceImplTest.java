@@ -28,8 +28,10 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +63,7 @@ import org.wise.portal.service.group.GroupService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.workgroup.WorkgroupService;
+import org.wise.portal.spring.data.redis.MessagePublisher;
 
 /**
  * @author Hiroki Terashima
@@ -70,6 +73,9 @@ public class StudentServiceImplTest {
 
   @TestSubject
   private StudentService studentService = new StudentServiceImpl();
+
+  @Mock
+  private MessagePublisher redisPublisher;
 
   @Mock
   private RunService runService;
@@ -129,7 +135,6 @@ public class StudentServiceImplTest {
     groupService.addMember(period.getId(), studentUser);
     expectLastCall();
     replay(groupService);
-
     studentService.addStudentToRun(studentUser, projectcode);
     verify(runService);
     verify(groupService);
@@ -185,6 +190,8 @@ public class StudentServiceImplTest {
     groupService.addMember(period.getId(), studentUser);
     expectLastCall();
     replay(groupService);
+    redisPublisher.publish(anyString());
+    expectLastCall();
     try {
       studentService.addStudentToRun(studentUser, projectcode);
     } catch (Exception e) {
@@ -229,7 +236,6 @@ public class StudentServiceImplTest {
     workgroupService.removeMembers(workgroup, membersToRemoveFromWorkgroup);
     expectLastCall();
     replay(workgroupService);
-
     studentService.removeStudentFromRun(studentUser, run);
     verify(groupService);
     verify(workgroupService);
@@ -239,6 +245,8 @@ public class StudentServiceImplTest {
   public void removeStudentFromRun_studentIsNotInRun_ShouldDoNothing() {
     replay(runService);
     replay(groupService);
+    expect(workgroupService.getWorkgroupListByRunAndUser(run, studentUser))
+        .andReturn(Collections.emptyList());
     replay(workgroupService);
     studentService.removeStudentFromRun(studentUser, run);
     verify(runService);

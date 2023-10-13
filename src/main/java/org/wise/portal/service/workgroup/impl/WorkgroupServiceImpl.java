@@ -20,7 +20,7 @@
  */
 package org.wise.portal.service.workgroup.impl;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -84,6 +84,11 @@ public class WorkgroupServiceImpl implements WorkgroupService {
     return workgroupDao.getListByUser(user);
   }
 
+  @Transactional(readOnly = true)
+  public List<Workgroup> getWorkgroupsForRun(Run run) {
+    return workgroupDao.getListByRun(run);
+  }
+
   @Transactional()
   public void addMembers(Workgroup workgroup, Set<User> membersToAdd) {
     for (User member : membersToAdd) {
@@ -103,32 +108,31 @@ public class WorkgroupServiceImpl implements WorkgroupService {
   }
 
   @Transactional()
-  public Workgroup updateWorkgroupMembership(ChangeWorkgroupParameters params) throws Exception {
-    Workgroup workgroupCreated = null;
-    Workgroup toGroup;
-    Workgroup fromGroup;
-    User user = params.getStudent();
+  public Workgroup updateWorkgroupMembership(ChangeWorkgroupParameters params) {
+    Workgroup toWorkgroup = params.getWorkgroupTo();
     Run run = params.getRun();
-    Group period = groupService.retrieveById(params.getPeriodId());
-    fromGroup = params.getWorkgroupFrom();
-    Set<User> addMemberSet = new HashSet<User>();
-    addMemberSet.add(user);
-    if (params.getWorkgroupTo() == null) {
-      if ((params.getWorkgroupToId() != null) && (params.getWorkgroupToId().intValue() == -1)) {
-        workgroupCreated = createWorkgroup("workgroup " + user.getUserDetails().getUsername(),
-            addMemberSet, run, period);
-      }
-    } else {
-      toGroup = params.getWorkgroupTo();
-      addMembers(toGroup, addMemberSet);
+    User user = params.getStudent();
+    if (toWorkgroup != null && isWorkgroupInRun(toWorkgroup, run)
+        && isUserInSamePeriodAsWorkgroup(user, toWorkgroup)) {
+      removeUserFromAllWorkgroupsInRun(run, user);
+      addMembers(toWorkgroup, Collections.singleton(user));
+      return toWorkgroup;
     }
+    return null;
+  }
 
-    if (!(fromGroup == null)) {
-      Set<User> removeMemberSet = new HashSet<User>();
-      removeMemberSet.add(user);
-      removeMembers(fromGroup, removeMemberSet);
+  private boolean isWorkgroupInRun(Workgroup workgroup, Run run) {
+    return this.getWorkgroupsForRun(run).contains(workgroup);
+  }
+
+  private boolean isUserInSamePeriodAsWorkgroup(User user, Workgroup workgroup) {
+    return workgroup.getPeriod().getMembers().contains(user);
+  }
+
+  public void removeUserFromAllWorkgroupsInRun(Run run, User user) {
+    for (Workgroup workgroup : getWorkgroupListByRunAndUser(run, user)) {
+      removeMembers(workgroup, Collections.singleton(user));
     }
-    return workgroupCreated;
   }
 
   public Workgroup retrieveById(Long workgroupId) throws ObjectNotFoundException {

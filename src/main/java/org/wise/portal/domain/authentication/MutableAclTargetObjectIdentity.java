@@ -20,8 +20,11 @@
  */
 package org.wise.portal.domain.authentication;
 
+import java.util.Set;
+
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.wise.portal.domain.Persistable;
+import org.wise.portal.domain.usertag.UserTag;
 
 /**
  * Mutable extension of <code>ObjectIdentity</code>. Represents the object
@@ -83,4 +86,6 @@ public interface MutableAclTargetObjectIdentity extends ObjectIdentity, Persista
    * @param parent the parent to set
    */
   void setParent(MutableAclTargetObjectIdentity parent);
+
+  Set<UserTag> getTags();
 }

@@ -41,8 +41,8 @@ public class ProjectAPIController {
   ProjectService projectService;
 
   @GetMapping("/library")
-  protected String getLibraryProjects(ModelMap modelMap) throws ObjectNotFoundException,
-      JSONException {
+  protected String getLibraryProjects(ModelMap modelMap)
+      throws ObjectNotFoundException, JSONException {
     Portal portal = portalService.getById(new Integer(1));
     String projectLibraryGroups = portal.getProjectLibraryGroups();
     JSONArray projectLibraryGroupsJSON = new JSONArray(projectLibraryGroups);
