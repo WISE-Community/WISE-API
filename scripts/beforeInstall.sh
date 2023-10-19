@@ -51,10 +51,10 @@ echo "Making tomcat the owner of the tomcat directory"
 chown tomcat:tomcat $CATALINA_HOME
 
 echo "Downloading Tomcat 9"
-wget -P /tmp https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.81/bin/apache-tomcat-9.0.81.tar.gz
+wget -P /tmp https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.82/bin/apache-tomcat-9.0.82.tar.gz
 
 echo "Unpackaging Tomcat 9 to $CATALINA_HOME"
-tar xzvf /tmp/apache-tomcat-9.0.81.tar.gz -C $CATALINA_HOME --strip-components=1
+tar xzvf /tmp/apache-tomcat-9.0.82.tar.gz -C $CATALINA_HOME --strip-components=1
 
 echo "Giving tomcat user ownership of tomcat directory contents"
 chown -R tomcat:tomcat $CATALINA_HOME
