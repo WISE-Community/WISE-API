@@ -4,7 +4,7 @@ export HOME=/home/ubuntu
 export BUILD_DIR=$HOME/build-folder
 export LEGACY_BUILD_DIR=$HOME/legacy-build-folder
 export BUILD_FILES=$HOME/wise-build-files
-export CATALINA_HOME=/var/lib/tomcat9
+export CATALINA_HOME=/opt/tomcat
 
 exec &>> $HOME/deploy.log
 
