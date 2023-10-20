@@ -31,7 +31,10 @@ echo "Moving legacy.war to $CATALINA_HOME/webapps/legacy.war"
 mv legacy.war $CATALINA_HOME/webapps/legacy.war
 chown tomcat:tomcat $CATALINA_HOME/webapps/legacy.war
 
-echo "Deleting build-folder"
+echo "Deleting build folder"
 rm -rf $BUILD_DIR
+
+echo "Deleting legacy build folder"
+rm -rf $LEGACY_BUILD_DIR
 
 echo "Finishing deployment at $(date)"

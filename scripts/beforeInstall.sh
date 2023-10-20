@@ -123,30 +123,18 @@ echo "Installing network drive package"
 apt-get install nfs-common -y
 
 echo "Mounting network drive folders"
-if [[ "$ENV" == "qa" ]]; then
-  cp $BUILD_FILES/api/qa/fstab /etc/fstab
-else
-  cp $BUILD_FILES/api/fstab /etc/fstab
-fi
+cp $BUILD_FILES/api/fstab /etc/fstab
 mount -a
 
 echo "Copying .vimrc file to the ubuntu home folder"
 sudo -u ubuntu -g ubuntu cp $BUILD_FILES/.vimrc $HOME/.vimrc
 
 echo "Appending text to .bashrc"
-if [[ "$ENV" == "qa" ]]; then
-  cat $BUILD_FILES/api/qa/append-to-bashrc.txt >> ~/.bashrc
-else
-  cat $BUILD_FILES/api/append-to-bashrc.txt >> ~/.bashrc
-fi
+cat $BUILD_FILES/api/append-to-bashrc.txt >> ~/.bashrc
 source ~/.bashrc
 
 echo "Copying message of the day file to update-motd.d folder to display notes on login"
-if [[ "$ENV" == "qa" ]]; then
-  cp $BUILD_FILES/api/qa/99-notes /etc/update-motd.d/99-notes
-else
-  cp $BUILD_FILES/api/99-notes /etc/update-motd.d/99-notes
-fi
+cp $BUILD_FILES/api/99-notes /etc/update-motd.d/99-notes
 chmod 755 /etc/update-motd.d/99-notes
 
 echo "Copying backup-nginx-logs script to /etc/cron.daily folder"
