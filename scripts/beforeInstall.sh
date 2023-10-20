@@ -4,7 +4,7 @@ export HOME=/home/ubuntu
 export BUILD_DIR=$HOME/build-folder
 export LEGACY_BUILD_DIR=$HOME/legacy-build-folder
 export BUILD_FILES=$HOME/wise-build-files
-export CATALINA_HOME=/var/lib/tomcat9
+export CATALINA_HOME=/opt/tomcat
 
 if [[ "$DEPLOYMENT_GROUP_NAME" == "qa-wise-api-deployment-group" ]]; then
   export ENV="qa"
@@ -28,9 +28,9 @@ echo "Installing AWS CLI"
 apt-get install awscli -y
 
 echo "Downloading files from wise-build-files S3 bucket"
-sudo -u ubuntu -g ubuntu mkdir $HOME/wise-build-files
-sudo -u ubuntu -g ubuntu aws s3 sync s3://wise-build-files $HOME/wise-build-files
-chmod u+x $HOME/wise-build-files/sync.sh
+sudo -u ubuntu -g ubuntu mkdir $BUILD_FILES
+sudo -u ubuntu -g ubuntu aws s3 sync s3://wise-build-files $BUILD_FILES
+chmod u+x $BUILD_FILES/sync.sh
 
 echo "Installing Java 11"
 apt-get install openjdk-11-jdk-headless -y
@@ -39,13 +39,31 @@ echo "Create tomcat group"
 groupadd -g 1001 tomcat
 
 echo "Create tomcat user"
-useradd -u 1001 -g tomcat -c "Apache Tomcat" -d / -s /usr/sbin/nologin tomcat
+useradd -u 1001 -g tomcat -c "Apache Tomcat" -d $CATALINA_HOME -s /usr/sbin/nologin tomcat
 
 echo "Adding ubuntu user to tomcat group"
 usermod -a -G tomcat ubuntu
 
-echo "Installing Tomcat 9"
-apt-get install tomcat9 -y
+echo "Creating tomcat directory"
+mkdir $CATALINA_HOME
+
+echo "Making tomcat the owner of the tomcat directory"
+chown tomcat:tomcat $CATALINA_HOME
+
+echo "Downloading Tomcat 9"
+wget -P /tmp https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.82/bin/apache-tomcat-9.0.82.tar.gz
+
+echo "Unpackaging Tomcat 9 to $CATALINA_HOME"
+tar xzvf /tmp/apache-tomcat-9.0.82.tar.gz -C $CATALINA_HOME --strip-components=1
+
+echo "Giving tomcat user ownership of tomcat directory contents"
+chown -R tomcat:tomcat $CATALINA_HOME
+
+echo "Giving tomcat user execute permission on tomcat bin folder"
+chmod -R u+x $CATALINA_HOME/bin
+
+echo "Copying tomcat service file to /etc/systemd/system"
+cp $BUILD_FILES/api/tomcat.service /etc/systemd/system/tomcat.service
 
 echo "Removing Tomcat ROOT folder"
 rm -rf $CATALINA_HOME/webapps/ROOT
@@ -53,11 +71,14 @@ rm -rf $CATALINA_HOME/webapps/ROOT
 echo "Add https to Tomcat server.xml"
 sed 's/<Connector port="8080"/<Connector port="8080" scheme="https"/' -i $CATALINA_HOME/conf/server.xml
 
-echo "Copying setenv.sh file to Tomcat bin folder"
-cp $BUILD_FILES/api/setenv.sh /usr/share/tomcat9/bin/setenv.sh
+echo "Reloading daemon"
+systemctl daemon-reload
 
-echo "Restarting Tomcat"
-service tomcat9 restart
+echo "Starting Tomcat"
+systemctl start tomcat
+
+echo "Enabling Tomcat on startup"
+systemctl enable tomcat
 
 echo "Creating Tomcat curriculum and studentuploads folders"
 sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
@@ -146,7 +167,7 @@ systemctl start sysstat
 echo "Set log file max size to 1G"
 sed 's/{/{\n        maxsize 1G/g' -i /etc/logrotate.d/rsyslog
 sed 's/{/{\n        maxsize 1G/g' -i /etc/logrotate.d/nginx
-sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/tomcat9
+sed 's/{/{\n  maxsize 1G/g' -i /etc/logrotate.d/tomcat
 
 echo "Installing Clam AV"
 apt-get install clamav clamav-daemon -y
