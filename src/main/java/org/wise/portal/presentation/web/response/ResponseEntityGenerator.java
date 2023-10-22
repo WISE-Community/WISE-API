@@ -28,4 +28,8 @@ public class ResponseEntityGenerator {
     body.put("messageCode", messageCode);
     return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
   }
+
+  public static ResponseEntity<Map<String, Object>> createError(Map<String, Object> map) {
+    return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
+  }
 }

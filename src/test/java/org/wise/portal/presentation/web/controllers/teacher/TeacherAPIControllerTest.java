@@ -22,10 +22,12 @@ import java.util.Set;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -36,7 +38,7 @@ import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
-import org.wise.portal.service.password.PasswordService;
+import org.wise.portal.service.password.impl.PasswordServiceImpl;
 
 @RunWith(EasyMockRunner.class)
 public class TeacherAPIControllerTest extends APIControllerTest {
@@ -45,10 +47,14 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   private TeacherAPIController teacherAPIController = new TeacherAPIController();
 
   @Mock
-  private PasswordService passwordService;
-
-  @Mock
   private UserDetailsService userDetailsService;
+
+  @Before
+  public void setUp() {
+    super.setUp();
+    ReflectionTestUtils.setField(teacherAPIController, "passwordService",
+        new PasswordServiceImpl());
+  }
 
   @Test
   public void getRuns_Max0_ReturnPersonalAndSharedRunsSortedByStartTimeDesc() {
@@ -363,34 +369,14 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void createTeacherAccount_InvalidPasswordLength_ReturnError()
+  public void createTeacherAccount_InvalidPassword_ReturnError()
       throws DuplicateUsernameException, InvalidNameException {
-    String password = "1234567";
-    expect(passwordService.isValidLength(password)).andReturn(false);
-    replay(passwordService);
     HashMap<String, String> teacherFields = createDefaultTeacherFields();
-    teacherFields.put("password", password);
+    teacherFields.put("password", PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
     ResponseEntity<Map<String, Object>> response = teacherAPIController
         .createTeacherAccount(teacherFields, request);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("invalidPasswordLength", response.getBody().get("messageCode"));
-    verify(passwordService);
-  }
-
-  @Test
-  public void createTeacherAccount_InvalidPasswordPattern_ReturnError()
-      throws DuplicateUsernameException, InvalidNameException {
-    String password = "abcd1234";
-    expect(passwordService.isValidLength(password)).andReturn(true);
-    expect(passwordService.isValidPattern(password)).andReturn(false);
-    replay(passwordService);
-    HashMap<String, String> teacherFields = createDefaultTeacherFields();
-    teacherFields.put("password", password);
-    ResponseEntity<Map<String, Object>> response = teacherAPIController
-        .createTeacherAccount(teacherFields, request);
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("invalidPasswordPattern", response.getBody().get("messageCode"));
-    verify(passwordService);
+    assertEquals("invalidPassword", response.getBody().get("messageCode"));
   }
 
   @Test

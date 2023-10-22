@@ -12,18 +12,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.easymock.EasyMockRunner;
-import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
-import org.wise.portal.service.password.PasswordService;
+import org.wise.portal.service.password.impl.PasswordServiceImpl;
 
 @RunWith(EasyMockRunner.class)
 public class UserAPIControllerTest extends APIControllerTest {
@@ -31,8 +32,11 @@ public class UserAPIControllerTest extends APIControllerTest {
   @TestSubject
   private UserAPIController userAPIController = new UserAPIController();
 
-  @Mock
-  protected PasswordService passwordService;
+  @Before
+  public void setUp() {
+    super.setUp();
+    ReflectionTestUtils.setField(userAPIController, "passwordService", new PasswordServiceImpl());
+  }
 
   @Test
   public void getUserInfo_UnAuthenticatedUser_ReturnPassedInUsername() {
@@ -112,45 +116,25 @@ public class UserAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void changePassword_InvalidLength_ReturnError() {
-    String newPassword = "Abcd123";
-    expect(passwordService.isValidLength(newPassword)).andReturn(false);
-    replay(passwordService);
+  public void changePassword_InvalidPassword_ReturnError() {
     ResponseEntity<Map<String, Object>> response = userAPIController.changePassword(studentAuth,
-        STUDENT_PASSWORD, newPassword);
+        STUDENT_PASSWORD, PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("invalidPasswordLength", response.getBody().get("messageCode"));
-    verify(passwordService);
-  }
-
-  @Test
-  public void changePassword_InvalidPattern_ReturnError() {
-    String newPassword = "abcd123";
-    expect(passwordService.isValidLength(newPassword)).andReturn(true);
-    expect(passwordService.isValidPattern(newPassword)).andReturn(false);
-    replay(passwordService);
-    ResponseEntity<Map<String, Object>> response = userAPIController.changePassword(studentAuth,
-        STUDENT_PASSWORD, newPassword);
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("invalidPasswordPattern", response.getBody().get("messageCode"));
-    verify(passwordService);
+    Map<String, Object> body = response.getBody();
+    assertEquals("invalidPassword", body.get("messageCode"));
   }
 
   @Test
   public void changePassword_CorrectOldPassword_ChangePassword() throws IncorrectPasswordException {
-    String newPassword = "Abcd1234";
-    expect(passwordService.isValidLength(newPassword)).andReturn(true);
-    expect(passwordService.isValidPattern(newPassword)).andReturn(true);
+    String newPassword = PasswordServiceImpl.VALID_PASSWORD;
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     expect(userService.updateUserPassword(student1, STUDENT_PASSWORD, newPassword))
         .andReturn(student1);
-    replay(passwordService);
     replay(userService);
     ResponseEntity<Map<String, Object>> response = userAPIController.changePassword(studentAuth,
         STUDENT_PASSWORD, newPassword);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("passwordUpdated", response.getBody().get("messageCode"));
-    verify(passwordService);
     verify(userService);
   }
 
@@ -158,19 +142,15 @@ public class UserAPIControllerTest extends APIControllerTest {
   public void changePassword_IncorrectOldPassword_PasswordStaysSame()
       throws IncorrectPasswordException {
     String incorrectPassword = "incorrectPass";
-    String newPassword = "Abcd1234";
-    expect(passwordService.isValidLength(newPassword)).andReturn(true);
-    expect(passwordService.isValidPattern(newPassword)).andReturn(true);
+    String newPassword = PasswordServiceImpl.VALID_PASSWORD;
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     expect(userService.updateUserPassword(student1, incorrectPassword, newPassword))
         .andStubThrow(new IncorrectPasswordException());
-    replay(passwordService);
     replay(userService);
     ResponseEntity<Map<String, Object>> response = userAPIController.changePassword(studentAuth,
         incorrectPassword, newPassword);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     assertEquals("incorrectPassword", response.getBody().get("messageCode"));
-    verify(passwordService);
     verify(userService);
   }
 

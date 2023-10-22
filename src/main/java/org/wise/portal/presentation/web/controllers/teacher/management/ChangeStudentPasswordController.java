@@ -43,10 +43,8 @@ public class ChangeStudentPasswordController {
       User teacherUser = userService.retrieveUserByUsername(auth.getName());
       boolean isTeacherGoogleUser = teacherUser.getUserDetails().isGoogleUser();
       if (isTeacherPasswordCorrect(isTeacherGoogleUser, teacherUser, teacherPassword)) {
-        if (!passwordService.isValidLength(newStudentPassword)) {
-          return ResponseEntityGenerator.createError("invalidPasswordLength");
-        } else if (!passwordService.isValidPattern(newStudentPassword)) {
-          return ResponseEntityGenerator.createError("invalidPasswordPattern");
+        if (!passwordService.isValid(newStudentPassword)) {
+          return ResponseEntityGenerator.createError(passwordService.getErrors(newStudentPassword));
         }
         User studentUser = userService.retrieveById(studentId);
         userService.updateUserPassword(studentUser, newStudentPassword);

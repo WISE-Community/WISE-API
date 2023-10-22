@@ -31,15 +31,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Map;
 
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
-import org.wise.portal.service.password.PasswordService;
+import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.easymock.EasyMockRunner;
-import org.easymock.Mock;
 import org.easymock.TestSubject;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(EasyMockRunner.class)
 public class ChangeStudentPasswordControllerTest extends APIControllerTest {
@@ -47,14 +48,16 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   @TestSubject
   private ChangeStudentPasswordController controller = new ChangeStudentPasswordController();
 
-  @Mock
-  private PasswordService passwordService;
-
-  String STUDENT_PASSWORD_INVALID_LENGTH = "1234567";
-  String STUDENT_PASSWORD_INVALID_PATTERN = "abcd1234";
-  String STUDENT_PASSWORD_VALID = "Abcd1234";
+  String STUDENT_PASSWORD_INVALID = PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT;
+  String STUDENT_PASSWORD_VALID = PasswordServiceImpl.VALID_PASSWORD;
   String TEACHER_PASSWORD_CORRECT = "correctTeacherPassword1";
   String TEACHER_PASSWORD_INCORRECT = "incorrectTeacherPassword1";
+
+  @Before
+  public void setUp() {
+    super.setUp();
+    ReflectionTestUtils.setField(controller, "passwordService", new PasswordServiceImpl());
+  }
 
   @Test
   public void changeStudentPassword_NoWritePermission_ThrowAccessDenied() throws Exception {
@@ -82,11 +85,11 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   }
 
   private void replayServices() {
-    replay(passwordService, runService, userService);
+    replay(runService, userService);
   }
 
   private void verifyServices() {
-    verify(passwordService, runService, userService);
+    verify(runService, userService);
   }
 
   @Test
@@ -102,27 +105,13 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void changeStudentPassword_InvalidPasswordLength_ReturnError() throws Exception {
+  public void changeStudentPassword_InvalidPassword_ReturnError() throws Exception {
     setupChangeStudentPasswordExpect();
     expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
-    expect(passwordService.isValidLength(STUDENT_PASSWORD_INVALID_LENGTH)).andReturn(false);
     replayServices();
     ResponseEntity<Map<String, Object>> response = controller.changeStudentPassword(teacherAuth,
-        runId1, student1Id, TEACHER_PASSWORD_CORRECT, STUDENT_PASSWORD_INVALID_LENGTH);
-    assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPasswordLength");
-    verifyServices();
-  }
-
-  @Test
-  public void changeStudentPassword_InvalidPasswordPattern_ReturnError() throws Exception {
-    setupChangeStudentPasswordExpect();
-    expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
-    expect(passwordService.isValidLength(STUDENT_PASSWORD_INVALID_PATTERN)).andReturn(true);
-    expect(passwordService.isValidPattern(STUDENT_PASSWORD_INVALID_PATTERN)).andReturn(false);
-    replayServices();
-    ResponseEntity<Map<String, Object>> response = controller.changeStudentPassword(teacherAuth,
-        runId1, student1Id, TEACHER_PASSWORD_CORRECT, STUDENT_PASSWORD_INVALID_PATTERN);
-    assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPasswordPattern");
+        runId1, student1Id, TEACHER_PASSWORD_CORRECT, STUDENT_PASSWORD_INVALID);
+    assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPassword");
     verifyServices();
   }
 
@@ -130,8 +119,6 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   public void changeStudentPassword_validTeacherPassword_ChangeStudentPassword() throws Exception {
     setupChangeStudentPasswordExpect();
     expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
-    expect(passwordService.isValidLength(STUDENT_PASSWORD_VALID)).andReturn(true);
-    expect(passwordService.isValidPattern(STUDENT_PASSWORD_VALID)).andReturn(true);
     expect(userService.retrieveById(student1Id)).andReturn(student1);
     expect(userService.updateUserPassword(student1, STUDENT_PASSWORD_VALID)).andReturn(student1);
     replayServices();

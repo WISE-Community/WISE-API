@@ -168,10 +168,8 @@ public class TeacherAPIController extends UserAPIController {
       tud.setPassword(RandomStringUtils.random(10, true, true));
     } else {
       String password = teacherFields.get("password");
-      if (!passwordService.isValidLength(password)) {
-        return ResponseEntityGenerator.createError("invalidPasswordLength");
-      } else if (!passwordService.isValidPattern(password)) {
-        return ResponseEntityGenerator.createError("invalidPasswordPattern");
+      if (!passwordService.isValid(password)) {
+        return ResponseEntityGenerator.createError(passwordService.getErrors(password));
       } else {
         tud.setPassword(password);
       }
