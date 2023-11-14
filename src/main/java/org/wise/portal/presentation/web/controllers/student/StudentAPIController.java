@@ -407,8 +407,17 @@ public class StudentAPIController extends UserAPIController {
     Workgroup workgroup = null;
     if (workgroupId != null) {
       workgroup = workgroupService.retrieveById(workgroupId);
-    } else if (workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
-      workgroup = workgroupService.getWorkgroupListByRunAndUser(run, user).get(0);
+    }
+    Workgroup workgroupOfUserBeingAdded = null;
+    if (workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
+      workgroupOfUserBeingAdded = workgroupService.getWorkgroupListByRunAndUser(run, user).get(0);
+      if (isUserAlreadyInAnotherWorkgroup(workgroup, workgroupOfUserBeingAdded)) {
+        response.put("status", false);
+        return response;
+      }
+    }
+    if (workgroup == null) {
+      workgroup = workgroupOfUserBeingAdded;
     }
     if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)
         || (workgroup != null && workgroupService.isUserInWorkgroupForRun(user, run, workgroup))) {
@@ -432,5 +441,9 @@ public class StudentAPIController extends UserAPIController {
     }
     response.put("workgroupMembers", members);
     return response;
+  }
+
+  private Boolean isUserAlreadyInAnotherWorkgroup(Workgroup workgroup1, Workgroup workgroup2) {
+    return workgroup1 != null && workgroup2 != null && workgroup1.getId() != workgroup2.getId();
   }
 }
