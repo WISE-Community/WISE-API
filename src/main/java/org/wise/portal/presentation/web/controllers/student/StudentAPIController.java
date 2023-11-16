@@ -404,20 +404,12 @@ public class StudentAPIController extends UserAPIController {
     List<HashMap<String, Object>> members = new ArrayList<HashMap<String, Object>>();
     response.put("status", false);
     response.put("isTeacher", user.isTeacher());
-    Workgroup workgroup = null;
-    if (workgroupId != null) {
-      workgroup = workgroupService.retrieveById(workgroupId);
-    }
-    Workgroup workgroupOfUserBeingAdded = null;
-    if (workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
-      workgroupOfUserBeingAdded = workgroupService.getWorkgroupListByRunAndUser(run, user).get(0);
-      if (isUserAlreadyInAnotherWorkgroup(workgroup, workgroupOfUserBeingAdded)) {
-        response.put("status", false);
-        return response;
-      }
-    }
-    if (workgroup == null) {
-      workgroup = workgroupOfUserBeingAdded;
+    Workgroup workgroup;
+    try {
+      workgroup = getWorkgroupToAddTo(workgroupId, user, run);
+    } catch (DifferentWorkgroupException e) {
+      response.put("status", false);
+      return response;
     }
     if (!workgroupService.isUserInAnyWorkgroupForRun(user, run)
         || (workgroup != null && workgroupService.isUserInWorkgroupForRun(user, run, workgroup))) {
@@ -443,7 +435,30 @@ public class StudentAPIController extends UserAPIController {
     return response;
   }
 
-  private Boolean isUserAlreadyInAnotherWorkgroup(Workgroup workgroup1, Workgroup workgroup2) {
-    return workgroup1 != null && workgroup2 != null && workgroup1.getId() != workgroup2.getId();
+  private Workgroup getWorkgroupToAddTo(Long workgroupId, User user, Run run)
+      throws ObjectNotFoundException, DifferentWorkgroupException {
+    Workgroup signedInWorkgroup = null;
+    if (workgroupId != null) {
+      signedInWorkgroup = workgroupService.retrieveById(workgroupId);
+    }
+    Workgroup workgroupOfUserBeingAdded = null;
+    if (workgroupService.isUserInAnyWorkgroupForRun(user, run)) {
+      workgroupOfUserBeingAdded = workgroupService.getWorkgroupListByRunAndUser(run, user).get(0);
+    }
+    if (signedInWorkgroup == null && workgroupOfUserBeingAdded == null) {
+      return null;
+    } else if (signedInWorkgroup != null && workgroupOfUserBeingAdded == null) {
+      return signedInWorkgroup;
+    } else if (signedInWorkgroup == null && workgroupOfUserBeingAdded != null) {
+      return workgroupOfUserBeingAdded;
+    } else if (signedInWorkgroup.getId() == workgroupOfUserBeingAdded.getId()) {
+      return signedInWorkgroup;
+    } else {
+      throw new DifferentWorkgroupException();
+    }
+  }
+
+  class DifferentWorkgroupException extends Exception {
+    private static final long serialVersionUID = 1L;
   }
 }
