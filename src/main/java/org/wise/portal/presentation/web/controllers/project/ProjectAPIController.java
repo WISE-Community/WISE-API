@@ -21,6 +21,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
+import org.wise.portal.service.usertags.UserTagsService;
 import org.wise.vle.web.SecurityUtils;
 
 /**
@@ -39,6 +40,9 @@ public class ProjectAPIController {
 
   @Autowired
   ProjectService projectService;
+
+  @Autowired
+  private UserTagsService userTagsService;
 
   @GetMapping("/library")
   protected String getLibraryProjects(ModelMap modelMap)
@@ -91,7 +95,7 @@ public class ProjectAPIController {
   protected String getPersonalLibraryProjects(ModelMap modelMap) throws JSONException {
     User signedInUser = ControllerUtil.getSignedInUser();
     List<Project> projectsWithoutRuns = projectService.getProjectsWithoutRuns(signedInUser);
-    JSONArray projectsJSON = getProjectsJSON(projectsWithoutRuns);
+    JSONArray projectsJSON = getProjectsWithTagsJSON(signedInUser, projectsWithoutRuns);
     return projectsJSON.toString();
   }
 
@@ -99,7 +103,7 @@ public class ProjectAPIController {
   protected String getSharedLibraryProjects(ModelMap modelMap) throws JSONException {
     User signedInUser = ControllerUtil.getSignedInUser();
     List<Project> sharedProjectList = projectService.getSharedProjectsWithoutRun(signedInUser);
-    JSONArray projectsJSON = getProjectsJSON(sharedProjectList);
+    JSONArray projectsJSON = getProjectsWithTagsJSON(signedInUser, sharedProjectList);
     return projectsJSON.toString();
   }
 
@@ -112,8 +116,19 @@ public class ProjectAPIController {
 
   private JSONArray getProjectsJSON(List<Project> projectList) throws JSONException {
     JSONArray projectsJSON = new JSONArray();
-    for (Project teacherSharedProject : projectList) {
-      projectsJSON.put(ControllerUtil.getProjectJSON(teacherSharedProject));
+    for (Project project : projectList) {
+      projectsJSON.put(ControllerUtil.getProjectJSON(project));
+    }
+    return projectsJSON;
+  }
+
+  private JSONArray getProjectsWithTagsJSON(User user, List<Project> projectList)
+      throws JSONException {
+    JSONArray projectsJSON = new JSONArray();
+    for (Project project : projectList) {
+      JSONObject projectJSON = ControllerUtil.getProjectJSON(project);
+      projectJSON.put("tags", userTagsService.getTagsList(user, project));
+      projectsJSON.put(projectJSON);
     }
     return projectsJSON;
   }

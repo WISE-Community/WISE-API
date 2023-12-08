@@ -85,17 +85,11 @@ public class TeacherAPIController extends UserAPIController {
     List<HashMap<String, Object>> runsList = new ArrayList<HashMap<String, Object>>();
     for (Run run : runs) {
       HashMap<String, Object> runMap = getRunMap(user, run);
-      Set<UserTag> tags = userTagsService.getTags(user, run.getProject());
-      ((HashMap<String, Object>) runMap.get("project")).put("tags", getTagsList(tags));
+      ((HashMap<String, Object>) runMap.get("project")).put("tags",
+          userTagsService.getTagsList(user, run.getProject()));
       runsList.add(runMap);
     }
     return runsList;
-  }
-
-  private List<String> getTagsList(Set<UserTag> tags) {
-    List<String> tagsList = tags.stream().map(tag -> tag.getText()).collect(Collectors.toList());
-    Collections.sort(tagsList);
-    return tagsList;
   }
 
   @GetMapping("/run/{runId}")
