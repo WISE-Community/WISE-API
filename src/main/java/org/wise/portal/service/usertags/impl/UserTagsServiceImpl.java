@@ -1,5 +1,7 @@
 package org.wise.portal.service.usertags.impl;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -70,5 +72,12 @@ public class UserTagsServiceImpl implements UserTagsService {
     ObjectIdentity objectIdentity = new ObjectIdentityImpl(
         HibernateProxyHelper.getClassWithoutInitializingProxy(project), project.getId());
     return aclTargetObjectIdentityDao.retrieveByObjectIdentity(objectIdentity);
+  }
+
+  public List<String> getTagsList(User user, Project project) {
+    List<String> tagsList = getTags(user, project).stream().map(tag -> tag.getText())
+        .collect(Collectors.toList());
+    Collections.sort(tagsList);
+    return tagsList;
   }
 }

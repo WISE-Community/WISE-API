@@ -1,5 +1,6 @@
 package org.wise.portal.service.usertags;
 
+import java.util.List;
 import java.util.Set;
 
 import org.wise.portal.domain.project.Project;
@@ -19,4 +20,6 @@ public interface UserTagsService {
   void applyTag(Project project, UserTag tag);
 
   void removeTag(Project project, UserTag tag);
+
+  List<String> getTagsList(User user, Project project);
 }
