@@ -60,6 +60,9 @@ public class RedisMessageSubscriber implements MessageListener {
       case "newWorkgroupJoinedRun":
         createAndSendWebSocketMessage("newWorkgroupJoinedRun", messageJSON);
         break;
+      case "isTyping":
+        createAndSendWebSocketMessage("isTyping", messageJSON, "body");
+        break;
       }
     } catch (JSONException e) {
       e.printStackTrace();
