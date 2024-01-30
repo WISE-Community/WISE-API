@@ -29,7 +29,7 @@ public class TranslateProjectAPIControllerTest extends APIControllerTest {
   public void saveTranslations_() throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
-    translateProjectService.saveTranslations(project1, "es", "{ }");
+    translateProjectService.saveTranslations(project1, "es", "{}");
     expectLastCall();
     replay(projectService, translateProjectService, userService);
     controller.saveTranslations(teacherAuth, project1, "es",

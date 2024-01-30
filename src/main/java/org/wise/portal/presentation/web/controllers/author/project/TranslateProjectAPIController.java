@@ -39,7 +39,7 @@ public class TranslateProjectAPIController {
       @RequestBody ObjectNode translations) throws IOException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
-      translateProjectService.saveTranslations(project, locale, translations.toPrettyString());
+      translateProjectService.saveTranslations(project, locale, translations.toString());
     }
   }
 }
