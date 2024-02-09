@@ -744,6 +744,9 @@ public class InformationController {
     config.put("renewSessionURL", contextPath + "/api/session/renew");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
     config.put("sessionLogOutURL", contextPath + "/api/logout");
+    config.put("speechToTextAWSRegion", appProperties.getProperty("speech-to-text.aws.region", ""));
+    config.put("speechToTextAWSIdentityPoolId",
+        appProperties.getProperty("speech-to-text.aws.identity-pool-id", ""));
 
     User signedInUser = ControllerUtil.getSignedInUser();
     setUserLocale(request, signedInUser, config);
