@@ -106,17 +106,8 @@ public class UserAPIController {
       info.put("isPreviousAdmin", isPreviousAdmin(auth));
       info.put("language", ud.getLanguage());
       info.put("isGoogleUser", ud.isGoogleUser());
-
-      if (user.isStudent()) {
-        info.put("role", "student");
-      } else {
-        if (user.isAdmin()) {
-          info.put("role", "admin");
-        } else if (user.isResearcher()) {
-          info.put("role", "researcher");
-        } else if (user.isTeacher()) {
-          info.put("role", "teacher");
-        }
+      info.put("roles", getRoles(user));
+      if (user.isTeacher()) {
         TeacherUserDetails tud = (TeacherUserDetails) ud;
         info.put("displayName", tud.getDisplayname());
         info.put("email", tud.getEmailAddress());
@@ -131,6 +122,26 @@ public class UserAPIController {
       info.put("username", username);
     }
     return info;
+  }
+
+  private List<String> getRoles(User user) {
+    List<String> roles = new ArrayList<String>();
+    if (user.isAdmin()) {
+      roles.add("admin");
+    }
+    if (user.isResearcher()) {
+      roles.add("researcher");
+    }
+    if (user.isTrustedAuthor()) {
+      roles.add("trustedAuthor");
+    }
+    if (user.isTeacher()) {
+      roles.add("teacher");
+    }
+    if (user.isStudent()) {
+      roles.add("student");
+    }
+    return roles;
   }
 
   @Secured("ROLE_TEACHER")
