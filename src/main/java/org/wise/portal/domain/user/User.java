@@ -20,6 +20,8 @@
  */
 package org.wise.portal.domain.user;
 
+import java.util.List;
+
 import org.wise.portal.domain.Persistable;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 
@@ -49,4 +51,6 @@ public interface User extends Persistable, Comparable<User> {
   boolean isTeacher();
 
   boolean isTrustedAuthor();
+
+  List<String> getRoles();
 }
