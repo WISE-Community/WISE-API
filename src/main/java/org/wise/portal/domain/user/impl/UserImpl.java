@@ -20,6 +20,9 @@
  */
 package org.wise.portal.domain.user.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -91,13 +94,31 @@ public class UserImpl implements User {
     return userDetails.hasGrantedAuthority(UserDetailsService.TRUSTED_AUTHOR_ROLE);
   }
 
+  public List<String> getRoles() {
+    List<String> roles = new ArrayList<String>();
+    if (this.isAdmin()) {
+      roles.add("admin");
+    }
+    if (this.isResearcher()) {
+      roles.add("researcher");
+    }
+    if (this.isTrustedAuthor()) {
+      roles.add("trustedAuthor");
+    }
+    if (this.isTeacher()) {
+      roles.add("teacher");
+    }
+    if (this.isStudent()) {
+      roles.add("student");
+    }
+    return roles;
+  }
+
   @Override
   public int hashCode() {
     final int PRIME = 31;
     int result = 1;
-    result = PRIME
-      * result
-      + ((userDetails == null) ? 0 : userDetails.hashCode());
+    result = PRIME * result + ((userDetails == null) ? 0 : userDetails.hashCode());
     return result;
   }
 
@@ -108,7 +129,8 @@ public class UserImpl implements User {
     if (obj == null)
       return false;
     if (obj instanceof HibernateProxy) {
-      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+      if (getClass() != ((HibernateProxy) obj).getHibernateLazyInitializer().getImplementation()
+          .getClass()) {
         return false;
       }
     } else if (getClass() != obj.getClass())
