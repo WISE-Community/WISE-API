@@ -80,4 +80,8 @@ public class UserTagsServiceImpl implements UserTagsService {
     Collections.sort(tagsList);
     return tagsList;
   }
+
+  public List<UserTag> getTags(User user) {
+    return userTagsDao.get(user);
+  }
 }

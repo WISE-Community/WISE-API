@@ -22,4 +22,6 @@ public interface UserTagsService {
   void removeTag(Project project, UserTag tag);
 
   List<String> getTagsList(User user, Project project);
+
+  List<UserTag> getTags(User user);
 }
