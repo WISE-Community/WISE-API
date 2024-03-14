@@ -22,6 +22,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = UserTagImpl.DATA_STORE_NAME)
+@Getter
+@Setter
 public class UserTagImpl implements UserTag {
 
   @Transient
@@ -32,19 +34,13 @@ public class UserTagImpl implements UserTag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Getter
-  @Setter
   private Long id = null;
 
   @ManyToOne(targetEntity = UserImpl.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "users_fk", nullable = false)
-  @Getter
-  @Setter
   @JsonIgnore
   private User user;
 
-  @Getter
-  @Setter
   @Column(name = "text")
   private String text;
 
