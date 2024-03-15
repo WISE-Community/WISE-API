@@ -106,17 +106,8 @@ public class UserAPIController {
       info.put("isPreviousAdmin", isPreviousAdmin(auth));
       info.put("language", ud.getLanguage());
       info.put("isGoogleUser", ud.isGoogleUser());
-
-      if (user.isStudent()) {
-        info.put("role", "student");
-      } else {
-        if (user.isAdmin()) {
-          info.put("role", "admin");
-        } else if (user.isResearcher()) {
-          info.put("role", "researcher");
-        } else if (user.isTeacher()) {
-          info.put("role", "teacher");
-        }
+      info.put("roles", user.getRoles());
+      if (user.isTeacher()) {
         TeacherUserDetails tud = (TeacherUserDetails) ud;
         info.put("displayName", tud.getDisplayname());
         info.put("email", tud.getEmailAddress());
