@@ -1,6 +1,5 @@
 package org.wise.portal.presentation.web.controllers.tag;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,6 +10,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,14 +32,19 @@ public class UserTagController {
   @Autowired
   private UserTagsService userTagsService;
 
+  @PostMapping("/user/tag")
+  protected ResponseEntity<Map<String, Object>> createTag(Authentication auth,
+      @RequestBody Map<String, Object> tag) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag userTag = userTagsService.createTag(user, (String) tag.get("text"));
+    return ResponseEntityGenerator.createSuccess(userTag.toMap());
+  }
+
   @GetMapping("/user/tags")
   protected ResponseEntity<List<Map<String, Object>>> getTags(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
-    List<Map<String, Object>> tags = userTagsService.getTags(user).stream().map(t -> {
-      Map<String, Object> tag = new HashMap<>();
-      tag.put("id", t.getId());
-      tag.put("text", t.getText());
-      return tag;
+    List<Map<String, Object>> tags = userTagsService.getTags(user).stream().map(tag -> {
+      return tag.toMap();
     }).collect(Collectors.toList());
     return ResponseEntityGenerator.createSuccess(tags);
   }
@@ -51,6 +56,6 @@ public class UserTagController {
     UserTag userTag = userTagsService.get(tagId);
     userTag.setText((String) tag.get("text"));
     userTagsService.updateTag(user, userTag);
-    return ResponseEntityGenerator.createSuccess(tag);
+    return ResponseEntityGenerator.createSuccess(userTag.toMap());
   }
 }
