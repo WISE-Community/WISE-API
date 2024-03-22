@@ -11,6 +11,8 @@ public interface UserTagsService {
 
   UserTag get(User user, String text);
 
+  UserTag get(Long id);
+
   UserTag createTag(User user, String tag);
 
   Set<UserTag> getTags(User user, Project project);
@@ -24,4 +26,6 @@ public interface UserTagsService {
   List<String> getTagsList(User user, Project project);
 
   List<UserTag> getTags(User user);
+
+  void updateTag(User user, UserTag tag);
 }

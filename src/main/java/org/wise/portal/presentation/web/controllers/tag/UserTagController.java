@@ -10,9 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -38,5 +42,15 @@ public class UserTagController {
       return tag;
     }).collect(Collectors.toList());
     return ResponseEntityGenerator.createSuccess(tags);
+  }
+
+  @PutMapping("/user/tag/{tagId}")
+  protected ResponseEntity<Map<String, Object>> updateTag(Authentication auth,
+      @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag userTag = userTagsService.get(tagId);
+    userTag.setText((String) tag.get("text"));
+    userTagsService.updateTag(user, userTag);
+    return ResponseEntityGenerator.createSuccess(tag);
   }
 }

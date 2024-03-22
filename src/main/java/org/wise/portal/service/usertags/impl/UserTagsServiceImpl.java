@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.proxy.HibernateProxyHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,11 @@ public class UserTagsServiceImpl implements UserTagsService {
   @Override
   public UserTag get(User user, String text) {
     return userTagsDao.get(user, text);
+  }
+
+  @Override
+  public UserTag get(Long id) {
+    return userTagsDao.get(id);
   }
 
   @Override
@@ -83,5 +89,14 @@ public class UserTagsServiceImpl implements UserTagsService {
 
   public List<UserTag> getTags(User user) {
     return userTagsDao.get(user);
+  }
+
+  public void updateTag(User user, UserTag tag) {
+    UserTag userTag = userTagsDao.get((Long) tag.getId());
+    if (user.equals(userTag.getUser())) {
+      userTagsDao.save(tag);
+    } else {
+      throw new AccessDeniedException("User does not have permission to update tag.");
+    }
   }
 }
