@@ -40,6 +40,7 @@ import com.auth0.jwk.UrlJwkProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -70,6 +71,7 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
   private String googleJwkUrl;
 
   @Autowired
+  @Qualifier("googleOpenIdRestTemplate")
   private OAuth2RestTemplate googleOpenIdRestTemplate;
 
   @Autowired

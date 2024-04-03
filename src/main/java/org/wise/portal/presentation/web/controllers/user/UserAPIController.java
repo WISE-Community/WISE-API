@@ -80,6 +80,9 @@ public class UserAPIController {
   @Autowired
   protected MessageSource messageSource;
 
+  @Value("${microsoft.clientId:}")
+  protected String microsoftClientId = "";
+
   @Autowired
   protected StudentService studentService;
 
@@ -163,6 +166,7 @@ public class UserAPIController {
     config.put("googleClientId", googleClientId);
     config.put("isGoogleClassroomEnabled", isGoogleClassroomEnabled());
     config.put("logOutURL", contextPath + "/api/logout");
+    config.put("microsoftClientId", microsoftClientId);
     config.put("recaptchaPublicKey", appProperties.getProperty("recaptcha_public_key"));
     config.put("wiseHostname", appProperties.getProperty("wise.hostname"));
     config.put("wise4Hostname", appProperties.getProperty("wise4.hostname"));

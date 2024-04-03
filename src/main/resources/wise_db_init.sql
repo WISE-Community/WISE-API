@@ -497,6 +497,7 @@ create table user_details (
     email_address varchar(255),
     enabled bit not null,
     googleUserId varchar(255) null,
+    microsoftUserId varchar(255) null,
     reset_password_verification_code_request_time datetime null,
     reset_password_verification_code varchar(255) null,
     recent_failed_verification_code_attempt_time datetime null,

@@ -57,6 +57,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
+import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
+import org.wise.portal.presentation.web.filters.MicrosoftOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationSuccessHandler;
@@ -77,23 +79,20 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http
-        .csrf().disable()
+    http.csrf().disable()
         .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
         .addFilterAfter(oAuth2ClientContextFilter(), OpenSessionInViewFilter.class)
         .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
+        .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
-        .authorizeRequests()
-        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR","RESEARCHER")
-        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR","RESEARCHER")
-        .antMatchers("/author/**").hasAnyRole("TEACHER")
+        .authorizeRequests().antMatchers("/api/login/impersonate")
+        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/admin/**")
+        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
-        .antMatchers("/student/account/info").hasAnyRole("TEACHER")
-        .antMatchers("/student/**").hasAnyRole("STUDENT")
-        .antMatchers("/studentStatus").hasAnyRole("TEACHER","STUDENT")
-        .antMatchers("/teacher/**").hasAnyRole("TEACHER")
-        .antMatchers("/sso/discourse").hasAnyRole("TEACHER","STUDENT")
-        .antMatchers("/").permitAll();
+        .antMatchers("/student/account/info").hasAnyRole("TEACHER").antMatchers("/student/**")
+        .hasAnyRole("STUDENT").antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/teacher/**").hasAnyRole("TEACHER").antMatchers("/sso/discourse")
+        .hasAnyRole("TEACHER", "STUDENT").antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
@@ -113,7 +112,6 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     return filter;
   }
 
-
   @Bean
   public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
     GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/api/google-login");
@@ -122,6 +120,13 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     return filter;
   }
 
+  @Bean
+  public MicrosoftOpenIdConnectFilter microsoftOpenIdConnectFilter() {
+    MicrosoftOpenIdConnectFilter filter = new MicrosoftOpenIdConnectFilter("/api/microsoft-login");
+    filter.setAuthenticationSuccessHandler(authSuccessHandler());
+    filter.setAuthenticationFailureHandler(microsoftAuthFailureHandler());
+    return filter;
+  }
 
   @Bean
   public OpenSessionInViewFilter openSessionInViewFilter() {
@@ -155,7 +160,7 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Bean
   public LogoutFilter logoutFilter() {
-    LogoutHandler[] handlers = new LogoutHandler[]{ new SecurityContextLogoutHandler() };
+    LogoutHandler[] handlers = new LogoutHandler[] { new SecurityContextLogoutHandler() };
     return new LogoutFilter("/", handlers);
   }
 
@@ -181,6 +186,11 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     WISEAuthenticationFailureHandler handler = new WISEAuthenticationFailureHandler();
     handler.setAuthenticationFailureUrl("/login?failed=true");
     return handler;
+  }
+
+  @Bean
+  public AuthenticationFailureHandler microsoftAuthFailureHandler() {
+    return new MicrosoftAuthenticationFailureHandler();
   }
 
   @Bean

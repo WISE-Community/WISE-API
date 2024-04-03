@@ -31,8 +31,8 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
  * Provides WISE-specific ROLES on top of what is already available in WISE
  * @author Hiroki Terashima
  */
-public interface UserDetailsService extends
-    org.springframework.security.core.userdetails.UserDetailsService {
+public interface UserDetailsService
+    extends org.springframework.security.core.userdetails.UserDetailsService {
 
   String ANONYMOUS_ROLE = "ROLE_ANONYMOUS";
 
@@ -72,7 +72,7 @@ public interface UserDetailsService extends
    * @throws DuplicateAuthorityException if authority is not unique.
    */
   MutableGrantedAuthority createGrantedAuthority(MutableGrantedAuthority mutableGrantedAuthority)
-    throws DuplicateAuthorityException;
+      throws DuplicateAuthorityException;
 
   /**
    * Given an authority string, loads an authority from the data store.
@@ -81,8 +81,7 @@ public interface UserDetailsService extends
    * @return A MutableGrantedAuthority object
    * @throws AuthorityNotFoundException if authority is not in data store.
    */
-  GrantedAuthority loadAuthorityByName(String authority)
-    throws AuthorityNotFoundException;
+  GrantedAuthority loadAuthorityByName(String authority) throws AuthorityNotFoundException;
 
   /**
    * Returns a list of all existing authorities in the system.
@@ -94,8 +93,11 @@ public interface UserDetailsService extends
 
   UserDetails loadUserByGoogleUserId(String googleUserId);
 
+  UserDetails loadUserByMicrosoftUserId(String userId);
+
   void updateStatsOnSuccessfulLogin(MutableUserDetails userDetails);
 
   List<String> retrieveAllTeacherUsernames();
+
   List<String> retrieveAllStudentUsernames();
 }
