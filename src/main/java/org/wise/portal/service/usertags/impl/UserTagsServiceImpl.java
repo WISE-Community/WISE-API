@@ -80,10 +80,10 @@ public class UserTagsServiceImpl implements UserTagsService {
     return aclTargetObjectIdentityDao.retrieveByObjectIdentity(objectIdentity);
   }
 
-  public List<String> getTagsList(User user, Project project) {
-    List<String> tagsList = getTags(user, project).stream().map(tag -> tag.getText())
-        .collect(Collectors.toList());
-    Collections.sort(tagsList);
+  public List<UserTag> getTagsList(User user, Project project) {
+    List<UserTag> tagsList = getTags(user, project).stream().collect(Collectors.toList());
+    Collections.sort(tagsList,
+        (tag1, tag2) -> tag1.getText().toLowerCase().compareTo(tag2.getText().toLowerCase()));
     return tagsList;
   }
 
