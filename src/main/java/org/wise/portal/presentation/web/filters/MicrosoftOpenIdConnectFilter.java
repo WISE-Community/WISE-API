@@ -82,7 +82,12 @@ public class MicrosoftOpenIdConnectFilter extends AbstractAuthenticationProcessi
     final UserDetails user = userDetailsService.loadUserByMicrosoftUserId(microsoftUserId);
     invalidateAccessToken();
     if (user != null) {
-      return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+      if (request.getAttribute("redirectUrl").toString().contains("join")) {
+        response.sendRedirect("/join/microsoftUserAlreadyExists");
+        return null;
+      } else {
+        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+      }
     } else {
       throw new MicrosoftUserNotFoundException("Microsoft user not found", authInfo);
     }
