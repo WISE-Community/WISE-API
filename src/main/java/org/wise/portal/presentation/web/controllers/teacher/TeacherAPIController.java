@@ -157,8 +157,12 @@ public class TeacherAPIController extends UserAPIController {
     tud.setState(teacherFields.get("state"));
     tud.setCountry(teacherFields.get("country"));
     String googleUserId = teacherFields.get("googleUserId");
-    if (isUsingGoogleUserId(googleUserId)) {
+    String microsoftUserId = teacherFields.get("microsoftUserId");
+    if (isSet(googleUserId)) {
       tud.setGoogleUserId(googleUserId);
+      tud.setPassword(RandomStringUtils.random(10, true, true));
+    } else if (isSet(microsoftUserId)) {
+      tud.setMicrosoftUserId(microsoftUserId);
       tud.setPassword(RandomStringUtils.random(10, true, true));
     } else {
       String password = teacherFields.get("password");
@@ -180,14 +184,15 @@ public class TeacherAPIController extends UserAPIController {
     String username = createdUser.getUserDetails().getUsername();
     String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
     Boolean iSendEmailEnabled = Boolean.valueOf(sendEmailEnabledStr);
+    boolean socialAccount = this.isSet(googleUserId) || this.isSet(microsoftUserId);
     if (iSendEmailEnabled) {
-      sendCreateTeacherAccountEmail(email, displayName, username, googleUserId, locale, request);
+      sendCreateTeacherAccountEmail(email, displayName, username, socialAccount, locale, request);
     }
     return createRegisterSuccessResponse(username);
   }
 
   private void sendCreateTeacherAccountEmail(String email, String displayName, String username,
-      String googleUserId, Locale locale, HttpServletRequest request) {
+      boolean socialAccount, Locale locale, HttpServletRequest request) {
     String fromEmail = appProperties.getProperty("portalemailaddress");
     String[] recipients = { email };
     String defaultSubject = messageSource.getMessage(
@@ -201,7 +206,7 @@ public class TeacherAPIController extends UserAPIController {
         new Object[] { username }, Locale.US);
     String gettingStartedUrl = getGettingStartedUrl(request);
     String message;
-    if (isUsingGoogleUserId(googleUserId)) {
+    if (socialAccount) {
       message = messageSource.getMessage(
           "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmailBodyNoUsername",
           new Object[] { displayName, gettingStartedUrl }, defaultBody, locale);
@@ -221,8 +226,8 @@ public class TeacherAPIController extends UserAPIController {
     return ControllerUtil.getPortalUrlString(request) + "/help/getting-started";
   }
 
-  private boolean isUsingGoogleUserId(String googleUserId) {
-    return googleUserId != null && !googleUserId.isEmpty();
+  private boolean isSet(String value) {
+    return value != null && !value.isEmpty();
   }
 
   private List<HashMap<String, Object>> getRunSharedOwnersList(Run run) {

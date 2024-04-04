@@ -124,7 +124,8 @@ public class PersistentUserDetails implements MutableUserDetails {
   // However, Acegi Security deals with an array. There are internal methods
   // to convert to and from the different data structures.
   @ManyToMany(targetEntity = PersistentGrantedAuthority.class, fetch = FetchType.EAGER)
-  @JoinTable(name = PersistentUserDetails.GRANTED_AUTHORITY_JOIN_TABLE_NAME, joinColumns = { @JoinColumn(name = USER_DETAILS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = GRANTED_AUTHORITY_JOIN_COLUMN_NAME, nullable = false))
+  @JoinTable(name = PersistentUserDetails.GRANTED_AUTHORITY_JOIN_TABLE_NAME, joinColumns = {
+      @JoinColumn(name = USER_DETAILS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = GRANTED_AUTHORITY_JOIN_COLUMN_NAME, nullable = false))
   private Set<GrantedAuthority> grantedAuthorities = null;
 
   @Column(name = PersistentUserDetails.COLUMN_NAME_PASSWORD, nullable = false)
@@ -181,6 +182,11 @@ public class PersistentUserDetails implements MutableUserDetails {
   @Setter
   private String googleUserId;
 
+  @Column(name = "microsoftUserId")
+  @Getter
+  @Setter
+  private String microsoftUserId;
+
   @Column(name = PersistentUserDetails.COLUMN_NAME_RESET_PASSWORD_VERIFICATION_CODE_REQUEST_TIME, nullable = true)
   @Getter
   @Setter
@@ -220,9 +226,8 @@ public class PersistentUserDetails implements MutableUserDetails {
   }
 
   @SuppressWarnings("unused")
-  private synchronized void setGrantedAuthorities(
-    Set<GrantedAuthority> grantedAuthorities) {
-        /* Used only for persistence */
+  private synchronized void setGrantedAuthorities(Set<GrantedAuthority> grantedAuthorities) {
+    /* Used only for persistence */
     this.grantedAuthorities = grantedAuthorities;
   }
 
@@ -266,8 +271,7 @@ public class PersistentUserDetails implements MutableUserDetails {
   public int hashCode() {
     final int PRIME = 31;
     int result = 1;
-    result = PRIME * result
-      + ((this.username == null) ? 0 : this.username.hashCode());
+    result = PRIME * result + ((this.username == null) ? 0 : this.username.hashCode());
     return result;
   }
 

@@ -64,6 +64,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return this.userDetailsDao.retrieveByGoogleUserId(googleUserId);
   }
 
+  public UserDetails loadUserByMicrosoftUserId(String userId) {
+    return this.userDetailsDao.retrieveByMicrosoftUserId(userId);
+  }
+
   @Override
   public void updateStatsOnSuccessfulLogin(MutableUserDetails userDetails) {
     ((MutableUserDetails) userDetails).incrementNumberOfLogins();
@@ -105,7 +109,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Transactional(readOnly = true)
   public List<MutableGrantedAuthority> retrieveAllAuthorities() {
-    return  grantedAuthorityDao.getList();
+    return grantedAuthorityDao.getList();
   }
 
   @Transactional
