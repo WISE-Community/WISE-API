@@ -1,5 +1,8 @@
 package org.wise.portal.domain.usertag.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -50,5 +53,12 @@ public class UserTagImpl implements UserTag {
   public UserTagImpl(User user, String text) {
     this.user = user;
     this.text = text;
+  }
+
+  public Map<String, Object> toMap() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("id", this.id);
+    map.put("text", this.text);
+    return map;
   }
 }
