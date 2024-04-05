@@ -1,5 +1,6 @@
 package org.wise.portal.presentation.web.controllers.tag;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,7 +44,10 @@ public class UserTagController {
   @GetMapping("/user/tags")
   protected ResponseEntity<List<Map<String, Object>>> getTags(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
-    List<Map<String, Object>> tags = userTagsService.getTags(user).stream().map(tag -> {
+    List<UserTag> userTags = userTagsService.getTags(user);
+    Collections.sort(userTags,
+        (tag1, tag2) -> tag1.getText().toLowerCase().compareTo(tag2.getText().toLowerCase()));
+    List<Map<String, Object>> tags = userTags.stream().map(tag -> {
       return tag.toMap();
     }).collect(Collectors.toList());
     return ResponseEntityGenerator.createSuccess(tags);
