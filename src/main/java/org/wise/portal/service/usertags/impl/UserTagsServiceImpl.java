@@ -18,6 +18,7 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.domain.usertag.impl.UserTagImpl;
+import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.usertags.UserTagsService;
 
 @Service
@@ -25,6 +26,9 @@ public class UserTagsServiceImpl implements UserTagsService {
 
   @Autowired
   private AclTargetObjectIdentityDao<MutableAclTargetObjectIdentity> aclTargetObjectIdentityDao;
+
+  @Autowired
+  private ProjectService projectService;
 
   @Autowired
   private UserTagsDao<UserTag> userTagsDao;
@@ -97,6 +101,24 @@ public class UserTagsServiceImpl implements UserTagsService {
       userTagsDao.save(tag);
     } else {
       throw new AccessDeniedException("User does not have permission to update tag.");
+    }
+  }
+
+  public void deleteTag(User user, UserTag tag) {
+    if (user.equals(tag.getUser())) {
+      removeTagFromProjects(projectService.getProjectList(user), tag);
+      removeTagFromProjects(projectService.getSharedProjectList(user), tag);
+      userTagsDao.delete(tag);
+    } else {
+      throw new AccessDeniedException("User does not have permission to delete tag.");
+    }
+  }
+
+  private void removeTagFromProjects(List<Project> projects, UserTag userTag) {
+    for (Project project : projects) {
+      MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
+      mutableObjectIdentity.getTags().remove(userTag);
+      aclTargetObjectIdentityDao.save(mutableObjectIdentity);
     }
   }
 }
