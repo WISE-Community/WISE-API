@@ -322,6 +322,9 @@ public class StudentAPIController extends UserAPIController {
     if (studentFields.containsKey("googleUserId")) {
       sud.setGoogleUserId(studentFields.get("googleUserId"));
       sud.setPassword(RandomStringUtils.random(10, true, true));
+    } else if (studentFields.containsKey("microsoftUserId")) {
+      sud.setMicrosoftUserId(studentFields.get("microsoftUserId"));
+      sud.setPassword(RandomStringUtils.random(10, true, true));
     } else {
       String password = studentFields.get("password");
       if (!passwordService.isValid(password)) {
