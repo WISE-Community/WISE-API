@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,5 +62,14 @@ public class UserTagController {
     userTag.setText((String) tag.get("text"));
     userTagsService.updateTag(user, userTag);
     return ResponseEntityGenerator.createSuccess(userTag.toMap());
+  }
+
+  @DeleteMapping("/user/tag/{tagId}")
+  protected ResponseEntity<Map<String, Object>> deleteTag(Authentication auth,
+      @PathVariable("tagId") Long tagId) {
+    User user = userService.retrieveUserByUsername(auth.getName());
+    UserTag tag = userTagsService.get(tagId);
+    userTagsService.deleteTag(user, tag);
+    return ResponseEntityGenerator.createSuccess(tag.toMap());
   }
 }

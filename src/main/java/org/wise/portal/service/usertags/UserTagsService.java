@@ -28,4 +28,6 @@ public interface UserTagsService {
   List<UserTag> getTags(User user);
 
   void updateTag(User user, UserTag tag);
+
+  void deleteTag(User user, UserTag tag);
 }
