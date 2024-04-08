@@ -58,6 +58,12 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
+  public Boolean hasTag(User user, String tag) {
+    return getTags(user).stream()
+        .anyMatch(t -> t.getText().toLowerCase().equals(tag.toLowerCase()));
+  }
+
+  @Override
   public Boolean hasTag(User user, Project project, String tag) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     Set<UserTag> tags = mutableObjectIdentity.getTags();

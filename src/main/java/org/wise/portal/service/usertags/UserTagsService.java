@@ -17,6 +17,8 @@ public interface UserTagsService {
 
   Set<UserTag> getTags(User user, Project project);
 
+  Boolean hasTag(User user, String tag);
+
   Boolean hasTag(User user, Project project, String tag);
 
   void applyTag(Project project, UserTag tag);
