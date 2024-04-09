@@ -38,7 +38,11 @@ public class UserTagController {
   protected ResponseEntity<Map<String, Object>> createTag(Authentication auth,
       @RequestBody Map<String, Object> tag) {
     User user = userService.retrieveUserByUsername(auth.getName());
-    UserTag userTag = userTagsService.createTag(user, (String) tag.get("text"));
+    String tagText = ((String) tag.get("text")).trim();
+    if (userTagsService.hasTag(user, tagText)) {
+      return ResponseEntityGenerator.createError("tagAlreadyExists");
+    }
+    UserTag userTag = userTagsService.createTag(user, tagText);
     return ResponseEntityGenerator.createSuccess(userTag.toMap());
   }
 
