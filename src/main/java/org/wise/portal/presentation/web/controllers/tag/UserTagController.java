@@ -62,8 +62,12 @@ public class UserTagController {
   protected ResponseEntity<Map<String, Object>> updateTag(Authentication auth,
       @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag) {
     User user = userService.retrieveUserByUsername(auth.getName());
+    String tagText = ((String) tag.get("text")).trim();
+    if (userTagsService.hasTag(user, tagText)) {
+      return ResponseEntityGenerator.createError("tagAlreadyExists");
+    }
     UserTag userTag = userTagsService.get(tagId);
-    userTag.setText((String) tag.get("text"));
+    userTag.setText(tagText);
     userTagsService.updateTag(user, userTag);
     return ResponseEntityGenerator.createSuccess(userTag.toMap());
   }
