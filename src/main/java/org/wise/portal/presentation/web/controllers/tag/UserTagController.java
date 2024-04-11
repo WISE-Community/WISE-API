@@ -38,11 +38,12 @@ public class UserTagController {
   protected ResponseEntity<Map<String, Object>> createTag(Authentication auth,
       @RequestBody Map<String, Object> tag) {
     User user = userService.retrieveUserByUsername(auth.getName());
-    String tagText = ((String) tag.get("text")).trim();
-    if (userTagsService.hasTag(user, tagText)) {
+    String text = ((String) tag.get("text")).trim();
+    if (userTagsService.hasTag(user, text)) {
       return ResponseEntityGenerator.createError("tagAlreadyExists");
     }
-    UserTag userTag = userTagsService.createTag(user, tagText);
+    String color = ((String) tag.get("color")).trim();
+    UserTag userTag = userTagsService.createTag(user, text, color);
     return ResponseEntityGenerator.createSuccess(userTag.toMap());
   }
 
@@ -63,11 +64,12 @@ public class UserTagController {
       @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag) {
     User user = userService.retrieveUserByUsername(auth.getName());
     String tagText = ((String) tag.get("text")).trim();
-    if (userTagsService.hasTag(user, tagText)) {
+    if (userTagsService.hasTag(user, tagText, tagId)) {
       return ResponseEntityGenerator.createError("tagAlreadyExists");
     }
     UserTag userTag = userTagsService.get(tagId);
     userTag.setText(tagText);
+    userTag.setColor((String) tag.get("color"));
     userTagsService.updateTag(user, userTag);
     return ResponseEntityGenerator.createSuccess(userTag.toMap());
   }

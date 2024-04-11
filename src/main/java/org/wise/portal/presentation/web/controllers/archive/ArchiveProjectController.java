@@ -67,7 +67,7 @@ public class ArchiveProjectController {
   private UserTag getOrCreateArchivedTag(User user) {
     UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
     if (archivedTag == null) {
-      archivedTag = userTagsService.createTag(user, ARCHIVED_TAG);
+      archivedTag = userTagsService.createTag(user, ARCHIVED_TAG, null);
     }
     return archivedTag;
   }

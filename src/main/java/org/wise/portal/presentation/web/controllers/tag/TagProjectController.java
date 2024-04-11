@@ -39,36 +39,28 @@ public class TagProjectController {
   @Autowired
   private UserTagsService userTagsService;
 
-  @PutMapping("/projects/tag/{tag}")
+  @PutMapping("/projects/tag/{tagId}")
   protected ResponseEntity<List<Map<String, Object>>> addTagToProjects(Authentication auth,
-      @RequestBody List<Long> projectIds, @PathVariable("tag") String tag) throws Exception {
+      @RequestBody List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
-    UserTag usertag = getOrCreateTag(user, tag);
+    UserTag userTag = userTagsService.get(tagId);
     List<Project> projects = getProjects(projectIds);
     for (Project project : projects) {
-      userTagsService.applyTag(project, usertag);
+      userTagsService.applyTag(project, userTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
   }
 
-  @DeleteMapping("/projects/tag/{tag}")
+  @DeleteMapping("/projects/tag/{tagId}")
   protected ResponseEntity<List<Map<String, Object>>> removeTagFromProjects(Authentication auth,
-      @RequestParam List<Long> projectIds, @PathVariable("tag") String tag) throws Exception {
+      @RequestParam List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
-    UserTag userTag = getOrCreateTag(user, tag);
+    UserTag userTag = userTagsService.get(tagId);
     List<Project> projects = getProjects(projectIds);
     for (Project project : projects) {
       userTagsService.removeTag(project, userTag);
     }
     return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
-  }
-
-  private UserTag getOrCreateTag(User user, String tag) {
-    UserTag archivedTag = userTagsService.get(user, tag);
-    if (archivedTag == null) {
-      archivedTag = userTagsService.createTag(user, tag);
-    }
-    return archivedTag;
   }
 
   private List<Project> getProjects(List<Long> projectIds) throws ObjectNotFoundException {
