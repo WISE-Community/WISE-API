@@ -47,18 +47,23 @@ public class UserTagImpl implements UserTag {
   @Column(name = "text")
   private String text;
 
+  @Column(name = "color")
+  private String color;
+
   public UserTagImpl() {
   }
 
-  public UserTagImpl(User user, String text) {
+  public UserTagImpl(User user, String text, String color) {
     this.user = user;
     this.text = text;
+    this.color = color;
   }
 
   public Map<String, Object> toMap() {
     Map<String, Object> map = new HashMap<>();
     map.put("id", this.id);
     map.put("text", this.text);
+    map.put("color", this.color);
     return map;
   }
 }

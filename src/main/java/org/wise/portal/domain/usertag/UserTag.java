@@ -11,6 +11,10 @@ public interface UserTag extends Persistable {
 
   void setText(String text);
 
+  String getColor();
+
+  void setColor(String color);
+
   User getUser();
 
   Map<String, Object> toMap();

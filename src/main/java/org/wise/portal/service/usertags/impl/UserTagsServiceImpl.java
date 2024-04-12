@@ -44,8 +44,8 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public UserTag createTag(User user, String text) {
-    UserTag userTag = new UserTagImpl(user, text);
+  public UserTag createTag(User user, String text, String color) {
+    UserTag userTag = new UserTagImpl(user, text, color);
     userTagsDao.save(userTag);
     return userTag;
   }
@@ -58,16 +58,25 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public Boolean hasTag(User user, String tag) {
-    return getTags(user).stream()
-        .anyMatch(t -> t.getText().toLowerCase().equals(tag.toLowerCase()));
+  public Boolean hasTag(User user, String text) {
+    return hasTag(user, text, null);
   }
 
   @Override
-  public Boolean hasTag(User user, Project project, String tag) {
+  public Boolean hasTag(User user, String text, Long idToIgnore) {
+    List<UserTag> tags = getTags(user);
+    if (idToIgnore != null) {
+      tags.remove(this.get(idToIgnore));
+    }
+    return tags.stream().anyMatch(t -> t.getText().toLowerCase().equals(text.toLowerCase()));
+  }
+
+  @Override
+  public Boolean hasTag(User user, Project project, String text) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     Set<UserTag> tags = mutableObjectIdentity.getTags();
-    return tags.stream().anyMatch(t -> t.getUser().equals(user) && t.getText().equals(tag));
+    return tags.stream()
+        .anyMatch(t -> t.getUser().equals(user) && t.getText().equals(text.toLowerCase()));
   }
 
   @Override

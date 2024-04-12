@@ -13,13 +13,15 @@ public interface UserTagsService {
 
   UserTag get(Long id);
 
-  UserTag createTag(User user, String tag);
+  UserTag createTag(User user, String text, String color);
 
   Set<UserTag> getTags(User user, Project project);
 
-  Boolean hasTag(User user, String tag);
+  Boolean hasTag(User user, String text);
 
-  Boolean hasTag(User user, Project project, String tag);
+  Boolean hasTag(User user, String text, Long idToIgnore);
+
+  Boolean hasTag(User user, Project project, String text);
 
   void applyTag(Project project, UserTag tag);
 
