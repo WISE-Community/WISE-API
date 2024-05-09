@@ -114,7 +114,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.5</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
             <goals>
@@ -132,16 +132,16 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.2</version>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.13.0</version>
         <executions>
           <execution>
             <id>default-testCompile</id>
@@ -182,8 +182,7 @@
           </execution>
         </executions>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <release>17</release>
         </configuration>
       </plugin>
       <plugin>
@@ -233,7 +232,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.3</version>
+        <version>3.4.0</version>
         <configuration>
           <archive>
             <manifest>
