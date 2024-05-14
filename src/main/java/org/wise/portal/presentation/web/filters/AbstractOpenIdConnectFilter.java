@@ -62,8 +62,8 @@ public abstract class AbstractOpenIdConnectFilter extends AbstractAuthentication
     int exp = (int) claims.get("exp");
     Date expireDate = new Date(exp * 1000L);
     Date now = new Date();
-    if (expireDate.before(now) || !claims.get("iss").equals(issuer)
-        || !claims.get("aud").equals(clientId)) {
+    System.out.println("issuer:" + claims.get("iss"));
+    if (expireDate.before(now) || !claims.get("aud").equals(clientId)) {
       throw new RuntimeException("Invalid claims");
     }
   }
