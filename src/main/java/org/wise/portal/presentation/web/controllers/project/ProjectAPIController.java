@@ -108,6 +108,15 @@ public class ProjectAPIController {
     return projectsJSON.toString();
   }
 
+  @GetMapping("/personal-and-shared")
+  protected String getPersonalAndSharedProjects(ModelMap modelMap) throws JSONException {
+    User signedInUser = ControllerUtil.getSignedInUser();
+    List<Project> projects = projectService.getProjectList(signedInUser);
+    projects.addAll(projectService.getSharedProjectList(signedInUser));
+    JSONArray projectsJSON = getProjectsWithTagsJSON(signedInUser, projects);
+    return projectsJSON.toString();
+  }
+
   @GetMapping("/info/{projectId}")
   protected String getProjectInfo(@PathVariable("projectId") ProjectImpl project)
       throws ObjectNotFoundException, JSONException {
