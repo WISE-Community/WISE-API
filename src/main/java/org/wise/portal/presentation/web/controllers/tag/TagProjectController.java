@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +19,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
-import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -40,7 +38,7 @@ public class TagProjectController {
   private UserTagsService userTagsService;
 
   @PutMapping("/projects/tag/{tagId}")
-  protected ResponseEntity<List<Map<String, Object>>> addTagToProjects(Authentication auth,
+  protected List<Map<String, Object>> addTagToProjects(Authentication auth,
       @RequestBody List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag userTag = userTagsService.get(tagId);
@@ -48,11 +46,11 @@ public class TagProjectController {
     for (Project project : projects) {
       userTagsService.applyTag(project, userTag);
     }
-    return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
+    return createProjectsResponse(user, projects);
   }
 
   @DeleteMapping("/projects/tag/{tagId}")
-  protected ResponseEntity<List<Map<String, Object>>> removeTagFromProjects(Authentication auth,
+  protected List<Map<String, Object>> removeTagFromProjects(Authentication auth,
       @RequestParam List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag userTag = userTagsService.get(tagId);
@@ -60,7 +58,7 @@ public class TagProjectController {
     for (Project project : projects) {
       userTagsService.removeTag(project, userTag);
     }
-    return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
+    return createProjectsResponse(user, projects);
   }
 
   private List<Project> getProjects(List<Long> projectIds) throws ObjectNotFoundException {
