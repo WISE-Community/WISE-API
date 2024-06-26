@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
+import org.wise.portal.presentation.web.exception.TagAlreadyExistsException;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -36,11 +37,11 @@ public class UserTagController {
 
   @PostMapping("/user/tag")
   protected ResponseEntity<Map<String, Object>> createTag(Authentication auth,
-      @RequestBody Map<String, Object> tag) {
+      @RequestBody Map<String, Object> tag) throws TagAlreadyExistsException {
     User user = userService.retrieveUserByUsername(auth.getName());
     String text = ((String) tag.get("text")).trim();
     if (userTagsService.hasTag(user, text)) {
-      return ResponseEntityGenerator.createError("tagAlreadyExists");
+      throw new TagAlreadyExistsException();
     }
     String color = ((String) tag.get("color")).trim();
     UserTag userTag = userTagsService.createTag(user, text, color);
@@ -61,11 +62,12 @@ public class UserTagController {
 
   @PutMapping("/user/tag/{tagId}")
   protected ResponseEntity<Map<String, Object>> updateTag(Authentication auth,
-      @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag) {
+      @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag)
+      throws TagAlreadyExistsException {
     User user = userService.retrieveUserByUsername(auth.getName());
     String tagText = ((String) tag.get("text")).trim();
     if (userTagsService.hasTag(user, tagText, tagId)) {
-      return ResponseEntityGenerator.createError("tagAlreadyExists");
+      throw new TagAlreadyExistsException();
     }
     UserTag userTag = userTagsService.get(tagId);
     userTag.setText(tagText);

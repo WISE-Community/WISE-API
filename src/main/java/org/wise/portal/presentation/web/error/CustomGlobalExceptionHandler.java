@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import org.wise.portal.presentation.web.exception.InvalidNameException;
+import org.wise.portal.presentation.web.exception.MessageCodeException;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(InvalidNameException.class)
-  public ResponseEntity<Object> handleInvalidNameException(InvalidNameException exception,
+  @ExceptionHandler(MessageCodeException.class)
+  public ResponseEntity<Object> handleMessageCodeException(MessageCodeException exception,
       WebRequest request) {
     Map<String, Object> body = new HashMap<>();
     body.put("messageCode", exception.getMessageCode());
