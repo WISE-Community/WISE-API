@@ -24,9 +24,6 @@
 package org.wise.portal.presentation.web.filters;
 
 import java.io.IOException;
-import java.net.URL;
-import java.security.interfaces.RSAPublicKey;
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -34,14 +31,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.auth0.jwk.Jwk;
-import com.auth0.jwk.JwkProvider;
-import com.auth0.jwk.UrlJwkProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,51 +43,25 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
-import org.springframework.security.jwt.crypto.sign.RsaVerifier;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.wise.portal.domain.authentication.MutableUserDetails;
-import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.session.SessionService;
 
-public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingFilter {
-
-  @Value("${google.clientId:}")
-  private String googleClientId;
-
-  @Value("${google.issuer:}")
-  private String googleIssuer;
-
-  @Value("${google.jwkUrl:}")
-  private String googleJwkUrl;
-
-  @Autowired
-  private OAuth2RestTemplate googleOpenIdRestTemplate;
-
-  @Autowired
-  private UserDetailsService userDetailsService;
+public class GoogleOpenIdConnectFilter extends AbstractOpenIdConnectFilter {
 
   @Autowired
   protected SessionService sessionService;
 
   public GoogleOpenIdConnectFilter(String defaultFilterProcessesUrl) {
     super(defaultFilterProcessesUrl);
-    setAuthenticationManager(new NoopAuthenticationManager());
   }
 
   @Override
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response) throws AuthenticationException, IOException {
-    saveRequestParameter(request, "accessCode");
-    saveRequestParameter(request, "redirectUrl");
-    OAuth2AccessToken accessToken;
-    try {
-      accessToken = googleOpenIdRestTemplate.getAccessToken();
-    } catch (final OAuth2Exception e) {
-      throw new BadCredentialsException("Could not obtain access token", e);
-    }
+    saveRequestParams(request);
+    OAuth2AccessToken accessToken = getAccessToken();
     try {
       final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();
       String kid = JwtHelper.headers(idToken).get("kid");
@@ -101,8 +69,7 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
       final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(),
           Map.class);
       verifyClaims(authInfo);
-      String googleUserId = authInfo.get("sub");
-      final UserDetails user = userDetailsService.loadUserByGoogleUserId(googleUserId);
+      final UserDetails user = userDetailsService.loadUserByGoogleUserId(authInfo.get("sub"));
       invalidateAccesToken();
       if (user != null) {
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
@@ -114,47 +81,8 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
     }
   }
 
-  private void saveRequestParameter(HttpServletRequest request, String parameterName) {
-    String parameterValue = request.getParameter(parameterName);
-    String parameterFromState = (String) googleOpenIdRestTemplate.getOAuth2ClientContext()
-        .removePreservedState(parameterName);
-    googleOpenIdRestTemplate.getOAuth2ClientContext().setPreservedState(parameterName,
-        parameterValue);
-    request.setAttribute(parameterName, parameterFromState);
-  }
-
   private void invalidateAccesToken() {
-    googleOpenIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken) null);
-  }
-
-  public void verifyClaims(Map claims) {
-    int exp = (int) claims.get("exp");
-    Date expireDate = new Date(exp * 1000L);
-    Date now = new Date();
-    if (expireDate.before(now) || !claims.get("iss").equals(googleIssuer)
-        || !claims.get("aud").equals(googleClientId)) {
-      throw new RuntimeException("Invalid claims");
-    }
-  }
-
-  private RsaVerifier verifier(String kid) throws Exception {
-    JwkProvider provider = new UrlJwkProvider(new URL(googleJwkUrl));
-    Jwk jwk = provider.get(kid);
-    return new RsaVerifier((RSAPublicKey) jwk.getPublicKey());
-  }
-
-  public void setRestTemplate(OAuth2RestTemplate restTemplate2) {
-    googleOpenIdRestTemplate = restTemplate2;
-  }
-
-  private static class NoopAuthenticationManager implements AuthenticationManager {
-
-    @Override
-    public Authentication authenticate(Authentication authentication)
-        throws AuthenticationException {
-      throw new UnsupportedOperationException(
-          "No authentication should be done with this AuthenticationManager");
-    }
+    openIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken) null);
   }
 
   @Override
@@ -166,4 +94,24 @@ public class GoogleOpenIdConnectFilter extends AbstractAuthenticationProcessingF
     super.successfulAuthentication(request, response, chain, authentication);
   }
 
+  @Value("${google.clientId:}")
+  protected void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
+  @Value("${google.issuer:}")
+  protected void setIssuer(String issuer) {
+    this.issuer = issuer;
+  }
+
+  @Value("${google.jwkUrl:}")
+  protected void setJwkUrl(String jwkUrl) {
+    this.jwkUrl = jwkUrl;
+  }
+
+  @Autowired
+  @Qualifier("googleOpenIdRestTemplate")
+  protected void setOpenIdRestTemplate(OAuth2RestTemplate template) {
+    this.openIdRestTemplate = template;
+  }
 }

@@ -32,8 +32,8 @@ sudo -u ubuntu -g ubuntu mkdir $BUILD_FILES
 sudo -u ubuntu -g ubuntu aws s3 sync s3://wise-build-files $BUILD_FILES
 chmod u+x $BUILD_FILES/sync.sh
 
-echo "Installing Java 11"
-apt-get install openjdk-11-jdk-headless -y
+echo "Installing Java 17"
+apt-get install openjdk-17-jdk-headless -y
 
 echo "Create tomcat group"
 groupadd -g 1001 tomcat
