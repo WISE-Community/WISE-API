@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.exception.TagAlreadyExistsException;
-import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.usertags.UserTagsService;
 
@@ -36,8 +34,8 @@ public class UserTagController {
   private UserTagsService userTagsService;
 
   @PostMapping("/user/tag")
-  protected ResponseEntity<Map<String, Object>> createTag(Authentication auth,
-      @RequestBody Map<String, Object> tag) throws TagAlreadyExistsException {
+  protected Map<String, Object> createTag(Authentication auth, @RequestBody Map<String, Object> tag)
+      throws TagAlreadyExistsException {
     User user = userService.retrieveUserByUsername(auth.getName());
     String text = ((String) tag.get("text")).trim();
     if (userTagsService.hasTag(user, text)) {
@@ -45,11 +43,11 @@ public class UserTagController {
     }
     String color = ((String) tag.get("color")).trim();
     UserTag userTag = userTagsService.createTag(user, text, color);
-    return ResponseEntityGenerator.createSuccess(userTag.toMap());
+    return userTag.toMap();
   }
 
   @GetMapping("/user/tags")
-  protected ResponseEntity<List<Map<String, Object>>> getTags(Authentication auth) {
+  protected List<Map<String, Object>> getTags(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<UserTag> userTags = userTagsService.getTags(user);
     Collections.sort(userTags,
@@ -57,13 +55,12 @@ public class UserTagController {
     List<Map<String, Object>> tags = userTags.stream().map(tag -> {
       return tag.toMap();
     }).collect(Collectors.toList());
-    return ResponseEntityGenerator.createSuccess(tags);
+    return tags;
   }
 
   @PutMapping("/user/tag/{tagId}")
-  protected ResponseEntity<Map<String, Object>> updateTag(Authentication auth,
-      @PathVariable("tagId") Long tagId, @RequestBody Map<String, Object> tag)
-      throws TagAlreadyExistsException {
+  protected Map<String, Object> updateTag(Authentication auth, @PathVariable("tagId") Long tagId,
+      @RequestBody Map<String, Object> tag) throws TagAlreadyExistsException {
     User user = userService.retrieveUserByUsername(auth.getName());
     String tagText = ((String) tag.get("text")).trim();
     if (userTagsService.hasTag(user, tagText, tagId)) {
@@ -73,15 +70,14 @@ public class UserTagController {
     userTag.setText(tagText);
     userTag.setColor((String) tag.get("color"));
     userTagsService.updateTag(user, userTag);
-    return ResponseEntityGenerator.createSuccess(userTag.toMap());
+    return userTag.toMap();
   }
 
   @DeleteMapping("/user/tag/{tagId}")
-  protected ResponseEntity<Map<String, Object>> deleteTag(Authentication auth,
-      @PathVariable("tagId") Long tagId) {
+  protected Map<String, Object> deleteTag(Authentication auth, @PathVariable("tagId") Long tagId) {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag tag = userTagsService.get(tagId);
     userTagsService.deleteTag(user, tag);
-    return ResponseEntityGenerator.createSuccess(tag.toMap());
+    return tag.toMap();
   }
 }
