@@ -17,11 +17,11 @@ public interface UserTagsService {
 
   Set<UserTag> getTags(User user, Project project);
 
-  Boolean hasTag(User user, String text);
+  boolean hasTag(User user, String text);
 
-  Boolean hasTag(User user, String text, Long idToIgnore);
+  boolean hasTag(User user, String text, Long idToIgnore);
 
-  Boolean hasTag(User user, Project project, String text);
+  boolean hasTag(User user, Project project, String text);
 
   void applyTag(Project project, UserTag tag);
 

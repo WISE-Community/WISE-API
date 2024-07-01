@@ -58,12 +58,12 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public Boolean hasTag(User user, String text) {
+  public boolean hasTag(User user, String text) {
     return hasTag(user, text, null);
   }
 
   @Override
-  public Boolean hasTag(User user, String text, Long idToIgnore) {
+  public boolean hasTag(User user, String text, Long idToIgnore) {
     List<UserTag> tags = getTags(user);
     if (idToIgnore != null) {
       tags.remove(this.get(idToIgnore));
@@ -72,7 +72,7 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   @Override
-  public Boolean hasTag(User user, Project project, String text) {
+  public boolean hasTag(User user, Project project, String text) {
     MutableAclTargetObjectIdentity mutableObjectIdentity = getMutableObjectIdentity(project);
     Set<UserTag> tags = mutableObjectIdentity.getTags();
     return tags.stream()
