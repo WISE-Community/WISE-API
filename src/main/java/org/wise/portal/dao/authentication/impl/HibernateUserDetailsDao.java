@@ -45,8 +45,8 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
  * @author Cynick Young
  */
 @Repository
-public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDetails> implements
-    UserDetailsDao<MutableUserDetails> {
+public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDetails>
+    implements UserDetailsDao<MutableUserDetails> {
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -62,8 +62,8 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentUserDetails> cq = cb.createQuery(PersistentUserDetails.class);
     Root<PersistentUserDetails> persistentUserDetailsRoot = cq.from(PersistentUserDetails.class);
-    cq.select(persistentUserDetailsRoot).where(
-        cb.equal(persistentUserDetailsRoot.get("username"), username));
+    cq.select(persistentUserDetailsRoot)
+        .where(cb.equal(persistentUserDetailsRoot.get("username"), username));
     TypedQuery<PersistentUserDetails> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }
@@ -73,8 +73,8 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
     CriteriaQuery<String> cq = cb.createQuery(String.class);
     Root<PersistentUserDetails> persistentUserDetailsRoot = cq.from(PersistentUserDetails.class);
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
-    cq.select(persistentUserDetailsRoot.get("username")).where(
-        cb.equal(persistentUserDetailsRoot.get("id"), teacherUserDetailsRoot.get("id")));
+    cq.select(persistentUserDetailsRoot.get("username"))
+        .where(cb.equal(persistentUserDetailsRoot.get("id"), teacherUserDetailsRoot.get("id")));
     TypedQuery<String> query = entityManager.createQuery(cq);
     return query.getResultList();
   }
@@ -84,8 +84,8 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
     CriteriaQuery<String> cq = cb.createQuery(String.class);
     Root<PersistentUserDetails> persistentUserDetailsRoot = cq.from(PersistentUserDetails.class);
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
-    cq.select(persistentUserDetailsRoot.get("username")).where(
-        cb.equal(persistentUserDetailsRoot.get("id"), studentUserDetailsRoot.get("id")));
+    cq.select(persistentUserDetailsRoot.get("username"))
+        .where(cb.equal(persistentUserDetailsRoot.get("id"), studentUserDetailsRoot.get("id")));
     TypedQuery<String> query = entityManager.createQuery(cq);
     return query.getResultList();
   }
@@ -94,8 +94,18 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentUserDetails> cq = cb.createQuery(PersistentUserDetails.class);
     Root<PersistentUserDetails> persistentUserDetailsRoot = cq.from(PersistentUserDetails.class);
-    cq.select(persistentUserDetailsRoot).where(
-        cb.equal(persistentUserDetailsRoot.get("googleUserId"), googleUserId));
+    cq.select(persistentUserDetailsRoot)
+        .where(cb.equal(persistentUserDetailsRoot.get("googleUserId"), googleUserId));
+    TypedQuery<PersistentUserDetails> query = entityManager.createQuery(cq);
+    return query.getResultStream().findFirst().orElse(null);
+  }
+
+  public PersistentUserDetails retrieveByMicrosoftUserId(String userId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<PersistentUserDetails> cq = cb.createQuery(PersistentUserDetails.class);
+    Root<PersistentUserDetails> persistentUserDetailsRoot = cq.from(PersistentUserDetails.class);
+    cq.select(persistentUserDetailsRoot)
+        .where(cb.equal(persistentUserDetailsRoot.get("microsoftUserId"), userId));
     TypedQuery<PersistentUserDetails> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }

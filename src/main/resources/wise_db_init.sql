@@ -497,6 +497,7 @@ create table user_details (
     email_address varchar(255),
     enabled bit not null,
     googleUserId varchar(255) null,
+    microsoftUserId varchar(255) null,
     reset_password_verification_code_request_time datetime null,
     reset_password_verification_code varchar(255) null,
     recent_failed_verification_code_attempt_time datetime null,
@@ -547,6 +548,7 @@ CREATE TABLE `user_tags` (
     id bigint not null auto_increment,
     users_fk bigint not null,
     text varchar(100) not null,
+    color varchar(25) DEFAULT null,
     constraint user_tags_users_fk foreign key (users_fk) references users (id),
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

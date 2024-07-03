@@ -48,7 +48,7 @@ public class ArchiveProjectController {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag archivedTag = getOrCreateArchivedTag(user);
     userTagsService.applyTag(project, archivedTag);
-    return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
+    return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project, archivedTag));
   }
 
   @PutMapping("/projects/archived")
@@ -60,13 +60,14 @@ public class ArchiveProjectController {
     for (Project project : projects) {
       userTagsService.applyTag(project, archivedTag);
     }
-    return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
+    return ResponseEntityGenerator
+        .createSuccess(createProjectsResponse(user, projects, archivedTag));
   }
 
   private UserTag getOrCreateArchivedTag(User user) {
     UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
     if (archivedTag == null) {
-      archivedTag = userTagsService.createTag(user, ARCHIVED_TAG);
+      archivedTag = userTagsService.createTag(user, ARCHIVED_TAG, null);
     }
     return archivedTag;
   }
@@ -79,7 +80,7 @@ public class ArchiveProjectController {
     if (archivedTag != null) {
       userTagsService.removeTag(project, archivedTag);
     }
-    return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project));
+    return ResponseEntityGenerator.createSuccess(createProjectResponse(user, project, archivedTag));
   }
 
   @DeleteMapping("/projects/archived")
@@ -93,7 +94,8 @@ public class ArchiveProjectController {
         userTagsService.removeTag(project, archivedTag);
       }
     }
-    return ResponseEntityGenerator.createSuccess(createProjectsResponse(user, projects));
+    return ResponseEntityGenerator
+        .createSuccess(createProjectsResponse(user, projects, archivedTag));
   }
 
   private List<Project> getProjects(List<Long> projectIds) throws ObjectNotFoundException {
@@ -104,17 +106,19 @@ public class ArchiveProjectController {
     return projects;
   }
 
-  private Map<String, Object> createProjectResponse(User user, Project project) {
+  private Map<String, Object> createProjectResponse(User user, Project project, UserTag tag) {
     Map<String, Object> response = new HashMap<String, Object>();
     response.put("id", project.getId());
     response.put("archived", userTagsService.hasTag(user, project, ARCHIVED_TAG));
+    response.put("tag", tag);
     return response;
   }
 
-  private List<Map<String, Object>> createProjectsResponse(User user, List<Project> projects) {
+  private List<Map<String, Object>> createProjectsResponse(User user, List<Project> projects,
+      UserTag tag) {
     List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
     for (Project project : projects) {
-      response.add(createProjectResponse(user, project));
+      response.add(createProjectResponse(user, project, tag));
     }
     return response;
   }

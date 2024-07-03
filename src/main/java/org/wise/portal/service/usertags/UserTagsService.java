@@ -11,15 +11,27 @@ public interface UserTagsService {
 
   UserTag get(User user, String text);
 
-  UserTag createTag(User user, String tag);
+  UserTag get(Long id);
+
+  UserTag createTag(User user, String text, String color);
 
   Set<UserTag> getTags(User user, Project project);
 
-  Boolean hasTag(User user, Project project, String tag);
+  boolean hasTag(User user, String text);
+
+  boolean hasTag(User user, String text, Long idToIgnore);
+
+  boolean hasTag(User user, Project project, String text);
 
   void applyTag(Project project, UserTag tag);
 
   void removeTag(Project project, UserTag tag);
 
-  List<String> getTagsList(User user, Project project);
+  List<UserTag> getTagsList(User user, Project project);
+
+  List<UserTag> getTags(User user);
+
+  void updateTag(User user, UserTag tag);
+
+  void deleteTag(User user, UserTag tag);
 }

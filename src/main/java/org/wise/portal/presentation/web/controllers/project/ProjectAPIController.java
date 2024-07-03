@@ -18,6 +18,7 @@ import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
@@ -107,6 +108,15 @@ public class ProjectAPIController {
     return projectsJSON.toString();
   }
 
+  @GetMapping("/personal-and-shared")
+  protected String getPersonalAndSharedProjects(ModelMap modelMap) throws JSONException {
+    User signedInUser = ControllerUtil.getSignedInUser();
+    List<Project> projects = projectService.getProjectList(signedInUser);
+    projects.addAll(projectService.getSharedProjectList(signedInUser));
+    JSONArray projectsJSON = getProjectsWithTagsJSON(signedInUser, projects);
+    return projectsJSON.toString();
+  }
+
   @GetMapping("/info/{projectId}")
   protected String getProjectInfo(@PathVariable("projectId") ProjectImpl project)
       throws ObjectNotFoundException, JSONException {
@@ -127,10 +137,18 @@ public class ProjectAPIController {
     JSONArray projectsJSON = new JSONArray();
     for (Project project : projectList) {
       JSONObject projectJSON = ControllerUtil.getProjectJSON(project);
-      projectJSON.put("tags", userTagsService.getTagsList(user, project));
+      projectJSON.put("tags", convertTagsToJsonArray(userTagsService.getTagsList(user, project)));
       projectsJSON.put(projectJSON);
     }
     return projectsJSON;
+  }
+
+  private JSONArray convertTagsToJsonArray(List<UserTag> tags) {
+    JSONArray tagsJSONArray = new JSONArray();
+    for (UserTag tag : tags) {
+      tagsJSONArray.put(tag.toMap());
+    }
+    return tagsJSONArray;
   }
 
   private JSONObject populateProjectMetadata(JSONObject projectLibraryGroup) throws JSONException {

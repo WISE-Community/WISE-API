@@ -22,7 +22,6 @@ package org.wise.portal.dao.authentication;
 
 import java.util.List;
 
-
 import org.wise.portal.dao.SimpleDao;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 
@@ -32,8 +31,14 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 public interface UserDetailsDao<T extends MutableUserDetails> extends SimpleDao<T> {
 
   boolean hasUsername(String username);
+
   T retrieveByName(String name);
+
   T retrieveByGoogleUserId(String googleUserId);
+
+  T retrieveByMicrosoftUserId(String userId);
+
   List<String> retrieveAllStudentUsernames();
+
   List<String> retrieveAllTeacherUsernames();
 }

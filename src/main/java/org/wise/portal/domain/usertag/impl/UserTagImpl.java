@@ -1,5 +1,8 @@
 package org.wise.portal.domain.usertag.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,6 +25,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = UserTagImpl.DATA_STORE_NAME)
+@Getter
+@Setter
 public class UserTagImpl implements UserTag {
 
   @Transient
@@ -32,27 +37,33 @@ public class UserTagImpl implements UserTag {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Getter
-  @Setter
   private Long id = null;
 
   @ManyToOne(targetEntity = UserImpl.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "users_fk", nullable = false)
-  @Getter
-  @Setter
   @JsonIgnore
   private User user;
 
-  @Getter
-  @Setter
   @Column(name = "text")
   private String text;
+
+  @Column(name = "color")
+  private String color;
 
   public UserTagImpl() {
   }
 
-  public UserTagImpl(User user, String text) {
+  public UserTagImpl(User user, String text, String color) {
     this.user = user;
     this.text = text;
+    this.color = color;
+  }
+
+  public Map<String, Object> toMap() {
+    Map<String, Object> map = new HashMap<>();
+    map.put("id", this.id);
+    map.put("text", this.text);
+    map.put("color", this.color);
+    return map;
   }
 }
