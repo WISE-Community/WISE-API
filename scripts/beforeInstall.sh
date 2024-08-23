@@ -84,27 +84,28 @@ echo "Creating Tomcat curriculum and studentuploads folders"
 sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/curriculum
 sudo -u tomcat -g tomcat mkdir $CATALINA_HOME/webapps/studentuploads
 
-echo "Installing Nginx"
-apt-get install nginx -y
+echo "Update apt repository to be able to use latest stable Nginx packages"
+apt install curl gnupg2 ca-certificates lsb-release ubuntu-keyring -y
+curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null
+echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
+apt update
 
-echo "Adding Nginx www-data user to tomcat group"
-usermod -a -G tomcat www-data
+echo "Installing Nginx 1.26.2"
+apt-get install nginx=1.26.2-1~$(lsb_release -sc) -y
 
-echo "Adding ip to nginx.conf"
-sed 's/http {/http {\n        add_header ip $server_addr;/' -i /etc/nginx/nginx.conf
+echo "Adding Nginx nginx user to tomcat group"
+usermod -a -G tomcat nginx
 
 echo "Adding gzip_types to nginx.conf"
-sed 's/gzip on;/gzip on;\n        gzip_types text\/plain text\/xml image\/gif image\/jpeg image\/png image\/svg+xml application\/json application\/javascript application\/x-javascript text\/javascript text\/css;/' -i /etc/nginx/nginx.conf
+sed 's/#gzip  on;/gzip on;\n    gzip_types text\/plain text\/xml image\/gif image\/jpeg image\/png image\/svg+xml application\/json application\/javascript application\/x-javascript text\/javascript text\/css;/' -i /etc/nginx/nginx.conf
 
-echo "Remove TLS 1.0 from nginx.conf"
-sed 's/TLSv1 //g' -i /etc/nginx/nginx.conf
+echo "Clearing out /etc/nginx/conf.d folder"
+rm -f /etc/nginx/conf.d/*
 
-echo "Remove TLS 1.1 from nginx.conf"
-sed 's/TLSv1.1 //g' -i /etc/nginx/nginx.conf
+echo "Copying WISE Nginx config file to Nginx conf.d folder"
+cp $BUILD_FILES/api/$ENV/wise.conf /etc/nginx/conf.d/wise.conf
 
-echo "Copying WISE Nginx config file to Nginx sites-enabled folder"
-rm -f /etc/nginx/sites-enabled/*
-cp $BUILD_FILES/api/$ENV/wise.conf /etc/nginx/sites-enabled/wise.conf
+echo "Restarting Nginx"
 systemctl restart nginx
 
 echo "Creating additional folders for WISE"
