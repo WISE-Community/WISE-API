@@ -2,7 +2,6 @@
 
 export HOME=/home/ubuntu
 export BUILD_DIR=$HOME/build-folder
-export LEGACY_BUILD_DIR=$HOME/legacy-build-folder
 export BUILD_FILES=$HOME/wise-build-files
 export CATALINA_HOME=/opt/tomcat
 
@@ -110,15 +109,11 @@ systemctl restart nginx
 
 echo "Creating additional folders for WISE"
 mkdir -p $BUILD_DIR/WEB-INF/classes
-mkdir -p $LEGACY_BUILD_DIR/WEB-INF/classes
 sudo -u ubuntu -g ubuntu mkdir $HOME/backup
 sudo -u ubuntu -g tomcat mkdir $HOME/googleTokens
 
 echo "Copying application.properties file to the build folder"
 cp $BUILD_FILES/api/$ENV/application.properties $BUILD_DIR/WEB-INF/classes/application.properties
-
-echo "Copying application-legacy.properties file to the legacy build folder"
-cp $BUILD_FILES/api/$ENV/application-legacy.properties $LEGACY_BUILD_DIR/WEB-INF/classes/application.properties
 
 echo "Installing network drive package"
 apt-get install nfs-common -y
