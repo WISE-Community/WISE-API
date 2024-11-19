@@ -796,7 +796,9 @@ public class InformationController {
       User user = userService.retrieveUser(userDetails);
       List<Workgroup> workgroupListByRunAndUser = workgroupService.getWorkgroupListByRunAndUser(run,
           user);
-      workgroup = workgroupListByRunAndUser.get(0);
+      if (workgroupListByRunAndUser.size() > 0) {
+        workgroup = workgroupListByRunAndUser.get(0);
+      }
     }
     return workgroup;
   }
