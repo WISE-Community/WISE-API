@@ -125,7 +125,7 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Column(name = "tools", length = 32768, columnDefinition = "text")
   @Getter
   @Setter
-  private String tools;   // text (blob) 2^15
+  private String tools; // text (blob) 2^15
 
   @Column(name = "lesson_plan", length = 5120000, columnDefinition = "mediumtext")
   @Getter
@@ -200,6 +200,10 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String navMode;
 
+  @Getter
+  @Setter
+  private String researchProjects;
+
   public ProjectMetadataImpl() {
   }
 
@@ -235,6 +239,12 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       authors = new JSONArray();
     }
     setAuthors(authors.toString());
+
+    JSONArray researchProjects = metadataJSON.optJSONArray("researchProjects");
+    if (researchProjects == null) {
+      researchProjects = new JSONArray();
+    }
+    setResearchProjects(researchProjects.toString());
 
     JSONArray parentProjects = metadataJSON.optJSONArray("parentProjects");
     if (parentProjects == null) {
@@ -372,7 +382,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
     if (techReqs != null && !techReqs.equals("") && !techReqs.equals("null")) {
       try {
         JSONObject techReqsJSON = new JSONObject(techReqs);
-        if (techReqsJSON.has("java") && (techReqsJSON.getString("java").equals("checked") || techReqsJSON.getString("java").equals("true"))) {
+        if (techReqsJSON.has("java") && (techReqsJSON.getString("java").equals("checked")
+            || techReqsJSON.getString("java").equals("true"))) {
           techReqsAndDetailsStringBuf.append("Java");
         }
 
@@ -383,14 +394,16 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
           techReqsAndDetailsStringBuf.append("Flash");
         }
 
-        if (techReqsJSON.has("quickTime") && (techReqsJSON.getString("quickTime").equals("checked") || techReqsJSON.getString("quickTime").equals("true"))) {
+        if (techReqsJSON.has("quickTime") && (techReqsJSON.getString("quickTime").equals("checked")
+            || techReqsJSON.getString("quickTime").equals("true"))) {
           if (techReqsAndDetailsStringBuf.length() != 0) {
             techReqsAndDetailsStringBuf.append(", ");
           }
           techReqsAndDetailsStringBuf.append("QuickTime");
         }
 
-        if (techReqsJSON.has("techDetails") && techReqsJSON.getString("techDetails") != null && !techReqsJSON.getString("techDetails").equals("")) {
+        if (techReqsJSON.has("techDetails") && techReqsJSON.getString("techDetails") != null
+            && !techReqsJSON.getString("techDetails").equals("")) {
           if (techReqsAndDetailsStringBuf.length() != 0) {
             techReqsAndDetailsStringBuf.append(", ");
           }
@@ -456,6 +469,14 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("parentProjects", parentProjectsJSON);
       } else {
         metadata.put("parentProjects", new JSONArray());
+      }
+
+      String researchProjectsString = metadata.getString("researchProjects");
+      if (researchProjectsString != null && researchProjectsString != "null") {
+        JSONArray researchProjectsJSON = new JSONArray(researchProjectsString);
+        metadata.put("researchProjects", researchProjectsJSON);
+      } else {
+        metadata.put("researchProjects", new JSONArray());
       }
 
     } catch (JSONException e) {
