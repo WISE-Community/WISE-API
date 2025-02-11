@@ -31,4 +31,9 @@ public class CRaterScoringRequest implements CRaterRequest {
     body.put("responses", responses);
     return body.toString();
   }
+
+  // Duplicate method implementation would be abstracted in issue 285  
+  public boolean forBerkeleyEndpoint() {
+    return itemId.substring(0, 9).equals("berkeley_");
+  }
 }

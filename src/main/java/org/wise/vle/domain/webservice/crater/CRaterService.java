@@ -59,7 +59,7 @@ public class CRaterService {
    */
   public String getScoringResponse(CRaterScoringRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
-    request.setCRaterUrl(appProperties.getProperty("cRater_scoring_url"));
+    setRequestCRaterUrl(request, "cRater_scoring_url");
     return post(request);
   }
 
@@ -71,8 +71,13 @@ public class CRaterService {
    */
   public String getVerificationResponse(CRaterVerificationRequest request) throws JSONException {
     request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
-    request.setCRaterUrl(appProperties.getProperty("cRater_verification_url"));
+    setRequestCRaterUrl(request, "cRater_verification_url");
     return post(request);
+  }
+
+  private void setRequestCRaterUrl(CRaterRequest request, String baseUrl) {
+    request.setCRaterUrl(appProperties.getProperty(
+      request.forBerkeleyEndpoint() ? "berkeley_" + baseUrl : baseUrl));
   }
 
   /**

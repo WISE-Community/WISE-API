@@ -21,4 +21,9 @@ public class CRaterVerificationRequest implements CRaterRequest {
     body.put("item_id", itemId);
     return body.toString();
   }
+
+  // Duplicate method implementation would be abstracted in issue 285
+  public boolean forBerkeleyEndpoint() {
+    return itemId.substring(0, 9).equals("berkeley_");
+  }
 }

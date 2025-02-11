@@ -25,6 +25,8 @@ public class CRaterServiceTest {
   private String password = "abc123";
   private String scoringUrl = "https://test.org/score";
   private String verifyUrl = "https://test.org/verify";
+  private String berkeleyScoringUrl = "https://test.org/score/berkeley";
+  private String berkeleyVerifyUrl = "https://test.org/verify/berkeley";
 
   @Before
   public void before() {
@@ -49,6 +51,28 @@ public class CRaterServiceTest {
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId(itemId);
     expect(appProperties.getProperty("cRater_verification_url")).andReturn(verifyUrl);
+    replay(appProperties);
+    cRaterService.getVerificationResponse(request);
+    verify(appProperties);
+  }
+
+  @Test
+  public void getBerkeleyScoringResponse_ShouldGetCRaterProperties() throws JSONException {
+    CRaterScoringRequest request = new CRaterScoringRequest();
+    request.setItemId("berkeley_" + itemId);
+    request.setResponseId("1234567890");
+    request.setResponseText("hello");
+    expect(appProperties.getProperty("berkeley_cRater_scoring_url")).andReturn(berkeleyScoringUrl);
+    replay(appProperties);
+    cRaterService.getScoringResponse(request);
+    verify(appProperties);
+  }
+
+  @Test
+  public void getBerkeleyVerificationResponse_ShouldGetCRaterProperties() throws JSONException {
+    CRaterVerificationRequest request = new CRaterVerificationRequest();
+    request.setItemId("berkeley_" + itemId);
+    expect(appProperties.getProperty("berkeley_cRater_verification_url")).andReturn(berkeleyVerifyUrl);
     replay(appProperties);
     cRaterService.getVerificationResponse(request);
     verify(appProperties);
