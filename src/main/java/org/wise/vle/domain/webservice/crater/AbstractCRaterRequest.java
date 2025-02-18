@@ -17,12 +17,11 @@ public abstract class AbstractCRaterRequest implements CRaterRequest {
   public String generateBodyData() throws JSONException {
     JSONObject body = new JSONObject();
     body.put("client_id", cRaterClientId);
-    body.put("service", "ScoringService");
     body.put("item_id", itemId);
     return body.toString();
   }
 
   public boolean forBerkeleyEndpoint() {
-    return itemId.substring(0, 9).equals("berkeley_");
+    return itemId.length() > 9 && itemId.substring(0, 9).equals("berkeley_");
   }
 }

@@ -14,6 +14,7 @@ public class CRaterScoringRequest extends AbstractCRaterRequest {
 
   public String generateBodyData() throws JSONException {
     JSONObject body = new JSONObject(super.generateBodyData());
+    body.put("service", "ScoringService");
     JSONArray responses = new JSONArray();
     JSONObject response = new JSONObject();
     response.put("response_id", responseId);
