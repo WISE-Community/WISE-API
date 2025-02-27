@@ -43,11 +43,11 @@ public class CRaterController {
 
   @GetMapping("/verify")
   String verifyItemId(CRaterVerificationRequest request) throws JSONException {
-    return cRaterService.getVerificationResponse(request);
+    return cRaterService.getCRaterResponse(request);
   }
 
   @PostMapping("/score")
   String scoreItem(@RequestBody CRaterScoringRequest request) throws JSONException {
-    return cRaterService.getScoringResponse(request);
+    return cRaterService.getCRaterResponse(request);
   }
 }

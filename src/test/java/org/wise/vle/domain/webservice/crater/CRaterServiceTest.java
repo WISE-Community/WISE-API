@@ -6,7 +6,6 @@ import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.core.env.Environment;
@@ -28,53 +27,61 @@ public class CRaterServiceTest {
   private String berkeleyScoringUrl = "https://test.org/score/berkeley";
   private String berkeleyVerifyUrl = "https://test.org/verify/berkeley";
 
-  @Before
-  public void before() {
+  public void beforeETS() {
     expect(appProperties.getProperty("cRater_client_id")).andReturn(clientId);
     expect(appProperties.getProperty("cRater_password")).andReturn(password);
   }
 
+  public void beforeBerkeley() {
+    expect(appProperties.getProperty("berkeley_cRater_client_id")).andReturn(clientId);
+    expect(appProperties.getProperty("berkeley_cRater_password")).andReturn(password);
+  }
+
   @Test
   public void getScoringResponse_ShouldGetCRaterProperties() throws JSONException {
+    beforeETS();
     CRaterScoringRequest request = new CRaterScoringRequest();
     request.setItemId(itemId);
     request.setResponseId("1234567890");
     request.setResponseText("hello");
     expect(appProperties.getProperty("cRater_scoring_url")).andReturn(scoringUrl);
     replay(appProperties);
-    cRaterService.getScoringResponse(request);
+    cRaterService.getCRaterResponse(request);
     verify(appProperties);
   }
 
   @Test
   public void getVerificationResponse_ShouldGetCRaterProperties() throws JSONException {
+    beforeETS();
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId(itemId);
     expect(appProperties.getProperty("cRater_verification_url")).andReturn(verifyUrl);
     replay(appProperties);
-    cRaterService.getVerificationResponse(request);
+    cRaterService.getCRaterResponse(request);
     verify(appProperties);
   }
 
   @Test
   public void getBerkeleyScoringResponse_ShouldGetCRaterProperties() throws JSONException {
+    beforeBerkeley();
     CRaterScoringRequest request = new CRaterScoringRequest();
     request.setItemId("berkeley_" + itemId);
     request.setResponseId("1234567890");
     request.setResponseText("hello");
     expect(appProperties.getProperty("berkeley_cRater_scoring_url")).andReturn(berkeleyScoringUrl);
     replay(appProperties);
-    cRaterService.getScoringResponse(request);
+    cRaterService.getCRaterResponse(request);
     verify(appProperties);
   }
 
   @Test
   public void getBerkeleyVerificationResponse_ShouldGetCRaterProperties() throws JSONException {
+    beforeBerkeley();
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId("berkeley_" + itemId);
     expect(appProperties.getProperty("berkeley_cRater_verification_url")).andReturn(berkeleyVerifyUrl);
     replay(appProperties);
-    cRaterService.getVerificationResponse(request);
+    cRaterService.getCRaterResponse(request);
     verify(appProperties);
   }
 }
