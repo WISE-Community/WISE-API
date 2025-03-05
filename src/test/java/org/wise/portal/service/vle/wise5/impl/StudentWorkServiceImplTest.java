@@ -9,25 +9,25 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.WISEServiceTest;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentWorkServiceImplTest extends WISEServiceTest {
-  
+
   @TestSubject
   private StudentWorkServiceImpl service = new StudentWorkServiceImpl();
 
   @Mock
   private StudentWorkDao<StudentWork> studentWorkDao;
-  
+
   @Test
   public void getLatestStudentWork_SpecificNodeIdComponentId_ReturnLatestStudentWorkList() {
     StudentWork studentWork1 = createComponentWork(run1Workgroup1, run1Node1Id, run1Component1Id,

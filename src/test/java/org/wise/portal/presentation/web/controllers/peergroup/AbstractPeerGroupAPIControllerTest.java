@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.easymock.Mock;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
@@ -45,7 +45,7 @@ public abstract class AbstractPeerGroupAPIControllerTest
 
   protected List<Workgroup> workgroupsNotInPeerGroups = new ArrayList<Workgroup>();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     peerGrouping = new PeerGroupingImpl();

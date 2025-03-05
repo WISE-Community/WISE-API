@@ -5,25 +5,25 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentForgotAccountAPIControllerTest extends APIControllerTest {
 
   @TestSubject
   private StudentForgotAccountAPIController studentForgotAccountAPIController = new StudentForgotAccountAPIController();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     ReflectionTestUtils.setField(studentForgotAccountAPIController, "passwordService",

@@ -25,13 +25,13 @@ import static org.junit.Assert.fail;
 
 import java.util.Collections;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.model.MutableAcl;
@@ -51,7 +51,7 @@ import org.wise.portal.service.acl.impl.AclServiceImpl;
  * @author Laurel Williams
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class AclServiceImplTest {
 
   @Mock
@@ -71,7 +71,7 @@ public class AclServiceImplTest {
 
   private MutableAcl mockMutableAcl;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     authority = new TestingAuthenticationToken("admin",
         new GrantedAuthority[] { new SimpleGrantedAuthority("ROLE_ADMINISTRATOR") });
@@ -86,7 +86,7 @@ public class AclServiceImplTest {
     objectIdentity = new ObjectIdentityImpl(group.getClass(), group.getId());
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     groupAclService = null;
     mutableAclService = null;

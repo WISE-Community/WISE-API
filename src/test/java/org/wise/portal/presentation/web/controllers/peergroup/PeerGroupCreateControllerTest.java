@@ -3,16 +3,16 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreateService;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControllerTest {
 
   @TestSubject
@@ -56,8 +56,7 @@ public class PeerGroupCreateControllerTest extends AbstractPeerGroupAPIControlle
   }
 
   private void expectCreatePeerGroup() {
-    expect(peerGroupCreateService.create(peerGrouping, run1Period1))
-        .andReturn(new PeerGroupImpl());
+    expect(peerGroupCreateService.create(peerGrouping, run1Period1)).andReturn(new PeerGroupImpl());
   }
 
   @Override

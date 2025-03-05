@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -24,7 +24,7 @@ public class GoogleUserAPIControllerTest extends UserAPIControllerTest {
   @TestSubject
   private GoogleUserAPIController controller = new GoogleUserAPIController();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     ReflectionTestUtils.setField(controller, "passwordService", new PasswordServiceImpl());

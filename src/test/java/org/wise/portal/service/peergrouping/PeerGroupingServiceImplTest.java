@@ -82,13 +82,10 @@ public class PeerGroupingServiceImplTest {
 
   PeerGrouping peerGrouping = new PeerGroupingImpl();
 
-  private String projectJSONString = "{" +
-      "\"peerGroupings\":[{\"tag\": \"" + tagInDB + "\"}]," +
-      "\"nodes\":[{\"id\":\"" + nodeId + "\"," +
-      "\"components\":[" +
-      "{\"id\":\"" + componentIdWithPeerGrouping + "\"," +
-      "\"peerGroupingTag\":\"" + tagInDB + "\"" +
-      "}, {\"id\":\"" + componentIdWithoutPeerGrouping + "\"}]}]}";
+  private String projectJSONString = "{" + "\"peerGroupings\":[{\"tag\": \"" + tagInDB + "\"}],"
+      + "\"nodes\":[{\"id\":\"" + nodeId + "\"," + "\"components\":[" + "{\"id\":\""
+      + componentIdWithPeerGrouping + "\"," + "\"peerGroupingTag\":\"" + tagInDB + "\""
+      + "}, {\"id\":\"" + componentIdWithoutPeerGrouping + "\"}]}]}";
 
   @Before
   public void setUp() {

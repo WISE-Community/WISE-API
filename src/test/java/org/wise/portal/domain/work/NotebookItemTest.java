@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.service.notebook.NotebookItemJsonModule;
 import org.wise.vle.domain.work.NotebookItem;
@@ -22,7 +22,7 @@ public class NotebookItemTest extends DomainTest {
 
   NotebookItem item;
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     studentWork = new StudentWork();
@@ -51,11 +51,11 @@ public class NotebookItemTest extends DomainTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new NotebookItemJsonModule());
     String json = mapper.writeValueAsString(item);
-    assertEquals("{\"id\":99,\"runId\":1,\"workgroupId\":64,\"type\":\"note\"" +
-        ",\"localNotebookItemId\":\"ooacs8tls7\"" +
-        ",\"content\":\"{\\\"text\\\":\\\"my note!\\\"}\"" +
-        ",\"clientSaveTime\":1582337976000,\"serverSaveTime\":1582338031000" +
-        ",\"periodId\":100,\"nodeId\":\"node78\",\"title\":\"Note from first step\"}", json);
+    assertEquals("{\"id\":99,\"runId\":1,\"workgroupId\":64,\"type\":\"note\""
+        + ",\"localNotebookItemId\":\"ooacs8tls7\""
+        + ",\"content\":\"{\\\"text\\\":\\\"my note!\\\"}\""
+        + ",\"clientSaveTime\":1582337976000,\"serverSaveTime\":1582338031000"
+        + ",\"periodId\":100,\"nodeId\":\"node78\",\"title\":\"Note from first step\"}", json);
   }
 
 }

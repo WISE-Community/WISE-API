@@ -29,13 +29,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.group.GroupDao;
 import org.wise.portal.dao.workgroup.WorkgroupDao;
 import org.wise.portal.domain.authentication.MutableUserDetails;
@@ -55,7 +55,7 @@ import org.wise.portal.service.group.GroupService;
  * @author Cynick Young
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class WorkgroupServiceImplTest {
 
   @Mock
@@ -89,7 +89,7 @@ public class WorkgroupServiceImplTest {
 
   private static final String USERNAME_3 = "username 3";
 
-  @Before
+  @BeforeEach
   public void setUp() {
     workgroup = new WorkgroupImpl();
     run = new RunImpl();
@@ -111,7 +111,7 @@ public class WorkgroupServiceImplTest {
     user3.setUserDetails(userDetails3);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     workgroupService = null;
     workgroupDao = null;
@@ -152,8 +152,8 @@ public class WorkgroupServiceImplTest {
     expectLastCall();
     replay(workgroupDao);
     Set<User> members = new HashSet<User>();
-    Workgroup createdWorkgroup = workgroupService.createWorkgroup(
-        WORKGROUP_NAME, members, run, period1);
+    Workgroup createdWorkgroup = workgroupService.createWorkgroup(WORKGROUP_NAME, members, run,
+        period1);
     verify(workgroupDao);
     verify(groupDao);
     assertEquals(0, createdWorkgroup.getMembers().size());
@@ -163,8 +163,8 @@ public class WorkgroupServiceImplTest {
   public void createWorkgroup_OneMembers_ShouldCreateWorkgroup() {
     Set<User> members = new HashSet<User>();
     members.add(user1);
-    Workgroup createdWorkgroup = workgroupService.createWorkgroup(
-        WORKGROUP_NAME, members, run, period1);
+    Workgroup createdWorkgroup = workgroupService.createWorkgroup(WORKGROUP_NAME, members, run,
+        period1);
     assertEquals(1, createdWorkgroup.getMembers().size());
     assertEquals(" username 1", createdWorkgroup.getGroup().getName());
   }

@@ -37,13 +37,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.newsitem.NewsItemDao;
 import org.wise.portal.domain.newsitem.NewsItem;
@@ -55,20 +55,20 @@ import org.wise.portal.service.newsitem.NewsItemService;
 /**
  * @author Patrick Lawler
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class NewsItemServiceImplTest {
 
   @TestSubject
-	private NewsItemService newsItemServiceImpl = new NewsItemServiceImpl();
+  private NewsItemService newsItemServiceImpl = new NewsItemServiceImpl();
 
   @Mock
-	private NewsItemDao<NewsItem> newsItemDao;
+  private NewsItemDao<NewsItem> newsItemDao;
 
-	private NewsItem newsItem1;
+  private NewsItem newsItem1;
 
-	private NewsItem newsItem2;
+  private NewsItem newsItem2;
 
-	private Date date1 = Calendar.getInstance().getTime();
+  private Date date1 = Calendar.getInstance().getTime();
 
   private Date date2 = Calendar.getInstance().getTime();
 
@@ -82,15 +82,15 @@ public class NewsItemServiceImplTest {
 
   private String type2 = "teacherOnly";
 
-	private User owner1 = new UserImpl();
+  private User owner1 = new UserImpl();
 
-	private User owner2 = new UserImpl();
+  private User owner2 = new UserImpl();
 
-	private String title1 = "yesterday";
+  private String title1 = "yesterday";
 
-	private String title2 = "today";
+  private String title2 = "today";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     newsItem1 = new NewsItemImpl();
     newsItem1.setDate(date1);
@@ -105,7 +105,7 @@ public class NewsItemServiceImplTest {
     newsItem2.setTitle(title2);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     newsItem1 = null;
     newsItem2 = null;
@@ -145,8 +145,8 @@ public class NewsItemServiceImplTest {
   public void deleteNewsItem_InvalidNewsItemID_ShouldThrowException()
       throws ObjectNotFoundException {
     newsItem1.setId(itemIdNotInDB);
-    expect(newsItemDao.getById(itemIdNotInDB)).andThrow(
-        new ObjectNotFoundException(itemIdNotInDB, NewsItemImpl.class));
+    expect(newsItemDao.getById(itemIdNotInDB))
+        .andThrow(new ObjectNotFoundException(itemIdNotInDB, NewsItemImpl.class));
     replay(newsItemDao);
 
     try {
@@ -186,8 +186,8 @@ public class NewsItemServiceImplTest {
 
   @Test
   public void retrieveById_InvalidItemID_ShouldThrowException() throws ObjectNotFoundException {
-    expect(newsItemDao.getById(itemIdNotInDB)).andThrow(
-        new ObjectNotFoundException(itemIdNotInDB, NewsItem.class));
+    expect(newsItemDao.getById(itemIdNotInDB))
+        .andThrow(new ObjectNotFoundException(itemIdNotInDB, NewsItem.class));
     replay(newsItemDao);
 
     try {
@@ -212,8 +212,8 @@ public class NewsItemServiceImplTest {
 
   @Test
   public void updateNewsItem_InvalidItemID_ShouldThrowException() throws Exception {
-    expect(newsItemDao.getById(itemIdNotInDB)).andThrow(
-        new ObjectNotFoundException(itemIdNotInDB, NewsItem.class));
+    expect(newsItemDao.getById(itemIdNotInDB))
+        .andThrow(new ObjectNotFoundException(itemIdNotInDB, NewsItem.class));
     replay(newsItemDao);
 
     try {

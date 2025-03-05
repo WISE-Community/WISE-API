@@ -13,11 +13,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +43,7 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.student.StudentService;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentAPIControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -56,7 +58,7 @@ public class StudentAPIControllerTest extends APIControllerTest {
   @Mock(fieldName = "i18nProperties")
   private Properties i18nProperties;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     ReflectionTestUtils.setField(studentAPIController, "passwordService",
@@ -300,7 +302,7 @@ public class StudentAPIControllerTest extends APIControllerTest {
     replay(runService);
     expect(workgroupService.retrieveById(workgroupId)).andReturn(workgroup1);
     expect(workgroupService.isUserInAnyWorkgroupForRun(studentNotInWorkgroup, run1))
-        .andReturn(false);
+        .andReturn(false).anyTimes();
     replay(workgroupService);
     HashMap<String, Object> response = studentAPIController.canBeAddedToWorkgroup(studentAuth,
         runId1, workgroupId, studentIdNotInWorkgroup);

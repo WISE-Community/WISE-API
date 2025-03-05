@@ -3,26 +3,24 @@ package org.wise.portal.domain.project;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.project.impl.ProjectContent;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ProjectContentTest {
 
   ProjectContent content;
 
-  final String PROJECT_1 = "{\"nodes\":[" +
-      "{\"id\":\"node1\"," +
-          "\"components\":[" +
-              "{\"id\":\"c1\"}," +
-              "{\"id\":\"c2\", \"peerGroupingTag\":\"tag1\"}]}]}";
+  final String PROJECT_1 = "{\"nodes\":[" + "{\"id\":\"node1\"," + "\"components\":["
+      + "{\"id\":\"c1\", \"type\":\"HTML\"},"
+      + "{\"id\":\"c2\", \"type\":\"PeerChat\", \"peerGroupingTag\":\"tag1\"}]}]}";
 
-  @Before
+  @BeforeEach
   public void setup() throws JSONException {
     content = new ProjectContent(new JSONObject(PROJECT_1));
   }

@@ -36,16 +36,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -67,7 +67,7 @@ import org.wise.portal.service.run.RunService;
 /**
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ProjectServiceImplTest {
 
   @TestSubject
@@ -96,7 +96,7 @@ public class ProjectServiceImplTest {
 
   private User projectOwner;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     TeacherUserDetails userDetails = new TeacherUserDetails();
     userDetails.setFirstname("SpongeBob");
@@ -114,7 +114,7 @@ public class ProjectServiceImplTest {
     projectServiceImpl.init();
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     projectServiceImpl = null;
     projectOwner = null;

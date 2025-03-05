@@ -7,17 +7,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.peergrouping.logic.DifferentKIScoresLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
 
   @TestSubject
@@ -26,7 +26,7 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
   List<Annotation> classroomAnnotations;
   Annotation workgroup1Score, workgroup2Score, workgroup3Score, workgroup4Score, workgroup5Score;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     super.setup();
     setLogic("any");

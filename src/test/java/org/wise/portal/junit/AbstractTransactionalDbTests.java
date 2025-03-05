@@ -22,9 +22,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.easymock.EasyMockExtension;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -62,7 +65,7 @@ import org.wise.portal.service.user.UserService;
  * @author Cynick Young
  * @author Hiroki Terashima
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 public abstract class AbstractTransactionalDbTests
     extends AbstractTransactionalJUnit4SpringContextTests {

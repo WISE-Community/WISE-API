@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
@@ -22,7 +22,7 @@ public class EventTest extends DomainTest {
   Project project;
   User user;
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     project = new ProjectImpl();

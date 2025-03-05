@@ -25,13 +25,13 @@ package org.wise.portal.presentation.web.controllers.admin;
 import java.util.List;
 
 import org.easymock.EasyMock;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.ui.ModelMap;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 /**
  * @author patrick lawler
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class FindProjectRunsControllerTest extends TestCase {
 
   @TestSubject
@@ -58,13 +58,13 @@ public class FindProjectRunsControllerTest extends TestCase {
   Long run1Id = 1L;
   String run1Name = "Run 1";
 
-  @Before
+  @BeforeEach
   public void setUp() {
     run1 = new RunImpl();
     run1.setName(run1Name);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     run1 = null;
   }

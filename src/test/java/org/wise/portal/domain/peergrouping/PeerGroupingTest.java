@@ -1,6 +1,5 @@
 package org.wise.portal.domain.peergrouping;
 
-
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -8,10 +7,12 @@ import static org.junit.Assert.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
@@ -20,7 +21,7 @@ import org.wise.portal.service.peergrouping.PeerGroupingJsonModule;
 import org.wise.portal.service.peergrouping.PeerGroupingSerializer;
 import org.wise.portal.service.run.RunService;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupingTest extends DomainTest {
 
   PeerGrouping peerGrouping;
@@ -35,14 +36,13 @@ public class PeerGroupingTest extends DomainTest {
   String peerGroupingJSON = "{\"id\":1,\"runId\":1,\"logic\":\"manual\",\"tag\":\"tag1\","
       + "\"maxMembershipCount\":2}";
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     PeerGroupingDeserializer deserializer = new PeerGroupingDeserializer();
     deserializer.setRunService(runService);
     mapper = new ObjectMapper();
-    peerGroupingJsonModule.addSerializer(PeerGroupingImpl.class,
-        new PeerGroupingSerializer());
+    peerGroupingJsonModule.addSerializer(PeerGroupingImpl.class, new PeerGroupingSerializer());
     peerGroupingJsonModule.addDeserializer(PeerGroupingImpl.class, deserializer);
     mapper.registerModule(peerGroupingJsonModule);
     peerGrouping = new PeerGroupingImpl();
@@ -63,8 +63,7 @@ public class PeerGroupingTest extends DomainTest {
   public void deserialize() throws Exception {
     expect(runService.retrieveById(1L)).andReturn(run);
     replay(runService);
-    PeerGrouping peerGrouping =
-        mapper.readValue(peerGroupingJSON, PeerGroupingImpl.class);
+    PeerGrouping peerGrouping = mapper.readValue(peerGroupingJSON, PeerGroupingImpl.class);
     assertEquals(1L, peerGrouping.getId().intValue());
     assertEquals("manual", peerGrouping.getLogic());
     assertEquals("tag1", peerGrouping.getTag());

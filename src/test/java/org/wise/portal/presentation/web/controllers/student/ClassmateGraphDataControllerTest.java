@@ -9,15 +9,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ClassmateGraphDataControllerTest extends AbstractClassmateDataControllerTest {
 
   String SHOW_WORK_COMPONENT_ID = "component2";
@@ -34,8 +34,8 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
     setupStudent2NotInRunAndNotInPeriod();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run3, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run3Period4Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run3, NODE_ID1, COMPONENT_ID1,
+            SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run3Period4Id));
     verifyAll();
   }
 
@@ -45,8 +45,8 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
     setupStudent2InRunButNotInPeriod();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run1, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period2Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth2, run1, NODE_ID1, COMPONENT_ID1,
+            SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period2Id));
     verifyAll();
   }
 
@@ -57,8 +57,8 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
     expectComponentType(OPEN_RESPONSE_TYPE);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1, COMPONENT_ID1,
+            SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
     verifyAll();
   }
 
@@ -87,8 +87,8 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
         actualComponentId, controller.SHOW_CLASSMATE_WORK_TYPE, actualSource);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
-            COMPONENT_ID1, requestedNodeId, requestedComponentId, run1Period1Id));
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1, COMPONENT_ID1,
+            requestedNodeId, requestedComponentId, run1Period1Id));
     verifyAll();
   }
 
@@ -100,8 +100,8 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
         SHOW_WORK_COMPONENT_ID, controller.SHOW_CLASSMATE_WORK_TYPE, controller.PERIOD_SOURCE);
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateGraphWorkInClass(studentAuth, run1, NODE_ID1,
-            COMPONENT_ID1, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID));
+        () -> controller.getClassmateGraphWorkInClass(studentAuth, run1, NODE_ID1, COMPONENT_ID1,
+            SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID));
     verifyAll();
   }
 
@@ -148,30 +148,18 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
       String connectedComponentNodeId, String connectedComponentComponentId,
       String connectedComponentType, String showClassmateWorkSource)
       throws IOException, ObjectNotFoundException {
-    String projectJSONString = new StringBuilder()
-        .append("{")
-        .append("  \"nodes\": [")
-        .append("    {")
-        .append("      \"id\": \"" + nodeId + "\",")
-        .append("      \"type\": \"node\",")
-        .append("      \"components\": [")
-        .append("        {")
+    String projectJSONString = new StringBuilder().append("{").append("  \"nodes\": [")
+        .append("    {").append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",").append("      \"components\": [").append("        {")
         .append("          \"id\": \"" + componentId + "\",")
         .append("          \"type\": \"" + componentType + "\",")
-        .append("          \"connectedComponents\": [")
-        .append("            {")
+        .append("          \"connectedComponents\": [").append("            {")
         .append("              \"nodeId\": \"" + connectedComponentNodeId + "\",")
         .append("              \"componentId\": \"" + connectedComponentComponentId + "\",")
         .append("              \"type\": \"" + connectedComponentType + "\",")
         .append("              \"showClassmateWorkSource\": \"" + showClassmateWorkSource + "\"")
-        .append("            }")
-        .append("          ]")
-        .append("        }")
-        .append("      ]")
-        .append("    }")
-        .append("  ]")
-        .append("}")
-        .toString();
+        .append("            }").append("          ]").append("        }").append("      ]")
+        .append("    }").append("  ]").append("}").toString();
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 }

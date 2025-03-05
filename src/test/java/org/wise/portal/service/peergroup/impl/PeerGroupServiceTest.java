@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.json.JSONException;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
@@ -47,7 +47,7 @@ public class PeerGroupServiceTest extends WISEServiceTest {
 
   List<PeerGroup> peerGroups = new ArrayList<PeerGroup>();
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     differentIdeasPeerGrouping = createPeerGrouping(run1, "tag1",

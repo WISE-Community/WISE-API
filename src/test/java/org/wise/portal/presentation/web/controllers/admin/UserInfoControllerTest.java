@@ -30,11 +30,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.ui.ModelMap;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -44,7 +44,7 @@ import org.wise.portal.service.student.StudentService;
 /**
  * @author patrick lawler
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class UserInfoControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -79,7 +79,8 @@ public class UserInfoControllerTest extends APIControllerTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void getUserAccountInfo_AdminLooksUpTeacher_ReturnTeacherAccountInfoPage() throws Exception {
+  public void getUserAccountInfo_AdminLooksUpTeacher_ReturnTeacherAccountInfoPage()
+      throws Exception {
     expect(userService.retrieveUserByUsername(ADMIN_USERNAME)).andReturn(admin1);
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);

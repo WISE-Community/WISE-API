@@ -32,17 +32,17 @@ import java.util.Map;
 
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ChangeStudentPasswordControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -53,7 +53,7 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   String TEACHER_PASSWORD_CORRECT = "correctTeacherPassword1";
   String TEACHER_PASSWORD_INCORRECT = "incorrectTeacherPassword1";
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     ReflectionTestUtils.setField(controller, "passwordService", new PasswordServiceImpl());
