@@ -29,12 +29,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.user.impl.HibernateUserDao;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
@@ -45,7 +43,6 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Hiroki Terashima
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateProjectDaoTest extends AbstractTransactionalDbTests {
 
   private Project project;
@@ -56,7 +53,7 @@ public class HibernateProjectDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   private HibernateUserDao userDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     project = new ProjectImpl();
@@ -70,23 +67,23 @@ public class HibernateProjectDaoTest extends AbstractTransactionalDbTests {
   }
 
   @Test
-	public void save_NewProject_Success() {
-		verifyDataStoreIsEmpty();
-	  projectDao.save(project);
+  public void save_NewProject_Success() {
+    verifyDataStoreIsEmpty();
+    projectDao.save(project);
     toilet.flush();
-		List<?> actualList = retrieveProjectListFromDb();
+    List<?> actualList = retrieveProjectListFromDb();
     assertEquals(1, actualList.size());
     Map<?, ?> projectMap = (Map<?, ?>) actualList.get(0);
     assertEquals(1L, projectMap.get("id"));
     assertEquals("Airbags", projectMap.get("name"));
-	}
+  }
 
-	private void verifyDataStoreIsEmpty() {
+  private void verifyDataStoreIsEmpty() {
     assertTrue(retrieveProjectListFromDb().isEmpty());
   }
 
   private List<?> retrieveProjectListFromDb() {
-    return jdbcTemplate.queryForList("SELECT * FROM " +
-        ProjectImpl.DATA_STORE_NAME, (Object[]) null);
-	}
+    return jdbcTemplate.queryForList("SELECT * FROM " + ProjectImpl.DATA_STORE_NAME,
+        (Object[]) null);
+  }
 }

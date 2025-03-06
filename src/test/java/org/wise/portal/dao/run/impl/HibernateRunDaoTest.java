@@ -31,11 +31,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.domain.run.Run;
@@ -47,7 +45,6 @@ import org.wise.portal.domain.workgroup.Workgroup;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateRunDaoTest extends WISEHibernateTest {
 
   private final String UNUSED_RUN_CODE = "Pig123";

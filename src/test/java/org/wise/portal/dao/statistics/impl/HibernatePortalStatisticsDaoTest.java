@@ -29,11 +29,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.portal.impl.HibernatePortalStatisticsDao;
 import org.wise.portal.domain.portal.PortalStatistics;
 import org.wise.portal.domain.portal.impl.PortalStatisticsImpl;
@@ -43,7 +41,6 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernatePortalStatisticsDaoTest extends AbstractTransactionalDbTests {
 
   @Autowired

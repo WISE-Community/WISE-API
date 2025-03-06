@@ -27,12 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.newsitem.NewsItem;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
@@ -43,7 +41,6 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
 
   @Autowired
@@ -51,7 +48,7 @@ public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
 
   User teacher;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     teacher = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
@@ -67,7 +64,7 @@ public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void getListByType_TypeThatExists_ShouldReturnNewsItems() {
-    createNewsItem(teacher, new Date(), "public", "News Title", "news1"); 
+    createNewsItem(teacher, new Date(), "public", "News Title", "news1");
     List<NewsItem> newsItems = newsItemDao.getListByType("public");
     assertEquals(1, newsItems.size());
   }

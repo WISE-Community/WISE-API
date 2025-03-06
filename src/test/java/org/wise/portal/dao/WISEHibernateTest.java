@@ -26,7 +26,7 @@ package org.wise.portal.dao;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.group.Group;
@@ -60,7 +60,7 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
   protected User student1, student2, student3, student4, teacher1, teacher2;
   protected Workgroup teacherWorkgroup1, workgroup1, workgroup2, workgroup3;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,

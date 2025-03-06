@@ -26,25 +26,22 @@ package org.wise.portal.dao.peergrouping.impl;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.Component;
 import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.run.Run;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernatePeerGroupingDaoTest extends WISEHibernateTest {
 
   @Autowired
   HibernatePeerGroupingDao peerGroupingDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     createPeerGroupingWithComponent(component1);

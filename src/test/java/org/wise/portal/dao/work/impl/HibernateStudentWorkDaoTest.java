@@ -29,12 +29,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
@@ -49,7 +47,6 @@ import org.wise.vle.domain.work.StudentWork;
  * @author Hiroki Terashima
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
 
   private final String DUMMY_STUDENT_WORK1 = "Dummy Student Work 1";
@@ -63,7 +60,7 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
   protected PeerGrouping peerGrouping;
   protected PeerGroup peerGroup1, peerGroup2;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     createPeerGrouping();
@@ -144,8 +141,8 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
 
   @Test
   public void getWorkForComponentByPeerGroup_ShouldReturnStudentWork() {
-    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(peerGroup1,
-        NODE_ID1, COMPONENT_ID1);
+    List<StudentWork> studentWorkList = studentWorkDao.getStudentWork(peerGroup1, NODE_ID1,
+        COMPONENT_ID1);
     assertEquals(2, studentWorkList.size());
     assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
     assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));

@@ -32,12 +32,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.group.Group;
@@ -50,7 +48,6 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
 
   Group period1, period2;
@@ -60,7 +57,7 @@ public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   HibernateWorkgroupDao workgroupDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     Long id = getNextAvailableProjectId();

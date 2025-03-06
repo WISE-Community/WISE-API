@@ -28,12 +28,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 import org.wise.vle.domain.status.StudentStatus;
 
@@ -41,15 +39,14 @@ import org.wise.vle.domain.status.StudentStatus;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateStudentStatusDaoTest extends AbstractTransactionalDbTests {
-  
+
   @Autowired
   private HibernateStudentStatusDao studentStatusDao;
 
   StudentStatus studentStatus1, studentStatus2, studentStatus3;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     Long runId = 1L;

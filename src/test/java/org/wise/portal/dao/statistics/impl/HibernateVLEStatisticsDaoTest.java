@@ -29,11 +29,9 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 import org.wise.vle.domain.statistics.VLEStatistics;
 
@@ -41,9 +39,7 @@ import org.wise.vle.domain.statistics.VLEStatistics;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
-public class HibernateVLEStatisticsDaoTest
-    extends AbstractTransactionalDbTests {
+public class HibernateVLEStatisticsDaoTest extends AbstractTransactionalDbTests {
 
   @Autowired
   HibernateVLEStatisticsDao vleStatisticsDao;
@@ -73,8 +69,7 @@ public class HibernateVLEStatisticsDaoTest
   private VLEStatistics createVLEStatistics(String data) {
     VLEStatistics vleStatistics = new VLEStatistics();
     vleStatistics.setData(data);
-    vleStatistics
-        .setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+    vleStatistics.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
     vleStatisticsDao.save(vleStatistics);
     return vleStatistics;
   }
