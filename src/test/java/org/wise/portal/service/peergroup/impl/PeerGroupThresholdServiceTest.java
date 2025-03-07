@@ -31,18 +31,18 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupThresholdServiceTest extends PeerGroupServiceTest {
 
   @TestSubject

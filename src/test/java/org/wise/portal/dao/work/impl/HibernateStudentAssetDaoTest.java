@@ -11,12 +11,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.group.Group;
@@ -30,7 +28,6 @@ import org.wise.vle.domain.work.StudentAsset;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateStudentAssetDaoTest extends AbstractTransactionalDbTests {
 
   Run run;
@@ -40,7 +37,7 @@ public class HibernateStudentAssetDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   HibernateStudentAssetDao studentAssetDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     Long id = getNextAvailableProjectId();
@@ -68,16 +65,16 @@ public class HibernateStudentAssetDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void getStudentAssetListByParams_RunWithNoStudentAssets_ShouldReturnNone() {
-    List<StudentAsset> studentAssets = 
-        studentAssetDao.getStudentAssetListByParams(null, run, null, null, null, null, null, null);
+    List<StudentAsset> studentAssets = studentAssetDao.getStudentAssetListByParams(null, run, null,
+        null, null, null, null, null);
     assertEquals(0, studentAssets.size());
   }
 
   @Test
   public void getStudentAssetListByParams_RunWithStudentAssets_ShouldReturnStudentAssets() {
     createStudentAsset(workgroup1, "file1.jpg");
-    List<StudentAsset> studentAssets = 
-        studentAssetDao.getStudentAssetListByParams(null, run, null, null, null, null, null, null);
+    List<StudentAsset> studentAssets = studentAssetDao.getStudentAssetListByParams(null, run, null,
+        null, null, null, null, null);
     assertEquals(1, studentAssets.size());
     assertEquals("file1.jpg", studentAssets.get(0).getFileName());
   }
@@ -87,8 +84,8 @@ public class HibernateStudentAssetDaoTest extends AbstractTransactionalDbTests {
     createStudentAsset(workgroup1, "file1.jpg");
     createStudentAsset(workgroup1, "file2.jpg");
     createStudentAsset(workgroup2, "file3.jpg");
-    List<StudentAsset> studentAssets = studentAssetDao.getStudentAssetListByParams(
-        null, run, null, workgroup1, null, null, null, null);
+    List<StudentAsset> studentAssets = studentAssetDao.getStudentAssetListByParams(null, run, null,
+        workgroup1, null, null, null, null);
     assertEquals(2, studentAssets.size());
     assertEquals("file1.jpg", studentAssets.get(0).getFileName());
     assertEquals("file2.jpg", studentAssets.get(1).getFileName());

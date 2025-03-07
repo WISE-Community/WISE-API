@@ -27,12 +27,14 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
+import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,7 +51,7 @@ import org.wise.portal.service.user.UserService;
 /**
  * @author Arthur Yin
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class GradeWorkControllerTest {
 
   @TestSubject
@@ -63,7 +65,7 @@ public class GradeWorkControllerTest {
 
   private Authentication teacherAuthentication;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     initializeTeacherAuthentication();
   }
@@ -77,7 +79,7 @@ public class GradeWorkControllerTest {
     teacherAuthentication = new TestingAuthenticationToken(teacherUserDetails, credentials);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     runService = null;
     controller = null;

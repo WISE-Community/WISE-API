@@ -8,15 +8,15 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.status.StudentStatus;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class TeacherRunAPIControllerTest extends APIControllerTest {
 
   @TestSubject

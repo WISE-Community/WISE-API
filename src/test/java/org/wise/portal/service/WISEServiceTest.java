@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.dao.Component;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
@@ -70,7 +70,7 @@ public class WISEServiceTest {
   protected StudentWork componentWorkSubmit1, componentWorkSubmit2, componentWorkSubmit3,
       componentWorkSubmit4, componentWorkNonSubmit1;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     run1 = new RunImpl();
     run1.setId(run1Id);

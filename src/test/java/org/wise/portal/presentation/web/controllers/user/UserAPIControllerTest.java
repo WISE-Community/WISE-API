@@ -7,15 +7,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,13 +27,13 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class UserAPIControllerTest extends APIControllerTest {
 
   @TestSubject
   private UserAPIController userAPIController = new UserAPIController();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     ReflectionTestUtils.setField(userAPIController, "passwordService", new PasswordServiceImpl());
@@ -53,7 +54,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     String username = "";
     HashMap<String, Object> userMap = userAPIController.getUserInfo(studentAuth, username);
     assertEquals(STUDENT_FIRSTNAME, userMap.get("firstName"));
-    assertEquals("student", userMap.get("role"));
+    assertEquals("student", ((ArrayList<String>) userMap.get("roles")).get(0));
     assertTrue((boolean) userMap.get("isGoogleUser"));
     verify(userService);
   }
@@ -65,7 +66,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     String username = "";
     HashMap<String, Object> userMap = userAPIController.getUserInfo(teacherAuth, username);
     assertEquals(TEACHER_FIRSTNAME, userMap.get("firstName"));
-    assertEquals("teacher", userMap.get("role"));
+    assertEquals("teacher", ((ArrayList<String>) userMap.get("roles")).get(0));
     assertFalse((boolean) userMap.get("isGoogleUser"));
     verify(userService);
   }

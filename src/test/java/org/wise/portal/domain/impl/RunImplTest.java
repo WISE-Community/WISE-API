@@ -31,11 +31,11 @@ import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.easymock.EasyMockRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -44,9 +44,8 @@ import org.wise.portal.domain.user.impl.UserImpl;
 
 /**
  * @author Hiroki Terashima
- * @version $Id: $
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class RunImplTest {
 
   private RunImpl run = new RunImpl();
@@ -57,7 +56,7 @@ public class RunImplTest {
 
   private static final String[] periodnames = { "1", "2", "3", "6", "9", "10", "sunflower" };
 
-  @Before
+  @BeforeEach
   public void setUp() {
     run = new RunImpl();
     Set<Group> periods = new TreeSet<Group>();
@@ -72,7 +71,7 @@ public class RunImplTest {
     run.setPeriods(periods);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     run = null;
   }

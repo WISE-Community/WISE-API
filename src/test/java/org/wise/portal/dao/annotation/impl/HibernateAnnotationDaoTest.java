@@ -9,11 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.WISEHibernateTest;
 import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.domain.group.Group;
@@ -22,7 +20,6 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateAnnotationDaoTest extends WISEHibernateTest {
 
   private final String COMMENT_TYPE = "comment";

@@ -33,12 +33,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.work.NotebookItemDao;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
@@ -53,7 +51,6 @@ import org.wise.vle.domain.work.NotebookItem;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
 
   Run run;
@@ -62,7 +59,7 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   private NotebookItemDao<NotebookItem> notebookItemDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     Long id = getNextAvailableProjectId();
@@ -90,16 +87,16 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void getNotebookItemListByParams_RunWithoutAnyNotebookItems_ShouldReturnNone() {
-    List<NotebookItem> notebookItems = 
-        notebookItemDao.getNotebookItemListByParams(null, run, null, null, null, null);
+    List<NotebookItem> notebookItems = notebookItemDao.getNotebookItemListByParams(null, run, null,
+        null, null, null);
     assertEquals(0, notebookItems.size());
   }
 
   @Test
   public void getNotebookItemListByParams_RunWitNotebookItems_ShouldReturnNotebookItems() {
     createNotebookItem(run, workgroup1, "localId1", null, "notebookItem1");
-    List<NotebookItem> notebookItems = 
-        notebookItemDao.getNotebookItemListByParams(null, run, null, null, null, null);
+    List<NotebookItem> notebookItems = notebookItemDao.getNotebookItemListByParams(null, run, null,
+        null, null, null);
     assertEquals(1, notebookItems.size());
     assertEquals("notebookItem1", notebookItems.get(0).getContent());
   }
@@ -109,8 +106,8 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
     createNotebookItem(run, workgroup1, "localId1", null, "notebookItem1");
     createNotebookItem(run, workgroup1, "localId2", null, "notebookItem2");
     createNotebookItem(run, workgroup2, "localId1", null, "notebookItem3");
-    List<NotebookItem> notebookItems = 
-        notebookItemDao.getNotebookItemListByParams(null, run, null, workgroup1, null, null);
+    List<NotebookItem> notebookItems = notebookItemDao.getNotebookItemListByParams(null, run, null,
+        workgroup1, null, null);
     assertEquals(2, notebookItems.size());
     assertEquals("notebookItem1", notebookItems.get(0).getContent());
     assertEquals("notebookItem2", notebookItems.get(1).getContent());
@@ -120,8 +117,8 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
   public void getNotebookItemByGroup_WithNoNotebookItemsInGroup_ShouldReturnNone() {
     createNotebookItem(run, workgroup1, "localId1", null, "notebookItem1");
     createNotebookItem(run, workgroup1, "localId2", null, "notebookItem2");
-    List<NotebookItem> notebookItems =
-        notebookItemDao.getNotebookItemByGroup(run.getId().intValue(), "group1");
+    List<NotebookItem> notebookItems = notebookItemDao
+        .getNotebookItemByGroup(run.getId().intValue(), "group1");
     assertEquals(0, notebookItems.size());
   }
 
@@ -130,8 +127,8 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
     createNotebookItem(run, workgroup1, "localId1", "[group1]", "notebookItem1");
     createNotebookItem(run, workgroup1, "localId2", "[group2]", "notebookItem2");
     createNotebookItem(run, workgroup2, "localId1", "[group1]", "notebookItem3");
-    List<NotebookItem> notebookItems =
-        notebookItemDao.getNotebookItemByGroup(run.getId().intValue(), "group1");
+    List<NotebookItem> notebookItems = notebookItemDao
+        .getNotebookItemByGroup(run.getId().intValue(), "group1");
     assertEquals(2, notebookItems.size());
     assertEquals("notebookItem1", notebookItems.get(0).getContent());
     assertEquals("notebookItem3", notebookItems.get(1).getContent());

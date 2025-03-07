@@ -31,11 +31,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -43,7 +43,7 @@ import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.run.RunService;
 
 @SuppressWarnings("unchecked")
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupInfoServiceImplTest extends PeerGroupServiceTest {
 
   @TestSubject

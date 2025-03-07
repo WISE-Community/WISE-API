@@ -10,17 +10,17 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataControllerTest {
 
   @TestSubject
@@ -33,7 +33,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     replayAll();
     assertThrows(AccessDeniedException.class,
         () -> controller.getClassmateSummaryWorkInPeriod(studentAuth2, run3, run3Period4Id,
-        OTHER_NODE_ID, OTHER_COMPONENT_ID));
+            OTHER_NODE_ID, OTHER_COMPONENT_ID));
     verifyAll();
   }
 
@@ -44,7 +44,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     replayAll();
     assertThrows(AccessDeniedException.class,
         () -> controller.getClassmateSummaryWorkInPeriod(studentAuth2, run1, run1Period2Id,
-        OTHER_NODE_ID, OTHER_COMPONENT_ID));
+            OTHER_NODE_ID, OTHER_COMPONENT_ID));
     verifyAll();
   }
 
@@ -56,7 +56,7 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     replayAll();
     assertThrows(AccessDeniedException.class,
         () -> controller.getClassmateSummaryWorkInPeriod(studentAuth, run1, run1Period1Id,
-        OTHER_NODE_ID, OTHER_COMPONENT_ID));
+            OTHER_NODE_ID, OTHER_COMPONENT_ID));
     verifyAll();
   }
 
@@ -102,8 +102,8 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     expectLatestStudentWork(run1, OTHER_NODE_ID, OTHER_COMPONENT_ID, studentWork);
     replayAll();
     try {
-      List<StudentWork> classmateSummaryWork = controller.getClassmateSummaryWorkInClass(
-          studentAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
+      List<StudentWork> classmateSummaryWork = controller
+          .getClassmateSummaryWorkInClass(studentAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
       assertEquals(classmateSummaryWork, studentWork);
     } catch (Exception e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
@@ -147,8 +147,8 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     expectAnnotations(run1, OTHER_NODE_ID, OTHER_COMPONENT_ID, allAnnotations);
     replayAll();
     try {
-      List<Annotation> classmateSummaryAnnotations = controller.getClassmateSummaryScoresInClass(
-          studentAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
+      List<Annotation> classmateSummaryAnnotations = controller
+          .getClassmateSummaryScoresInClass(studentAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
       List<Annotation> latestAnnotations = Arrays.asList(annotation1, annotation3);
       assertEquals(classmateSummaryAnnotations, latestAnnotations);
     } catch (Exception e) {
@@ -183,8 +183,8 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     expectLatestStudentWork(run1, OTHER_NODE_ID, OTHER_COMPONENT_ID, studentWork);
     replayAll();
     try {
-      List<StudentWork> classmateSummaryWork = controller.getClassmateSummaryWorkInClass(
-          teacherAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
+      List<StudentWork> classmateSummaryWork = controller
+          .getClassmateSummaryWorkInClass(teacherAuth, run1, OTHER_NODE_ID, OTHER_COMPONENT_ID);
       assertEquals(classmateSummaryWork, studentWork);
     } catch (Exception e) {
       fail(SHOULD_NOT_HAVE_THROWN_EXCEPTION);
@@ -199,8 +199,8 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
     setupTeacher2();
     replayAll();
     assertThrows(AccessDeniedException.class,
-        () -> controller.getClassmateSummaryWorkInPeriod(
-        teacherAuth2, run1, run1Period1Id, OTHER_NODE_ID, OTHER_COMPONENT_ID));
+        () -> controller.getClassmateSummaryWorkInPeriod(teacherAuth2, run1, run1Period1Id,
+            OTHER_NODE_ID, OTHER_COMPONENT_ID));
     verifyAll();
   }
 
@@ -216,25 +216,15 @@ public class ClassmateSummaryDataControllerTest extends AbstractClassmateDataCon
   protected void expectComponentType(String nodeId, String componentId, String componentType,
       String otherNodeId, String otherComponentId, String source)
       throws IOException, ObjectNotFoundException {
-    String projectJSONString = new StringBuilder()
-        .append("{")
-        .append("  \"nodes\": [")
-        .append("    {")
-        .append("      \"id\": \"" + nodeId + "\",")
-        .append("      \"type\": \"node\",")
-        .append("      \"components\": [")
-        .append("        {")
+    String projectJSONString = new StringBuilder().append("{").append("  \"nodes\": [")
+        .append("    {").append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",").append("      \"components\": [").append("        {")
         .append("          \"id\": \"" + componentId + "\",")
         .append("          \"type\": \"" + componentType + "\",")
         .append("          \"summaryNodeId\": \"" + otherNodeId + "\",")
         .append("          \"summaryComponentId\": \"" + otherComponentId + "\",")
-        .append("          \"source\": \"" + source + "\",")
-        .append("        }")
-        .append("      ]")
-        .append("    }")
-        .append("  ]")
-        .append("}")
-        .toString();
+        .append("          \"source\": \"" + source + "\",").append("        }").append("      ]")
+        .append("    }").append("  ]").append("}").toString();
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 }

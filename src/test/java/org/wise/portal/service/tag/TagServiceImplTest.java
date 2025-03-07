@@ -1,27 +1,21 @@
 package org.wise.portal.service.tag;
 
-import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.project.TagDao;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.impl.TagImpl;
 import org.wise.portal.service.tag.impl.TagServiceImpl;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class TagServiceImplTest {
 
   @TestSubject
@@ -32,7 +26,7 @@ public class TagServiceImplTest {
 
   private Tag tag;
 
-  @Before
+  @BeforeEach
   public void setup() {
     tag = new TagImpl();
     tag.setId(1);
@@ -48,8 +42,4 @@ public class TagServiceImplTest {
     verify(tagDao);
   }
 
-  @Test
-  public void deleteTag_ExistingTagNoReferences_ShouldDeleteTag() {
-
-  }
 }

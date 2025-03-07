@@ -6,17 +6,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.fail;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.web.server.ResponseStatusException;
 import org.wise.portal.domain.impl.ChangeWorkgroupParameters;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
 
   JsonNode postedParams;
@@ -24,7 +24,7 @@ public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
   @TestSubject
   private WorkgroupMembershipAPIController controller = new WorkgroupMembershipAPIController();
 
-  @Before
+  @BeforeEach
   public void init() throws Exception {
     String paramString = "{\"workgroupIdTo\":\"2\",\"periodId\":\"1\"}";
     ObjectMapper objectMapper = new ObjectMapper();

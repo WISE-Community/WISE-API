@@ -7,16 +7,16 @@ import java.sql.Timestamp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.easymock.EasyMockRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.service.work.AchievementJsonModule;
 import org.wise.vle.domain.achievement.Achievement;
 import org.wise.vle.domain.achievement.AchievementSerializer;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class AchievementTest extends DomainTest {
 
   Achievement achievement;
@@ -25,7 +25,7 @@ public class AchievementTest extends DomainTest {
 
   AchievementJsonModule jsonModule = new AchievementJsonModule();
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     jsonModule.addSerializer(Achievement.class, new AchievementSerializer());
@@ -44,7 +44,7 @@ public class AchievementTest extends DomainTest {
   @Test
   public void serialize() throws JsonProcessingException {
     String json = mapper.writeValueAsString(achievement);
-    assertEquals("{\"id\":12,\"runId\":1,\"workgroupId\":64,\"achievementId\":\"achievement_1\"," +
-        "\"type\":\"milestoneReport\",\"achievementTime\":1,\"data\":{}}", json);
+    assertEquals("{\"id\":12,\"runId\":1,\"workgroupId\":64,\"achievementId\":\"achievement_1\","
+        + "\"type\":\"milestoneReport\",\"achievementTime\":1,\"data\":{}}", json);
   }
 }

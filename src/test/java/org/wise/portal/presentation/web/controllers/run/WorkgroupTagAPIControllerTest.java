@@ -11,13 +11,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.Tag;
@@ -26,7 +26,7 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.tag.TagService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class WorkgroupTagAPIControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -42,7 +42,7 @@ public class WorkgroupTagAPIControllerTest extends APIControllerTest {
 
   private TagImpl tag1;
 
-  @Before
+  @BeforeEach
   public void setup() {
     tag1 = new TagImpl();
     tag1.setId(1);
@@ -168,7 +168,8 @@ public class WorkgroupTagAPIControllerTest extends APIControllerTest {
   @Test
   public void getTagsForWorkgroup_CanNotReadTags_AccessDenied() throws ObjectNotFoundException {
     expect(workgroupService.retrieveById(workgroup1.getId())).andReturn(workgroup1);
-    expect(userService.retrieveUserByUsername(student1UserDetails.getUsername())).andReturn(student1);
+    expect(userService.retrieveUserByUsername(student1UserDetails.getUsername()))
+        .andReturn(student1);
     expect(workgroupService.isUserInWorkgroupForRun(student1, workgroup1.getRun(), workgroup1))
         .andReturn(false);
     expect(runService.hasReadPermission(studentAuth, workgroup1.getRun())).andReturn(false);

@@ -24,13 +24,13 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
@@ -47,7 +47,7 @@ import org.wise.portal.service.authentication.UserDetailsService;
  * @author Laurel Williams
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class UserDetailsServiceImplTest {
 
   @TestSubject
@@ -69,7 +69,7 @@ public class UserDetailsServiceImplTest {
 
   String UNKNOWN_USERNAME = "usernameNotInDB";
 
-  @Before
+  @BeforeEach
   public void setUp() {
     teacherUserDetails = new TeacherUserDetails();
     teacherUserDetails.setUsername(TEACHER_USERNAME);
@@ -77,7 +77,7 @@ public class UserDetailsServiceImplTest {
     teacherAuthority.setAuthority(TEACHER_ROLE);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     teacherUserDetails = null;
     teacherAuthority = null;
@@ -91,8 +91,7 @@ public class UserDetailsServiceImplTest {
       userDetailsService.loadUserByUsername(UNKNOWN_USERNAME);
       fail("should have caught UsernameNotFoundException");
     } catch (UsernameNotFoundException e) {
-      assertEquals("Username: " + UNKNOWN_USERNAME + " not found.",
-          e.getMessage());
+      assertEquals("Username: " + UNKNOWN_USERNAME + " not found.", e.getMessage());
     }
     verify(userDetailsDao);
   }
@@ -114,8 +113,7 @@ public class UserDetailsServiceImplTest {
       userDetailsService.createGrantedAuthority(teacherAuthority);
       fail("DuplicateAuthorityException expected and not caught.");
     } catch (DuplicateAuthorityException e) {
-      assertEquals("Granted Authority:" + TEACHER_ROLE + " already in use.",
-          e.getMessage());
+      assertEquals("Granted Authority:" + TEACHER_ROLE + " already in use.", e.getMessage());
     }
     verify(authorityDao);
   }
@@ -127,7 +125,8 @@ public class UserDetailsServiceImplTest {
     expectLastCall();
     replay(authorityDao);
     try {
-      MutableGrantedAuthority grantedAuthority = userDetailsService.createGrantedAuthority(teacherAuthority);
+      MutableGrantedAuthority grantedAuthority = userDetailsService
+          .createGrantedAuthority(teacherAuthority);
       assertEquals(TEACHER_ROLE, grantedAuthority.getAuthority());
     } catch (DuplicateAuthorityException e) {
       fail("DuplicateAuthorityException was not expected to be thrown");

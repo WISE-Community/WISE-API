@@ -2,15 +2,15 @@ package org.wise.vle.domain.webservice.crater;
 
 import static org.easymock.EasyMock.*;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.env.Environment;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class CRaterServiceTest {
 
   @TestSubject
@@ -79,7 +79,8 @@ public class CRaterServiceTest {
     beforeBerkeley();
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId("berkeley_" + itemId);
-    expect(appProperties.getProperty("berkeley_cRater_verification_url")).andReturn(berkeleyVerifyUrl);
+    expect(appProperties.getProperty("berkeley_cRater_verification_url"))
+        .andReturn(berkeleyVerifyUrl);
     replay(appProperties);
     cRaterService.getCRaterResponse(request);
     verify(appProperties);

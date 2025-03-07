@@ -34,12 +34,14 @@ import static org.junit.Assert.fail;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.easymock.EasyMockExtension;
 import org.easymock.EasyMockRunner;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -58,7 +60,7 @@ import org.wise.portal.service.group.GroupService;
 /**
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class GroupServiceImplTest {
 
   @TestSubject
@@ -72,8 +74,7 @@ public class GroupServiceImplTest {
 
   private Group group1, group2, group3;
 
-  private final String[] DEFAULT_GROUP_NAMES = { "Period 1", "Period 2",
-      "My Science Class" };
+  private final String[] DEFAULT_GROUP_NAMES = { "Period 1", "Period 2", "My Science Class" };
 
   private User user1, user2, user3;
 
@@ -83,7 +84,7 @@ public class GroupServiceImplTest {
 
   private final String USERNAME_3 = "Duck";
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     group1 = new PersistentGroup();
     group2 = new PersistentGroup();
@@ -102,7 +103,7 @@ public class GroupServiceImplTest {
     user3.setUserDetails(userDetails3);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     groupService = null;
     groupDao = null;
@@ -203,7 +204,8 @@ public class GroupServiceImplTest {
   }
 
   @Test
-  public void createGroup_CreateSubGroup_NoCycleShouldBeCreated_hereisalongsenthis() throws Exception {
+  public void createGroup_CreateSubGroup_NoCycleShouldBeCreated_hereisalongsenthis()
+      throws Exception {
     createGroup1();
     createGroup3(); // create a new group whose parent is group1
     assertEquals(group3.getParent(), group1);
@@ -250,8 +252,7 @@ public class GroupServiceImplTest {
   }
 
   @Test
-  public void moveGroup_SetGroupParentToItself_ShouldThrowCycleException()
-      throws Exception {
+  public void moveGroup_SetGroupParentToItself_ShouldThrowCycleException() throws Exception {
     // test making a group's parent be itself. This should create a cycle.
     createGroup1();
     try {
@@ -326,8 +327,7 @@ public class GroupServiceImplTest {
   }
 
   @Test
-  public void retrieveById_WithExistingGroupId_ShouldReturnGroup()
-      throws Exception {
+  public void retrieveById_WithExistingGroupId_ShouldReturnGroup() throws Exception {
     createGroup1();
 
     Long groupId = group1.getId();
@@ -340,11 +340,9 @@ public class GroupServiceImplTest {
   }
 
   @Test
-  public void retrieveById_WithNonExistingGroupId_ShouldThrowException()
-      throws Exception {
+  public void retrieveById_WithNonExistingGroupId_ShouldThrowException() throws Exception {
     Long groupId = new Long(-1);
-    expect(groupDao.getById(groupId))
-        .andThrow(new ObjectNotFoundException(groupId, Group.class));
+    expect(groupDao.getById(groupId)).andThrow(new ObjectNotFoundException(groupId, Group.class));
     replay(groupDao);
 
     try {

@@ -1,8 +1,7 @@
 package org.wise.portal.presentation.web.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ErrorResponseTest {
 

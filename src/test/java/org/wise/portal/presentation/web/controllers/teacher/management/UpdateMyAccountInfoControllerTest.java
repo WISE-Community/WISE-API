@@ -22,21 +22,19 @@
  */
 package org.wise.portal.presentation.web.controllers.teacher.management;
 
-import org.junit.Test;
 import org.springframework.test.web.AbstractModelAndViewTests;
 
 /**
  * Test class for UpdateMyAccountInfoController
- * 
+ *
  * @author Hiroki Terashima
  * @version $Id$
  */
-public class UpdateMyAccountInfoControllerTest extends
-		AbstractModelAndViewTests {
-	
-	@Test
-	public void testNothing() {
-		assertTrue(true);
-	}
+public class UpdateMyAccountInfoControllerTest extends AbstractModelAndViewTests {
+
+  @Test
+  public void testNothing() {
+    assertTrue(true);
+  }
 
 }

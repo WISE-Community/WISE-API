@@ -2,10 +2,10 @@ package org.wise.portal.domain.workgroup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.workgroup.WorkgroupJsonModule;
@@ -14,7 +14,7 @@ public class WorkgroupTest extends DomainTest {
 
   Workgroup workgroup;
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     workgroup = new WorkgroupImpl();

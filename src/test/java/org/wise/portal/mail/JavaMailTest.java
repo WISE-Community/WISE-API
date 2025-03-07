@@ -25,11 +25,9 @@ package org.wise.portal.mail;
 
 import javax.mail.MessagingException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -68,8 +66,6 @@ import org.wise.portal.service.mail.MailService;
  * @author aperritano
  * @author Laurel Williams
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
 public class JavaMailTest {
 
   @Autowired
@@ -86,7 +82,7 @@ public class JavaMailTest {
   /**
    * @throws Exception
    */
-  @Before
+  @BeforeEach
   public void callSetUp() throws Exception {
     //this.setUp();
     this.onSetUp();
@@ -101,7 +97,7 @@ public class JavaMailTest {
     recipients[0] = RECEIVER;
   }
 
-  @After
+  @AfterEach
   public void callTearDown() throws Exception {
     //this.tearDown();
     this.onTearDown();
@@ -121,8 +117,7 @@ public class JavaMailTest {
    *
    * @throws Exception
    */
-  @Test
-  @Ignore
+  @Disabled
   public void testSendBasicMessage() throws Exception {
     try {
       mailService.postMail(recipients, SUBJECT, MESSAGE, FROM);
@@ -135,8 +130,7 @@ public class JavaMailTest {
   /**
    * tests sending a message to multiple email recipients.
    */
-  @Test
-  @Ignore
+  @Disabled
   public void testSendMultiMessage() {
     recipients[1] = RECEIVER2;
     try {

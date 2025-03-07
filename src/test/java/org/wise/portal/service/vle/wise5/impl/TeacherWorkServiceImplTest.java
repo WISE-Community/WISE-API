@@ -6,16 +6,16 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.service.WISEServiceTest;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class TeacherWorkServiceImplTest extends WISEServiceTest {
 
   @TestSubject

@@ -8,8 +8,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.easymock.Mock;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -126,7 +126,7 @@ public abstract class APIControllerTest {
   @Mock
   protected WorkgroupService workgroupService;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     createAdmin();
     createTeachers();
@@ -194,7 +194,7 @@ public abstract class APIControllerTest {
     teacher1Run1Workgroup = createTeacherWorkgroup(run1, teacher1);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     student1 = null;
     student2 = null;

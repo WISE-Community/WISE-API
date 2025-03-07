@@ -38,13 +38,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
 import org.wise.portal.domain.RunHasEndedException;
@@ -68,7 +68,7 @@ import org.wise.portal.spring.data.redis.MessagePublisher;
 /**
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentServiceImplTest {
 
   @TestSubject
@@ -100,7 +100,7 @@ public class StudentServiceImplTest {
 
   private final Long runId = new Long(3);
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     studentUser = new UserImpl();
     StudentUserDetails userDetails = new StudentUserDetails();
@@ -116,7 +116,7 @@ public class StudentServiceImplTest {
     run.setMaxWorkgroupSize(1);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     runService = null;
     groupService = null;

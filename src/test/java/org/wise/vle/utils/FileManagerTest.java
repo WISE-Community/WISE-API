@@ -1,11 +1,12 @@
 package org.wise.vle.utils;
 
 import static org.junit.Assert.assertEquals;
-import org.easymock.EasyMockRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(EasyMockRunner.class)
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+@ExtendWith(EasyMockExtension.class)
 public class FileManagerTest {
 
   @Test

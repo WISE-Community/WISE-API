@@ -6,16 +6,16 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.easymock.EasyMockRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.service.work.StudentAssetJsonModule;
 import org.wise.vle.domain.work.StudentAsset;
 import org.wise.vle.domain.work.StudentAssetSerializer;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentAssetTest extends DomainTest {
 
   StudentAsset asset;
@@ -24,7 +24,7 @@ public class StudentAssetTest extends DomainTest {
 
   StudentAssetJsonModule jsonModule = new StudentAssetJsonModule();
 
-  @Before
+  @BeforeEach
   public void setup() {
     super.setup();
     jsonModule.addSerializer(StudentAsset.class, new StudentAssetSerializer());
@@ -48,10 +48,10 @@ public class StudentAssetTest extends DomainTest {
   @Test
   public void serialize() throws Exception {
     String json = mapper.writeValueAsString(asset);
-    assertEquals("{\"id\":15,\"runId\":1,\"periodId\":100,\"workgroupId\":64,\"nodeId\":null," +
-        "\"componentId\":null,\"componentType\":null,\"isReferenced\":false," +
-        "\"fileName\":\"abc.png\",\"filePath\":\"/345/assets\",\"fileSize\":512," +
-        "\"clientSaveTime\":1,\"serverSaveTime\":2,\"clientDeleteTime\":5,\"serverDeleteTime\":6}",
+    assertEquals("{\"id\":15,\"runId\":1,\"periodId\":100,\"workgroupId\":64,\"nodeId\":null,"
+        + "\"componentId\":null,\"componentType\":null,\"isReferenced\":false,"
+        + "\"fileName\":\"abc.png\",\"filePath\":\"/345/assets\",\"fileSize\":512,"
+        + "\"clientSaveTime\":1,\"serverSaveTime\":2,\"clientDeleteTime\":5,\"serverDeleteTime\":6}",
         json);
   }
 

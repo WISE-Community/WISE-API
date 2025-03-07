@@ -3,15 +3,15 @@ package org.wise.portal.presentation.web.controllers.peergroup;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergrouping.PeerGroupingNotFoundException;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTest {
 
   @TestSubject
@@ -51,8 +51,8 @@ public class PeerGroupAPIControllerTest extends AbstractPeerGroupAPIControllerTe
     verifyAll();
   }
 
-  private void expectWorkgroupAssociatedWithRunAndPeerGroupingFound() throws Exception,
-      PeerGroupingNotFoundException {
+  private void expectWorkgroupAssociatedWithRunAndPeerGroupingFound()
+      throws Exception, PeerGroupingNotFoundException {
     expectWorkgroupAssociatedWithRun(true);
     expectPeerGroupingByTagFound();
   }

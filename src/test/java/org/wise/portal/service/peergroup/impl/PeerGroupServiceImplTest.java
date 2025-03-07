@@ -35,12 +35,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
 import org.wise.portal.dao.peergrouping.PeerGroupingDao;
 import org.wise.portal.dao.run.RunDao;
@@ -57,7 +57,7 @@ import org.wise.portal.service.peergrouping.logic.impl.RandomLogicServiceImpl;
 import org.wise.portal.service.run.RunService;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class PeerGroupServiceImplTest extends PeerGroupServiceTest {
 
   @TestSubject

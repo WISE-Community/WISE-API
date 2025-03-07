@@ -3,17 +3,17 @@ package org.wise.vle.web;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertNotNull;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterService;
 import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class CRaterControllerTest {
 
   @TestSubject

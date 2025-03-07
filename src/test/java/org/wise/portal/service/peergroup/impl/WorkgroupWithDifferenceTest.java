@@ -3,14 +3,14 @@ package org.wise.portal.service.peergroup.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.easymock.EasyMockRunner;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class WorkgroupWithDifferenceTest {
 
   WorkgroupWithDifference wwd1, wwd2, wwd3, wwd4;
