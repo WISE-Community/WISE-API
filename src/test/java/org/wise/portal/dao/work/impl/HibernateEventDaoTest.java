@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2006 Encore Research Group, University of Toronto
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -28,12 +28,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.dao.work.EventDao;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
@@ -48,20 +46,19 @@ import org.wise.vle.domain.work.Event;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateEventDaoTest extends AbstractTransactionalDbTests {
-  
+
   private Group period1, period2;
   private User teacher1, student1, student2;
   private Run run;
   private Workgroup workgroup1, workgroup2;
   private List<JSONObject> components;
   private Event event1;
-  
+
   @Autowired
   private EventDao<Event> eventDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     period1 = createPeriod("Period 1");
@@ -90,12 +87,12 @@ public class HibernateEventDaoTest extends AbstractTransactionalDbTests {
     components.add(component);
     event1 = createEvent(run, period1, workgroup1, "node1", null, null, "VLE", "Navigation",
         "nodeEntered", "event1", null);
-    createEvent(run, period1, workgroup1, "node2", "12345abcde", "MultipleChoice",
-        "Component", "StudentInteraction", "buttonClicked", "event2", components);
-    createEvent(run, period2, workgroup2, "node1", null, null, "VLE", "Navigation",
-        "nodeEntered", "event3", null);
-    createEvent(run, period2, workgroup2, "node2", "12345abcde", "MultipleChoice",
-        "Component", "StudentInteraction", "buttonClicked", "event4", components);
+    createEvent(run, period1, workgroup1, "node2", "12345abcde", "MultipleChoice", "Component",
+        "StudentInteraction", "buttonClicked", "event2", components);
+    createEvent(run, period2, workgroup2, "node1", null, null, "VLE", "Navigation", "nodeEntered",
+        "event3", null);
+    createEvent(run, period2, workgroup2, "node2", "12345abcde", "MultipleChoice", "Component",
+        "StudentInteraction", "buttonClicked", "event4", components);
     toilet.flush();
   }
 

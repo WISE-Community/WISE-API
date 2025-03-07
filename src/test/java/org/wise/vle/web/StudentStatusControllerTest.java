@@ -4,10 +4,10 @@ import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -15,9 +15,9 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.status.StudentStatus;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentStatusControllerTest extends APIControllerTest {
-  
+
   @TestSubject
   private StudentStatusController controller = new StudentStatusController();
 
@@ -46,13 +46,13 @@ public class StudentStatusControllerTest extends APIControllerTest {
     expect(userService.retrieveUserByUsername(username)).andReturn(user);
   }
 
-  private void expectIsUserInWorkgroupForRun(
-      User user, Run run, Workgroup workgroup, boolean isInWorkgroup) {
+  private void expectIsUserInWorkgroupForRun(User user, Run run, Workgroup workgroup,
+      boolean isInWorkgroup) {
     expect(workgroupService.isUserInWorkgroupForRun(user, run, workgroup)).andReturn(isInWorkgroup);
   }
 
-  private void expectGetStudentStatusByWorkgroupId(
-      Workgroup workgroup, StudentStatus studentStatus) {
+  private void expectGetStudentStatusByWorkgroupId(Workgroup workgroup,
+      StudentStatus studentStatus) {
     expect(vleService.getStudentStatusByWorkgroupId(workgroup.getId())).andReturn(studentStatus);
   }
 

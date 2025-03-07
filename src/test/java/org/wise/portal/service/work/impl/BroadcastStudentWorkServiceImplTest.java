@@ -4,18 +4,18 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.service.WISEServiceTest;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   @TestSubject
@@ -26,7 +26,7 @@ public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   private StudentWork studentWork;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     studentWork = new StudentWork();
@@ -38,8 +38,8 @@ public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   @Test
   public void broadcastToClassroom_PublishClassroomTopic() {
-    redisPublisher.publish("{\"topic\":\"/topic/classroom/1/2\"," +
-        "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToClassroom\"}");
+    redisPublisher.publish("{\"topic\":\"/topic/classroom/1/2\","
+        + "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToClassroom\"}");
     expectLastCall();
     replay(redisPublisher);
     service.broadcastToClassroom(studentWork);
@@ -48,8 +48,8 @@ public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   @Test
   public void broadcastToTeacher_PublishTeacherRunTopic() {
-    redisPublisher.publish("{\"topic\":\"/topic/teacher/1\"," +
-        "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToTeacher\"}");
+    redisPublisher.publish("{\"topic\":\"/topic/teacher/1\","
+        + "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToTeacher\"}");
     expectLastCall();
     replay(redisPublisher);
     service.broadcastToTeacher(studentWork);

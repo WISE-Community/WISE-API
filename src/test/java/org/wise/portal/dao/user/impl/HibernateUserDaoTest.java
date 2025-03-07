@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2006 Encore Research Group, University of Toronto
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -25,13 +25,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.user.User;
@@ -41,7 +39,6 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   private User teacher1, teacher2, student1, student2;
@@ -49,14 +46,14 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   private HibernateUserDao userDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     teacher1 = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
         Schoollevel.COLLEGE, "1234567890");
     teacher2 = createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
-        "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com",
-        "Krusty Krab", Schoollevel.HIGH_SCHOOL, "abcdefghij");
+        "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
+        Schoollevel.HIGH_SCHOOL, "abcdefghij");
     student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
         Gender.MALE);
     student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
@@ -130,8 +127,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveTeacherById_WithTeacherId_ShouldReturnTheTeacher() {
     User user = userDao.retrieveTeacherById(teacher1.getId());
-    assertEquals(teacher1.getUserDetails().getUsername(),
-        user.getUserDetails().getUsername());
+    assertEquals(teacher1.getUserDetails().getUsername(), user.getUserDetails().getUsername());
   }
 
   @Test
@@ -250,8 +246,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveTeachersBySchoolLevel_WithNotUsedSchoolLevel_ShouldNotReturnAnyUser() {
-    List<User> users = userDao.retrieveTeachersBySchoolLevel(
-        Schoollevel.ELEMENTARY_SCHOOL.toString());
+    List<User> users = userDao
+        .retrieveTeachersBySchoolLevel(Schoollevel.ELEMENTARY_SCHOOL.toString());
     assertEquals(0, users.size());
   }
 
@@ -276,8 +272,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveStudentsById_WithStudentId_ShouldReturnUser() {
     User user = userDao.retrieveStudentById(student1.getId());
-    assertEquals(student1.getUserDetails().getUsername(),
-        user.getUserDetails().getUsername());
+    assertEquals(student1.getUserDetails().getUsername(), user.getUserDetails().getUsername());
   }
 
   @Test

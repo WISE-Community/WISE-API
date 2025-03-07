@@ -8,18 +8,18 @@ import static org.junit.Assert.fail;
 
 import java.nio.file.AccessDeniedException;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.service.vle.wise5.TeacherWorkService;
 import org.wise.portal.service.work.BroadcastStudentWorkService;
 import org.wise.vle.domain.work.StudentWork;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class TeacherWorkControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -33,7 +33,7 @@ public class TeacherWorkControllerTest extends APIControllerTest {
 
   private StudentWork studentWork;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
     studentWork = new StudentWork();

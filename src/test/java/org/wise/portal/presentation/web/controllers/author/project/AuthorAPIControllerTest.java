@@ -17,15 +17,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpSession;
-import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.portal.impl.PortalImpl;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
@@ -36,7 +35,7 @@ import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.session.SessionService;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class AuthorAPIControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -79,6 +78,10 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expect(request.getServerName()).andReturn("");
     expect(request.getServerPort()).andReturn(8080);
     replay(request);
+    expect(appProperties.getProperty("curriculum_base_www"))
+        .andReturn("http://localhost:8080/curriculum");
+    expect(appProperties.getProperty("OPENAI_API_KEY")).andReturn("OPENAPIKEY");
+    replay(appProperties);
     Map<String, Object> config = authorAPIController.getAuthorProjectConfig(teacherAuth, request,
         project1);
     assertTrue((boolean) config.get("canEditProject"));
@@ -260,7 +263,8 @@ public class AuthorAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupingsAndReturnProjectSaved() throws Exception {
+  public void saveProject_ProjectHasAssociatedRun_shouldScanForPeerGroupingsAndReturnProjectSaved()
+      throws Exception {
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     project1.setMetadata("{\"title\":\"Old Title\"}");
     expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
@@ -280,7 +284,6 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     assertEquals("projectSaved", response.getMessageCode());
     verify(userService, projectService);
   }
-
 
   @Test
   public void getAssetFileNames_withDuplicateReferences_shouldReturnUniqueFileNames()

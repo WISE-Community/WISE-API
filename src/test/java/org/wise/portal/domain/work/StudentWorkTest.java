@@ -3,11 +3,10 @@ package org.wise.portal.domain.work;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
@@ -27,7 +26,7 @@ public class StudentWorkTest {
   Workgroup workgroup;
   ObjectMapper mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     run = new RunImpl();
     run.setId(1L);

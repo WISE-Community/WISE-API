@@ -32,10 +32,10 @@ import java.util.TreeSet;
 import javax.servlet.http.HttpSession;
 
 import org.easymock.EasyMock;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.internal.runners.TestClassRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -50,94 +50,85 @@ import org.wise.portal.service.run.RunService;
 
 /**
  * @author Hiroki Terashima
- * @version $Id$
  */
-@RunWith(TestClassRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentListControllerTest extends AbstractModelAndViewTests {
 
-	private MockHttpServletRequest request;
+  private MockHttpServletRequest request;
 
-	private MockHttpServletResponse response;
+  private MockHttpServletResponse response;
 
-	private RunService mockRunService;
-	
-	private StudentListController studentListController;
-	
-	private String requestedRunId = "4";
-	
-	private Run requestedRun;
-	
-	private Set<Group> periodsInRun;
+  private RunService mockRunService;
 
-	/**
-	 * @see junit.framework.TestCase#setUp()
-	 */
-	@Before
-	public void setUp() {
-		request = new MockHttpServletRequest();
-		response = new MockHttpServletResponse();
-		HttpSession mockSession = new MockHttpSession();
-		request.setSession(mockSession);
-		
-		mockRunService = EasyMock.createMock(RunService.class);
-		
-		studentListController = new StudentListController();
-		studentListController.setRunService(mockRunService);
-	}
-	
-	/**
-	 * @see junit.framework.TestCase#tearDown()
-	 */
-	@After
-	public void tearDown() {
-		mockRunService = null;
-		request = null;
-		response = null;
-		studentListController = null;
-	}
-	
-	@Test
-	public void testNoPeriodFilter_RunWithNoPeriods() throws Exception {
-		// request does not have any filter
-		// the run has not periods
-		requestedRun = new RunImpl();
-		periodsInRun = new TreeSet<Group>();
-		requestedRun.setPeriods(periodsInRun);
-		request.setParameter(StudentListController.RUNID_PARAM_KEY, requestedRunId);
-		
-		expect(mockRunService.retrieveById(Long.parseLong(requestedRunId))).andReturn(requestedRun);
-		replay(mockRunService);
-		
-		ModelAndView modelAndView = studentListController.handleRequestInternal(request, response);
-		assertModelAttributeValue(modelAndView, StudentListController.RUN, requestedRun);
-		assertModelAttributeValue(modelAndView, StudentListController.PERIODS, periodsInRun);
-		
-		verify(mockRunService);
-	}
+  private StudentListController studentListController;
 
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testNoPeriodFilter_RunWithPeriods() throws Exception {
-		// request does not have any filter
-		// the run has not periods
-		requestedRun = new RunImpl();
-		periodsInRun = new TreeSet<Group>();
-		periodsInRun.add(new PersistentGroup());
-		requestedRun.setPeriods(periodsInRun);
-		request.setParameter(StudentListController.RUNID_PARAM_KEY, requestedRunId);
-		
-		expect(mockRunService.retrieveById(Long.parseLong(requestedRunId))).andReturn(requestedRun);
-		replay(mockRunService);
-		
-		ModelAndView modelAndView = studentListController.handleRequestInternal(request, response);
-		assertModelAttributeValue(modelAndView, StudentListController.RUN, requestedRun);
-		assertModelAttributeAvailable(modelAndView, StudentListController.PERIODS);
-		Set<Group> periods = (Set<Group>) modelAndView.getModel().get(StudentListController.PERIODS);
-		assertEquals(1, periods.size());
-		
-		verify(mockRunService);
-	}
+  private String requestedRunId = "4";
 
-		
-	
+  private Run requestedRun;
+
+  private Set<Group> periodsInRun;
+
+  @BeforeEach
+  public void setUp() {
+    request = new MockHttpServletRequest();
+    response = new MockHttpServletResponse();
+    HttpSession mockSession = new MockHttpSession();
+    request.setSession(mockSession);
+
+    mockRunService = EasyMock.createMock(RunService.class);
+
+    studentListController = new StudentListController();
+    studentListController.setRunService(mockRunService);
+  }
+
+  @AfterEach
+  public void tearDown() {
+    mockRunService = null;
+    request = null;
+    response = null;
+    studentListController = null;
+  }
+
+  @Test
+  public void testNoPeriodFilter_RunWithNoPeriods() throws Exception {
+    // request does not have any filter
+    // the run has not periods
+    requestedRun = new RunImpl();
+    periodsInRun = new TreeSet<Group>();
+    requestedRun.setPeriods(periodsInRun);
+    request.setParameter(StudentListController.RUNID_PARAM_KEY, requestedRunId);
+
+    expect(mockRunService.retrieveById(Long.parseLong(requestedRunId))).andReturn(requestedRun);
+    replay(mockRunService);
+
+    ModelAndView modelAndView = studentListController.handleRequestInternal(request, response);
+    assertModelAttributeValue(modelAndView, StudentListController.RUN, requestedRun);
+    assertModelAttributeValue(modelAndView, StudentListController.PERIODS, periodsInRun);
+
+    verify(mockRunService);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testNoPeriodFilter_RunWithPeriods() throws Exception {
+    // request does not have any filter
+    // the run has not periods
+    requestedRun = new RunImpl();
+    periodsInRun = new TreeSet<Group>();
+    periodsInRun.add(new PersistentGroup());
+    requestedRun.setPeriods(periodsInRun);
+    request.setParameter(StudentListController.RUNID_PARAM_KEY, requestedRunId);
+
+    expect(mockRunService.retrieveById(Long.parseLong(requestedRunId))).andReturn(requestedRun);
+    replay(mockRunService);
+
+    ModelAndView modelAndView = studentListController.handleRequestInternal(request, response);
+    assertModelAttributeValue(modelAndView, StudentListController.RUN, requestedRun);
+    assertModelAttributeAvailable(modelAndView, StudentListController.PERIODS);
+    Set<Group> periods = (Set<Group>) modelAndView.getModel().get(StudentListController.PERIODS);
+    assertEquals(1, periods.size());
+
+    verify(mockRunService);
+  }
+
 }

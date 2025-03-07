@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2006 Encore Research Group, University of Toronto
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -25,12 +25,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.PersistentUserDetails;
@@ -40,22 +38,20 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
   @Autowired
   private HibernateUserDetailsDao userDetailsDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
-    createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
-        "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
-        Schoollevel.COLLEGE, "1234567890");
-    createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
-        "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com",
-        "Krusty Krab", Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
-        Gender.MALE);
+    createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom", "Water State",
+        "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School", Schoollevel.COLLEGE,
+        "1234567890");
+    createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant", "Bikini Bottom",
+        "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
+        Schoollevel.HIGH_SCHOOL, "abcdefghij");
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1, Gender.MALE);
     createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
   }
 

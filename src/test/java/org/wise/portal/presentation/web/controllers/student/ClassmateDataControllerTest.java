@@ -8,14 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ClassmateDataControllerTest extends AbstractClassmateDataControllerTest {
 
   private final String COMPONENT_ID2 = "component2";
@@ -102,22 +102,12 @@ public class ClassmateDataControllerTest extends AbstractClassmateDataController
 
   private void expectGetProjectContent(String nodeId, String componentId, String componentType)
       throws IOException {
-    String projectJSONString = new StringBuilder()
-        .append("{")
-        .append("  \"nodes\": [")
-        .append("    {")
-        .append("      \"id\": \"" + nodeId + "\",")
-        .append("      \"type\": \"node\",")
-        .append("      \"components\": [")
-        .append("        {")
+    String projectJSONString = new StringBuilder().append("{").append("  \"nodes\": [")
+        .append("    {").append("      \"id\": \"" + nodeId + "\",")
+        .append("      \"type\": \"node\",").append("      \"components\": [").append("        {")
         .append("          \"id\": \"" + componentId + "\",")
-        .append("          \"type\": \"" + componentType + "\"")
-        .append("        }")
-        .append("      ]")
-        .append("    }")
-        .append("  ]")
-        .append("}")
-        .toString();
+        .append("          \"type\": \"" + componentType + "\"").append("        }")
+        .append("      ]").append("    }").append("  ]").append("}").toString();
     expect(projectService.getProjectContent(project1)).andReturn(projectJSONString);
   }
 }

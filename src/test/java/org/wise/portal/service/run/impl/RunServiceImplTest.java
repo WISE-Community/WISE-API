@@ -40,17 +40,16 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.Set;
 
 import org.easymock.EasyMock;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.env.Environment;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.group.GroupDao;
@@ -69,7 +68,7 @@ import org.wise.portal.service.acl.AclService;
 /**
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class RunServiceImplTest {
 
   private static final String PROJECT_NAME = "Airbags!!!";
@@ -103,7 +102,7 @@ public class RunServiceImplTest {
   private RunParameters runParameters;
 
   @SuppressWarnings("unchecked")
-  @Before
+  @BeforeEach
   public void setUp() {
     aclService = EasyMock.createMock(AclService.class);
     Project project = new ProjectImpl();
@@ -122,7 +121,7 @@ public class RunServiceImplTest {
     runParameters.setProject(project);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     runService = null;
     runDao = null;

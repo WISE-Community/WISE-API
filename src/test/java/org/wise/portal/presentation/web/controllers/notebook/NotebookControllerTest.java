@@ -9,16 +9,16 @@ import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.work.NotebookItem;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class NotebookControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -28,7 +28,7 @@ public class NotebookControllerTest extends APIControllerTest {
 
   private NotebookItem item1, item2;
 
-  @Before
+  @BeforeEach
   public void setup() {
     notebookItems = new ArrayList<>();
     item1 = new NotebookItem();
@@ -77,6 +77,7 @@ public class NotebookControllerTest extends APIControllerTest {
     expect(workgroupService.retrieveById(workgroup1.getId())).andReturn(workgroup1).times(1);
     expect(userService.retrieveUserByUsername(student1UserDetails.getUsername()))
         .andReturn(student1);
+    expect(userService.isUserAssociatedWithRun(student1, run1)).andReturn(true);
     expect(workgroupService.isUserInWorkgroupForRun(student1, run1, workgroup1)).andReturn(true);
     expect(vleService.getNotebookItems(run1, workgroup1)).andReturn(notebookItems);
     replay(runService, workgroupService, userService, vleService);

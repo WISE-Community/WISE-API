@@ -31,12 +31,10 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 import org.wise.vle.domain.status.RunStatus;
 
@@ -44,7 +42,6 @@ import org.wise.vle.domain.status.RunStatus;
  * @author Eric Khumalo
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateRunStatusDaoTest extends AbstractTransactionalDbTests {
 
   private final String status = "status";
@@ -52,7 +49,7 @@ public class HibernateRunStatusDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   private HibernateRunStatusDao runStatusDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
   }

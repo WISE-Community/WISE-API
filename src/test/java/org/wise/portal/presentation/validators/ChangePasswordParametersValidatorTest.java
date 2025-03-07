@@ -23,14 +23,13 @@
 package org.wise.portal.presentation.validators;
 
 import org.easymock.EasyMock;
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.wise.portal.dao.ObjectNotFoundException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.ChangePasswordParameters;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -43,7 +42,7 @@ import org.wise.portal.service.user.impl.UserServiceImpl;
 /**
  * @author Sally Ahn
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ChangePasswordParametersValidatorTest extends TestCase {
 
   private ChangePasswordParameters params;
@@ -86,7 +85,7 @@ public class ChangePasswordParametersValidatorTest extends TestCase {
     errors = new BeanPropertyBindingResult(params, "");
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     params = new ChangePasswordParameters();
     Long teacherId = new Long(1);
@@ -103,7 +102,7 @@ public class ChangePasswordParametersValidatorTest extends TestCase {
     EasyMock.replay(mutableUserDetails);
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     validator = null;
     params = null;

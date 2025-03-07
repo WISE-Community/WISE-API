@@ -2,16 +2,16 @@ package org.wise.vle.domain.webservice.crater;
 
 import static org.easymock.EasyMock.*;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.env.Environment;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class CRaterServiceTest {
 
   @TestSubject
@@ -26,7 +26,7 @@ public class CRaterServiceTest {
   private String scoringUrl = "https://test.org/score";
   private String verifyUrl = "https://test.org/verify";
 
-  @Before
+  @BeforeEach
   public void before() {
     expect(appProperties.getProperty("cRater_client_id")).andReturn(clientId);
     expect(appProperties.getProperty("cRater_password")).andReturn(password);

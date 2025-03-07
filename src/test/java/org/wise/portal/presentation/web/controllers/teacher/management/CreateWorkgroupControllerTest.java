@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.web.server.ResponseStatusException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
@@ -24,7 +24,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class CreateWorkgroupControllerTest extends APIControllerTest {
 
   @TestSubject

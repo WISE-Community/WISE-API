@@ -6,13 +6,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.run.Run;
@@ -21,8 +20,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.vle.domain.work.StudentWork;
 
-@SpringBootTest
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class StudentGetDataControllerTest extends APIControllerTest {
 
   @TestSubject
@@ -52,7 +50,7 @@ public class StudentGetDataControllerTest extends APIControllerTest {
   private List<JSONObject> components;
   private Boolean onlyGetLatest;
 
-  @Before
+  @BeforeEach
   public void init() {
     getStudentWork = false;
     getEvents = false;

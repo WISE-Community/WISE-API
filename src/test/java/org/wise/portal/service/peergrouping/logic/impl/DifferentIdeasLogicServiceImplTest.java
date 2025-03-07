@@ -7,17 +7,17 @@ import java.util.TreeSet;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.peergrouping.logic.DifferentIdeasLogic;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.peergroup.impl.WorkgroupLogicComparable;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogicServiceImplTest {
 
   @TestSubject
@@ -31,7 +31,7 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
   String ideas3And4 = createIdeaString(false, false, true, true);
   String ideas4 = createIdeaString(false, false, false, true);
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     super.setup();
     setLogic("maximize");

@@ -32,12 +32,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.group.Group;
@@ -51,7 +49,6 @@ import org.wise.vle.domain.achievement.Achievement;
  * @author Geoffrey Kwan
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class HibernateAchievementDaoTest extends AbstractTransactionalDbTests {
 
   Run run;
@@ -61,7 +58,7 @@ public class HibernateAchievementDaoTest extends AbstractTransactionalDbTests {
   @Autowired
   HibernateAchievementDao achievementDao;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
     Long id = getNextAvailableProjectId();
@@ -89,8 +86,8 @@ public class HibernateAchievementDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void getAchievementsByParams_RunWithNoAchievements_ShouldReturnNone() {
-    List<Achievement> achievements = 
-        achievementDao.getAchievementsByParams(null, run, null, null, null);
+    List<Achievement> achievements = achievementDao.getAchievementsByParams(null, run, null, null,
+        null);
     assertEquals(0, achievements.size());
   }
 
@@ -98,8 +95,8 @@ public class HibernateAchievementDaoTest extends AbstractTransactionalDbTests {
   public void getAchievementsByParams_RunWithAchievements_ShouldReturnAchievements() {
     createAchievement(workgroup1, "achievementId1", "type1", "achievement1");
     createAchievement(workgroup2, "achievementId1", "type1", "achievement2");
-    List<Achievement> achievements = 
-        achievementDao.getAchievementsByParams(null, run, null, null, null);
+    List<Achievement> achievements = achievementDao.getAchievementsByParams(null, run, null, null,
+        null);
     assertEquals(2, achievements.size());
     assertEquals("achievement1", achievements.get(0).getData());
     assertEquals("achievement2", achievements.get(1).getData());
@@ -110,8 +107,8 @@ public class HibernateAchievementDaoTest extends AbstractTransactionalDbTests {
     createAchievement(workgroup1, "achievementId1", "type1", "achievement1");
     createAchievement(workgroup1, "achievementId2", "type1", "achievement2");
     createAchievement(workgroup2, "achievementId1", "type1", "achievement3");
-    List<Achievement> achievements = 
-        achievementDao.getAchievementsByParams(null, run, null, "achievementId2", null);
+    List<Achievement> achievements = achievementDao.getAchievementsByParams(null, run, null,
+        "achievementId2", null);
     assertEquals(1, achievements.size());
     assertEquals("achievement2", achievements.get(0).getData());
   }

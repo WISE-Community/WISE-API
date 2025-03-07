@@ -2,19 +2,19 @@ package org.wise.portal.domain.peergrouping.logic;
 
 import static org.junit.Assert.assertEquals;
 
-import org.easymock.EasyMockRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class DifferentKIScoresLogicTest {
 
   private DifferentKIScoresLogic logicBasic, logicWithMode;
   private String logicStringBasic = "differentKIScores(\"node1\", \"componentX\")";
   private String logicStringWithMode = "differentKIScores(\"node1\", \"componentX\", \"maximize\")";
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.logicBasic = new DifferentKIScoresLogic(logicStringBasic);
     this.logicWithMode = new DifferentKIScoresLogic(logicStringWithMode);

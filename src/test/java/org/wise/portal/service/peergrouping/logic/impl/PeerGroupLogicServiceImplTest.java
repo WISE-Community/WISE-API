@@ -2,7 +2,7 @@ package org.wise.portal.service.peergrouping.logic.impl;
 
 import java.util.HashSet;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -16,7 +16,7 @@ public class PeerGroupLogicServiceImplTest extends PeerGroupServiceTest {
   HashSet<Workgroup> possibleMembers = new HashSet<Workgroup>();
   Workgroup workgroup1, workgroup2, workgroup3, workgroup4, workgroup5;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     super.setUp();
     workgroup1 = createWorkgroup(1L);

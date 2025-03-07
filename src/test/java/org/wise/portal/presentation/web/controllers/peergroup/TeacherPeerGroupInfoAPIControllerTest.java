@@ -7,24 +7,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.easymock.EasyMockRunner;
+import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
 import org.wise.portal.domain.peergroup.PeerGroup;
 
 /**
  * @author Hiroki Terashima
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class TeacherPeerGroupInfoAPIControllerTest extends AbstractPeerGroupAPIControllerTest {
 
   @TestSubject
   private TeacherPeerGroupInfoAPIController controller = new TeacherPeerGroupInfoAPIController();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     super.setUp();
   }

@@ -22,12 +22,22 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.easymock.EasyMockExtension;
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import org.wise.portal.dao.group.impl.HibernateGroupDao;
 import org.wise.portal.dao.peergroup.impl.HibernatePeerGroupDao;
 import org.wise.portal.dao.peergrouping.impl.HibernatePeerGroupingDao;
@@ -62,8 +72,9 @@ import org.wise.portal.service.user.UserService;
  * @author Cynick Young
  * @author Hiroki Terashima
  */
-@RunWith(SpringRunner.class)
 @WebAppConfiguration
+@ContextConfiguration
+@Testcontainers
 public abstract class AbstractTransactionalDbTests
     extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -97,6 +108,18 @@ public abstract class AbstractTransactionalDbTests
   private UserService userService;
 
   private Long nextAvailableProjectId = 1L;
+
+  @Container
+  static GenericContainer redisContainer = new GenericContainer(
+      DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+
+  @DynamicPropertySource
+  static void redisProperties(DynamicPropertyRegistry registry) {
+    String redisHost = redisContainer.getHost();
+    Integer redisPort = redisContainer.getFirstMappedPort();
+    registry.add("spring.redis.host", () -> redisHost);
+    registry.add("spring.redis.port", () -> redisPort);
+  }
 
   public void setUp() throws Exception {
     toilet = new HibernateFlusher();

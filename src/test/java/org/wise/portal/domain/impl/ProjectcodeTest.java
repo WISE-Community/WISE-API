@@ -26,17 +26,17 @@ package org.wise.portal.domain.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import org.easymock.EasyMockRunner;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.easymock.EasyMockExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.project.impl.Projectcode;
 
 /**
  * @author Hiroki Terashima
  * @version $Id$
  */
-@RunWith(EasyMockRunner.class)
+@ExtendWith(EasyMockExtension.class)
 public class ProjectcodeTest {
 
   private String runcode = "saphire8886";
@@ -47,7 +47,7 @@ public class ProjectcodeTest {
   private Projectcode projectcode, projectcode2;
   private final String[] ILLEGAL_PROJECTCODES = { "Owl0896", "Owl0896-", "-3", "-", "" };
 
-  @Before
+  @BeforeEach
   public void setUp() {
     // test to make sure that both constructors work
     projectcode = new Projectcode(runcode, period);
