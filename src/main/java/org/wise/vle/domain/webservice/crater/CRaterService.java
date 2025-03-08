@@ -52,19 +52,18 @@ public class CRaterService {
   private Environment appProperties;
 
   /**
-   * Sends either student work (scoring request) or an item id (verification request) to 
+   * Sends either student work (scoring request) or an item id (verification request) to
    * the CRater server
    * @param request the scoring or verification request from the client
    * @return scoring or verify response from CRater
    * @throws JSONException
    */
-  public String getCRaterResponse(CRaterRequest request) 
-  throws JSONException {
+  public String getCRaterResponse(CRaterRequest request) throws JSONException {
     String prefix = request.forBerkeleyEndpoint() ? "berkeley_" : "";
-    
+
     String clientIdVariable = prefix + "cRater_client_id";
     String cRaterUrlVariable = prefix + request.getCRaterUrlVariableBase();
-    
+
     request.setCRaterClientId(appProperties.getProperty(clientIdVariable));
     request.setCRaterUrl(appProperties.getProperty(cRaterUrlVariable));
 
@@ -83,8 +82,8 @@ public class CRaterService {
     try {
       String password = appProperties.getProperty(
           request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
-      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
-          ("extsyscrtr02dev:" + password).getBytes());
+      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
+          .printBase64Binary(("extsyscrtr02dev:" + password).getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
       post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
       post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));
@@ -92,7 +91,7 @@ public class CRaterService {
       if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
         System.err.println("Method failed: " + response.getStatusLine());
       }
-      return IOUtils.toString(response.getEntity().getContent());
+      return IOUtils.toString(response.getEntity().getContent(), "UTF-8");
     } catch (IOException e) {
       System.err.println("Fatal transport error: " + e.getMessage());
       e.printStackTrace();
