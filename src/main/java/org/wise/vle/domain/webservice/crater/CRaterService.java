@@ -52,26 +52,21 @@ public class CRaterService {
   private Environment appProperties;
 
   /**
-   * Sends student work to the CRater server and receives the score as the response
-   *
-   * @param CRaterScoringRequest scoring request from client
-   * @return CRaterScoringResponse scoring response from CRater
+   * Sends either student work (scoring request) or an item id (verification request) to
+   * the CRater server
+   * @param request the scoring or verification request from the client
+   * @return scoring or verify response from CRater
+   * @throws JSONException
    */
-  public String getScoringResponse(CRaterScoringRequest request) throws JSONException {
-    request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
-    request.setCRaterUrl(appProperties.getProperty("cRater_scoring_url"));
-    return post(request);
-  }
+  public String getCRaterResponse(CRaterRequest request) throws JSONException {
+    String prefix = request.forBerkeleyEndpoint() ? "berkeley_" : "";
 
-  /**
-   * Sends item id verification request to the CRater server
-   *
-   * @param CRaterVerificationRequest request with item id to verify
-   * @return CRaterVerificationResponse verify response from CRater
-   */
-  public String getVerificationResponse(CRaterVerificationRequest request) throws JSONException {
-    request.setCRaterClientId(appProperties.getProperty("cRater_client_id"));
-    request.setCRaterUrl(appProperties.getProperty("cRater_verification_url"));
+    String clientIdVariable = prefix + "cRater_client_id";
+    String cRaterUrlVariable = prefix + request.getCRaterUrlVariableBase();
+
+    request.setCRaterClientId(appProperties.getProperty(clientIdVariable));
+    request.setCRaterUrl(appProperties.getProperty(cRaterUrlVariable));
+
     return post(request);
   }
 
@@ -85,8 +80,10 @@ public class CRaterService {
     HttpClient client = HttpClientBuilder.create().build();
     HttpPost post = new HttpPost(request.getCRaterUrl());
     try {
-      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
-          ("extsyscrtr02dev:" + appProperties.getProperty("cRater_password")).getBytes());
+      String password = appProperties.getProperty(
+          request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
+      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
+          .printBase64Binary(("extsyscrtr02dev:" + password).getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
       post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
       post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));
@@ -94,7 +91,7 @@ public class CRaterService {
       if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
         System.err.println("Method failed: " + response.getStatusLine());
       }
-      return IOUtils.toString(response.getEntity().getContent());
+      return IOUtils.toString(response.getEntity().getContent(), "UTF-8");
     } catch (IOException e) {
       System.err.println("Fatal transport error: " + e.getMessage());
       e.printStackTrace();

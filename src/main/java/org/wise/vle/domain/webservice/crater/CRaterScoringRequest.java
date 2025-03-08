@@ -5,24 +5,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.wise.portal.presentation.util.http.Base64;
 
-import lombok.Getter;
 import lombok.Setter;
 
 @Setter
-public class CRaterScoringRequest implements CRaterRequest {
-  String itemId;
+public class CRaterScoringRequest extends AbstractCRaterRequest {
   String responseId;
   String responseText;
-  String cRaterClientId;
-
-  @Getter
-  String cRaterUrl;
 
   public String generateBodyData() throws JSONException {
-    JSONObject body = new JSONObject();
-    body.put("client_id", cRaterClientId);
+    JSONObject body = new JSONObject(super.generateBodyData());
     body.put("service", "ScoringService");
-    body.put("item_id", itemId);
     JSONArray responses = new JSONArray();
     JSONObject response = new JSONObject();
     response.put("response_id", responseId);
@@ -30,5 +22,9 @@ public class CRaterScoringRequest implements CRaterRequest {
     responses.put(response);
     body.put("responses", responses);
     return body.toString();
+  }
+
+  public String getCRaterUrlVariableBase() {
+    return "cRater_scoring_url";
   }
 }

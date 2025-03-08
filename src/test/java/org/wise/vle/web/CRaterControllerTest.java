@@ -31,7 +31,7 @@ public class CRaterControllerTest {
     CRaterVerificationRequest request = new CRaterVerificationRequest();
     request.setItemId(itemId);
     try {
-      expect(cRaterService.getVerificationResponse(request))
+      expect(cRaterService.getCRaterResponse(request))
           .andReturn(createVerificationResponseString(itemId, true, trackingId, clientId));
       replay(cRaterService);
       String response = controller.verifyItemId(request);
@@ -59,7 +59,7 @@ public class CRaterControllerTest {
     CRaterScoringRequest request = new CRaterScoringRequest();
     request.setItemId(itemId);
     try {
-      expect(cRaterService.getScoringResponse(request))
+      expect(cRaterService.getCRaterResponse(request))
           .andReturn(createScoringResponseString(itemId, trackingId, clientId));
       replay(cRaterService);
       String response = controller.scoreItem(request);
