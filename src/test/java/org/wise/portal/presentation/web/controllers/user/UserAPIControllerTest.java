@@ -76,6 +76,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     expect(request.getContextPath()).andReturn("wise");
     replay(request);
     expect(appProperties.getProperty("google_analytics_id")).andReturn("UA-XXXXXX-1");
+    expect(appProperties.getProperty("google_tag_manager_id")).andReturn("GTM-XXXXXXXX");
     expect(appProperties.getProperty("recaptcha_public_key")).andReturn("recaptcha-123-abc");
     expect(appProperties.getProperty("wise4.hostname")).andReturn("http://localhost:8080/legacy");
     expect(appProperties.getProperty("discourse_url")).andReturn("http://localhost:9292");
@@ -87,6 +88,7 @@ public class UserAPIControllerTest extends APIControllerTest {
     assertEquals("wise/api/logout", config.get("logOutURL"));
     assertFalse((boolean) config.get("isGoogleClassroomEnabled"));
     assertEquals("UA-XXXXXX-1", config.get("googleAnalyticsId"));
+    assertEquals("GTM-XXXXXXXX", config.get("googleTagManagerId"));
     verify(request);
     verify(appProperties);
   }

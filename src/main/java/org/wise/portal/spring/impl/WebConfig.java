@@ -71,6 +71,9 @@ public class WebConfig implements WebMvcConfigurer {
   @Value("${google_analytics_id:}")
   private String googleAnalyticsId;
 
+  @Value("${google_tag_manager_id:}")
+  private String googleTagManagerId;
+
   @Autowired
   private ObjectMapper objectMapper;
 

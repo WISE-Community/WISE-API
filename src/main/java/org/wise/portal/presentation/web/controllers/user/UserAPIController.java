@@ -163,6 +163,7 @@ public class UserAPIController {
     config.put("contextPath", contextPath);
     config.put("currentTime", System.currentTimeMillis());
     config.put("googleAnalyticsId", appProperties.getProperty("google_analytics_id"));
+    config.put("googleTagManagerId", appProperties.getProperty("google_tag_manager_id"));
     config.put("googleClientId", googleClientId);
     config.put("isGoogleClassroomEnabled", isGoogleClassroomEnabled());
     config.put("logOutURL", contextPath + "/api/logout");
