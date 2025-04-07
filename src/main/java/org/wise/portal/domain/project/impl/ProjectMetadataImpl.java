@@ -208,6 +208,10 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String resources;
 
+  @Getter
+  @Setter
+  private String unitType;
+
   public ProjectMetadataImpl() {
   }
 
@@ -377,6 +381,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       postLevel = (long) 5;
     }
     setPostLevel(postLevel);
+
+    setUnitType(metadataJSON.optString("unitType", "Classroom"));
   }
 
   /**
