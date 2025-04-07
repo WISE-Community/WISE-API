@@ -1,0 +1,929 @@
+{
+	"data": {
+		"id": "49FCDFBD2CF04033A9C347BFA0584DF0_D2604890_grade-06",
+		"title": "Grade 6",
+		"subject": "Mathematics (2013-2022)",
+		"normalizedSubject": "Math",
+		"educationLevels": [
+			"06"
+		],
+		"cspStatus": {},
+		"license": {
+			"title": "CC BY 3.0 US",
+			"URL": "http://creativecommons.org/licenses/by/3.0/us/",
+			"rightsHolder": "D2L Corporation"
+		},
+		"document": {
+			"id": "D2604890",
+			"valid": "2015",
+			"title": "Maryland College and Career-Ready Standards - Mathematics (PK-8)",
+			"sourceURL": "http://mdk12.org/instruction/curriculum/mathematics/index.html",
+			"asnIdentifier": "D2604890",
+			"publicationStatus": "Deprecated"
+		},
+		"jurisdiction": {
+			"id": "49FCDFBD2CF04033A9C347BFA0584DF0",
+			"title": "Maryland"
+		},
+		"standards": {
+			"DDD5E465CF4849B18664B7697D9F0F8D": {
+				"id": "DDD5E465CF4849B18664B7697D9F0F8D",
+				"asnIdentifier": "S2605238",
+				"position": 71000,
+				"depth": 3,
+				"statementNotation": "6.SP.5.d",
+				"listId": "d.",
+				"description": "Relating the choice of measures of center and variability to the shape of the data distribution and the context in which the data was gathered",
+				"ancestorIds": [
+					"BCCDCC5F03D04C6E9F7A5364B8FB22FC",
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"816573492490419192D3E58B8D6078AE": {
+				"id": "816573492490419192D3E58B8D6078AE",
+				"asnIdentifier": "S2605237",
+				"position": 70000,
+				"depth": 3,
+				"statementNotation": "6.SP.5.c",
+				"listId": "c.",
+				"description": "Giving quantitative measures of center (median and/or mean) and variability (interquartile range and/or mean absolute deviation), as well as describing any overall pattern and any striking deviations from the overall pattern with reference to the context in which the data was gathered.",
+				"ancestorIds": [
+					"BCCDCC5F03D04C6E9F7A5364B8FB22FC",
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"060F971E38874120B9F92E77C7497382": {
+				"id": "060F971E38874120B9F92E77C7497382",
+				"asnIdentifier": "S2605236",
+				"position": 69000,
+				"depth": 3,
+				"statementNotation": "6.SP.5.b",
+				"listId": "b.",
+				"description": "Describing the nature of the attribute under investigation, including how it was measured and its units of measurement.",
+				"ancestorIds": [
+					"BCCDCC5F03D04C6E9F7A5364B8FB22FC",
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"3325E0230BCE40319FB31C2D76EAB3D2": {
+				"id": "3325E0230BCE40319FB31C2D76EAB3D2",
+				"asnIdentifier": "S2605235",
+				"position": 68000,
+				"depth": 3,
+				"statementNotation": "6.SP.5.a",
+				"listId": "a.",
+				"description": "Reporting the number of observations.",
+				"ancestorIds": [
+					"BCCDCC5F03D04C6E9F7A5364B8FB22FC",
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"BCCDCC5F03D04C6E9F7A5364B8FB22FC": {
+				"id": "BCCDCC5F03D04C6E9F7A5364B8FB22FC",
+				"asnIdentifier": "S2605234",
+				"position": 67000,
+				"depth": 2,
+				"statementNotation": "6.SP.5",
+				"statementLabel": "Standard",
+				"description": "Summarize numerical data sets in relation to their context, such as by:",
+				"ancestorIds": [
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"7A04AF54AB0C42B09359780EA2E3BCAB": {
+				"id": "7A04AF54AB0C42B09359780EA2E3BCAB",
+				"asnIdentifier": "S2605233",
+				"position": 66000,
+				"depth": 2,
+				"statementNotation": "6.SP.4",
+				"statementLabel": "Standard",
+				"description": "Display numerical data in plots on a number line, including dot plots, histograms, and box plots.",
+				"ancestorIds": [
+					"D886351BFCAC48348CE4490452B89E15",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"D886351BFCAC48348CE4490452B89E15": {
+				"id": "D886351BFCAC48348CE4490452B89E15",
+				"asnIdentifier": "S2605232",
+				"position": 65000,
+				"depth": 1,
+				"statementNotation": "6.SP.B",
+				"statementLabel": "Cluster",
+				"description": "Summarize and describe distributions.",
+				"ancestorIds": [
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"703798B832884FD188F3AA1642AE98ED": {
+				"id": "703798B832884FD188F3AA1642AE98ED",
+				"asnIdentifier": "S2605231",
+				"position": 64000,
+				"depth": 2,
+				"statementNotation": "6.SP.3",
+				"statementLabel": "Standard",
+				"description": "Recognize that a measure of center for a numerical data set summarizes all of its values with a single number, while a measure of variation describes how its values vary with a single number",
+				"ancestorIds": [
+					"4547D832679B4D69B5F90CB1A32FE174",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"6A1AEB4B93C34218819CC5101A7A7BB6": {
+				"id": "6A1AEB4B93C34218819CC5101A7A7BB6",
+				"asnIdentifier": "S2605230",
+				"position": 63000,
+				"depth": 2,
+				"statementNotation": "6.SP.2",
+				"statementLabel": "Standard",
+				"description": "Understand that a set of data collected to answer a statistical question has a distribution which can be described by its center, spread, and overall shape.",
+				"ancestorIds": [
+					"4547D832679B4D69B5F90CB1A32FE174",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"3C8BCE14A4ED457D8ADEC7E264C72390": {
+				"id": "3C8BCE14A4ED457D8ADEC7E264C72390",
+				"asnIdentifier": "S2605229",
+				"position": 62000,
+				"depth": 2,
+				"statementNotation": "6.SP.1",
+				"statementLabel": "Standard",
+				"description": "Recognize a statistical question as one that anticipates variability in the data related to the question and accounts for it in the answers. For example, \"How old am I?\" is not a statistical question, but \"How old are the students in my school?\" is a statistical question because one anticipates variability in students' ages.",
+				"ancestorIds": [
+					"4547D832679B4D69B5F90CB1A32FE174",
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"4547D832679B4D69B5F90CB1A32FE174": {
+				"id": "4547D832679B4D69B5F90CB1A32FE174",
+				"asnIdentifier": "S2605228",
+				"position": 61000,
+				"depth": 1,
+				"statementNotation": "6.SP.A",
+				"statementLabel": "Cluster",
+				"description": "Develop understanding of statistical variability",
+				"ancestorIds": [
+					"6EE78529B0C24BBC9E7C1ABC4118CE40"
+				]
+			},
+			"6EE78529B0C24BBC9E7C1ABC4118CE40": {
+				"id": "6EE78529B0C24BBC9E7C1ABC4118CE40",
+				"asnIdentifier": "S2605227",
+				"position": 60000,
+				"depth": 0,
+				"statementLabel": "Domain",
+				"description": "Statistics and Probability",
+				"ancestorIds": []
+			},
+			"6141D2510ACA402EBD11CFA76D172E5F": {
+				"id": "6141D2510ACA402EBD11CFA76D172E5F",
+				"asnIdentifier": "S2605221",
+				"position": 59000,
+				"depth": 2,
+				"statementNotation": "6.EE.9",
+				"statementLabel": "Standard",
+				"description": "Use variables to represent two quantities in a real-world problem that change in relationship to one another; write an equation to express one quantity, thought of as the dependent variable, in terms of the other quantity, thought of as the independent variable. Analyze the relationship between the dependent and independent variables using graphs and tables, and relate these to the equation. For example, in a problem involving motion at constant speed, list and graph ordered pairs of distances and times, and write the equation d = 65t to represent the relationship between distance and time.",
+				"ancestorIds": [
+					"421F234557264386BA9FCB17DB5A78BF",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"421F234557264386BA9FCB17DB5A78BF": {
+				"id": "421F234557264386BA9FCB17DB5A78BF",
+				"asnIdentifier": "S2605220",
+				"position": 58000,
+				"depth": 1,
+				"statementNotation": "6.EE.C",
+				"statementLabel": "Cluster",
+				"description": "Represent and analyze quantitative relationships between dependent and independent variables.",
+				"ancestorIds": [
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"C763750D45844ADF895FF8088FCFA01E": {
+				"id": "C763750D45844ADF895FF8088FCFA01E",
+				"asnIdentifier": "S2605219",
+				"position": 57000,
+				"depth": 2,
+				"statementNotation": "6.EE.8",
+				"statementLabel": "Standard",
+				"description": "Write an inequality of the form x > c or x < c to represent a constraint or condition in a real-world or mathematical problem. Recognize that inequalities of the form x > c or x < c have infinitely many solutions; represent solutions of such inequalities on number line diagrams.",
+				"ancestorIds": [
+					"6226A2B9F2AE45E3A8EC69C93387A02D",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"84ADA9D0813E4E2AB462C2534D6E2621": {
+				"id": "84ADA9D0813E4E2AB462C2534D6E2621",
+				"asnIdentifier": "S2605218",
+				"position": 56000,
+				"depth": 2,
+				"statementNotation": "6.EE.7",
+				"statementLabel": "Standard",
+				"description": "Solve real-world and mathematical problems by writing and solving equations of the form x + p = q and px = q for cases in which p, q and x are all non-negative rational numbers.",
+				"ancestorIds": [
+					"6226A2B9F2AE45E3A8EC69C93387A02D",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"3532621C3D7F495ABDC365CC8192FF43": {
+				"id": "3532621C3D7F495ABDC365CC8192FF43",
+				"asnIdentifier": "S2605217",
+				"position": 55000,
+				"depth": 2,
+				"statementNotation": "6.EE.6",
+				"statementLabel": "Standard",
+				"description": "Use variables to represent numbers and write expressions when solving a real-world or mathematical problem; understand that a variable can represent an unknown number, or, depending on the purpose at hand, any number in a specified set.",
+				"ancestorIds": [
+					"6226A2B9F2AE45E3A8EC69C93387A02D",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"60E8003AE60047AC82BC594DDCDEF65D": {
+				"id": "60E8003AE60047AC82BC594DDCDEF65D",
+				"asnIdentifier": "S2605216",
+				"position": 54000,
+				"depth": 2,
+				"statementNotation": "6.EE.5",
+				"statementLabel": "Standard",
+				"description": "Understand solving an equation or inequality as a process of answering a question: which values from a specified set, if any, make the equation or inequality true? Use substitution to determine whether a given number in a specified set makes an equation or inequality true.",
+				"ancestorIds": [
+					"6226A2B9F2AE45E3A8EC69C93387A02D",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"6226A2B9F2AE45E3A8EC69C93387A02D": {
+				"id": "6226A2B9F2AE45E3A8EC69C93387A02D",
+				"asnIdentifier": "S2605215",
+				"position": 53000,
+				"depth": 1,
+				"statementNotation": "6.EE.B",
+				"statementLabel": "Cluster",
+				"description": "Reason about and solve one-variable equations and inequalities.",
+				"ancestorIds": [
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"9DF069800D80475093E1D0555171541B": {
+				"id": "9DF069800D80475093E1D0555171541B",
+				"asnIdentifier": "S2605214",
+				"position": 52000,
+				"depth": 2,
+				"statementNotation": "6.EE.4",
+				"statementLabel": "Standard",
+				"description": "Identify when two expressions are equivalent (i.e., when the two expressions name the same number regardless of which value is substituted into them). For example, the expressions y + y + y and 3y are equivalent because they name the same number regardless of which number y stands for.",
+				"ancestorIds": [
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"8AA67E6F3B314D83A4DD4167B74BE351": {
+				"id": "8AA67E6F3B314D83A4DD4167B74BE351",
+				"asnIdentifier": "S2605213",
+				"position": 51000,
+				"depth": 2,
+				"statementNotation": "6.EE.3",
+				"statementLabel": "Standard",
+				"description": "Apply the properties of operations to generate equivalent expressions. For example, apply the distributive property to the expression 3(2 + x) to produce the equivalent expression 6 + 3x; apply the distributive property to the expression 24x + 18y to produce the equivalent expression 6 (4x + 3y); apply properties of operations to y + y + y to produce the equivalent expression 3y.",
+				"ancestorIds": [
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"E21E797BA80146FABC92D815EC3AF64B": {
+				"id": "E21E797BA80146FABC92D815EC3AF64B",
+				"asnIdentifier": "S2605212",
+				"position": 50000,
+				"depth": 3,
+				"statementNotation": "6.EE.2.c",
+				"listId": "c.",
+				"description": "Evaluate expressions at specific values for their variables. Include expressions that arise from formulas in real-world problems. Perform arithmetic operations, including those involving whole-number exponents, in the conventional order when there are no parentheses to specify a particular order (Order of Operations). For example, use the formulas V=s³ and A=6s² to find the volume and surface area of a cube with sides of length s = ½.",
+				"ancestorIds": [
+					"824987743EF04D93AAE515D7AD819C11",
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"3A1F4F34358D44A598ECFAED74DE899E": {
+				"id": "3A1F4F34358D44A598ECFAED74DE899E",
+				"asnIdentifier": "S2605211",
+				"position": 49000,
+				"depth": 3,
+				"statementNotation": "6.EE.2.b",
+				"listId": "b.",
+				"description": "Identify parts of an expression using mathematical terms (sum, term, product, factor, quotient, coefficient); view one or more parts of an expression as a single entity. For example, describe the expression 2(8 + 7) as a product of two factors; view (8 + 7) as both a single entity and a sum of two terms.",
+				"ancestorIds": [
+					"824987743EF04D93AAE515D7AD819C11",
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"02CB941C879E418B82CB6195D455E434": {
+				"id": "02CB941C879E418B82CB6195D455E434",
+				"asnIdentifier": "S2605210",
+				"position": 48000,
+				"depth": 3,
+				"statementNotation": "6.EE.2.a",
+				"listId": "a.",
+				"description": "Write expressions that record operations with numbers and with letters standing for numbers. For example, express the calculation \"Subtract y from 5\" as 5 – y.",
+				"ancestorIds": [
+					"824987743EF04D93AAE515D7AD819C11",
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"824987743EF04D93AAE515D7AD819C11": {
+				"id": "824987743EF04D93AAE515D7AD819C11",
+				"asnIdentifier": "S2605209",
+				"position": 47000,
+				"depth": 2,
+				"statementNotation": "6.EE.2",
+				"statementLabel": "Standard",
+				"description": "Write, read, and evaluate expressions in which letters stand for numbers.",
+				"ancestorIds": [
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"AB1459526A6E44F7AD61BFAB1A321A6A": {
+				"id": "AB1459526A6E44F7AD61BFAB1A321A6A",
+				"asnIdentifier": "S2605208",
+				"position": 46000,
+				"depth": 2,
+				"statementNotation": "6.EE.1",
+				"statementLabel": "Standard",
+				"description": "Write and evaluate numerical expressions involving whole-number exponents.",
+				"ancestorIds": [
+					"CF59C95160FB4A1E911972D3EA9AAF55",
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"CF59C95160FB4A1E911972D3EA9AAF55": {
+				"id": "CF59C95160FB4A1E911972D3EA9AAF55",
+				"asnIdentifier": "S2605207",
+				"position": 45000,
+				"depth": 1,
+				"statementNotation": "6.EE.A",
+				"statementLabel": "Cluster",
+				"description": "Apply and extend previous understandings of arithmetic to algebraic expressions.",
+				"ancestorIds": [
+					"BD8874BC9252429DB8D60B24DC2B98AC"
+				]
+			},
+			"BD8874BC9252429DB8D60B24DC2B98AC": {
+				"id": "BD8874BC9252429DB8D60B24DC2B98AC",
+				"asnIdentifier": "S2605145",
+				"position": 44000,
+				"depth": 0,
+				"statementLabel": "Domain",
+				"description": "Expressions and Equations",
+				"ancestorIds": []
+			},
+			"1AB3B287166B4FBAB3A376F2EA2065D3": {
+				"id": "1AB3B287166B4FBAB3A376F2EA2065D3",
+				"asnIdentifier": "S2605206",
+				"position": 43000,
+				"depth": 2,
+				"statementNotation": "6.NS.8",
+				"statementLabel": "Standard",
+				"description": "Solve real-world and mathematical problems by graphing points in all four quadrants of the coordinate plane. Include use of coordinates and absolute value to find distances between points with the same first coordinate or the same second coordinate.",
+				"ancestorIds": [
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"9555ECB00553418DA5FBFAAAF3B3C0EE": {
+				"id": "9555ECB00553418DA5FBFAAAF3B3C0EE",
+				"asnIdentifier": "S2605205",
+				"position": 42000,
+				"depth": 3,
+				"statementNotation": "6.NS.7.d",
+				"listId": "d.",
+				"description": "Distinguish comparisons of absolute value from statements about order. For example, recognize that an account balance less than –30 dollars represents a debt greater than 30 dollars.",
+				"ancestorIds": [
+					"9FAB4B4886DA44EEB998DD5B566F03FF",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"FD685310C1924F13B88F86F54292D525": {
+				"id": "FD685310C1924F13B88F86F54292D525",
+				"asnIdentifier": "S2605204",
+				"position": 41000,
+				"depth": 3,
+				"statementNotation": "6.NS.7.c",
+				"listId": "c.",
+				"description": "Understand the absolute value of a rational number as its distance from 0 on the number line; interpret absolute value as magnitude for a positive or negative quantity in a real-world situation. For example, for an account balance of –30 dollars, write |–30| = 30 to describe the size of the debt in dollars.",
+				"ancestorIds": [
+					"9FAB4B4886DA44EEB998DD5B566F03FF",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"0D389D91242C4DCB91B75E4449D03D79": {
+				"id": "0D389D91242C4DCB91B75E4449D03D79",
+				"asnIdentifier": "S2605203",
+				"position": 40000,
+				"depth": 3,
+				"statementNotation": "6.NS.7.b",
+				"listId": "b.",
+				"description": "Write, interpret, and explain statements of order for rational numbers in real-world contexts. For example, write –3°C > –7°C to express the fact that –3°C is warmer than –7°C.",
+				"ancestorIds": [
+					"9FAB4B4886DA44EEB998DD5B566F03FF",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"833D51E105394B6286CA4F986DAF3942": {
+				"id": "833D51E105394B6286CA4F986DAF3942",
+				"asnIdentifier": "S2605202",
+				"position": 39000,
+				"depth": 3,
+				"statementNotation": "6.NS.7.a",
+				"listId": "a.",
+				"description": "Interpret statements of inequality as statements about the relative position of two numbers on a number line diagram. For example, interpret –3 > –7 as a statement that –3 is located to the right of –7 on a number line oriented from left to right.",
+				"ancestorIds": [
+					"9FAB4B4886DA44EEB998DD5B566F03FF",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"9FAB4B4886DA44EEB998DD5B566F03FF": {
+				"id": "9FAB4B4886DA44EEB998DD5B566F03FF",
+				"asnIdentifier": "S2605201",
+				"position": 38000,
+				"depth": 2,
+				"statementNotation": "6.NS.7",
+				"statementLabel": "Standard",
+				"description": "Understand ordering and absolute value of rational numbers.",
+				"ancestorIds": [
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"F9646636E1754EFE99E0F0FE402D327E": {
+				"id": "F9646636E1754EFE99E0F0FE402D327E",
+				"asnIdentifier": "S2605200",
+				"position": 37000,
+				"depth": 3,
+				"statementNotation": "6.NS.6.c",
+				"listId": "c.",
+				"description": "Find and position integers and other rational numbers on a horizontal or vertical number line diagram; find and position pairs of integers and other rational numbers on a coordinate plane.",
+				"ancestorIds": [
+					"A2C32A62B408431BA0A08A763EFDA03B",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"9CA7A78B980545B88916966E22FE16E9": {
+				"id": "9CA7A78B980545B88916966E22FE16E9",
+				"asnIdentifier": "S2605199",
+				"position": 36000,
+				"depth": 3,
+				"statementNotation": "6.NS.6.b",
+				"listId": "b.",
+				"description": "Understand signs of numbers in ordered pairs as indicating locations in quadrants of the coordinate plane; recognize that when two ordered pairs differ only by signs, the locations of the points are related by reflections across one or both axes.",
+				"ancestorIds": [
+					"A2C32A62B408431BA0A08A763EFDA03B",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"F8C510F69D9646C8A34D1A2650521BB9": {
+				"id": "F8C510F69D9646C8A34D1A2650521BB9",
+				"asnIdentifier": "S2605198",
+				"position": 35000,
+				"depth": 3,
+				"statementNotation": "6.NS.6.a",
+				"listId": "a.",
+				"description": "Recognize opposite signs of numbers as indicating locations on opposite sides of 0 on the number line; recognize that the opposite of the opposite of a number is the number itself, e.g., –(–3) = 3, and that 0 is its own opposite.",
+				"ancestorIds": [
+					"A2C32A62B408431BA0A08A763EFDA03B",
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"A2C32A62B408431BA0A08A763EFDA03B": {
+				"id": "A2C32A62B408431BA0A08A763EFDA03B",
+				"asnIdentifier": "S2788372",
+				"position": 34000,
+				"depth": 2,
+				"statementNotation": "6.NS.6",
+				"statementLabel": "Standard",
+				"description": "Extend number line diagrams and coordinate axes familiar from previous grades to represent points on the line and in the plane with negative number coordinates.",
+				"ancestorIds": [
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"3EE0E5CF76A8480E9FD557031B2ABA8A": {
+				"id": "3EE0E5CF76A8480E9FD557031B2ABA8A",
+				"asnIdentifier": "S2605197",
+				"position": 33000,
+				"depth": 2,
+				"statementNotation": "6.NS.5",
+				"statementLabel": "Standard",
+				"description": "Understand that positive and negative numbers are used together to describe quantities having opposite directions or values (e.g., temperature above/below zero, elevation above/below sea level, debits/credits, positive/negative electric charge); use positive and negative numbers to represent quantities in real-world contexts, explaining the meaning of 0 in each situation.",
+				"ancestorIds": [
+					"CBD7068458D245B1B3F3F4B743B6BFBF",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"CBD7068458D245B1B3F3F4B743B6BFBF": {
+				"id": "CBD7068458D245B1B3F3F4B743B6BFBF",
+				"asnIdentifier": "S2605196",
+				"position": 32000,
+				"depth": 1,
+				"statementNotation": "6.NS.C",
+				"statementLabel": "Cluster",
+				"description": "Apply and extend previous understandings of numbers to the system of rational numbers.",
+				"ancestorIds": [
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"934022FDA8C141C088CC74E8B1BF04A8": {
+				"id": "934022FDA8C141C088CC74E8B1BF04A8",
+				"asnIdentifier": "S2605195",
+				"position": 31000,
+				"depth": 2,
+				"statementNotation": "6.NS.4",
+				"statementLabel": "Standard",
+				"description": "Find the greatest common factor of two whole numbers less than or equal to 100 and the least common multiple of two whole numbers less than or equal to 12. Use the distributive property to express a sum of two whole numbers 1–100 with a common factor as a multiple of a sum of two whole numbers with no common factor. For example, express 36 + 8 as 4 (9 + 2).",
+				"ancestorIds": [
+					"00841B718E1A4E7AA7410D30C8729EF8",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"9F906617C66A4172A5B0135E42B8EEB4": {
+				"id": "9F906617C66A4172A5B0135E42B8EEB4",
+				"asnIdentifier": "S2605194",
+				"position": 30000,
+				"depth": 2,
+				"statementNotation": "6.NS.3",
+				"statementLabel": "Standard",
+				"description": "Fluently add, subtract, multiply, and divide multi-digit decimals using the standard algorithm for each operation.",
+				"ancestorIds": [
+					"00841B718E1A4E7AA7410D30C8729EF8",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"8BB47378C06543D28D244540345B7B3C": {
+				"id": "8BB47378C06543D28D244540345B7B3C",
+				"asnIdentifier": "S2605193",
+				"position": 29000,
+				"depth": 2,
+				"statementNotation": "6.NS.2",
+				"statementLabel": "Standard",
+				"description": "Fluently divide multi-digit numbers using the standard algorithm.",
+				"ancestorIds": [
+					"00841B718E1A4E7AA7410D30C8729EF8",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"00841B718E1A4E7AA7410D30C8729EF8": {
+				"id": "00841B718E1A4E7AA7410D30C8729EF8",
+				"asnIdentifier": "S2605192",
+				"position": 28000,
+				"depth": 1,
+				"statementNotation": "6.NS.B",
+				"statementLabel": "Cluster",
+				"description": "Compute fluently with multi-digit numbers and find common factors and multiples.",
+				"ancestorIds": [
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"1735925E2BA1449DBDD9AD09C3F321E9": {
+				"id": "1735925E2BA1449DBDD9AD09C3F321E9",
+				"asnIdentifier": "S2605191",
+				"position": 27000,
+				"depth": 2,
+				"statementNotation": "6.NS.1",
+				"statementLabel": "Standard",
+				"description": "Interpret and compute quotients of fractions, and solve word problems involving division of fractions by fractions, e.g., by using visual fraction models and equations to represent the problem. For example, create a story context for (2/3) ÷ (3/4) and use a visual fraction model to show the quotient; use the relationship between multiplication and division to explain that (2/3) ÷ (3/4) = 8/9 because 3/4 of 8/9 is 2/3. (In general, a/b ÷ c/d = ad/bc. How much chocolate will each person get if 3 people share 1/2 lb of chocolate equally? How many 3/4-cup servings are in 2/3 of a cup of yogurt? How wide is a rectangular strip of land with length 3/4 mi and area 1/2 square mi?",
+				"ancestorIds": [
+					"A5279FB4073C4948A1E75FFBCEFEC7BA",
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"A5279FB4073C4948A1E75FFBCEFEC7BA": {
+				"id": "A5279FB4073C4948A1E75FFBCEFEC7BA",
+				"asnIdentifier": "S2605190",
+				"position": 26000,
+				"depth": 1,
+				"statementNotation": "6.NS.A",
+				"statementLabel": "Cluster",
+				"description": "Apply and extend previous understandings of multiplication and division to divide fractions by fractions.",
+				"ancestorIds": [
+					"0074460643B4409EBBFE79195642DAC0"
+				]
+			},
+			"0074460643B4409EBBFE79195642DAC0": {
+				"id": "0074460643B4409EBBFE79195642DAC0",
+				"asnIdentifier": "S2605098",
+				"position": 25000,
+				"depth": 0,
+				"statementLabel": "Domain",
+				"description": "The Number System",
+				"ancestorIds": []
+			},
+			"4FE558F27FD64A62BF095B6CFDF8A119": {
+				"id": "4FE558F27FD64A62BF095B6CFDF8A119",
+				"asnIdentifier": "S2605189",
+				"position": 24000,
+				"depth": 3,
+				"statementNotation": "6.RP.3.d",
+				"listId": "d.",
+				"description": "Use ratio reasoning to convert measurement units; manipulate and transform units appropriately when multiplying or dividing quantities.",
+				"ancestorIds": [
+					"522EDB52CFD345319B5DC30D75B50DC3",
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"309B31AA534848D6842F02043B279E72": {
+				"id": "309B31AA534848D6842F02043B279E72",
+				"asnIdentifier": "S2605188",
+				"position": 23000,
+				"depth": 3,
+				"statementNotation": "6.RP.3.c",
+				"listId": "c.",
+				"description": "Find a percent of a quantity as a rate per 100 (e.g., 30% of a quantity means 30/100 times the quantity); solve problems involving finding the whole given a part and the percent.",
+				"ancestorIds": [
+					"522EDB52CFD345319B5DC30D75B50DC3",
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"84177C9885BA43D5A7B83A3BBD567397": {
+				"id": "84177C9885BA43D5A7B83A3BBD567397",
+				"asnIdentifier": "S2605187",
+				"position": 22000,
+				"depth": 3,
+				"statementNotation": "6.RP.3.b",
+				"listId": "b.",
+				"description": "Solve unit rate problems including those involving unit pricing and constant speed. For example, If it took 7 hours to mow 4 lawns, then at that rate, how many lawns could be mowed in 35 hours? At what rate were lawns being mowed?",
+				"ancestorIds": [
+					"522EDB52CFD345319B5DC30D75B50DC3",
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"392246269747437CAA2AA5DAE8FB010E": {
+				"id": "392246269747437CAA2AA5DAE8FB010E",
+				"asnIdentifier": "S2605186",
+				"position": 21000,
+				"depth": 3,
+				"statementNotation": "6.RP.3.a",
+				"listId": "a.",
+				"description": "Make tables of equivalent ratios relating quantities with whole-number measurements, find missing values in the tables, and plot the pairs of values on the coordinate plane. Use tables to compare ratios.",
+				"ancestorIds": [
+					"522EDB52CFD345319B5DC30D75B50DC3",
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"522EDB52CFD345319B5DC30D75B50DC3": {
+				"id": "522EDB52CFD345319B5DC30D75B50DC3",
+				"asnIdentifier": "S2605185",
+				"position": 20000,
+				"depth": 2,
+				"statementNotation": "6.RP.3",
+				"statementLabel": "Standard",
+				"description": "Use ratio and rate reasoning to solve real-world and mathematical problems, e.g., by reasoning about tables of equivalent ratios, tape diagrams, double number line diagrams, or equations.",
+				"ancestorIds": [
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"C0711BC6071B4117A729A57EAE0234A3": {
+				"id": "C0711BC6071B4117A729A57EAE0234A3",
+				"asnIdentifier": "S2605184",
+				"position": 19000,
+				"depth": 2,
+				"statementNotation": "6.RP.2",
+				"statementLabel": "Standard",
+				"description": "Understand the concept of a unit rate a/b associated with a ratio a:b with b ≠ 0 (b not equal to zero), and use rate language in the context of a ratio relationship. For example, \"This recipe has a ratio of 3 cups of flour to 4 cups of sugar, so there is 3/4 cup of flour for each cup of sugar.\" \"We paid $75 for 15 hamburgers, which is a rate of $5 per hamburger.\" (Expectations for unit rates in this grade are limited to non-complex fractions.)",
+				"ancestorIds": [
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"7DF3819346A04D6F869317FF8AAEC809": {
+				"id": "7DF3819346A04D6F869317FF8AAEC809",
+				"asnIdentifier": "S2605183",
+				"position": 18000,
+				"depth": 2,
+				"statementNotation": "6.RP.1",
+				"statementLabel": "Standard",
+				"description": "Understand the concept of a ratio and use ratio language to describe a ratio relationship between two quantities. For example, \"The ratio of wings to beaks in the bird house at the zoo was 2:1, because for every 2 wings there was 1 beak.\" \"For every vote candidate A received, candidate C received nearly three votes.\"",
+				"ancestorIds": [
+					"CACD2D11C4754624A35A39ADDC92AE30",
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"CACD2D11C4754624A35A39ADDC92AE30": {
+				"id": "CACD2D11C4754624A35A39ADDC92AE30",
+				"asnIdentifier": "S2605182",
+				"position": 17000,
+				"depth": 1,
+				"statementNotation": "6.RP.A",
+				"statementLabel": "Cluster",
+				"description": "Understand ratio concepts and use ratio reasoning to solve problems.",
+				"ancestorIds": [
+					"306B8D030E2B4377AC242CF84D598F4A"
+				]
+			},
+			"306B8D030E2B4377AC242CF84D598F4A": {
+				"id": "306B8D030E2B4377AC242CF84D598F4A",
+				"asnIdentifier": "S2605089",
+				"position": 16000,
+				"depth": 0,
+				"statementLabel": "Domain",
+				"description": "Ratios and Proportional Relationships",
+				"ancestorIds": []
+			},
+			"0D937A640D71432B9B52FD48C5CA5399": {
+				"id": "0D937A640D71432B9B52FD48C5CA5399",
+				"asnIdentifier": "S2605226",
+				"position": 15000,
+				"depth": 2,
+				"statementNotation": "6.G.4",
+				"statementLabel": "Standard",
+				"description": "Represent three-dimensional figures using nets made up of rectangles and triangles, and use the nets to find the surface area of these figures. Apply these techniques in the context of solving real-world and mathematical problems.",
+				"ancestorIds": [
+					"AAB63007930C4AE99128836775ADC963",
+					"85F7ACD0AD8B4434B8526B7D3008EBE7"
+				]
+			},
+			"862EEBF7A020483C9B3ABA2F0339721B": {
+				"id": "862EEBF7A020483C9B3ABA2F0339721B",
+				"asnIdentifier": "S2605225",
+				"position": 14000,
+				"depth": 2,
+				"statementNotation": "6.G.3",
+				"statementLabel": "Standard",
+				"description": "Draw polygons in the coordinate plane given coordinates for the vertices; use coordinates to find the length of a side joining points with the same first coordinate or the same second coordinate. Apply these techniques in the context of solving real-world and mathematical problems.",
+				"ancestorIds": [
+					"AAB63007930C4AE99128836775ADC963",
+					"85F7ACD0AD8B4434B8526B7D3008EBE7"
+				]
+			},
+			"E6B873E8147F4BD6B7229FA8C027AC41": {
+				"id": "E6B873E8147F4BD6B7229FA8C027AC41",
+				"asnIdentifier": "S2605224",
+				"position": 13000,
+				"depth": 2,
+				"statementNotation": "6.G.2",
+				"statementLabel": "Standard",
+				"description": "Find the volume of a right rectangular prism with fractional edge lengths by packing it with unit cubes of the appropriate unit fraction edge lengths, and show that the volume is the same as would be found by multiplying the edge lengths of the prism. Apply the formulas V = lwh and V = Bh to find volumes of right rectangular prisms with fractional edge lengths in the context of solving real-world and mathematical problems.",
+				"ancestorIds": [
+					"AAB63007930C4AE99128836775ADC963",
+					"85F7ACD0AD8B4434B8526B7D3008EBE7"
+				]
+			},
+			"F582F82D99DE4A7D954768AB4463167F": {
+				"id": "F582F82D99DE4A7D954768AB4463167F",
+				"asnIdentifier": "S2605223",
+				"position": 12000,
+				"depth": 2,
+				"statementNotation": "6.G.1",
+				"statementLabel": "Standard",
+				"description": "Find area of right triangles, other triangles, special quadrilaterals, and polygons by composing into rectangles or decomposing into triangles and other shapes; apply these techniques in the context of solving real-world and mathematical problems.",
+				"ancestorIds": [
+					"AAB63007930C4AE99128836775ADC963",
+					"85F7ACD0AD8B4434B8526B7D3008EBE7"
+				]
+			},
+			"AAB63007930C4AE99128836775ADC963": {
+				"id": "AAB63007930C4AE99128836775ADC963",
+				"asnIdentifier": "S2605222",
+				"position": 11000,
+				"depth": 1,
+				"statementNotation": "6.G.A",
+				"statementLabel": "Cluster",
+				"description": "Solve real-world and mathematical problems involving area, surface area, and volume.",
+				"ancestorIds": [
+					"85F7ACD0AD8B4434B8526B7D3008EBE7"
+				]
+			},
+			"85F7ACD0AD8B4434B8526B7D3008EBE7": {
+				"id": "85F7ACD0AD8B4434B8526B7D3008EBE7",
+				"asnIdentifier": "S2604929",
+				"position": 10000,
+				"depth": 0,
+				"statementLabel": "Domain",
+				"description": "Geometry",
+				"ancestorIds": []
+			},
+			"1A224B064C8D40A2944489257C842E18": {
+				"id": "1A224B064C8D40A2944489257C842E18",
+				"asnIdentifier": "S2604899",
+				"position": 9000,
+				"depth": 1,
+				"statementNotation": "MP.8",
+				"statementLabel": "Standard",
+				"description": "Look for and express regularity in repeated reasoning.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"0D01FEE68A85438A8D7B024C391FD219": {
+				"id": "0D01FEE68A85438A8D7B024C391FD219",
+				"asnIdentifier": "S2604898",
+				"position": 8000,
+				"depth": 1,
+				"statementNotation": "MP.7",
+				"statementLabel": "Standard",
+				"description": "Look for and make use of structure.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"97A0B78911ED4D418814456E204C6058": {
+				"id": "97A0B78911ED4D418814456E204C6058",
+				"asnIdentifier": "S2604897",
+				"position": 7000,
+				"depth": 1,
+				"statementNotation": "MP.6",
+				"statementLabel": "Standard",
+				"description": "Attend to precision.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"0AB5E695C6174393B7A52F22390369CD": {
+				"id": "0AB5E695C6174393B7A52F22390369CD",
+				"asnIdentifier": "S2604896",
+				"position": 6000,
+				"depth": 1,
+				"statementNotation": "MP.5",
+				"statementLabel": "Standard",
+				"description": "Use appropriate tools strategically.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"77AA3011B7644A2B97A2A453FBFB4303": {
+				"id": "77AA3011B7644A2B97A2A453FBFB4303",
+				"asnIdentifier": "S2604895",
+				"position": 5000,
+				"depth": 1,
+				"statementNotation": "MP.4",
+				"statementLabel": "Standard",
+				"description": "Model with mathematics.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"C4F5EFEF81184574B46C5261228692B3": {
+				"id": "C4F5EFEF81184574B46C5261228692B3",
+				"asnIdentifier": "S2604894",
+				"position": 4000,
+				"depth": 1,
+				"statementNotation": "MP.3",
+				"statementLabel": "Standard",
+				"description": "Construct viable arguments and critique the reasoning of others.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"72833E511E1E4CE59AC4C68EDFB1F12E": {
+				"id": "72833E511E1E4CE59AC4C68EDFB1F12E",
+				"asnIdentifier": "S2604893",
+				"position": 3000,
+				"depth": 1,
+				"statementNotation": "MP.2",
+				"statementLabel": "Standard",
+				"description": "Reason abstractly and quantitatively.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"FEED83B4E0504235B74E84BDF8258780": {
+				"id": "FEED83B4E0504235B74E84BDF8258780",
+				"asnIdentifier": "S2604892",
+				"position": 2000,
+				"depth": 1,
+				"statementNotation": "MP.1",
+				"statementLabel": "Standard",
+				"description": "Make sense of problems and persevere in solving them.",
+				"ancestorIds": [
+					"34F3D8A1D75C4CCBAD926DA75C351615"
+				]
+			},
+			"34F3D8A1D75C4CCBAD926DA75C351615": {
+				"id": "34F3D8A1D75C4CCBAD926DA75C351615",
+				"asnIdentifier": "S2604891",
+				"position": 1000,
+				"depth": 0,
+				"description": "Standards for Mathematical Practice",
+				"ancestorIds": []
+			}
+		}
+	}
+}
