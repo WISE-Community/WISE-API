@@ -37,9 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import org.wise.portal.dao.ObjectNotFoundException;
+import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.mail.IMailFacade;
+import org.wise.portal.service.portal.PortalService;
 
 /**
  * Resolves Exceptions by gathering the following information and
@@ -59,6 +62,9 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
   @Autowired
   private Environment appProperties;
 
+  @Autowired
+  private PortalService portalService;
+
   private static final String HANDLE_EXCEPTION_PROPERTY_KEY = "handle_exception";
 
   private static final String HANDLE_EXCEPTION_MAIL_SUBJECT = "WISE Exception Report";
@@ -67,8 +73,13 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
   public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response,
       Object handler, Exception exception) {
     exception.printStackTrace();
-    String sendEmailOnExceptionStr = appProperties.getProperty("send_email_on_exception");
-    boolean sendEmailOnException = sendEmailOnExceptionStr.equalsIgnoreCase("true");
+    boolean sendEmailOnException = false;
+    try {
+      Portal portal = portalService.getById(1);
+      sendEmailOnException = portal.isSendMailOnException();
+    } catch (ObjectNotFoundException e) {
+      e.printStackTrace();
+    }
 
     if (sendEmailOnException) {
       String portalName = appProperties.getProperty("wise.name");
