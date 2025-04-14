@@ -382,7 +382,7 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
     }
     setPostLevel(postLevel);
 
-    setUnitType(metadataJSON.optString("unitType", "Classroom"));
+    setUnitType(metadataJSON.optString("unitType", "Platform"));
   }
 
   /**
