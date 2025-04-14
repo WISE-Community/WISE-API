@@ -74,11 +74,11 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
       String portalName = appProperties.getProperty("wise.name");
       String[] recipients = appProperties.getProperty(HANDLE_EXCEPTION_PROPERTY_KEY).split(",");
       String subject = HANDLE_EXCEPTION_MAIL_SUBJECT + ": (" + portalName + ")";
-      String fromEmail = appProperties.getProperty("mail.from");
+      String fromEmail = appProperties.getProperty("portalemailaddress");
       String message = getHandleExceptionMessage(request, exception);
 
-      ExceptionEmailSender emailSender =
-          new ExceptionEmailSender(recipients,subject,fromEmail,message);
+      ExceptionEmailSender emailSender = new ExceptionEmailSender(recipients, subject, fromEmail,
+          message);
       Thread thread = new Thread(emailSender);
       thread.start();
     }
@@ -91,8 +91,8 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
     String fromEmail;
     String message;
 
-    public ExceptionEmailSender(String[] recipients, String subject,
-        String fromEmail, String message) {
+    public ExceptionEmailSender(String[] recipients, String subject, String fromEmail,
+        String message) {
       this.recipients = recipients;
       this.subject = subject;
       this.fromEmail = fromEmail;
@@ -122,9 +122,8 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
     Date time = Calendar.getInstance().getTime();
     User user = ControllerUtil.getSignedInUser();
 
-    String fullUrl = request.getScheme() + "://" + request.getServerName() + ":" +
-        request.getServerPort() + request.getRequestURI() + "?" +
-        request.getQueryString();
+    String fullUrl = request.getScheme() + "://" + request.getServerName() + ":"
+        + request.getServerPort() + request.getRequestURI() + "?" + request.getQueryString();
 
     Writer result = new StringWriter();
     PrintWriter printWriter = new PrintWriter(result);
@@ -138,12 +137,9 @@ public class WISESimpleMappingExceptionResolver extends SimpleMappingExceptionRe
       username = "unknown";
     }
 
-    String message = "The following WISE exception was thrown on " +
-        time.toString() + "\n\n" +
-        "username: " + username + "\n" +
-        "url: " + fullUrl + "\n\n" +
-        "exception message: " + exception.toString() + "\n\n" +
-        "stacktrace:\n" + stackTrace;
+    String message = "The following WISE exception was thrown on " + time.toString() + "\n\n"
+        + "username: " + username + "\n" + "url: " + fullUrl + "\n\n" + "exception message: "
+        + exception.toString() + "\n\n" + "stacktrace:\n" + stackTrace;
 
     return message;
   }

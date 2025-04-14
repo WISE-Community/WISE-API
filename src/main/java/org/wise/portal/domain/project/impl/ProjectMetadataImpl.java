@@ -207,7 +207,15 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String disciplines;
 
+  @Getter
+  @Setter
+  private String resources;
+
   private String standardsDefault = "{\"commonCore\": [], \"ngss\": [], \"learningForJustice\": []}";
+
+  @Getter
+  @Setter
+  private String unitType;
 
   public ProjectMetadataImpl() {
   }
@@ -256,6 +264,12 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       disciplines = new JSONArray();
     }
     setDisciplines(disciplines.toString());
+
+    JSONArray resources = metadataJSON.optJSONArray("resources");
+    if (resources == null) {
+      resources = new JSONArray();
+    }
+    setResources(resources.toString());
 
     JSONArray parentProjects = metadataJSON.optJSONArray("parentProjects");
     if (parentProjects == null) {
@@ -375,6 +389,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       postLevel = (long) 5;
     }
     setPostLevel(postLevel);
+
+    setUnitType(metadataJSON.optString("unitType", "Platform"));
   }
 
   /**
@@ -498,6 +514,14 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("disciplines", disciplinesJSON);
       } else {
         metadata.put("disciplines", new JSONArray());
+      }
+
+      String resourcesString = metadata.getString("resources");
+      if (resourcesString != null && resourcesString != "null") {
+        JSONArray resourcesJSON = new JSONArray(resourcesString);
+        metadata.put("resources", resourcesJSON);
+      } else {
+        metadata.put("resources", new JSONArray());
       }
     } catch (JSONException e) {
       e.printStackTrace();
