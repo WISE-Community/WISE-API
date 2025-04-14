@@ -204,6 +204,14 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String researchProjects;
 
+  @Getter
+  @Setter
+  private String resources;
+
+  @Getter
+  @Setter
+  private String unitType;
+
   public ProjectMetadataImpl() {
   }
 
@@ -245,6 +253,12 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       researchProjects = new JSONArray();
     }
     setResearchProjects(researchProjects.toString());
+
+    JSONArray resources = metadataJSON.optJSONArray("resources");
+    if (resources == null) {
+      resources = new JSONArray();
+    }
+    setResources(resources.toString());
 
     JSONArray parentProjects = metadataJSON.optJSONArray("parentProjects");
     if (parentProjects == null) {
@@ -367,6 +381,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       postLevel = (long) 5;
     }
     setPostLevel(postLevel);
+
+    setUnitType(metadataJSON.optString("unitType", "Platform"));
   }
 
   /**
@@ -479,6 +495,13 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("researchProjects", new JSONArray());
       }
 
+      String resourcesString = metadata.getString("resources");
+      if (resourcesString != null && resourcesString != "null") {
+        JSONArray resourcesJSON = new JSONArray(resourcesString);
+        metadata.put("resources", resourcesJSON);
+      } else {
+        metadata.put("resources", new JSONArray());
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
