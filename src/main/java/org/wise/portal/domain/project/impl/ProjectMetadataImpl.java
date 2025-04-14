@@ -132,7 +132,6 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String lessonPlan;
 
-  @Column(name = "standards", length = 5120000, columnDefinition = "mediumtext")
   @Getter
   @Setter
   private String standards;
@@ -204,6 +203,20 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String researchProjects;
 
+  @Getter
+  @Setter
+  private String disciplines;
+
+  @Getter
+  @Setter
+  private String resources;
+
+  private String standardsDefault = "{\"commonCore\": [], \"ngss\": [], \"learningForJustice\": []}";
+
+  @Getter
+  @Setter
+  private String unitType;
+
   public ProjectMetadataImpl() {
   }
 
@@ -245,6 +258,18 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       researchProjects = new JSONArray();
     }
     setResearchProjects(researchProjects.toString());
+
+    JSONArray disciplines = metadataJSON.optJSONArray("disciplines");
+    if (disciplines == null) {
+      disciplines = new JSONArray();
+    }
+    setDisciplines(disciplines.toString());
+
+    JSONArray resources = metadataJSON.optJSONArray("resources");
+    if (resources == null) {
+      resources = new JSONArray();
+    }
+    setResources(resources.toString());
 
     JSONArray parentProjects = metadataJSON.optJSONArray("parentProjects");
     if (parentProjects == null) {
@@ -318,10 +343,7 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
     }
     setLessonPlan(lessonPlan);
 
-    String standards = metadataJSON.optString("standards", "");
-    if (standards.equals("null")) {
-      standards = "";
-    }
+    String standards = metadataJSON.optString("standards", this.standardsDefault);
     setStandards(standards);
 
     JSONObject standardsAddressed = metadataJSON.optJSONObject("standardsAddressed");
@@ -367,6 +389,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       postLevel = (long) 5;
     }
     setPostLevel(postLevel);
+
+    setUnitType(metadataJSON.optString("unitType", "Platform"));
   }
 
   /**
@@ -455,12 +479,17 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("tools", new JSONObject());
       }
 
-      String standardsAddressedString = metadata.getString("standardsAddressed");
-      if (standardsAddressedString != null && standardsAddressedString != "null") {
-        JSONObject standardsAddressedJSON = new JSONObject(standardsAddressedString);
-        metadata.put("standardsAddressed", standardsAddressedJSON);
+      String standardsString = metadata.getString("standards");
+      if (standardsString != null && standardsString != "null") {
+        JSONObject standardsJSON;
+        try {
+          standardsJSON = new JSONObject(standardsString);
+        } catch (JSONException e) {
+          standardsJSON = new JSONObject(standardsDefault);
+        }
+        metadata.put("standards", standardsJSON);
       } else {
-        metadata.put("standardsAddressed", new JSONObject());
+        metadata.put("standards", new JSONObject());
       }
 
       String parentProjectsString = metadata.getString("parentProjects");
@@ -479,6 +508,21 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("researchProjects", new JSONArray());
       }
 
+      String disciplinesString = metadata.getString("disciplines");
+      if (disciplinesString != null && disciplinesString != "null") {
+        JSONArray disciplinesJSON = new JSONArray(disciplinesString);
+        metadata.put("disciplines", disciplinesJSON);
+      } else {
+        metadata.put("disciplines", new JSONArray());
+      }
+
+      String resourcesString = metadata.getString("resources");
+      if (resourcesString != null && resourcesString != "null") {
+        JSONArray resourcesJSON = new JSONArray(resourcesString);
+        metadata.put("resources", resourcesJSON);
+      } else {
+        metadata.put("resources", new JSONArray());
+      }
     } catch (JSONException e) {
       e.printStackTrace();
     }
