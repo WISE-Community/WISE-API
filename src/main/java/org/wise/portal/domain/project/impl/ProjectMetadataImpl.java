@@ -516,6 +516,19 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("disciplines", new JSONArray());
       }
 
+      String featuresString = metadata.getString("features");
+      if (featuresString != null && featuresString != "null") {
+        JSONArray featuresJSON;
+        try {
+          featuresJSON = new JSONArray(featuresString);
+        } catch (JSONException e) {
+          featuresJSON = new JSONArray();
+        }
+        metadata.put("features", featuresJSON);
+      } else {
+        metadata.put("features", new JSONArray());
+      }
+
       String resourcesString = metadata.getString("resources");
       if (resourcesString != null && resourcesString != "null") {
         JSONArray resourcesJSON = new JSONArray(resourcesString);
