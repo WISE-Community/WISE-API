@@ -201,10 +201,6 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
 
   @Getter
   @Setter
-  private String researchProjects;
-
-  @Getter
-  @Setter
   private String disciplines;
 
   @Getter
@@ -252,12 +248,6 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
       authors = new JSONArray();
     }
     setAuthors(authors.toString());
-
-    JSONArray researchProjects = metadataJSON.optJSONArray("researchProjects");
-    if (researchProjects == null) {
-      researchProjects = new JSONArray();
-    }
-    setResearchProjects(researchProjects.toString());
 
     JSONArray disciplines = metadataJSON.optJSONArray("disciplines");
     if (disciplines == null) {
@@ -498,14 +488,6 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("parentProjects", parentProjectsJSON);
       } else {
         metadata.put("parentProjects", new JSONArray());
-      }
-
-      String researchProjectsString = metadata.getString("researchProjects");
-      if (researchProjectsString != null && researchProjectsString != "null") {
-        JSONArray researchProjectsJSON = new JSONArray(researchProjectsString);
-        metadata.put("researchProjects", researchProjectsJSON);
-      } else {
-        metadata.put("researchProjects", new JSONArray());
       }
 
       String disciplinesString = metadata.getString("disciplines");
