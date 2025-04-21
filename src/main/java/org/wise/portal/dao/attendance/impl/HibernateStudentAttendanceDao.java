@@ -76,6 +76,10 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
     List<Predicate> predicates = new ArrayList<>();
     Calendar c = Calendar.getInstance();
     c.add(Calendar.DAY_OF_YEAR, -lookBackNumDays);
+    this.roundDownCalendar(c, Calendar.HOUR_OF_DAY);
+    this.roundDownCalendar(c, Calendar.MINUTE);
+    this.roundDownCalendar(c, Calendar.SECOND);
+    this.roundDownCalendar(c, Calendar.MILLISECOND);
     Date compareDate = c.getTime();
     predicates.add(
         cb.greaterThanOrEqualTo(studentAttendanceRoot.get("loginTimestamp"), compareDate));
@@ -84,6 +88,10 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
         .orderBy(cb.desc(studentAttendanceRoot.get("loginTimestamp")));
     TypedQuery<StudentAttendanceImpl> query = entityManager.createQuery(cq);
     return (List<StudentAttendance>) (Object) query.getResultList();
+  }
+
+  private void roundDownCalendar(Calendar c, int timeUnit) {
+    c.add(timeUnit, -c.get(timeUnit));
   }
 
   @Override
