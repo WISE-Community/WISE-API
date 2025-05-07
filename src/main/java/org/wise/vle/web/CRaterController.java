@@ -31,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.vle.domain.webservice.crater.CRaterVerificationRequest;
+import org.wise.portal.service.ping.PingEndpointService;
+import org.wise.vle.domain.webservice.crater.CRaterPingRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterService;
 
@@ -40,6 +42,9 @@ public class CRaterController {
 
   @Autowired
   private CRaterService cRaterService;
+    
+  @Autowired
+  private PingEndpointService pingEndpointService;
 
   @GetMapping("/verify")
   String verifyItemId(CRaterVerificationRequest request) throws JSONException {
@@ -50,4 +55,14 @@ public class CRaterController {
   String scoreItem(@RequestBody CRaterScoringRequest request) throws JSONException {
     return cRaterService.getCRaterResponse(request);
   }
+
+  @PostMapping("/ping-endpoint")
+  public void receivePingRequest(@RequestBody CRaterPingRequest ping) throws JSONException {
+    String itemId = ping.getItemId();
+    boolean readyToPing = !this.pingEndpointService.hasPingedItem(itemId);
+    if (ping.forBerkeleyEndpoint() && readyToPing) {
+        this.pingEndpointService.cachePingTimestamp(itemId);
+        this.cRaterService.getCRaterResponse(ping);
+    }
+  }  
 }
