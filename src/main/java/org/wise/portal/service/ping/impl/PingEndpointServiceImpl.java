@@ -18,8 +18,8 @@ public class PingEndpointServiceImpl implements PingEndpointService{
     return members.size() > 0;
   }
 
-  public void cachePingTimestamp(String itemId) {
+  public void cachePingedItem(String itemId) {
     this.stringRedisTemplate.opsForSet().add(itemId, "pinged");
-    this.stringRedisTemplate.expire(itemId, Duration.ofSeconds(270));      
+    this.stringRedisTemplate.expire(itemId, Duration.ofSeconds(280));      
   }
 }

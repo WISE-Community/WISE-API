@@ -9,7 +9,7 @@ import lombok.Setter;
 public class CRaterPingRequest extends AbstractCRaterRequest {
 	public String generateBodyData() throws JSONException {
 		JSONObject body = new JSONObject(super.generateBodyData());
-		body.put("ping", true);
+		body.put("service", "LoadService");
 		return body.toString();
 	}
 
