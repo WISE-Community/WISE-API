@@ -57,13 +57,13 @@ public class CRaterController {
   }
 
   @PostMapping("/ping-endpoint")
-  public String receivePingRequest(@RequestBody CRaterPingRequest ping) throws JSONException {
+  public String pingItem(@RequestBody CRaterPingRequest ping) throws JSONException {
     String itemId = ping.getItemId();
     boolean readyToPing = !this.pingEndpointService.hasPingedItem(itemId);
     if (ping.forBerkeleyEndpoint() && readyToPing) {
-      this.pingEndpointService.cachePingedItem(itemId);
+      this.pingEndpointService.cachePingedItem(itemId, 280);
       return this.cRaterService.getCRaterResponse(ping);
     }
     return "";
-  }  
+  }
 }
