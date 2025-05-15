@@ -17,9 +17,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 @ExtendWith(EasyMockExtension.class)
-public class PingEndpointServiceImplTest {
+public class CRaterPingServiceImplTest {
   @TestSubject
-  private PingEndpointServiceImpl pingEndpointServiceImpl = new PingEndpointServiceImpl();
+  private CRaterPingServiceImpl pingEndpointServiceImpl = new CRaterPingServiceImpl();
 
   @Mock
   private StringRedisTemplate stringRedisTemplate;

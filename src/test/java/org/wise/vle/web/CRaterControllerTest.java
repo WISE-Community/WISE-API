@@ -11,7 +11,7 @@ import org.easymock.TestSubject;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.wise.portal.service.ping.PingEndpointService;
+import org.wise.portal.service.ping.CRaterPingService;
 import org.wise.vle.domain.webservice.crater.CRaterPingRequest;
 import org.wise.vle.domain.webservice.crater.CRaterScoringRequest;
 import org.wise.vle.domain.webservice.crater.CRaterService;
@@ -27,7 +27,7 @@ public class CRaterControllerTest {
   private CRaterService cRaterService;
 
   @Mock
-  private PingEndpointService pingEndpointService;
+  private CRaterPingService pingEndpointService;
 
   private String clientId = "wise-test";
   private String itemId = "test-item-id";

@@ -6,10 +6,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.wise.portal.service.ping.PingEndpointService;
+import org.wise.portal.service.ping.CRaterPingService;
 
 @Service
-public class PingEndpointServiceImpl implements PingEndpointService{
+public class CRaterPingServiceImpl implements CRaterPingService{
   @Autowired
   private StringRedisTemplate stringRedisTemplate;
 
