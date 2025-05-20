@@ -46,6 +46,8 @@ public interface UserDetailsService
 
   String STUDENT_ROLE = "ROLE_STUDENT";
 
+  String SURVEY_STUDENT_ROLE = "ROLE_SURVEY_STUDENT";
+
   String AUTHOR_ROLE = "ROLE_AUTHOR";
 
   String TRUSTED_AUTHOR_ROLE = "ROLE_TRUSTED_AUTHOR";

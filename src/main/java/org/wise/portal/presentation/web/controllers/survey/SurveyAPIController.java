@@ -11,7 +11,9 @@ import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.project.impl.Projectcode;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.service.authentication.AuthorityNotFoundException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
+import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.user.UserService;
@@ -49,6 +51,9 @@ public class SurveyAPIController {
   private StudentService studentService;
 
   @Autowired
+  private UserDetailsService userDetailsService;
+
+  @Autowired
   private UserService userService;
 
   @Autowired
@@ -56,7 +61,8 @@ public class SurveyAPIController {
 
   @GetMapping("/launch/{code}")
   public void launchSurveyRun(@PathVariable String code, HttpServletResponse response, HttpServletRequest request) 
-    throws IOException, DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
+    throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
+           PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
     Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
@@ -86,7 +92,7 @@ public class SurveyAPIController {
     session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
   }
   
-  private User createNewStudentAccount() throws DuplicateUsernameException {
+  private User createNewStudentAccount() throws AuthorityNotFoundException, DuplicateUsernameException {
     StudentUserDetails sud = new StudentUserDetails();
     sud.setFirstname("null");
     sud.setLastname("null");
@@ -95,6 +101,10 @@ public class SurveyAPIController {
     sud.setGender(Gender.UNSPECIFIED);
     sud.setEmailAddress("null@null.com");
     sud.setLanguage("null");
-    return userService.createUser(sud);
+
+    User user = userService.createUser(sud);
+    user.getUserDetails().addAuthority(userDetailsService.loadAuthorityByName("ROLE_SURVEY_STUDENT"));
+
+    return user;
   }
 }
