@@ -101,6 +101,9 @@ public class RunImpl implements Run {
   private static final String COLUMN_NAME_EXTRAS = "extras";
 
   @Transient
+  private static final String COLUMN_NAME_IS_SURVEY = "isSurvey";
+
+  @Transient
   private static final String COLUMN_NAME_MAX_WORKGROUP_SIZE = "maxWorkgroupSize";
 
   @Transient
@@ -198,6 +201,11 @@ public class RunImpl implements Run {
   @Getter
   @Setter
   private String info; // other info pertaining to the run
+
+  @Column(name = COLUMN_NAME_IS_SURVEY)
+  @Getter
+  @Setter
+  private Boolean isSurvey; 
 
   @Column(name = COLUMN_NAME_MAX_WORKGROUP_SIZE, nullable = true)
   @Getter

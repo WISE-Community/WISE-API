@@ -54,17 +54,21 @@ public class SurveyAPIController {
   @Autowired
   private WorkgroupService workgroupService;
 
-  @GetMapping("/launch/{p}")
-  public void launchSurveyRun(@PathVariable String p, HttpServletResponse response, HttpServletRequest request) 
+  @GetMapping("/launch/{code}")
+  public void launchSurveyRun(@PathVariable String code, HttpServletResponse response, HttpServletRequest request) 
     throws IOException, DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
-    Projectcode projectCode = new Projectcode(p);
+    Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
-    User user = this.createNewStudentAccount();
-    loginStudent(request, user);
-    studentService.addStudentToRun(user, projectCode);
-    createWorkgroupForUser(user, run);
-    response.sendRedirect("/student/unit/" + run.getId());
+    if (run.getIsSurvey()) {
+      User user = this.createNewStudentAccount();
+      loginStudent(request, user);
+      studentService.addStudentToRun(user, projectCode);
+      createWorkgroupForUser(user, run);
+      response.sendRedirect("/student/unit/" + run.getId());
+    } else {
+      response.sendRedirect("/");
+    }
   }
 
   private void createWorkgroupForUser(User user, Run run) throws ObjectNotFoundException {

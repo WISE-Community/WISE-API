@@ -58,7 +58,7 @@ public interface RunService {
    */
   Run createRun(RunParameters runParameters) throws ObjectNotFoundException;
 
-  Run createRun(Long projectId, User user, Set<String> periodNames, Integer maxStudentsPerTeam,
+  Run createRun(Long projectId, User user, Set<String> periodNames, Boolean isSurvey, Integer maxStudentsPerTeam,
       Long startDate, Long endDate, Boolean isLockedAfterEndDate, Locale locale) throws Exception;
 
   /**

@@ -199,6 +199,7 @@ public class RunServiceImpl implements RunService {
     run.setStarttime(runParameters.getStartTime());
     run.setRuncode(generateUniqueRunCode(runParameters.getLocale()));
     run.setOwner(runParameters.getOwner());
+    run.setIsSurvey(runParameters.getIsSurvey());
     run.setMaxWorkgroupSize(runParameters.getMaxWorkgroupSize());
     run.setProject(project);
     run.setName("" + runParameters.getProject().getName());
@@ -239,11 +240,11 @@ public class RunServiceImpl implements RunService {
   }
 
   @Transactional()
-  public Run createRun(Long projectId, User user, Set<String> periodNames,
+  public Run createRun(Long projectId, User user, Set<String> periodNames, Boolean isSurvey,
       Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
       Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
-    RunParameters runParameters = createRunParameters(project, user, periodNames,
+    RunParameters runParameters = createRunParameters(project, user, periodNames, isSurvey,
         maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
@@ -251,7 +252,7 @@ public class RunServiceImpl implements RunService {
     return run;
   }
 
-  public RunParameters createRunParameters(Project project, User user, Set<String> periodNames,
+  public RunParameters createRunParameters(Project project, User user, Set<String> periodNames, Boolean isSurvey,
       Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
       Locale locale) {
     RunParameters runParameters = new RunParameters();
@@ -261,6 +262,7 @@ public class RunServiceImpl implements RunService {
     runParameters.setLocale(locale);
     runParameters.setPostLevel(5);
     runParameters.setPeriodNames(periodNames);
+    runParameters.setIsSurvey(isSurvey);
     runParameters.setMaxWorkgroupSize(maxStudentsPerTeam);
     runParameters.setStartTime(new Date(startDate));
     if (endDate == null || endDate <= startDate) {

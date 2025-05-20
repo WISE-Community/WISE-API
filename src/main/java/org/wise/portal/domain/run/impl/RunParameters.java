@@ -70,6 +70,8 @@ public class RunParameters implements Serializable {
 
   private Boolean isLockedAfterEndDate = false;
 
+  private Boolean isSurvey = false;
+
   public String printAllPeriods() {
     String allPeriods = null;
 

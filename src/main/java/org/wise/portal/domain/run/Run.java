@@ -241,6 +241,16 @@ public interface Run extends Persistable {
   boolean isIdeaManagerEnabled();
 
   /**
+   * @return Whether or not the run a survey 
+   */
+  Boolean getIsSurvey();
+
+  /**
+   * @param isSurvey 
+   */
+  void setIsSurvey(Boolean isSurvey);
+
+  /**
    * @return <code>Integer</code> maxWorkgroupSize
    */
   Integer getMaxWorkgroupSize();
