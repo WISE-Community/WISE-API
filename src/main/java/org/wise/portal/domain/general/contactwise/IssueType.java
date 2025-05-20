@@ -32,7 +32,7 @@ import java.util.Properties;
 public enum IssueType {
 
   TROUBLE_LOGGING_IN, NEED_HELP_USING_WISE, PROJECT_PROBLEMS,
-  STUDENT_MANAGEMENT, AUTHORING, SHARE, FEEDBACK, OTHER;
+  STUDENT_MANAGEMENT, AUTHORING, PUBLISH, FEEDBACK, OTHER;
 
   private static Properties i18nProperties;
 
