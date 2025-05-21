@@ -115,6 +115,9 @@ public class UserImpl implements User {
     if (this.isStudent()) {
       roles.add("student");
     }
+    if (this.isSurveyStudent()) {
+      roles.add("surveyStudent");
+    }
     return roles;
   }
 

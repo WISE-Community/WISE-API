@@ -103,7 +103,7 @@ public class SurveyAPIController {
     sud.setLanguage("null");
 
     User user = userService.createUser(sud);
-    user.getUserDetails().addAuthority(userDetailsService.loadAuthorityByName("ROLE_SURVEY_STUDENT"));
+    user.getUserDetails().addAuthority(userDetailsService.loadAuthorityByName(UserDetailsService.SURVEY_STUDENT_ROLE));
 
     return user;
   }
