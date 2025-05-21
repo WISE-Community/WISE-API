@@ -330,6 +330,7 @@ create table runs (
     end_time datetime,
     extras mediumtext,
     info varchar(255),
+    isSurvey bit,
     lastRun datetime,
     loggingLevel integer,
     maxWorkgroupSize integer,
