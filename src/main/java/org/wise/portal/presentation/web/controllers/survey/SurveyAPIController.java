@@ -67,14 +67,22 @@ public class SurveyAPIController {
     Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
-      User user = this.createNewStudentAccount();
-      loginStudent(request, user);
-      studentService.addStudentToRun(user, projectCode);
-      createWorkgroupForUser(user, run);
-      response.sendRedirect("/student/unit/" + run.getId());
+      if (underWorkgroupLimit(run)) {
+        User user = this.createNewStudentAccount();
+        loginStudent(request, user);
+        studentService.addStudentToRun(user, projectCode);
+        createWorkgroupForUser(user, run);
+        response.sendRedirect("/student/unit/" + run.getId());
+      } else {
+        response.sendRedirect("/workgroupLimitReached");
+      }
     } else {
       response.sendRedirect("/");
     }
+  }
+
+  private Boolean underWorkgroupLimit(Run run) {
+    return workgroupService.getWorkgroupsForRun(run).size() <= 1000;
   }
 
   private void createWorkgroupForUser(User user, Run run) throws ObjectNotFoundException {
