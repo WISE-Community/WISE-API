@@ -27,18 +27,18 @@ import org.wise.portal.service.user.UserService;
  * @author Aaron Detre
  */
 @RestController
-@RequestMapping("/api/run-info")
+@RequestMapping("/api/run")
 public class RunInfoAPIController {
- 
+
   @Autowired
   private RunService runService;
- 
+
   @Autowired
   private UserService userService;
 
   @Secured("ROLE_USER")
-  @GetMapping("/run/info-by-id")
-  HashMap<String, Object> getRunInfoById(Authentication auth, @RequestParam("runId") Long runId) {
+  @GetMapping("/info-by-id")
+  HashMap<String, Object> getRunInfoById(Authentication auth, @RequestParam Long runId) {
     try {
       User user = userService.retrieveUserByUsername(auth.getName());
       Run run = runService.retrieveById(runId);
@@ -49,7 +49,7 @@ public class RunInfoAPIController {
     }
     return createRunNotFoundInfo();
   }
-  
+
   private HashMap<String, Object> getRunInfo(Run run) {
     HashMap<String, Object> info = new HashMap<String, Object>();
     info.put("id", String.valueOf(run.getId()));
@@ -79,8 +79,8 @@ public class RunInfoAPIController {
     return info;
   }
 
-  @GetMapping("/run/info")
-  HashMap<String, Object> getRunInfoByRunCode(@RequestParam("runCode") String runCode) {
+  @GetMapping("/info")
+  HashMap<String, Object> getRunInfoByRunCode(@RequestParam String runCode) {
     try {
       return getRunInfo(runService.retrieveRunByRuncode(runCode));
     } catch (ObjectNotFoundException e) {
@@ -89,4 +89,3 @@ public class RunInfoAPIController {
   }
 
 }
-
