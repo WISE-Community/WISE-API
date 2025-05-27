@@ -64,17 +64,19 @@ public class SurveyAPIController {
     throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
            PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
-    Projectcode projectCode = new Projectcode(code);
+    Projectcode projectCode = new Projectcode(code.replaceAll("++", " "));
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
-      if (underWorkgroupLimit(run)) {
+      if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) { // Already signed in
+        response.sendRedirect("/survey/logout");
+      } else if (underWorkgroupLimit(run)) {
         User user = this.createNewStudentAccount();
         loginStudent(request, user);
         studentService.addStudentToRun(user, projectCode);
         createWorkgroupForUser(user, run);
         response.sendRedirect("/student/unit/" + run.getId());
       } else {
-        response.sendRedirect("/workgroupLimitReached");
+        response.sendRedirect("/survey/workgroupLimitReached");
       }
     } else {
       response.sendRedirect("/");
@@ -102,8 +104,8 @@ public class SurveyAPIController {
   
   private User createNewStudentAccount() throws AuthorityNotFoundException, DuplicateUsernameException {
     StudentUserDetails sud = new StudentUserDetails();
-    sud.setFirstname("null");
-    sud.setLastname("null");
+    sud.setFirstname("survey_student");
+    sud.setLastname(Integer.toString((int) Math.ceil(Math.random() * 10000)));
     sud.setBirthday(new Date());
     sud.setPassword("null");
     sud.setGender(Gender.UNSPECIFIED);
