@@ -64,7 +64,7 @@ public class SurveyAPIController {
     throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
            PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
-    Projectcode projectCode = new Projectcode(code.replaceAll("++", " "));
+    Projectcode projectCode = new Projectcode(code.replaceAll("\\+\\+", " "));
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
       if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) { // Already signed in
@@ -73,7 +73,6 @@ public class SurveyAPIController {
         User user = this.createNewStudentAccount();
         loginStudent(request, user);
         studentService.addStudentToRun(user, projectCode);
-        createWorkgroupForUser(user, run);
         response.sendRedirect("/student/unit/" + run.getId());
       } else {
         response.sendRedirect("/survey/workgroupLimitReached");
@@ -85,12 +84,6 @@ public class SurveyAPIController {
 
   private Boolean underWorkgroupLimit(Run run) {
     return workgroupService.getWorkgroupsForRun(run).size() <= 1000;
-  }
-
-  private void createWorkgroupForUser(User user, Run run) throws ObjectNotFoundException {
-    Set<User> userSet = new HashSet<User>();
-    userSet.add(user);
-    workgroupService.createWorkgroup("Workgroup for user: " + user.getUserDetails().getUsername(), userSet, run, run.getPeriodOfStudent(user));
   }
 
   private void loginStudent(HttpServletRequest request, User user) {
