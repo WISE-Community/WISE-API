@@ -5,19 +5,15 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 @ExtendWith(EasyMockExtension.class)
 public class CRaterPingServiceImplTest {
@@ -28,42 +24,38 @@ public class CRaterPingServiceImplTest {
   private StringRedisTemplate stringRedisTemplate;
 
   @Mock
-  private SetOperations<String, String> setOperations;
+  private ValueOperations<String, String> valueOperations;
 
   private String testId = "test";
 
   @Test
   public void hasPingedItem_ItemPinged_ShouldReturnTrue() {
-    Set<String> members = new HashSet<String>();
-    members.add(testId);
-    expect(stringRedisTemplate.opsForSet()).andReturn(setOperations);
-    expect(setOperations.members(testId)).andReturn(members);
-    replay(stringRedisTemplate, setOperations);
+    expect(stringRedisTemplate.opsForValue()).andReturn(valueOperations);
+    expect(valueOperations.size(testId)).andReturn(1L);
+    replay(stringRedisTemplate, valueOperations);
     assertTrue(pingEndpointServiceImpl.hasPingedItem(testId));
     verify(stringRedisTemplate);
-    verify(setOperations);
+    verify(valueOperations);
   }
- 
+
   @Test
   public void hasPingedItem_ItemNotPinged_ShouldReturnFalse() {
-    Set<String> members = new HashSet<String>();
-    expect(stringRedisTemplate.opsForSet()).andReturn(setOperations);
-    expect(setOperations.members(testId)).andReturn(members);
-    replay(stringRedisTemplate, setOperations);
+    expect(stringRedisTemplate.opsForValue()).andReturn(valueOperations);
+    expect(valueOperations.size(testId)).andReturn(0L);
+    replay(stringRedisTemplate, valueOperations);
     assertFalse(pingEndpointServiceImpl.hasPingedItem(testId));
     verify(stringRedisTemplate);
-    verify(setOperations);
+    verify(valueOperations);
 
   }
-
 
   @Test
   public void cachePingedItem_ShouldCacheAndExpireItemId() {
-    expect(stringRedisTemplate.opsForSet()).andReturn(setOperations);
+    expect(stringRedisTemplate.opsForValue()).andReturn(valueOperations);
     expect(stringRedisTemplate.expire(testId, Duration.ofSeconds(1))).andReturn(null);
-    expect(setOperations.add(testId, "pinged")).andReturn(null);
-    replay(stringRedisTemplate, setOperations);
+    expect(valueOperations.setIfAbsent(testId, "pinged")).andReturn(null);
+    replay(stringRedisTemplate, valueOperations);
     pingEndpointServiceImpl.cachePingedItem(testId, 1);
-    verify(stringRedisTemplate, setOperations);
+    verify(stringRedisTemplate, valueOperations);
   }
 }
