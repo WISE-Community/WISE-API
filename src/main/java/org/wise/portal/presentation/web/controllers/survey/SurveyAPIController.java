@@ -21,8 +21,6 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -67,7 +65,16 @@ public class SurveyAPIController {
     Projectcode projectCode = new Projectcode(code.replaceAll("\\+\\+", " "));
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
-      if (!SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) { // Already signed in
+      handleSurveyLaunched(response, request, run, projectCode);
+          } else {
+      response.sendRedirect("/");
+    }
+  }
+
+  private void handleSurveyLaunched(HttpServletResponse response, HttpServletRequest request, Run run, Projectcode projectCode)
+    throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
+           PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
+    if (userAlreadySignedIn()) {
         response.sendRedirect("/survey/logout");
       } else if (underWorkgroupLimit(run)) {
         User user = this.createNewStudentAccount();
@@ -77,9 +84,10 @@ public class SurveyAPIController {
       } else {
         response.sendRedirect("/survey/workgroupLimitReached");
       }
-    } else {
-      response.sendRedirect("/");
-    }
+  }
+
+  private Boolean userAlreadySignedIn() {
+    return !SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser");
   }
 
   private Boolean underWorkgroupLimit(Run run) {
