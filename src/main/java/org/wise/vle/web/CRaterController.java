@@ -42,9 +42,9 @@ public class CRaterController {
 
   @Autowired
   private CRaterService cRaterService;
-    
+
   @Autowired
-  private CRaterPingService pingEndpointService;
+  private CRaterPingService cRaterPingService;
 
   @GetMapping("/verify")
   String verifyItemId(CRaterVerificationRequest request) throws JSONException {
@@ -59,8 +59,8 @@ public class CRaterController {
   @PostMapping("/ping")
   public String pingItem(@RequestBody CRaterPingRequest ping) throws JSONException {
     String itemId = ping.getItemId();
-    if (!this.pingEndpointService.hasPingedItem(itemId)) {
-      this.pingEndpointService.cachePingedItem(itemId, 280);
+    if (!this.cRaterPingService.hasPingedItem(itemId)) {
+      this.cRaterPingService.cachePingedItem(itemId, 280);
       return this.cRaterService.getCRaterResponse(ping);
     }
     return "";

@@ -18,7 +18,7 @@ import org.springframework.data.redis.core.ValueOperations;
 @ExtendWith(EasyMockExtension.class)
 public class CRaterPingServiceImplTest {
   @TestSubject
-  private CRaterPingServiceImpl pingEndpointServiceImpl = new CRaterPingServiceImpl();
+  private CRaterPingServiceImpl cRaterPingServiceImpl = new CRaterPingServiceImpl();
 
   @Mock
   private StringRedisTemplate stringRedisTemplate;
@@ -33,7 +33,7 @@ public class CRaterPingServiceImplTest {
     expect(stringRedisTemplate.opsForValue()).andReturn(valueOperations);
     expect(valueOperations.size(testId)).andReturn(1L);
     replay(stringRedisTemplate, valueOperations);
-    assertTrue(pingEndpointServiceImpl.hasPingedItem(testId));
+    assertTrue(cRaterPingServiceImpl.hasPingedItem(testId));
     verify(stringRedisTemplate);
     verify(valueOperations);
   }
@@ -43,7 +43,7 @@ public class CRaterPingServiceImplTest {
     expect(stringRedisTemplate.opsForValue()).andReturn(valueOperations);
     expect(valueOperations.size(testId)).andReturn(0L);
     replay(stringRedisTemplate, valueOperations);
-    assertFalse(pingEndpointServiceImpl.hasPingedItem(testId));
+    assertFalse(cRaterPingServiceImpl.hasPingedItem(testId));
     verify(stringRedisTemplate);
     verify(valueOperations);
 
@@ -55,7 +55,7 @@ public class CRaterPingServiceImplTest {
     expect(stringRedisTemplate.expire(testId, Duration.ofSeconds(1))).andReturn(null);
     expect(valueOperations.setIfAbsent(testId, "pinged")).andReturn(null);
     replay(stringRedisTemplate, valueOperations);
-    pingEndpointServiceImpl.cachePingedItem(testId, 1);
+    cRaterPingServiceImpl.cachePingedItem(testId, 1);
     verify(stringRedisTemplate, valueOperations);
   }
 }

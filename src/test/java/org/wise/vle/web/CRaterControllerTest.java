@@ -27,7 +27,7 @@ public class CRaterControllerTest {
   private CRaterService cRaterService;
 
   @Mock
-  private CRaterPingService pingEndpointService;
+  private CRaterPingService cRaterPingService;
 
   private String clientId = "wise-test";
   private String itemId = "test-item-id";
@@ -94,12 +94,11 @@ public class CRaterControllerTest {
     CRaterPingRequest request = new CRaterPingRequest();
     request.setItemId(berkeleyItemId);
     try {
-      expect(pingEndpointService.hasPingedItem(berkeleyItemId))
-        .andReturn(true);
-      replay(cRaterService, pingEndpointService);
+      expect(cRaterPingService.hasPingedItem(berkeleyItemId)).andReturn(true);
+      replay(cRaterService, cRaterPingService);
       String response = controller.pingItem(request);
       assertEquals(response, "");
-      verify(cRaterService, pingEndpointService);
+      verify(cRaterService, cRaterPingService);
     } catch (JSONException exception) {
 
     }
@@ -111,20 +110,19 @@ public class CRaterControllerTest {
     request.setItemId(berkeleyItemId);
     try {
       expect(cRaterService.getCRaterResponse(request))
-        .andReturn(createPingResponseString(berkeleyItemId, trackingId, clientId));
-      expect(pingEndpointService.hasPingedItem(berkeleyItemId))
-        .andReturn(false);
-      pingEndpointService.cachePingedItem(berkeleyItemId, 280);
+          .andReturn(createPingResponseString(berkeleyItemId, trackingId, clientId));
+      expect(cRaterPingService.hasPingedItem(berkeleyItemId)).andReturn(false);
+      cRaterPingService.cachePingedItem(berkeleyItemId, 280);
       expectLastCall();
-      replay(cRaterService, pingEndpointService);
+      replay(cRaterService, cRaterPingService);
       String response = controller.pingItem(request);
       assertNotNull(response);
       assertNotEquals(response, "");
-      verify(cRaterService, pingEndpointService);
+      verify(cRaterService, cRaterPingService);
     } catch (JSONException exception) {
 
     }
-    
+
   }
 
   private String createPingResponseString(String itemId, Long trackingId, String clientId) {
