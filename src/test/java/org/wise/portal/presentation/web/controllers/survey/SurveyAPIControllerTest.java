@@ -22,6 +22,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -35,20 +36,25 @@ public class SurveyAPIControllerTest {
   private TestingAuthenticationToken authority;
   private SecurityContext securityContext;
 
-  @TestSubject SurveyAPIController surveyAPIController = new SurveyAPIController();
+  @TestSubject
+  SurveyAPIController surveyAPIController = new SurveyAPIController();
 
-  @Mock HttpServletResponse httpServletResponse;
-  
-  @Mock HttpServletRequest httpServletRequest;
+  @Mock
+  HttpServletResponse httpServletResponse;
 
-  @Mock RunService runService;
+  @Mock
+  HttpServletRequest httpServletRequest;
 
-  @Mock WorkgroupService workgroupService;
+  @Mock
+  RunService runService;
+
+  @Mock
+  WorkgroupService workgroupService;
 
   @BeforeEach
   public void setUp() {
     run = new RunImpl();
-    run.setId(1);
+    run.setId(1L);
   }
 
   SecurityContext getSecurityContext(String role, String authorityName) {
@@ -57,6 +63,7 @@ public class SurveyAPIControllerTest {
     authority.setAuthenticated(true);
     securityContext = new SecurityContextImpl();
     securityContext.setAuthentication(authority);
+    return securityContext;
   }
 
   @Test
@@ -124,4 +131,3 @@ public class SurveyAPIControllerTest {
     verify(workgroupService);
   }
 }
-
