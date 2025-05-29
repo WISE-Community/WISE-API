@@ -66,7 +66,7 @@ public class SurveyAPIController {
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
       handleSurveyLaunched(response, request, run, projectCode);
-          } else {
+    } else {
       response.sendRedirect("/");
     }
   }
@@ -75,15 +75,15 @@ public class SurveyAPIController {
     throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
            PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
     if (userAlreadySignedIn()) {
-        response.sendRedirect("/survey/logout");
-      } else if (underWorkgroupLimit(run)) {
-        User user = this.createNewStudentAccount();
-        loginStudent(request, user);
-        studentService.addStudentToRun(user, projectCode);
-        response.sendRedirect("/student/unit/" + run.getId());
-      } else {
-        response.sendRedirect("/survey/workgroupLimitReached");
-      }
+      response.sendRedirect("/survey/logout");
+    } else if (underWorkgroupLimit(run)) {
+      User user = this.createNewStudentAccount();
+      loginStudent(request, user);
+      studentService.addStudentToRun(user, projectCode);
+      response.sendRedirect("/student/unit/" + run.getId());
+    } else {
+      response.sendRedirect("/survey/workgroupLimitReached");
+    }
   }
 
   private Boolean userAlreadySignedIn() {

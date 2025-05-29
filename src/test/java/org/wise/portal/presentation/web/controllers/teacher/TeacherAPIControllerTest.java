@@ -364,10 +364,10 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     periodNamesSet.add("1");
     periodNamesSet.add("2");
     periodNamesSet.add("free");
-    expect(runService.createRun(projectId, teacher1, periodNamesSet, maxStudentsPerTeam, startDate,
+    expect(runService.createRun(projectId, teacher1, periodNamesSet, false, maxStudentsPerTeam, startDate,
         endDate, isLockedAfterEndDate, Locale.US)).andReturn(run1);
     replay(runService);
-    teacherAPIController.createRun(teacherAuth, request, projectId, periods, maxStudentsPerTeam,
+    teacherAPIController.createRun(teacherAuth, request, projectId, periods, false, maxStudentsPerTeam,
         startDate, endDate, isLockedAfterEndDate);
     verify(userService);
     verify(request);
