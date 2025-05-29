@@ -112,15 +112,6 @@ public class StudentAPIController extends UserAPIController {
     return runList;
   }
 
-  @GetMapping("/run/info")
-  HashMap<String, Object> getRunInfoByRunCode(@RequestParam("runCode") String runCode) {
-    try {
-      return getRunInfo(runService.retrieveRunByRuncode(runCode));
-    } catch (ObjectNotFoundException e) {
-      return createRunNotFoundInfo();
-    }
-  }
-
   @PostMapping("/run/launch")
   HashMap<String, Object> launchRun(Authentication auth, @RequestParam("runId") Long runId,
       @RequestParam(value = "workgroupId", required = false) Long workgroupId,

@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
@@ -226,30 +224,4 @@ public class UserAPIControllerTest extends APIControllerTest {
     assertEquals(response.getStatusCode(), HttpStatus.OK);
     assertEquals(response.getBody().get("username"), username);
   }
-
-  @Test
-  public void getRunInfoById_RunExistsInDB_ReturnRunInfo() throws ObjectNotFoundException {
-    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    expect(userService.isUserAssociatedWithRun(teacher1, run1)).andReturn(true);
-    replay(userService);
-    expect(runService.retrieveById(runId1)).andReturn(run1);
-    replay(runService);
-    HashMap<String, Object> info = userAPIController.getRunInfoById(teacherAuth, runId1);
-    assertEquals("1", info.get("id"));
-    assertEquals(RUN1_RUNCODE, info.get("runCode"));
-    verify(runService);
-  }
-
-  @Test
-  public void getRunInfoById_RunNotInDB_ReturnRunInfo() throws ObjectNotFoundException {
-    Long runIdNotInDB = -1L;
-    expect(runService.retrieveById(runIdNotInDB))
-        .andThrow(new ObjectNotFoundException(runIdNotInDB, Run.class));
-    replay(runService);
-    HashMap<String, Object> info = userAPIController.getRunInfoById(teacherAuth, runIdNotInDB);
-    assertEquals(1, info.size());
-    assertEquals("runNotFound", info.get("error"));
-    verify(runService);
-  }
-
 }
