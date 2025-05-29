@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/survey")
+@RequestMapping("/run-survey")
 public class SurveyAPIController {
   @Autowired
   private AuthenticationManager authenticationManager;
@@ -57,10 +57,11 @@ public class SurveyAPIController {
   @Autowired
   private WorkgroupService workgroupService;
 
-  @GetMapping("/launch/{code}")
-  public void launchSurveyRun(@PathVariable String code, HttpServletResponse response, HttpServletRequest request) 
-    throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
-           PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
+  @GetMapping("/{code}")
+  public void launchSurveyRun(@PathVariable String code, HttpServletResponse response,
+      HttpServletRequest request) throws AuthorityNotFoundException, IOException,
+      DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
+      StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
     Projectcode projectCode = new Projectcode(code.replaceAll("\\+\\+", " "));
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
@@ -71,9 +72,10 @@ public class SurveyAPIController {
     }
   }
 
-  private void handleSurveyLaunched(HttpServletResponse response, HttpServletRequest request, Run run, Projectcode projectCode)
-    throws AuthorityNotFoundException, IOException, DuplicateUsernameException, ObjectNotFoundException, 
-           PeriodNotFoundException, StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
+  private void handleSurveyLaunched(HttpServletResponse response, HttpServletRequest request,
+      Run run, Projectcode projectCode) throws AuthorityNotFoundException, IOException,
+      DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
+      StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
     if (userAlreadySignedIn()) {
       response.sendRedirect("/survey/logout");
     } else if (underWorkgroupLimit(run)) {
@@ -87,7 +89,8 @@ public class SurveyAPIController {
   }
 
   private Boolean userAlreadySignedIn() {
-    return !SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser");
+    return !SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+        .equals("anonymousUser");
   }
 
   private Boolean underWorkgroupLimit(Run run) {
@@ -95,15 +98,17 @@ public class SurveyAPIController {
   }
 
   private void loginStudent(HttpServletRequest request, User user) {
-    UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(user.getUserDetails().getUsername(), "null");
+    UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(
+        user.getUserDetails().getUsername(), "null");
     Authentication auth = authenticationManager.authenticate(authReq);
     SecurityContext sc = SecurityContextHolder.getContext();
     sc.setAuthentication(auth);
     HttpSession session = request.getSession(true);
     session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
   }
-  
-  private User createNewStudentAccount() throws AuthorityNotFoundException, DuplicateUsernameException {
+
+  private User createNewStudentAccount()
+      throws AuthorityNotFoundException, DuplicateUsernameException {
     StudentUserDetails sud = new StudentUserDetails();
     sud.setFirstname("survey_student");
     sud.setLastname(Integer.toString((int) Math.ceil(Math.random() * 10000)));
@@ -114,7 +119,8 @@ public class SurveyAPIController {
     sud.setLanguage("null");
 
     User user = userService.createUser(sud);
-    user.getUserDetails().addAuthority(userDetailsService.loadAuthorityByName(UserDetailsService.SURVEY_STUDENT_ROLE));
+    user.getUserDetails().addAuthority(
+        userDetailsService.loadAuthorityByName(UserDetailsService.SURVEY_STUDENT_ROLE));
 
     return user;
   }
