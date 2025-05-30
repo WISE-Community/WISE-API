@@ -63,7 +63,7 @@ public class SurveyAPIController {
       DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
       StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
-    Projectcode projectCode = new Projectcode(code.replaceAll("\\+\\+", " "));
+    Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
     if (run.getIsSurvey()) {
       handleSurveyLaunched(response, request, run, projectCode);
