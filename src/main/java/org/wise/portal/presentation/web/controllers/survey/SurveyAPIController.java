@@ -68,7 +68,7 @@ public class SurveyAPIController {
     if (run.getIsSurvey()) {
       handleSurveyLaunched(response, request, run, projectCode);
     } else {
-      response.sendRedirect("/");
+      sendRedirect(response, "/");
     }
   }
 
@@ -76,21 +76,35 @@ public class SurveyAPIController {
       Run run, Projectcode projectCode) throws AuthorityNotFoundException, IOException,
       DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
       StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
-    if (userAlreadySignedIn()) {
-      response.sendRedirect("/survey/logout");
-    } else if (underWorkgroupLimit(run)) {
+    
+    Object principal = getSecurityContextHolderPrincipal();
+    if (principal instanceof StudentUserDetails 
+        && isStudentAssociatedWithRun(run, (StudentUserDetails) principal)) {
+      sendRedirect(response, "/student/unit/" + run.getId());
+      return;
+    } else {
+      SecurityContextHolder.getContext().setAuthentication(null);
+    }
+    if (underWorkgroupLimit(run)) {
       User user = this.createNewStudentAccount();
       loginStudent(request, user);
       studentService.addStudentToRun(user, projectCode);
-      response.sendRedirect("/student/unit/" + run.getId());
+      sendRedirect(response, "/student/unit/" + run.getId());
     } else {
-      response.sendRedirect("/survey/workgroupLimitReached");
+      sendRedirect(response, "/survey/workgroupLimitReached");
     }
   }
 
-  private Boolean userAlreadySignedIn() {
-    return !SecurityContextHolder.getContext().getAuthentication().getPrincipal()
-        .equals("anonymousUser");
+  private void sendRedirect(HttpServletResponse response, String redirectUrl) throws IOException {
+    response.sendRedirect(redirectUrl);
+  }
+
+  private Object getSecurityContextHolderPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  private Boolean isStudentAssociatedWithRun(Run run, StudentUserDetails principal) {
+    return run.isStudentAssociatedToThisRun(userService.retrieveStudentById((principal).getId()));
   }
 
   private Boolean underWorkgroupLimit(Run run) {
