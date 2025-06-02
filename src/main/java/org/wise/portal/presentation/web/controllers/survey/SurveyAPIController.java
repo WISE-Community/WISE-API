@@ -135,7 +135,6 @@ public class SurveyAPIController {
     User user = userService.createUser(sud);
     user.getUserDetails().addAuthority(
         userDetailsService.loadAuthorityByName(UserDetailsService.SURVEY_STUDENT_ROLE));
-
     return user;
   }
 }
