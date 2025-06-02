@@ -261,7 +261,7 @@ public class UserAPIController {
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", run.getId());
     map.put("name", run.getName());
-    map.put("isSurvey", run.getIsSurvey());
+    map.put("isSurvey", run.isSurvey());
     map.put("maxStudentsPerTeam", run.getMaxWorkgroupSize());
     map.put("runCode", run.getRuncode());
     map.put("startTime", run.getStartTimeMilliseconds());

@@ -65,7 +65,7 @@ public class SurveyAPIController {
 
     Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
-    if (run.getIsSurvey()) {
+    if (run.isSurvey()) {
       handleSurveyLaunched(response, request, run, projectCode);
     } else {
       sendRedirect(response, "/");
@@ -76,9 +76,9 @@ public class SurveyAPIController {
       Run run, Projectcode projectCode) throws AuthorityNotFoundException, IOException,
       DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
       StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
-    
+
     Object principal = getSecurityContextHolderPrincipal();
-    if (principal instanceof StudentUserDetails 
+    if (principal instanceof StudentUserDetails
         && isStudentAssociatedWithRun(run, (StudentUserDetails) principal)) {
       sendRedirect(response, "/student/unit/" + run.getId());
       return;

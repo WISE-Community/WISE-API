@@ -58,8 +58,9 @@ public interface RunService {
    */
   Run createRun(RunParameters runParameters) throws ObjectNotFoundException;
 
-  Run createRun(Long projectId, User user, Set<String> periodNames, Boolean isSurvey, Integer maxStudentsPerTeam,
-      Long startDate, Long endDate, Boolean isLockedAfterEndDate, Locale locale) throws Exception;
+  Run createRun(Long projectId, User user, Set<String> periodNames, boolean isSurvey,
+      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
+      Locale locale) throws Exception;
 
   /**
    * Ends this run. The side effect is that the run's endtime gets set. A Run that has ended is no

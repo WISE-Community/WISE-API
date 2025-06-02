@@ -199,7 +199,7 @@ public class RunServiceImpl implements RunService {
     run.setStarttime(runParameters.getStartTime());
     run.setRuncode(generateUniqueRunCode(runParameters.getLocale()));
     run.setOwner(runParameters.getOwner());
-    run.setIsSurvey(runParameters.getIsSurvey());
+    run.setIsSurvey(runParameters.isSurvey());
     run.setMaxWorkgroupSize(runParameters.getMaxWorkgroupSize());
     run.setProject(project);
     run.setName("" + runParameters.getProject().getName());
@@ -240,7 +240,7 @@ public class RunServiceImpl implements RunService {
   }
 
   @Transactional()
-  public Run createRun(Long projectId, User user, Set<String> periodNames, Boolean isSurvey,
+  public Run createRun(Long projectId, User user, Set<String> periodNames, boolean isSurvey,
       Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
       Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
@@ -252,9 +252,9 @@ public class RunServiceImpl implements RunService {
     return run;
   }
 
-  public RunParameters createRunParameters(Project project, User user, Set<String> periodNames, Boolean isSurvey,
-      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-      Locale locale) {
+  public RunParameters createRunParameters(Project project, User user, Set<String> periodNames,
+      boolean isSurvey, Integer maxStudentsPerTeam, Long startDate, Long endDate,
+      Boolean isLockedAfterEndDate, Locale locale) {
     RunParameters runParameters = new RunParameters();
     runParameters.setOwner(user);
     runParameters.setName(project.getName());
@@ -262,7 +262,7 @@ public class RunServiceImpl implements RunService {
     runParameters.setLocale(locale);
     runParameters.setPostLevel(5);
     runParameters.setPeriodNames(periodNames);
-    runParameters.setIsSurvey(isSurvey);
+    runParameters.setSurvey(isSurvey);
     runParameters.setMaxWorkgroupSize(maxStudentsPerTeam);
     runParameters.setStartTime(new Date(startDate));
     if (endDate == null || endDate <= startDate) {
