@@ -62,14 +62,19 @@ public class SurveyAPIController {
       HttpServletRequest request) throws AuthorityNotFoundException, IOException,
       DuplicateUsernameException, ObjectNotFoundException, PeriodNotFoundException,
       StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
-
     Projectcode projectCode = new Projectcode(code);
     Run run = runService.retrieveRunByRuncode(projectCode.getRuncode());
-    if (run.isSurvey()) {
+    if (run.isSurvey() && isActive(run)) {
       handleSurveyLaunched(response, request, run, projectCode);
     } else {
       sendRedirect(response, "/");
     }
+  }
+
+  private boolean isActive(Run run) {
+    Date now = new Date();
+    Date endTime = run.getEndtime();
+    return run.getStarttime().before(now) && (endTime == null || endTime.after(now));
   }
 
   private void handleSurveyLaunched(HttpServletResponse response, HttpServletRequest request,
@@ -103,11 +108,11 @@ public class SurveyAPIController {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  private Boolean isStudentAssociatedWithRun(Run run, StudentUserDetails principal) {
+  private boolean isStudentAssociatedWithRun(Run run, StudentUserDetails principal) {
     return run.isStudentAssociatedToThisRun(userService.retrieveStudentById((principal).getId()));
   }
 
-  private Boolean underWorkgroupLimit(Run run) {
+  private boolean underWorkgroupLimit(Run run) {
     return workgroupService.getWorkgroupsForRun(run).size() <= 1000;
   }
 

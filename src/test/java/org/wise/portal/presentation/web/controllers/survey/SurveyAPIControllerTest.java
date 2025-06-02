@@ -7,6 +7,7 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -90,6 +91,7 @@ public class SurveyAPIControllerTest {
     run = new RunImpl();
     run.setId(1L);
     run.setIsSurvey(true);
+    run.setStarttime(new Date(System.currentTimeMillis() - 3600 * 1000));
     Set<Group> periods = new TreeSet<Group>();
     for (String periodname : periodnames) {
       Group period = new PersistentGroup();
@@ -119,6 +121,32 @@ public class SurveyAPIControllerTest {
     expectLastCall();
     replay(httpServletResponse);
     run.setIsSurvey(false);
+    expect(runService.retrieveRunByRuncode("dog1234")).andReturn(run);
+    replay(runService);
+    surveyAPIController.launchSurveyRun("dog1234-1", httpServletResponse, httpServletRequest);
+    verify(httpServletResponse);
+    verify(runService);
+  }
+
+  @Test
+  public void launchSurveyRun_RunInFuture_RedirectHomePage() throws Exception {
+    httpServletResponse.sendRedirect("/");
+    expectLastCall();
+    replay(httpServletResponse);
+    run.setStarttime(new Date(System.currentTimeMillis() + 3600 * 1000)); // Future start time
+    expect(runService.retrieveRunByRuncode("dog1234")).andReturn(run);
+    replay(runService);
+    surveyAPIController.launchSurveyRun("dog1234-1", httpServletResponse, httpServletRequest);
+    verify(httpServletResponse);
+    verify(runService);
+  }
+
+  @Test
+  public void launchSurveyRun_RunInPast_RedirectHomePage() throws Exception {
+    httpServletResponse.sendRedirect("/");
+    expectLastCall();
+    replay(httpServletResponse);
+    run.setEndtime(new Date(System.currentTimeMillis() - 3600 * 1000)); // Past end time
     expect(runService.retrieveRunByRuncode("dog1234")).andReturn(run);
     replay(runService);
     surveyAPIController.launchSurveyRun("dog1234-1", httpServletResponse, httpServletRequest);
