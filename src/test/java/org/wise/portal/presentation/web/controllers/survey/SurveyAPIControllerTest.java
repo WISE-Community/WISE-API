@@ -9,6 +9,7 @@ import static org.easymock.EasyMock.verify;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -201,6 +202,7 @@ public class SurveyAPIControllerTest {
     replay(workgroupService);
     expect(userDetailsService.loadAuthorityByName("ROLE_SURVEY_STUDENT")).andReturn(null);
     replay(userDetailsService);
+    expect(httpServletRequest.getLocale()).andReturn(new Locale("en"));
     expect(httpServletRequest.getSession(true)).andReturn(httpSession);
     replay(httpServletRequest);
     studentService.addStudentToRun(isA(User.class), isA(Projectcode.class));

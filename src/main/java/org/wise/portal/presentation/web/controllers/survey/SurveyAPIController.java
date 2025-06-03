@@ -21,11 +21,13 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -91,8 +93,9 @@ public class SurveyAPIController {
       SecurityContextHolder.getContext().setAuthentication(null);
     }
     if (underWorkgroupLimit(run)) {
-      User user = this.createNewStudentAccount();
-      loginStudent(request, user);
+      String password = RandomStringUtils.randomAlphanumeric(10);
+      User user = this.createNewStudentAccount(request.getLocale(), password);
+      loginStudent(request, user, password);
       studentService.addStudentToRun(user, projectCode);
       sendRedirect(response, "/student/unit/" + run.getId());
     } else {
@@ -116,9 +119,9 @@ public class SurveyAPIController {
     return workgroupService.getWorkgroupsForRun(run).size() <= 1000;
   }
 
-  private void loginStudent(HttpServletRequest request, User user) {
+  private void loginStudent(HttpServletRequest request, User user, String password) {
     UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(
-        user.getUserDetails().getUsername(), "null");
+        user.getUserDetails().getUsername(), password);
     Authentication auth = authenticationManager.authenticate(authReq);
     SecurityContext sc = SecurityContextHolder.getContext();
     sc.setAuthentication(auth);
@@ -126,16 +129,18 @@ public class SurveyAPIController {
     session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, sc);
   }
 
-  private User createNewStudentAccount()
+  private User createNewStudentAccount(Locale locale, String password)
       throws AuthorityNotFoundException, DuplicateUsernameException {
     StudentUserDetails sud = new StudentUserDetails();
-    sud.setFirstname("survey_student");
-    sud.setLastname(Integer.toString((int) Math.ceil(Math.random() * 10000)));
+    sud.setFirstname("survey_student_" + RandomStringUtils.randomAlphanumeric(10));
+    sud.setLastname(RandomStringUtils.randomAlphanumeric(10));
     sud.setBirthday(new Date());
-    sud.setPassword("null");
+    sud.setPassword(password);
     sud.setGender(Gender.UNSPECIFIED);
     sud.setEmailAddress("null@null.com");
-    sud.setLanguage("null");
+    sud.setLanguage(locale.getLanguage());
+    sud.setNumberOfLogins(1);
+    sud.setLastLoginTime(new Date());
 
     User user = userService.createUser(sud);
     user.getUserDetails().addAuthority(
