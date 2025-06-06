@@ -679,6 +679,7 @@ public class InformationController {
     config.put("startTime", run.getStartTimeMilliseconds());
     config.put("endTime", run.getEndTimeMilliseconds());
     config.put("isLockedAfterEndDate", run.isLockedAfterEndDate());
+    config.put("isSurvey", run.isSurvey());
   }
 
   private void printConfigToResponse(HttpServletResponse response, JSONObject config)
@@ -785,6 +786,7 @@ public class InformationController {
 
   /**
    * Gets the workgroup for the logged in user
+   * 
    * @param run
    * @return Workgroup for the logged in user
    */

@@ -120,7 +120,7 @@ public interface Run extends Persistable {
 
   /**
    * Returns the period with periodName that is associated with this run
-   * 
+   *
    * @param periodName
    * @return Group the period with the periodName that is associated with this run
    * @throws <code>PeriodNotFoundException</code>
@@ -214,31 +214,41 @@ public interface Run extends Persistable {
 
   /**
    * Sets whether or not student asset uploading is enabled for this run.
-   * 
+   *
    * @return
    */
   void setStudentAssetUploaderEnabled(boolean isStudentAssetUploaderEnabled);
 
   /**
    * Returns whether or not student asset uploading is enabled for this run.
-   * 
+   *
    * @return
    */
   boolean isStudentAssetUploaderEnabled();
 
   /**
    * Sets whether or not idea manager is enabled for this run.
-   * 
+   *
    * @return
    */
   void setIdeaManagerEnabled(boolean isIdeaManagerEnabled);
 
   /**
    * Returns whether or not idea manager is enabled for this run.
-   * 
+   *
    * @return
    */
   boolean isIdeaManagerEnabled();
+
+  /**
+   * @return Whether or not the run a survey
+   */
+  boolean isSurvey();
+
+  /**
+   * @param isSurvey
+   */
+  void setIsSurvey(boolean isSurvey);
 
   /**
    * @return <code>Integer</code> maxWorkgroupSize
@@ -341,7 +351,7 @@ public interface Run extends Persistable {
 
   /**
    * sets student attendance for this run
-   * 
+   *
    * @param studentAttendance
    */
   void setStudentAttendance(List<StudentAttendance> studentAttendance);
@@ -353,14 +363,14 @@ public interface Run extends Persistable {
 
   /**
    * Gets private notes for this run
-   * 
+   *
    * @return String private notes for this run
    */
   String getPrivateNotes();
 
   /**
    * Sets private notes for this run
-   * 
+   *
    * @param privateNotes
    *                       private notes for this run
    */
@@ -368,14 +378,14 @@ public interface Run extends Persistable {
 
   /**
    * Gets survey for this run
-   * 
+   *
    * @return String survey for this run
    */
   String getSurvey();
 
   /**
    * Sets survey for this run
-   * 
+   *
    * @return String survey for this run
    */
   void setSurvey(String survey);

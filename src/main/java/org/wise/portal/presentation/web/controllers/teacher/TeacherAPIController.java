@@ -255,6 +255,7 @@ public class TeacherAPIController extends UserAPIController {
   @PostMapping("/run/create")
   HashMap<String, Object> createRun(Authentication auth, HttpServletRequest request,
       @RequestParam("projectId") Long projectId, @RequestParam("periods") String periods,
+      @RequestParam boolean isSurvey,
       @RequestParam("maxStudentsPerTeam") Integer maxStudentsPerTeam,
       @RequestParam("startDate") Long startDate,
       @RequestParam(value = "endDate", required = false) Long endDate,
@@ -263,8 +264,8 @@ public class TeacherAPIController extends UserAPIController {
     User user = userService.retrieveUserByUsername(auth.getName());
     Locale locale = request.getLocale();
     Set<String> periodNames = createPeriodNamesSet(periods);
-    Run run = runService.createRun(projectId, user, periodNames, maxStudentsPerTeam, startDate,
-        endDate, isLockedAfterEndDate, locale);
+    Run run = runService.createRun(projectId, user, periodNames, isSurvey, maxStudentsPerTeam,
+        startDate, endDate, isLockedAfterEndDate, locale);
     return getRunMap(user, run);
   }
 

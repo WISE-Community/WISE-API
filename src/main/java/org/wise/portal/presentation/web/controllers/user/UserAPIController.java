@@ -30,7 +30,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
-import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
@@ -262,6 +261,7 @@ public class UserAPIController {
     HashMap<String, Object> map = new HashMap<String, Object>();
     map.put("id", run.getId());
     map.put("name", run.getName());
+    map.put("isSurvey", run.isSurvey());
     map.put("maxStudentsPerTeam", run.getMaxWorkgroupSize());
     map.put("runCode", run.getRuncode());
     map.put("startTime", run.getStartTimeMilliseconds());
