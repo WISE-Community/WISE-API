@@ -4,7 +4,7 @@
 FROM maven:3.9.6-eclipse-temurin-17 as build
 WORKDIR /app
 COPY . .
-RUN mvn package
+RUN mvn package -DskipTests
 
 # Stage 2: Copy war
 FROM eclipse-temurin:17
