@@ -29,7 +29,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.authentication.UserDetailsDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -52,11 +51,6 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
   private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from PersistentUserDetails";
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
 
   public PersistentUserDetails retrieveByName(String username) {
     CriteriaBuilder cb = getCriteriaBuilder();

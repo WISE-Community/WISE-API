@@ -11,7 +11,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.usertags.UserTagsDao;
@@ -74,10 +73,5 @@ public class HibernateUserTagsDao extends AbstractHibernateDao<UserTag>
     TypedQuery<UserTagImpl> query = entityManager.createQuery(cq);
     List<UserTagImpl> tagsResultList = query.getResultList();
     return tagsResultList.isEmpty() ? null : tagsResultList.get(0);
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 }

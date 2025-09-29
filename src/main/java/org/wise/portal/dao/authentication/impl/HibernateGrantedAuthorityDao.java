@@ -21,14 +21,12 @@
 package org.wise.portal.dao.authentication.impl;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -42,9 +40,8 @@ import org.wise.portal.domain.authentication.impl.PersistentGrantedAuthority;
  * @author Cynick Young
  */
 @Repository
-public class HibernateGrantedAuthorityDao extends
-    AbstractHibernateDao<MutableGrantedAuthority> implements
-    GrantedAuthorityDao<MutableGrantedAuthority> {
+public class HibernateGrantedAuthorityDao extends AbstractHibernateDao<MutableGrantedAuthority>
+    implements GrantedAuthorityDao<MutableGrantedAuthority> {
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -52,13 +49,12 @@ public class HibernateGrantedAuthorityDao extends
   private static final String FIND_ALL_QUERY = "from PersistentGrantedAuthority";
 
   public MutableGrantedAuthority retrieveByName(String authority) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentGrantedAuthority> cq = cb.createQuery(PersistentGrantedAuthority.class);
-    Root<PersistentGrantedAuthority> persistentGrantedAuthorityRoot = 
-        cq.from(PersistentGrantedAuthority.class);
-    cq.select(persistentGrantedAuthorityRoot).where(
-        cb.equal(persistentGrantedAuthorityRoot.get("authority"), authority));
+    Root<PersistentGrantedAuthority> persistentGrantedAuthorityRoot = cq
+        .from(PersistentGrantedAuthority.class);
+    cq.select(persistentGrantedAuthorityRoot)
+        .where(cb.equal(persistentGrantedAuthorityRoot.get("authority"), authority));
     TypedQuery<PersistentGrantedAuthority> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }
@@ -66,6 +62,7 @@ public class HibernateGrantedAuthorityDao extends
   public boolean hasRole(String authority) {
     return (this.retrieveByName(authority) != null);
   }
+
   @Override
   protected String getFindAllQuery() {
     return FIND_ALL_QUERY;

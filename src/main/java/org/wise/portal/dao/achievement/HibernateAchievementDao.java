@@ -34,7 +34,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.domain.run.Run;
@@ -56,8 +55,7 @@ public class HibernateAchievementDao extends AbstractHibernateDao<Achievement>
   @SuppressWarnings("unchecked")
   public List<Achievement> getAchievementsByParams(Integer id, Run run, Workgroup workgroup,
       String achievementId, String type) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Achievement> cq = cb.createQuery(Achievement.class);
     Root<Achievement> achievementRoot = cq.from(Achievement.class);
     List<Predicate> predicates = new ArrayList<>();

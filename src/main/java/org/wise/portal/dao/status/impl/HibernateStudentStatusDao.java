@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -42,14 +41,9 @@ import org.wise.vle.domain.status.StudentStatus;
 @Repository
 public class HibernateStudentStatusDao extends AbstractHibernateDao<StudentStatus>
     implements StudentStatusDao<StudentStatus> {
-  
+
   @PersistenceContext
   private EntityManager entityManager;
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
-  }
 
   @Override
   protected String getFindAllQuery() {

@@ -36,7 +36,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.attendance.StudentAttendanceDao;
@@ -50,12 +49,11 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
 
   @PersistenceContext
   private EntityManager entityManager;
-  
-  @Transactional(readOnly=true)
+
+  @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")
   public List<StudentAttendance> getStudentAttendanceByRunId(Long runId) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<StudentAttendanceImpl> cq = cb.createQuery(StudentAttendanceImpl.class);
     Root<StudentAttendanceImpl> studentAttendanceRoot = cq.from(StudentAttendanceImpl.class);
     cq.select(studentAttendanceRoot).where(cb.equal(studentAttendanceRoot.get("runId"), runId))
@@ -66,11 +64,10 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
 
   @SuppressWarnings("unchecked")
   @Override
-  @Transactional(readOnly=true)
-  public List<StudentAttendance> getStudentAttendanceByRunIdAndPeriod(
-      Long runId, int lookBackNumDays) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+  @Transactional(readOnly = true)
+  public List<StudentAttendance> getStudentAttendanceByRunIdAndPeriod(Long runId,
+      int lookBackNumDays) {
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<StudentAttendanceImpl> cq = cb.createQuery(StudentAttendanceImpl.class);
     Root<StudentAttendanceImpl> studentAttendanceRoot = cq.from(StudentAttendanceImpl.class);
     List<Predicate> predicates = new ArrayList<>();
@@ -81,8 +78,8 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
     this.roundDownCalendar(c, Calendar.SECOND);
     this.roundDownCalendar(c, Calendar.MILLISECOND);
     Date compareDate = c.getTime();
-    predicates.add(
-        cb.greaterThanOrEqualTo(studentAttendanceRoot.get("loginTimestamp"), compareDate));
+    predicates
+        .add(cb.greaterThanOrEqualTo(studentAttendanceRoot.get("loginTimestamp"), compareDate));
     predicates.add(cb.equal(studentAttendanceRoot.get("runId"), runId));
     cq.select(studentAttendanceRoot).where(predicates.toArray(new Predicate[predicates.size()]))
         .orderBy(cb.desc(studentAttendanceRoot.get("loginTimestamp")));

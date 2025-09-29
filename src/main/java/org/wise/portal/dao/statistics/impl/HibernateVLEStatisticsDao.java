@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -47,11 +46,6 @@ public class HibernateVLEStatisticsDao extends AbstractHibernateDao<VLEStatistic
   @PersistenceContext
   private EntityManager entityManager;
 
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
-  }
-  
   @Override
   protected String getFindAllQuery() {
     return null;
@@ -79,7 +73,7 @@ public class HibernateVLEStatisticsDao extends AbstractHibernateDao<VLEStatistic
     save(vleStatistics);
   }
 
-  @Transactional(readOnly=true)
+  @Transactional(readOnly = true)
   public List<VLEStatistics> getVLEStatistics() {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<VLEStatistics> cq = cb.createQuery(VLEStatistics.class);
@@ -89,7 +83,7 @@ public class HibernateVLEStatisticsDao extends AbstractHibernateDao<VLEStatistic
     return query.getResultList();
   }
 
-  @Transactional(readOnly=true)
+  @Transactional(readOnly = true)
   public VLEStatistics getLatestVLEStatistics() {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<VLEStatistics> cq = cb.createQuery(VLEStatistics.class);

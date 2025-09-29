@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -60,11 +59,6 @@ public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao
   @Override
   protected String getFindAllQuery() {
     return HibernateTagDao.FIND_ALL_QUERY;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 
   /**

@@ -38,7 +38,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -55,8 +54,8 @@ import org.wise.portal.domain.user.impl.UserImpl;
  * @author Hiroki Terashima
  */
 @Repository
-public class HibernateProjectDao extends AbstractHibernateDao<Project> implements
-    ProjectDao<Project> {
+public class HibernateProjectDao extends AbstractHibernateDao<Project>
+    implements ProjectDao<Project> {
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -77,22 +76,16 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     return new ProjectImpl();
   }
 
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
-
   @SuppressWarnings("unchecked")
   public List<Project> getSharedProjectsWithoutRun(User user) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Subquery<RunImpl> runProjectIds = getRunProjectIds(cq);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.isMember(userRoot.get("id"), projectRoot.<Set<User>>get("sharedowners")));
+    predicates.add(cb.isMember(userRoot.get("id"), projectRoot.<Set<User>> get("sharedowners")));
     predicates.add(cb.not(projectRoot.get("id").in(runProjectIds)));
     cq.select(projectRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
@@ -115,7 +108,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.isMember(userRoot, projectRoot.<Set<UserImpl>>get(role)));
+    predicates.add(cb.isMember(userRoot, projectRoot.<Set<UserImpl>> get(role)));
     cq.select(projectRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
     List<ProjectImpl> projectResultList = query.getResultList();
@@ -143,7 +136,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
     try {
       return query.setMaxResults(1).getSingleResult();
-    } catch(NoResultException e) {
+    } catch (NoResultException e) {
       throw new ObjectNotFoundException((Long) id, ProjectImpl.class);
     }
   }
@@ -168,7 +161,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     Root<TagImpl> tagRoot = cq.from(TagImpl.class);
     cq.select(projectRoot).where(cb.and(tagRoot.get("name").in(tagNames),
-        cb.isMember(tagRoot, projectRoot.<Set<TagImpl>>get("tags")))).distinct(true);
+        cb.isMember(tagRoot, projectRoot.<Set<TagImpl>> get("tags")))).distinct(true);
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
     List<ProjectImpl> projectResultList = query.getResultList();
     return (List<Project>) (Object) projectResultList;
@@ -180,8 +173,8 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
-    cq.select(projectRoot).where(cb.like(
-        projectRoot.get("owner").get("userDetails").get("username"), "%" + authorName + "%"));
+    cq.select(projectRoot).where(cb
+        .like(projectRoot.get("owner").get("userDetails").get("username"), "%" + authorName + "%"));
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
     List<ProjectImpl> projectResultList = query.getResultList();
     return (List<Project>) (Object) projectResultList;
@@ -212,8 +205,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
 
   @SuppressWarnings("unchecked")
   public List<Project> getProjectsWithoutRuns(User user) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
@@ -230,8 +222,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
 
   @SuppressWarnings("unchecked")
   public List<Project> getAllSharedProjects() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     cq.select(projectRoot).where(cb.isNotEmpty(projectRoot.get("sharedowners")));
@@ -245,7 +236,7 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project> implement
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Long> cq = cb.createQuery(Long.class);
     Root<ProjectImpl> runRoot = cq.from(ProjectImpl.class);
-    cq.select(cb.max(runRoot.<Long>get("id")));
+    cq.select(cb.max(runRoot.<Long> get("id")));
     TypedQuery<Long> query = entityManager.createQuery(cq);
     try {
       return query.getSingleResult();

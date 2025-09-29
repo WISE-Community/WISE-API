@@ -34,7 +34,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.work.StudentAssetDao;
@@ -52,7 +51,7 @@ public class HibernateStudentAssetDao extends AbstractHibernateDao<StudentAsset>
 
   @PersistenceContext
   private EntityManager entityManager;
-  
+
   @Override
   protected String getFindAllQuery() {
     return null;
@@ -63,17 +62,12 @@ public class HibernateStudentAssetDao extends AbstractHibernateDao<StudentAsset>
     return StudentAsset.class;
   }
 
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
-  }
-
   @Override
   public List<StudentAsset> getStudentAssetListByParams(Integer id, Run run, Group period,
       Workgroup workgroup, String nodeId, String componentId, String componentType,
       Boolean isReferenced) {
     CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<StudentAsset> cq = cb.createQuery(StudentAsset.class); 
+    CriteriaQuery<StudentAsset> cq = cb.createQuery(StudentAsset.class);
     Root<StudentAsset> studentAssetRoot = cq.from(StudentAsset.class);
     List<Predicate> predicates = new ArrayList<>();
     if (id != null) {

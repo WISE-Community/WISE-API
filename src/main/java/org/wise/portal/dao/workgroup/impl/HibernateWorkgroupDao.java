@@ -35,7 +35,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.workgroup.WorkgroupDao;
@@ -56,11 +55,6 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
 
   @PersistenceContext
   private EntityManager entityManager;
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
 
   private static final String FIND_ALL_QUERY = "from WorkgroupImpl";
 

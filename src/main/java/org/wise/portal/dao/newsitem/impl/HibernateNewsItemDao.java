@@ -32,7 +32,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.newsitem.NewsItemDao;
@@ -44,7 +43,7 @@ import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
  */
 @Repository
 public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
-    implements NewsItemDao<NewsItem>{
+    implements NewsItemDao<NewsItem> {
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -59,11 +58,6 @@ public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
   @Override
   protected Class<NewsItemImpl> getDataObjectClass() {
     return NewsItemImpl.class;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder(); 
   }
 
   @Override

@@ -21,14 +21,12 @@
 package org.wise.portal.dao.authentication.impl;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.authentication.AclSidDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -62,8 +60,7 @@ public class HibernateAclSidDao extends AbstractHibernateDao<MutableAclSid>
   }
 
   public MutableAclSid retrieveBySidName(String sidName) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentAclSid> cq = cb.createQuery(PersistentAclSid.class);
     Root<PersistentAclSid> persistentAclSidRoot = cq.from(PersistentAclSid.class);
     cq.select(persistentAclSidRoot).where(cb.equal(persistentAclSidRoot.get("sidName"), sidName));

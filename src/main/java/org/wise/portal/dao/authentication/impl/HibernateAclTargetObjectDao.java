@@ -21,14 +21,12 @@
 package org.wise.portal.dao.authentication.impl;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.authentication.AclTargetObjectDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -43,15 +41,14 @@ import org.wise.portal.domain.authentication.impl.PersistentAclTargetObject;
  * @author Cynick Young
  */
 @Repository
-public class HibernateAclTargetObjectDao extends
-    AbstractHibernateDao<MutableAclTargetObject> implements
-    AclTargetObjectDao<MutableAclTargetObject> {
+public class HibernateAclTargetObjectDao extends AbstractHibernateDao<MutableAclTargetObject>
+    implements AclTargetObjectDao<MutableAclTargetObject> {
 
   private static final String FIND_ALL_QUERY = "from PersistentAclTargetObject";
 
   @PersistenceContext
   private EntityManager entityManager;
-  
+
   @Override
   protected Class<PersistentAclTargetObject> getDataObjectClass() {
     return PersistentAclTargetObject.class;
@@ -63,13 +60,12 @@ public class HibernateAclTargetObjectDao extends
   }
 
   public MutableAclTargetObject retrieveByClassname(String classname) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentAclTargetObject> cq = cb.createQuery(PersistentAclTargetObject.class);
-    Root<PersistentAclTargetObject> persistentAclTargetObjectRoot = 
-        cq.from(PersistentAclTargetObject.class);
-    cq.select(persistentAclTargetObjectRoot).where(
-        cb.equal(persistentAclTargetObjectRoot.get("classname"), classname));
+    Root<PersistentAclTargetObject> persistentAclTargetObjectRoot = cq
+        .from(PersistentAclTargetObject.class);
+    cq.select(persistentAclTargetObjectRoot)
+        .where(cb.equal(persistentAclTargetObjectRoot.get("classname"), classname));
     TypedQuery<PersistentAclTargetObject> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }

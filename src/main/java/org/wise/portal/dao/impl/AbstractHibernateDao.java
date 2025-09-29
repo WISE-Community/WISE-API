@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2022 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -26,8 +26,10 @@ package org.wise.portal.dao.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -39,19 +41,19 @@ import org.wise.portal.dao.SimpleDao;
 
 /**
  * @author Cynick Young
+ * @author Hiroki Terashima
  */
-public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport
-    implements SimpleDao<T> {
+public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implements SimpleDao<T> {
 
   @PersistenceContext
   private EntityManager entityManager;
 
+  @Resource
+  protected SessionFactory sessionFactory;
+
   @Autowired
   @Transactional
   public void init() {
-    entityManager = entityManager.getEntityManagerFactory().createEntityManager();
-    Session session = (Session) entityManager.unwrap(Session.class);
-    SessionFactory sessionFactory = session.getSessionFactory();
     setSessionFactory(sessionFactory);
   }
 
@@ -75,11 +77,11 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport
     T object = null;
     try {
       if (id instanceof Integer) {
-        object = (T) this.getHibernateTemplate().get(
-          this.getDataObjectClass(), Integer.valueOf(id.toString()));
+        object = (T) this.getHibernateTemplate().get(this.getDataObjectClass(),
+            Integer.valueOf(id.toString()));
       } else {
-        object = (T) this.getHibernateTemplate().get(
-          this.getDataObjectClass(), Long.valueOf(id.toString()));
+        object = (T) this.getHibernateTemplate().get(this.getDataObjectClass(),
+            Long.valueOf(id.toString()));
       }
     } catch (NumberFormatException e) {
       return null;
@@ -89,6 +91,11 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport
       throw new ObjectNotFoundException((Long) id, this.getDataObjectClass());
     }
     return object;
+  }
+
+  protected CriteriaBuilder getCriteriaBuilder() {
+    Session session = sessionFactory.getCurrentSession();
+    return session.getCriteriaBuilder();
   }
 
   /**
