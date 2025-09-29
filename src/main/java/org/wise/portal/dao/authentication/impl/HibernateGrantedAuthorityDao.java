@@ -20,8 +20,6 @@
  */
 package org.wise.portal.dao.authentication.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -42,9 +40,6 @@ import org.wise.portal.domain.authentication.impl.PersistentGrantedAuthority;
 @Repository
 public class HibernateGrantedAuthorityDao extends AbstractHibernateDao<MutableGrantedAuthority>
     implements GrantedAuthorityDao<MutableGrantedAuthority> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from PersistentGrantedAuthority";
 

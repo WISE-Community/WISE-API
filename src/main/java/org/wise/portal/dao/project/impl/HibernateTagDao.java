@@ -25,8 +25,6 @@ package org.wise.portal.dao.project.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -47,9 +45,6 @@ import org.wise.portal.domain.run.Run;
 public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao<Tag> {
 
   private static final String FIND_ALL_QUERY = "from TagImpl";
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   @Override
   protected Class<? extends Tag> getDataObjectClass() {

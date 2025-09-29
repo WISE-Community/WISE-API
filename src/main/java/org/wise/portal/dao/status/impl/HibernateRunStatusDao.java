@@ -23,8 +23,6 @@
  */
 package org.wise.portal.dao.status.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -39,9 +37,6 @@ import org.wise.vle.domain.status.RunStatus;
 @Repository
 public class HibernateRunStatusDao extends AbstractHibernateDao<RunStatus>
     implements RunStatusDao<RunStatus> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   @Override
   protected String getFindAllQuery() {

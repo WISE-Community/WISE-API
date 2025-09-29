@@ -29,8 +29,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -56,9 +54,6 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
  */
 @Repository
 public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao<Run> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from RunImpl";
 

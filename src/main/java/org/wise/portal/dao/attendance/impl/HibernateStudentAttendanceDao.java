@@ -28,8 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -46,9 +44,6 @@ import org.wise.portal.domain.attendance.impl.StudentAttendanceImpl;
 @Repository
 public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentAttendance>
     implements StudentAttendanceDao<StudentAttendance> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   @Transactional(readOnly = true)
   @SuppressWarnings("unchecked")

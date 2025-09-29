@@ -28,9 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -56,9 +54,6 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Repository
 public class HibernateProjectDao extends AbstractHibernateDao<Project>
     implements ProjectDao<Project> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from ProjectImpl";
 

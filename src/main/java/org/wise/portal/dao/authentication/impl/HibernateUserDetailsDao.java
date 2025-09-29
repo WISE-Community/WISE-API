@@ -22,8 +22,6 @@ package org.wise.portal.dao.authentication.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -46,9 +44,6 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 @Repository
 public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDetails>
     implements UserDetailsDao<MutableUserDetails> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from PersistentUserDetails";
 

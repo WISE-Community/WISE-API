@@ -26,8 +26,6 @@ package org.wise.portal.dao.work.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -48,9 +46,6 @@ import org.wise.vle.domain.work.StudentAsset;
 @Repository
 public class HibernateStudentAssetDao extends AbstractHibernateDao<StudentAsset>
     implements StudentAssetDao<StudentAsset> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   @Override
   protected String getFindAllQuery() {

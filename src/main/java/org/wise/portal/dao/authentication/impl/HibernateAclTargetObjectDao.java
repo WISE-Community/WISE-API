@@ -20,8 +20,6 @@
  */
 package org.wise.portal.dao.authentication.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -45,9 +43,6 @@ public class HibernateAclTargetObjectDao extends AbstractHibernateDao<MutableAcl
     implements AclTargetObjectDao<MutableAclTargetObject> {
 
   private static final String FIND_ALL_QUERY = "from PersistentAclTargetObject";
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   @Override
   protected Class<PersistentAclTargetObject> getDataObjectClass() {

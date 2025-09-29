@@ -3,8 +3,6 @@ package org.wise.portal.dao.usertags.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -21,9 +19,6 @@ import org.wise.portal.domain.usertag.impl.UserTagImpl;
 @Repository
 public class HibernateUserTagsDao extends AbstractHibernateDao<UserTag>
     implements UserTagsDao<UserTag> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
 
   private static final String FIND_ALL_QUERY = "from TagsImpl";
 

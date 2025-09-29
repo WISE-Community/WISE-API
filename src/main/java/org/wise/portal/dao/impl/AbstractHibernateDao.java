@@ -46,7 +46,7 @@ import org.wise.portal.dao.SimpleDao;
 public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implements SimpleDao<T> {
 
   @PersistenceContext
-  private EntityManager entityManager;
+  protected EntityManager entityManager;
 
   @Resource
   protected SessionFactory sessionFactory;
