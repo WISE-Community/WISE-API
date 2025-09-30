@@ -49,11 +49,6 @@ public class HibernateNotificationDao extends AbstractHibernateDao<Notification>
     implements NotificationDao<Notification> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends Notification> getDataObjectClass() {
     return Notification.class;
   }

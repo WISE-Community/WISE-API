@@ -45,8 +45,6 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDetails>
     implements UserDetailsDao<MutableUserDetails> {
 
-  private static final String FIND_ALL_QUERY = "from PersistentUserDetails";
-
   public PersistentUserDetails retrieveByName(String username) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentUserDetails> cq = cb.createQuery(PersistentUserDetails.class);
@@ -101,11 +99,6 @@ public class HibernateUserDetailsDao extends AbstractHibernateDao<MutableUserDet
 
   public boolean hasUsername(String username) {
     return this.retrieveByName(username) != null;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 
   @Override

@@ -44,16 +44,9 @@ import org.wise.portal.domain.run.Run;
 @Repository
 public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao<Tag> {
 
-  private static final String FIND_ALL_QUERY = "from TagImpl";
-
   @Override
   protected Class<? extends Tag> getDataObjectClass() {
     return TagImpl.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return HibernateTagDao.FIND_ALL_QUERY;
   }
 
   /**

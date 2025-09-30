@@ -76,11 +76,6 @@ public class HibernateAchievementDao extends AbstractHibernateDao<Achievement>
   }
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends Achievement> getDataObjectClass() {
     return Achievement.class;
   }

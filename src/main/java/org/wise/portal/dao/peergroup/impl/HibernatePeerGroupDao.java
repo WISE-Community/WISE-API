@@ -54,11 +54,6 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     implements PeerGroupDao<PeerGroup> {
 
   @Override
-  protected String getFindAllQuery() {
-    return "from PeerGroupImpl";
-  }
-
-  @Override
   protected Class<? extends PeerGroup> getDataObjectClass() {
     return PeerGroupImpl.class;
   }

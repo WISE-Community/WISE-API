@@ -26,11 +26,6 @@ public class HibernateNotebookItemDao extends AbstractHibernateDao<NotebookItem>
     implements NotebookItemDao<NotebookItem> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends NotebookItem> getDataObjectClass() {
     return NotebookItem.class;
   }

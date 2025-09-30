@@ -53,11 +53,6 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     implements StudentWorkDao<StudentWork> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends StudentWork> getDataObjectClass() {
     return StudentWork.class;
   }

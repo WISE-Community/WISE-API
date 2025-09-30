@@ -55,13 +55,6 @@ import org.wise.portal.domain.user.impl.UserImpl;
 public class HibernateProjectDao extends AbstractHibernateDao<Project>
     implements ProjectDao<Project> {
 
-  private static final String FIND_ALL_QUERY = "from ProjectImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<? extends ProjectImpl> getDataObjectClass() {
     return ProjectImpl.class;
@@ -105,18 +98,6 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project>
     predicates.add(cb.equal(userRoot.get("id"), user.getId()));
     predicates.add(cb.isMember(userRoot, projectRoot.<Set<UserImpl>> get(role)));
     cq.select(projectRoot).where(predicates.toArray(new Predicate[predicates.size()]));
-    TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
-    List<ProjectImpl> projectResultList = query.getResultList();
-    return (List<Project>) (Object) projectResultList;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public List<Project> getList() {
-    CriteriaBuilder cb = getCriteriaBuilder();
-    CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
-    Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
-    cq.select(projectRoot);
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
     List<ProjectImpl> projectResultList = query.getResultList();
     return (List<Project>) (Object) projectResultList;

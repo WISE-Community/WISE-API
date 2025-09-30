@@ -66,6 +66,7 @@ public class FindProjectRunsController {
     if ("runId".equals(runLookupType)) {
       runList = getRunListByRunId(Long.parseLong(runLookupValue));
     } else if ("projectId".equals(runLookupType)) {
+      // can be re-written using JPA?
       runList = getRunListByProjectId(Long.parseLong(runLookupValue));
     } else if ("teacherUsername".equals(runLookupType)) {
       runList = getRunListByUsername(runLookupValue);
@@ -88,7 +89,7 @@ public class FindProjectRunsController {
     List<Run> runList = new ArrayList<Run>();
     List<Run> run_list = runService.getAllRunList();
     List<Project> projectCopies = projectService.getProjectCopies(projectId);
-    for (Run run: run_list) {
+    for (Run run : run_list) {
       if (run.getProject().getId().equals(projectId)) {
         runList.add(run);
       } else {
@@ -124,7 +125,7 @@ public class FindProjectRunsController {
       if (run != null) {
         runList.add(run);
       }
-    } catch(ObjectNotFoundException e) {
+    } catch (ObjectNotFoundException e) {
       e.printStackTrace();
     }
     return runList;

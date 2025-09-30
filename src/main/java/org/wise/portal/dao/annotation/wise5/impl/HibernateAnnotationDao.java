@@ -27,11 +27,6 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     implements AnnotationDao<Annotation> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends Annotation> getDataObjectClass() {
     return null;
   }

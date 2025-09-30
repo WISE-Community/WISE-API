@@ -51,16 +51,9 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
     implements WorkgroupDao<Workgroup> {
 
-  private static final String FIND_ALL_QUERY = "from WorkgroupImpl";
-
   @Override
   protected Class<WorkgroupImpl> getDataObjectClass() {
     return WorkgroupImpl.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 
   @SuppressWarnings("unchecked")

@@ -41,8 +41,6 @@ import org.wise.portal.domain.authentication.impl.PersistentGrantedAuthority;
 public class HibernateGrantedAuthorityDao extends AbstractHibernateDao<MutableGrantedAuthority>
     implements GrantedAuthorityDao<MutableGrantedAuthority> {
 
-  private static final String FIND_ALL_QUERY = "from PersistentGrantedAuthority";
-
   public MutableGrantedAuthority retrieveByName(String authority) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentGrantedAuthority> cq = cb.createQuery(PersistentGrantedAuthority.class);
@@ -56,11 +54,6 @@ public class HibernateGrantedAuthorityDao extends AbstractHibernateDao<MutableGr
 
   public boolean hasRole(String authority) {
     return (this.retrieveByName(authority) != null);
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 
   @Override

@@ -126,13 +126,6 @@ public class RunServiceImpl implements RunService {
   private PeerGroupingService peerGroupingService;
 
   @Transactional(readOnly = true)
-  public List<Run> getRunList() {
-    // for some reason, runDao.getList returns all runs, when it should
-    // only return runs with the right privileges according to Acegi.
-    return runDao.getList();
-  }
-
-  @Transactional(readOnly = true)
   public List<Run> getRunList(User user) {
     return runDao.getRunListByUser(user);
   }

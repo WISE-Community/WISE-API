@@ -42,16 +42,9 @@ import org.wise.portal.domain.authentication.impl.PersistentAclTargetObject;
 public class HibernateAclTargetObjectDao extends AbstractHibernateDao<MutableAclTargetObject>
     implements AclTargetObjectDao<MutableAclTargetObject> {
 
-  private static final String FIND_ALL_QUERY = "from PersistentAclTargetObject";
-
   @Override
   protected Class<PersistentAclTargetObject> getDataObjectClass() {
     return PersistentAclTargetObject.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 
   public MutableAclTargetObject retrieveByClassname(String classname) {

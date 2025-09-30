@@ -48,11 +48,6 @@ public class HibernateStudentAssetDao extends AbstractHibernateDao<StudentAsset>
     implements StudentAssetDao<StudentAsset> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends StudentAsset> getDataObjectClass() {
     return StudentAsset.class;
   }

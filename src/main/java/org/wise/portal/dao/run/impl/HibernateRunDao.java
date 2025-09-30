@@ -55,13 +55,6 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 @Repository
 public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao<Run> {
 
-  private static final String FIND_ALL_QUERY = "from RunImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<RunImpl> getDataObjectClass() {
     return RunImpl.class;

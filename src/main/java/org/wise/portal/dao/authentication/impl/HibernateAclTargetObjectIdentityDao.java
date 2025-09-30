@@ -48,8 +48,6 @@ public class HibernateAclTargetObjectIdentityDao
     extends AbstractHibernateDao<MutableAclTargetObjectIdentity>
     implements AclTargetObjectIdentityDao<MutableAclTargetObjectIdentity> {
 
-  private static final String FIND_ALL_QUERY = "from PersistentAclTargetObjectIdentity";
-
   public MutableAclTargetObjectIdentity retrieveByObjectIdentity(ObjectIdentity objectIdentity) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<PersistentAclTargetObjectIdentity> cq = cb
@@ -84,10 +82,5 @@ public class HibernateAclTargetObjectIdentityDao
   @Override
   protected Class<PersistentAclTargetObjectIdentity> getDataObjectClass() {
     return PersistentAclTargetObjectIdentity.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 }

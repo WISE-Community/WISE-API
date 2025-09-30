@@ -48,13 +48,6 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Repository
 public class HibernateUserDao extends AbstractHibernateDao<User> implements UserDao<User> {
 
-  private static final String FIND_ALL_QUERY = "from UserImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<UserImpl> getDataObjectClass() {
     return UserImpl.class;

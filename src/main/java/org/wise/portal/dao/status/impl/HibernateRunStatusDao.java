@@ -39,11 +39,6 @@ public class HibernateRunStatusDao extends AbstractHibernateDao<RunStatus>
     implements RunStatusDao<RunStatus> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends RunStatus> getDataObjectClass() {
     return null;
   }

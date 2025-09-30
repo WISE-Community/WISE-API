@@ -42,16 +42,9 @@ import org.wise.portal.domain.authentication.impl.PersistentAclSid;
 public class HibernateAclSidDao extends AbstractHibernateDao<MutableAclSid>
     implements AclSidDao<MutableAclSid> {
 
-  private static final String FIND_ALL_QUERY = "from PersistentAclSid";
-
   @Override
   protected Class<PersistentAclSid> getDataObjectClass() {
     return PersistentAclSid.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 
   public MutableAclSid retrieveBySidName(String sidName) {

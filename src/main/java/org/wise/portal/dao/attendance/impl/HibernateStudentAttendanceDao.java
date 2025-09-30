@@ -90,9 +90,4 @@ public class HibernateStudentAttendanceDao extends AbstractHibernateDao<StudentA
   protected Class<? extends StudentAttendance> getDataObjectClass() {
     return null;
   }
-
-  @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
 }

@@ -32,10 +32,8 @@ import org.wise.portal.domain.authentication.impl.PersistentAclEntry;
  * @author Cynick Young
  */
 @Repository
-public class HibernateAclEntryDao extends AbstractHibernateDao<ImmutableAclEntry> implements
-  AclEntryDao<ImmutableAclEntry> {
-
-  private static final String FIND_ALL_QUERY = "from PersistentAclEntry";
+public class HibernateAclEntryDao extends AbstractHibernateDao<ImmutableAclEntry>
+    implements AclEntryDao<ImmutableAclEntry> {
 
   /**
    * @see org.wise.portal.dao.impl.AbstractHibernateDao#getDataObjectClass()
@@ -43,13 +41,5 @@ public class HibernateAclEntryDao extends AbstractHibernateDao<ImmutableAclEntry
   @Override
   protected Class<? extends ImmutableAclEntry> getDataObjectClass() {
     return PersistentAclEntry.class;
-  }
-
-  /**
-   * @see org.wise.portal.dao.impl.AbstractHibernateDao#getFindAllQuery()
-   */
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 }

@@ -43,13 +43,6 @@ import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
     implements NewsItemDao<NewsItem> {
 
-  private static final String FIND_ALL_QUERY = "from NewsItemImpl order by id desc";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<NewsItemImpl> getDataObjectClass() {
     return NewsItemImpl.class;

@@ -50,11 +50,6 @@ import org.wise.vle.domain.work.Event;
 public class HibernateEventDao extends AbstractHibernateDao<Event> implements EventDao<Event> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends Event> getDataObjectClass() {
     return Event.class;
   }

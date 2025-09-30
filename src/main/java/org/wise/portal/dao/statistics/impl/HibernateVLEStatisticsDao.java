@@ -42,11 +42,6 @@ public class HibernateVLEStatisticsDao extends AbstractHibernateDao<VLEStatistic
     implements VLEStatisticsDao<VLEStatistics> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends VLEStatistics> getDataObjectClass() {
     return null;
   }

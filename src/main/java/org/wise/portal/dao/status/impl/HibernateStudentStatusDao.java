@@ -41,11 +41,6 @@ public class HibernateStudentStatusDao extends AbstractHibernateDao<StudentStatu
     implements StudentStatusDao<StudentStatus> {
 
   @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
-  @Override
   protected Class<? extends StudentStatus> getDataObjectClass() {
     return null;
   }

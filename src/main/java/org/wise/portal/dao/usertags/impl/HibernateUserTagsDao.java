@@ -20,13 +20,6 @@ import org.wise.portal.domain.usertag.impl.UserTagImpl;
 public class HibernateUserTagsDao extends AbstractHibernateDao<UserTag>
     implements UserTagsDao<UserTag> {
 
-  private static final String FIND_ALL_QUERY = "from TagsImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<? extends UserTag> getDataObjectClass() {
     return UserTag.class;

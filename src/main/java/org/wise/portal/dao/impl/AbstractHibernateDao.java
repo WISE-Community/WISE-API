@@ -30,8 +30,8 @@ import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
@@ -49,7 +49,7 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implem
   protected EntityManager entityManager;
 
   @Resource
-  protected SessionFactory sessionFactory;
+  private SessionFactory sessionFactory;
 
   @Autowired
   @Transactional
@@ -59,28 +59,30 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implem
 
   @Transactional
   public void delete(T object) {
-    this.getHibernateTemplate().delete(object);
+    sessionFactory.getCurrentSession().delete(object);
   }
 
   @Transactional
   public void save(T object) {
-    this.getHibernateTemplate().saveOrUpdate(object);
+    sessionFactory.getCurrentSession().saveOrUpdate(object);
   }
 
   @SuppressWarnings("unchecked")
   public List<T> getList() {
-    return (List<T>) this.getHibernateTemplate().find(this.getFindAllQuery());
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery cq = cb.createQuery(getDataObjectClass());
+    cq.from(getDataObjectClass());
+    return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
   }
 
-  @SuppressWarnings("unchecked")
   public T getById(Serializable id) throws ObjectNotFoundException {
     T object = null;
     try {
       if (id instanceof Integer) {
-        object = (T) this.getHibernateTemplate().get(this.getDataObjectClass(),
+        object = sessionFactory.getCurrentSession().get(this.getDataObjectClass(),
             Integer.valueOf(id.toString()));
       } else {
-        object = (T) this.getHibernateTemplate().get(this.getDataObjectClass(),
+        object = sessionFactory.getCurrentSession().get(this.getDataObjectClass(),
             Long.valueOf(id.toString()));
       }
     } catch (NumberFormatException e) {
@@ -94,18 +96,8 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implem
   }
 
   protected CriteriaBuilder getCriteriaBuilder() {
-    Session session = sessionFactory.getCurrentSession();
-    return session.getCriteriaBuilder();
+    return sessionFactory.getCurrentSession().getCriteriaBuilder();
   }
 
-  /**
-   * Gets a string that will perform a query to retrieve all available objects
-   * from the persistent data store.
-   *
-   * @return <code>String</code> query
-   */
-  protected abstract String getFindAllQuery();
-
   protected abstract Class<? extends T> getDataObjectClass();
-
 }

@@ -45,11 +45,6 @@ public class HibernatePortalStatisticsDao extends AbstractHibernateDao<PortalSta
     return null;
   }
 
-  @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
   @SuppressWarnings("unchecked")
   public List<PortalStatistics> getAllPortalStatistics() {
     CriteriaBuilder cb = getCriteriaBuilder();

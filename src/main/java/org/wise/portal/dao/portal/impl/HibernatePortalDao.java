@@ -35,21 +35,8 @@ import org.wise.portal.domain.portal.impl.PortalImpl;
 @Repository
 public class HibernatePortalDao extends AbstractHibernateDao<Portal> implements PortalDao<Portal> {
 
-  private static final String FIND_ALL_QUERY = "from PortalImpl";
-
-  /**
-   * @see org.wise.portal.dao.impl.AbstractHibernateDao#getDataObjectClass()
-   */
   @Override
   protected Class<? extends Portal> getDataObjectClass() {
     return PortalImpl.class;
-  }
-
-  /**
-   * @see org.wise.portal.dao.impl.AbstractHibernateDao#getFindAllQuery()
-   */
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
   }
 }
