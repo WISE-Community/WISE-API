@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2022 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2025 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -33,8 +33,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.SimpleDao;
@@ -43,19 +41,13 @@ import org.wise.portal.dao.SimpleDao;
  * @author Cynick Young
  * @author Hiroki Terashima
  */
-public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport implements SimpleDao<T> {
+public abstract class AbstractHibernateDao<T> implements SimpleDao<T> {
 
   @PersistenceContext
   protected EntityManager entityManager;
 
   @Resource
   private SessionFactory sessionFactory;
-
-  @Autowired
-  @Transactional
-  public void init() {
-    setSessionFactory(sessionFactory);
-  }
 
   @Transactional
   public void delete(T object) {

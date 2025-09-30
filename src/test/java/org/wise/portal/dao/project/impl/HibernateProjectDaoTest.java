@@ -62,7 +62,7 @@ public class HibernateProjectDaoTest extends AbstractTransactionalDbTests {
     project.setDateCreated(new Date());
     User owner = createUser();
     userDao.save(owner);
-    toilet.flush();
+    flush();
     project.setOwner(owner);
   }
 
@@ -70,7 +70,7 @@ public class HibernateProjectDaoTest extends AbstractTransactionalDbTests {
   public void save_NewProject_Success() {
     verifyDataStoreIsEmpty();
     projectDao.save(project);
-    toilet.flush();
+    flush();
     List<?> actualList = retrieveProjectListFromDb();
     assertEquals(1, actualList.size());
     Map<?, ?> projectMap = (Map<?, ?>) actualList.get(0);

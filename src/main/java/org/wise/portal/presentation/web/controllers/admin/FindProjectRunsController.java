@@ -66,7 +66,6 @@ public class FindProjectRunsController {
     if ("runId".equals(runLookupType)) {
       runList = getRunListByRunId(Long.parseLong(runLookupValue));
     } else if ("projectId".equals(runLookupType)) {
-      // can be re-written using JPA?
       runList = getRunListByProjectId(Long.parseLong(runLookupValue));
     } else if ("teacherUsername".equals(runLookupType)) {
       runList = getRunListByUsername(runLookupValue);

@@ -136,7 +136,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     ROOT_GROUP_NAME = "new name";
     this.rootGroup.setName(ROOT_GROUP_NAME);
     this.groupDao.save(this.rootGroup);
-    this.toilet.flush();
+    this.flush();
 
     actualGroupList = retrieveAllGroupsListFromDb();
     assertEquals(1, actualGroupList.size());
@@ -180,7 +180,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     rootParentGroup3.setName(ROOT_GROUP_NAME);
 
     this.groupDao.save(intermediateGroup3);
-    this.toilet.flush(); // need to flush the toilet to force cascade
+    this.flush(); // need to flush to force cascade
     actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(4, actualList.size());
     checkRootGroupIsValid(); // make sure Root node name changed
@@ -200,8 +200,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup0.addMember(user1);
 
     this.groupDao.save(leafGroup0);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     List<?> actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(2, actualList.size());
     List<?> actualGroupMembersList = retrieveGroupsWithMembers();
@@ -212,8 +211,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup0.addMember(user2);
 
     this.groupDao.save(leafGroup0);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(2, actualList.size());
     actualGroupMembersList = retrieveGroupsWithMembers();
@@ -231,7 +229,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     // the root node will be saved along with the intermediate node
     Group intermediateGroup0 = intermediateGroups.get(0);
     this.groupDao.save(intermediateGroup0);
-    this.toilet.flush();
+    this.flush();
 
     List<?> actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(2, actualList.size());
@@ -245,8 +243,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup0.addMember(user1);
 
     this.groupDao.save(leafGroup0);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(3, actualList.size());
     List<?> actualGroupMembersList = retrieveGroupsWithMembers();
@@ -269,8 +266,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup0.addMember(user1);
 
     this.groupDao.save(leafGroup0);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     List<?> actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(2, actualList.size());
     List<?> actualGroupMembersList = retrieveGroupsWithMembers();
@@ -282,8 +278,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup1.addMember(user2);
 
     this.groupDao.save(leafGroup1);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(3, actualList.size());
     actualGroupMembersList = retrieveGroupsWithMembers();
@@ -295,8 +290,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
     leafGroup2.addMember(user3);
 
     this.groupDao.save(leafGroup2);
-    this.toilet.flush(); // need to flush the toilet to force group
-    // members to be saved.
+    this.flush(); // need to flush to force group members to be saved.
     actualList = this.retrieveAllGroupsListFromDb();
     assertEquals(4, actualList.size());
     actualGroupMembersList = retrieveGroupsWithMembers();
