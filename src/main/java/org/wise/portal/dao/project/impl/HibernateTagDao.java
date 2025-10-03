@@ -24,21 +24,20 @@
 package org.wise.portal.dao.project.impl;
 
 import java.util.List;
+import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.project.TagDao;
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.impl.TagImpl;
+import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
 
 /**
@@ -47,24 +46,9 @@ import org.wise.portal.domain.run.Run;
 @Repository
 public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao<Tag> {
 
-  private static final String FIND_ALL_QUERY = "from TagImpl";
-
-  @PersistenceContext
-  private EntityManager entityManager;
-
   @Override
   protected Class<? extends Tag> getDataObjectClass() {
     return TagImpl.class;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return HibernateTagDao.FIND_ALL_QUERY;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 
   /**
@@ -72,9 +56,12 @@ public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao
    */
   @SuppressWarnings("unchecked")
   public Tag getTagByName(String name) {
-    List<Tag> tags = (List<Tag>) this.getHibernateTemplate()
-        .find("select tag from TagImpl tag where tag.name='" + name + "'");
-
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<TagImpl> cq = cb.createQuery(TagImpl.class);
+    Root<TagImpl> tagRoot = cq.from(TagImpl.class);
+    cq.select(tagRoot).where(cb.equal(tagRoot.get("name"), name));
+    TypedQuery<TagImpl> query = entityManager.createQuery(cq);
+    List<TagImpl> tags = query.getResultList();
     if (tags.size() == 0) {
       return null;
     } else {
@@ -82,16 +69,15 @@ public class HibernateTagDao extends AbstractHibernateDao<Tag> implements TagDao
     }
   }
 
-  /**
-   *
-   * @param tagId
-   */
-  @SuppressWarnings("unchecked")
   public void removeIfOrphaned(Integer tagId) {
-    List<Tag> projects = (List<Tag>) this.getHibernateTemplate()
-        .find("select project from ProjectImpl project inner join project.tags tag where tag.id="
-            + tagId);
-
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
+    Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
+    Root<TagImpl> tagRoot = cq.from(TagImpl.class);
+    cq.select(projectRoot).where(cb.and(cb.equal(tagRoot.get("id"), tagId),
+        cb.isMember(tagRoot, projectRoot.<Set<TagImpl>> get("tags")))).distinct(true);
+    TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
+    List<ProjectImpl> projects = query.getResultList();
     if (projects.size() == 0) {
       try {
         Tag tag = this.getById(tagId);

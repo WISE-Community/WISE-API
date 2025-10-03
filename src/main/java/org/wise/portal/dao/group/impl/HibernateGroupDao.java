@@ -33,18 +33,7 @@ import org.wise.portal.domain.group.impl.PersistentGroup;
  * @author Hiroki Terashima
  */
 @Repository
-public class HibernateGroupDao extends AbstractHibernateDao<Group> implements
-    GroupDao<Group> {
-
-  private static final String FIND_ALL_QUERY = "from PersistentGroup";
-
-  /**
-   * @see org.wise.portal.dao.impl.AbstractHibernateDao#getFindAllQuery()
-   */
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
+public class HibernateGroupDao extends AbstractHibernateDao<Group> implements GroupDao<Group> {
 
   /**
    * @see org.wise.portal.dao.impl.AbstractHibernateDao#getDataObjectClass()

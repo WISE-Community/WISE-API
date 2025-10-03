@@ -61,7 +61,7 @@ public class HibernateStudentStatusDaoTest extends AbstractTransactionalDbTests 
     studentStatusDao.save(studentStatus2);
     studentStatus3 = createStudentStatus(runId, periodId2, workgroupId3, "status3");
     studentStatusDao.save(studentStatus3);
-    toilet.flush();
+    flush();
   }
 
   private StudentStatus createStudentStatus(Long runId, Long periodId, Long workgroupId,

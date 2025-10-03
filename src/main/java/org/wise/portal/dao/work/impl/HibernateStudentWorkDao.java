@@ -27,16 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-
-import org.hibernate.Session;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
@@ -56,19 +51,6 @@ import org.wise.vle.domain.work.StudentWork;
 @Repository
 public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     implements StudentWorkDao<StudentWork> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
 
   @Override
   protected Class<? extends StudentWork> getDataObjectClass() {
@@ -102,7 +84,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
@@ -118,7 +100,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
@@ -133,11 +115,11 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
-  
+
   @Override
   public List<StudentWork> getStudentWork(Set<Workgroup> workgroups, String nodeId,
       String componentId) {
@@ -149,7 +131,7 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     predicates.add(cb.equal(studentWorkRoot.get("nodeId"), nodeId));
     predicates.add(cb.equal(studentWorkRoot.get("componentId"), componentId));
     cq.select(studentWorkRoot).where(predicates.toArray(new Predicate[predicates.size()]))
-    .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
+        .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }

@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -29,14 +26,6 @@ import org.wise.vle.domain.work.StudentWork;
 public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
     implements AnnotationDao<Annotation> {
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
-
   @Override
   protected Class<? extends Annotation> getDataObjectClass() {
     return null;
@@ -47,8 +36,7 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
   public List<Annotation> getAnnotationsByParams(Integer id, Run run, Group period,
       Workgroup fromWorkgroup, Workgroup toWorkgroup, String nodeId, String componentId,
       StudentWork studentWork, String localNotebookItemId, NotebookItem notebookItem, String type) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
     Root<Annotation> annotationRoot = cq.from(Annotation.class);
     List<Predicate> predicates = new ArrayList<>();
@@ -95,8 +83,7 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
   }
 
   public List<Annotation> getAnnotations(Run run, Group period, String nodeId, String componentId) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
     Root<Annotation> annotationRoot = cq.from(Annotation.class);
     Root<RunImpl> runImplRoot = cq.from(RunImpl.class);
@@ -117,8 +104,7 @@ public class HibernateAnnotationDao extends AbstractHibernateDao<Annotation>
 
   public List<Annotation> getAnnotationsToWorkgroups(Set<Workgroup> workgroups, String nodeId,
       String componentId) {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    CriteriaBuilder cb = session.getCriteriaBuilder();
+    CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Annotation> cq = cb.createQuery(Annotation.class);
     Root<Annotation> annotationRoot = cq.from(Annotation.class);
     List<Predicate> predicates = new ArrayList<Predicate>();

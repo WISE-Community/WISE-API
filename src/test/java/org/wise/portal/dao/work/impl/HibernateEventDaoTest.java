@@ -93,7 +93,7 @@ public class HibernateEventDaoTest extends AbstractTransactionalDbTests {
         "event3", null);
     createEvent(run, period2, workgroup2, "node2", "12345abcde", "MultipleChoice", "Component",
         "StudentInteraction", "buttonClicked", "event4", components);
-    toilet.flush();
+    flush();
   }
 
   private Event createEvent(Run run, Group period, Workgroup workgroup, String nodeId,

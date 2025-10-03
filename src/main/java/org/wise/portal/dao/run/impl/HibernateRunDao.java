@@ -29,20 +29,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.run.RunDao;
-import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
@@ -59,24 +55,9 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 @Repository
 public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao<Run> {
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  private static final String FIND_ALL_QUERY = "from RunImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<RunImpl> getDataObjectClass() {
     return RunImpl.class;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 
   public Run retrieveByRunCode(String runcode) throws ObjectNotFoundException {

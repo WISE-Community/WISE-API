@@ -27,16 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.peergroup.PeerGroupDao;
@@ -55,14 +52,6 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 @Repository
 public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     implements PeerGroupDao<PeerGroup> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  @Override
-  protected String getFindAllQuery() {
-    return "from PeerGroupImpl";
-  }
 
   @Override
   protected Class<? extends PeerGroup> getDataObjectClass() {
@@ -139,10 +128,5 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> resultList = query.getResultList();
     return (List<Workgroup>) (Object) resultList;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 }

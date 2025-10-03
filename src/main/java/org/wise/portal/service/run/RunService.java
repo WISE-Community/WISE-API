@@ -90,14 +90,6 @@ public interface RunService {
   void startRun(Run run);
 
   /**
-   * Retrieves a list of <code>Run</code>
-   *
-   * @return <code>List</code> of <code>Run</code>
-   */
-  @Secured({ "ROLE_USER", "AFTER_ACL_COLLECTION_READ" })
-  List<Run> getRunList();
-
-  /**
    * Retrieves a list of <code>Run</code> that the specified user owns
    *
    * @return <code>List</code> of <code>Run</code>

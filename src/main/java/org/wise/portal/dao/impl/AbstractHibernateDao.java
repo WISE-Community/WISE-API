@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008-2017 Regents of the University of California (Regents).
+ * Copyright (c) 2008-2025 Regents of the University of California (Regents).
  * Created by WISE, Graduate School of Education, University of California, Berkeley.
  *
  * This software is distributed under the GNU General Public License, v3,
@@ -26,60 +26,56 @@ package org.wise.portal.dao.impl;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.SimpleDao;
 
 /**
  * @author Cynick Young
+ * @author Hiroki Terashima
  */
-public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport
-    implements SimpleDao<T> {
+public abstract class AbstractHibernateDao<T> implements SimpleDao<T> {
 
   @PersistenceContext
-  private EntityManager entityManager;
+  protected EntityManager entityManager;
 
-  @Autowired
-  @Transactional
-  public void init() {
-    entityManager = entityManager.getEntityManagerFactory().createEntityManager();
-    Session session = (Session) entityManager.unwrap(Session.class);
-    SessionFactory sessionFactory = session.getSessionFactory();
-    setSessionFactory(sessionFactory);
-  }
+  @Resource
+  private SessionFactory sessionFactory;
 
   @Transactional
   public void delete(T object) {
-    this.getHibernateTemplate().delete(object);
+    sessionFactory.getCurrentSession().delete(object);
   }
 
   @Transactional
   public void save(T object) {
-    this.getHibernateTemplate().saveOrUpdate(object);
+    sessionFactory.getCurrentSession().saveOrUpdate(object);
   }
 
   @SuppressWarnings("unchecked")
   public List<T> getList() {
-    return (List<T>) this.getHibernateTemplate().find(this.getFindAllQuery());
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery cq = cb.createQuery(getDataObjectClass());
+    cq.from(getDataObjectClass());
+    return sessionFactory.getCurrentSession().createQuery(cq).getResultList();
   }
 
-  @SuppressWarnings("unchecked")
   public T getById(Serializable id) throws ObjectNotFoundException {
     T object = null;
     try {
       if (id instanceof Integer) {
-        object = (T) this.getHibernateTemplate().get(
-          this.getDataObjectClass(), Integer.valueOf(id.toString()));
+        object = sessionFactory.getCurrentSession().get(this.getDataObjectClass(),
+            Integer.valueOf(id.toString()));
       } else {
-        object = (T) this.getHibernateTemplate().get(
-          this.getDataObjectClass(), Long.valueOf(id.toString()));
+        object = sessionFactory.getCurrentSession().get(this.getDataObjectClass(),
+            Long.valueOf(id.toString()));
       }
     } catch (NumberFormatException e) {
       return null;
@@ -91,14 +87,9 @@ public abstract class AbstractHibernateDao<T> extends HibernateDaoSupport
     return object;
   }
 
-  /**
-   * Gets a string that will perform a query to retrieve all available objects
-   * from the persistent data store.
-   *
-   * @return <code>String</code> query
-   */
-  protected abstract String getFindAllQuery();
+  protected CriteriaBuilder getCriteriaBuilder() {
+    return sessionFactory.getCurrentSession().getCriteriaBuilder();
+  }
 
   protected abstract Class<? extends T> getDataObjectClass();
-
 }

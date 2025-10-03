@@ -25,15 +25,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -51,24 +48,9 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Repository
 public class HibernateUserDao extends AbstractHibernateDao<User> implements UserDao<User> {
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  private static final String FIND_ALL_QUERY = "from UserImpl";
-
-  @Override
-  protected String getFindAllQuery() {
-    return FIND_ALL_QUERY;
-  }
-
   @Override
   protected Class<UserImpl> getDataObjectClass() {
     return UserImpl.class;
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 
   public User retrieveByUserDetails(UserDetails userDetails) {
@@ -103,8 +85,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    cq.select(userRoot).where(
-        cb.equal(userRoot.get("userDetails").get("emailAddress"), emailAddress));
+    cq.select(userRoot)
+        .where(cb.equal(userRoot.get("userDetails").get("emailAddress"), emailAddress));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
   }
@@ -113,8 +95,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    cq.select(userRoot).where(
-        cb.equal(userRoot.get("userDetails").get("googleUserId"), googleUserId));
+    cq.select(userRoot)
+        .where(cb.equal(userRoot.get("userDetails").get("googleUserId"), googleUserId));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }
@@ -136,8 +118,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -150,8 +132,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), id));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
@@ -202,8 +184,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(teacherUserDetailsRoot.get(field), value));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -217,8 +199,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(teacherUserDetailsRoot.get("schoollevel"), getLevel(schoolLevel)));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -240,8 +222,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -254,8 +236,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), id));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
@@ -282,8 +264,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(studentUserDetailsRoot.get(field), value));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -296,10 +278,10 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(
-        studentUserDetailsRoot.get("gender"), Gender.valueOf(gender.toUpperCase())));
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(studentUserDetailsRoot.get("gender"), Gender.valueOf(gender.toUpperCase())));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -313,16 +295,14 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     predicates.add(cb.equal(studentUserDetailsRoot.get("firstname"), firstName));
     predicates.add(cb.equal(studentUserDetailsRoot.get("lastname"), lastName));
     predicates.add(cb.equal(
-        cb.function("MONTH", Integer.class, studentUserDetailsRoot.get("birthday")),
-        birthMonth));
+        cb.function("MONTH", Integer.class, studentUserDetailsRoot.get("birthday")), birthMonth));
     predicates.add(cb.equal(
-        cb.function("DAY", Integer.class, studentUserDetailsRoot.get("birthday")),
-        birthDay));
+        cb.function("DAY", Integer.class, studentUserDetailsRoot.get("birthday")), birthDay));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -335,8 +315,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(
-        userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     predicates.add(cb.equal(teacherUserDetailsRoot.get("firstname"), firstName));
     predicates.add(cb.equal(teacherUserDetailsRoot.get("lastname"), lastName));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
@@ -352,8 +332,8 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    cq.select(userRoot).where(
-        cb.equal(userRoot.get("userDetails").get("resetPasswordKey"), resetPasswordKey));
+    cq.select(userRoot)
+        .where(cb.equal(userRoot.get("userDetails").get("resetPasswordKey"), resetPasswordKey));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }
@@ -375,16 +355,16 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Date compareDate = getCompareDate("sinceYesterday");
     if ("student".equals(userType)) {
       Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
-      predicates.add(
-          cb.greaterThanOrEqualTo(studentUserDetailsRoot.get("signupdate"), compareDate));
-      predicates.add(cb.equal(
-          userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+      predicates
+          .add(cb.greaterThanOrEqualTo(studentUserDetailsRoot.get("signupdate"), compareDate));
+      predicates
+          .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     } else if ("teacher".equals(userType)) {
       Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
-      predicates.add(
-          cb.greaterThanOrEqualTo(teacherUserDetailsRoot.get("signupdate"), compareDate));
-      predicates.add(cb.equal(
-          userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+      predicates
+          .add(cb.greaterThanOrEqualTo(teacherUserDetailsRoot.get("signupdate"), compareDate));
+      predicates
+          .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     }
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
@@ -419,10 +399,10 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<TeacherUserDetails> teacherUserDetailsRoot = cq.from(TeacherUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     Date compareDate = getCompareDate(when);
-    predicates.add(
-        cb.greaterThanOrEqualTo(teacherUserDetailsRoot.get("lastLoginTime"), compareDate));
-    predicates.add(
-        cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.greaterThanOrEqualTo(teacherUserDetailsRoot.get("lastLoginTime"), compareDate));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), teacherUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
@@ -456,10 +436,10 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<StudentUserDetails> studentUserDetailsRoot = cq.from(StudentUserDetails.class);
     List<Predicate> predicates = new ArrayList<>();
     Date compareDate = getCompareDate(when);
-    predicates.add(
-        cb.greaterThanOrEqualTo(studentUserDetailsRoot.get("lastLoginTime"), compareDate));
-    predicates.add(
-        cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
+    predicates
+        .add(cb.greaterThanOrEqualTo(studentUserDetailsRoot.get("lastLoginTime"), compareDate));
+    predicates
+        .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();
