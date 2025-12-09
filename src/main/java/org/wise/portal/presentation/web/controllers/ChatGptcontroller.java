@@ -6,7 +6,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import org.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONArray;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
@@ -32,17 +35,19 @@ public class ChatGptcontroller {
       throw new RuntimeException("OPENAI_API_KEY is not set");
     }
     try {
+      System.out.println("sendChatMessage from wise api server");
       URL url = new URL("https://api.openai.com/v1/chat/completions");
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Authorization", "Bearer " + openaiApiKey);
-      connection.setRequestProperty("Content-Type", "application/json");
+      connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+      connection.setRequestProperty("Accept-Charset", "UTF-8");
       connection.setDoOutput(true);
       OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
       writer.write(body);
       writer.flush();
       writer.close();
-      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"ISO-8859-1"));
       String line;
       StringBuffer response = new StringBuffer();
       while ((line = br.readLine()) != null) {
