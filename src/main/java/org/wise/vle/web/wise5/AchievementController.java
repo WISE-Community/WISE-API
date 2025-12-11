@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.portal.service.workgroup.WorkgroupService;
@@ -43,12 +41,12 @@ public class AchievementController {
   private WorkgroupService workgroupService;
 
   @GetMapping("/{runId}")
-  public List<Achievement> getWISE5StudentAchievements(@PathVariable("runId") RunImpl run,
-      @RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "workgroupId", required = false) WorkgroupImpl workgroup,
-      @RequestParam(value = "achievementId", required = false) String achievementId,
-      @RequestParam(value = "type", required = false) String type,
-      Authentication auth) throws ObjectNotFoundException {
+  public List<Achievement> getWISE5StudentAchievements(@PathVariable("runId") Run run,
+      @RequestParam(required = false) Integer id,
+      @RequestParam(value = "workgroupId", required = false) Workgroup workgroup,
+      @RequestParam(required = false) String achievementId,
+      @RequestParam(required = false) String type, Authentication auth)
+      throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (!isAssociatedWithRun(run, user, workgroup)) {
       throw new AccessDeniedException("Not associated with run");
@@ -71,17 +69,16 @@ public class AchievementController {
   }
 
   @PostMapping("/{runId}")
-  public Achievement saveAchievement(@PathVariable("runId") RunImpl run,
-      @RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "workgroupId", required = true) WorkgroupImpl workgroup,
-      @RequestParam(value = "achievementId", required = true) String achievementId,
-      @RequestParam(value = "type", required = true) String type,
-      @RequestParam(value = "data", required = true) String data,
+  public Achievement saveAchievement(@PathVariable("runId") Run run,
+      @RequestParam(required = false) Integer id,
+      @RequestParam(value = "workgroupId", required = true) Workgroup workgroup,
+      @RequestParam(required = true) String achievementId,
+      @RequestParam(required = true) String type, @RequestParam(required = true) String data,
       Authentication auth) throws JSONException, ObjectNotFoundException, IOException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (isAllowedToSave(run, user, workgroup)) {
-      Achievement achievement = vleService.saveAchievement(id, run, workgroup, achievementId,
-          type, data);
+      Achievement achievement = vleService.saveAchievement(id, run, workgroup, achievementId, type,
+          data);
       achievement.convertToClientAchievement();
       broadcastAchievementToTeacher(achievement);
       return achievement;
@@ -90,11 +87,11 @@ public class AchievementController {
   }
 
   private boolean isAllowedToSave(Run run, User user, Workgroup workgroup) {
-    if (user.isStudent() && run.isStudentAssociatedToThisRun(user) &&
-        workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
+    if (user.isStudent() && run.isStudentAssociatedToThisRun(user)
+        && workgroupService.isUserInWorkgroupForRun(user, run, workgroup)) {
       return true;
-    } else if (user.isTeacher() &&
-        (run.getOwner().equals(user) || run.getSharedowners().contains(user))) {
+    } else if (user.isTeacher()
+        && (run.getOwner().equals(user) || run.getSharedowners().contains(user))) {
       return true;
     } else {
       return false;

@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.json.JSONArray;
@@ -130,7 +130,7 @@ public class VLEServiceImpl implements VLEService {
     Run run = null;
     if (runId != null) {
       try {
-        run = runService.retrieveById(new Long(runId));
+        run = runService.retrieveById(Long.valueOf(runId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -138,7 +138,7 @@ public class VLEServiceImpl implements VLEService {
     Group period = null;
     if (periodId != null) {
       try {
-        period = groupService.retrieveById(new Long(periodId));
+        period = groupService.retrieveById(Long.valueOf(periodId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -146,7 +146,7 @@ public class VLEServiceImpl implements VLEService {
     Workgroup workgroup = null;
     if (workgroupId != null) {
       try {
-        workgroup = workgroupService.retrieveById(new Long(workgroupId));
+        workgroup = workgroupService.retrieveById(Long.valueOf(workgroupId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -213,7 +213,7 @@ public class VLEServiceImpl implements VLEService {
 
   public JSONArray getNotificationsExport(Integer runId) {
     try {
-      Run run = runService.retrieveById(new Long(runId));
+      Run run = runService.retrieveById(Long.valueOf(runId));
       List<Notification> notificationsList = notificationDao.getExport(run);
       JSONArray notificationsJSONArray = new JSONArray();
       for (int n = 0; n < notificationsList.size(); n++) {
@@ -245,21 +245,21 @@ public class VLEServiceImpl implements VLEService {
     }
     if (runId != null) {
       try {
-        studentWork.setRun(runService.retrieveById(new Long(runId)));
+        studentWork.setRun(runService.retrieveById(Long.valueOf(runId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (periodId != null) {
       try {
-        studentWork.setPeriod(groupService.retrieveById(new Long(periodId)));
+        studentWork.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (workgroupId != null) {
       try {
-        studentWork.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
+        studentWork.setWorkgroup(workgroupService.retrieveById(Long.valueOf(workgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -294,7 +294,7 @@ public class VLEServiceImpl implements VLEService {
       studentWork.setComponentType(componentType);
     }
     if (clientSaveTime != null) {
-      Timestamp clientSaveTimestamp = new Timestamp(new Long(clientSaveTime));
+      Timestamp clientSaveTimestamp = new Timestamp(Long.valueOf(clientSaveTime));
       studentWork.setClientSaveTime(clientSaveTimestamp);
     }
 
@@ -317,7 +317,7 @@ public class VLEServiceImpl implements VLEService {
     Run run = null;
     if (runId != null) {
       try {
-        run = runService.retrieveById(new Long(runId));
+        run = runService.retrieveById(Long.valueOf(runId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -325,7 +325,7 @@ public class VLEServiceImpl implements VLEService {
     Group period = null;
     if (periodId != null) {
       try {
-        period = groupService.retrieveById(new Long(periodId));
+        period = groupService.retrieveById(Long.valueOf(periodId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -333,7 +333,7 @@ public class VLEServiceImpl implements VLEService {
     Workgroup workgroup = null;
     if (workgroupId != null) {
       try {
-        workgroup = workgroupService.retrieveById(new Long(workgroupId));
+        workgroup = workgroupService.retrieveById(Long.valueOf(workgroupId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -376,21 +376,21 @@ public class VLEServiceImpl implements VLEService {
     }
     if (runId != null) {
       try {
-        event.setRun(runService.retrieveById(new Long(runId)));
+        event.setRun(runService.retrieveById(Long.valueOf(runId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (periodId != null) {
       try {
-        event.setPeriod(groupService.retrieveById(new Long(periodId)));
+        event.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (workgroupId != null) {
       try {
-        event.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
+        event.setWorkgroup(workgroupService.retrieveById(Long.valueOf(workgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -417,19 +417,19 @@ public class VLEServiceImpl implements VLEService {
       event.setData(data);
     }
     if (clientSaveTime != null) {
-      Timestamp clientSaveTimestamp = new Timestamp(new Long(clientSaveTime));
+      Timestamp clientSaveTimestamp = new Timestamp(Long.valueOf(clientSaveTime));
       event.setClientSaveTime(clientSaveTimestamp);
     }
     if (projectId != null) {
       try {
-        event.setProject(projectService.getById(new Long(projectId)));
+        event.setProject(projectService.getById(Long.valueOf(projectId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (userId != null) {
       try {
-        event.setUser(userService.retrieveById(new Long(userId)));
+        event.setUser(userService.retrieveById(Long.valueOf(userId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -488,7 +488,7 @@ public class VLEServiceImpl implements VLEService {
     Run run = null;
     if (runId != null) {
       try {
-        run = runService.retrieveById(new Long(runId));
+        run = runService.retrieveById(Long.valueOf(runId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -496,7 +496,7 @@ public class VLEServiceImpl implements VLEService {
     Group period = null;
     if (periodId != null) {
       try {
-        period = groupService.retrieveById(new Long(periodId));
+        period = groupService.retrieveById(Long.valueOf(periodId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -504,7 +504,7 @@ public class VLEServiceImpl implements VLEService {
     Workgroup fromWorkgroup = null;
     if (fromWorkgroupId != null) {
       try {
-        fromWorkgroup = workgroupService.retrieveById(new Long(fromWorkgroupId));
+        fromWorkgroup = workgroupService.retrieveById(Long.valueOf(fromWorkgroupId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -512,7 +512,7 @@ public class VLEServiceImpl implements VLEService {
     Workgroup toWorkgroup = null;
     if (toWorkgroupId != null) {
       try {
-        toWorkgroup = workgroupService.retrieveById(new Long(toWorkgroupId));
+        toWorkgroup = workgroupService.retrieveById(Long.valueOf(toWorkgroupId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -569,28 +569,28 @@ public class VLEServiceImpl implements VLEService {
     }
     if (runId != null) {
       try {
-        annotation.setRun(runService.retrieveById(new Long(runId)));
+        annotation.setRun(runService.retrieveById(Long.valueOf(runId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (periodId != null) {
       try {
-        annotation.setPeriod(groupService.retrieveById(new Long(periodId)));
+        annotation.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (fromWorkgroupId != null) {
       try {
-        annotation.setFromWorkgroup(workgroupService.retrieveById(new Long(fromWorkgroupId)));
+        annotation.setFromWorkgroup(workgroupService.retrieveById(Long.valueOf(fromWorkgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (toWorkgroupId != null) {
       try {
-        annotation.setToWorkgroup(workgroupService.retrieveById(new Long(toWorkgroupId)));
+        annotation.setToWorkgroup(workgroupService.retrieveById(Long.valueOf(toWorkgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -625,7 +625,7 @@ public class VLEServiceImpl implements VLEService {
       annotation.setData(data);
     }
     if (clientSaveTime != null) {
-      Timestamp clientSaveTimestamp = new Timestamp(new Long(clientSaveTime));
+      Timestamp clientSaveTimestamp = new Timestamp(Long.valueOf(clientSaveTime));
       annotation.setClientSaveTime(clientSaveTimestamp);
     }
     Calendar now = Calendar.getInstance();
@@ -663,21 +663,21 @@ public class VLEServiceImpl implements VLEService {
     }
     if (runId != null) {
       try {
-        studentAsset.setRun(runService.retrieveById(new Long(runId)));
+        studentAsset.setRun(runService.retrieveById(Long.valueOf(runId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (periodId != null) {
       try {
-        studentAsset.setPeriod(groupService.retrieveById(new Long(periodId)));
+        studentAsset.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (workgroupId != null) {
       try {
-        studentAsset.setWorkgroup(workgroupService.retrieveById(new Long(workgroupId)));
+        studentAsset.setWorkgroup(workgroupService.retrieveById(Long.valueOf(workgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -704,14 +704,14 @@ public class VLEServiceImpl implements VLEService {
       studentAsset.setFileSize(fileSize);
     }
     if (clientSaveTime != null) {
-      Timestamp clientSaveTimestamp = new Timestamp(new Long(clientSaveTime));
+      Timestamp clientSaveTimestamp = new Timestamp(Long.valueOf(clientSaveTime));
       studentAsset.setClientSaveTime(clientSaveTimestamp);
       Calendar now = Calendar.getInstance();
       Timestamp serverSaveTimestamp = new Timestamp(now.getTimeInMillis());
       studentAsset.setServerSaveTime(serverSaveTimestamp);
     }
     if (clientDeleteTime != null) {
-      Timestamp clientDeleteTimestamp = new Timestamp(new Long(clientDeleteTime));
+      Timestamp clientDeleteTimestamp = new Timestamp(Long.valueOf(clientDeleteTime));
       studentAsset.setClientDeleteTime(clientDeleteTimestamp);
       Calendar now = Calendar.getInstance();
       Timestamp serverDeleteTimestamp = new Timestamp(now.getTimeInMillis());
@@ -782,7 +782,7 @@ public class VLEServiceImpl implements VLEService {
     notebookItem.setRun(run);
     if (periodId != null) {
       try {
-        notebookItem.setPeriod(groupService.retrieveById(new Long(periodId)));
+        notebookItem.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -826,14 +826,14 @@ public class VLEServiceImpl implements VLEService {
       notebookItem.setGroups(null);
     }
     if (clientSaveTime != null && !clientSaveTime.isEmpty()) {
-      Timestamp clientSaveTimestamp = new Timestamp(new Long(clientSaveTime));
+      Timestamp clientSaveTimestamp = new Timestamp(Long.valueOf(clientSaveTime));
       notebookItem.setClientSaveTime(clientSaveTimestamp);
       Calendar now = Calendar.getInstance();
       Timestamp serverSaveTimestamp = new Timestamp(now.getTimeInMillis());
       notebookItem.setServerSaveTime(serverSaveTimestamp);
     }
     if (clientDeleteTime != null && !clientDeleteTime.isEmpty()) {
-      Timestamp clientDeleteTimestamp = new Timestamp(new Long(clientDeleteTime));
+      Timestamp clientDeleteTimestamp = new Timestamp(Long.valueOf(clientDeleteTime));
       notebookItem.setClientDeleteTime(clientDeleteTimestamp);
       if (notebookItem.getServerDeleteTime() == null) {
         Calendar now = Calendar.getInstance();
@@ -867,7 +867,7 @@ public class VLEServiceImpl implements VLEService {
         }
         groupsJSONArray.put(group);
         copiedNotebookItem.setGroups(groupsJSONArray.toString());
-        copiedNotebookItem.setClientSaveTime(new Timestamp(new Long(clientSaveTime)));
+        copiedNotebookItem.setClientSaveTime(new Timestamp(Long.valueOf(clientSaveTime)));
         notebookItemDao.save(copiedNotebookItem);
       } catch (JSONException e) {
         e.printStackTrace();
@@ -902,7 +902,7 @@ public class VLEServiceImpl implements VLEService {
         } else {
           copiedNotebookItem.setGroups(groupsJSONArray.toString());
         }
-        copiedNotebookItem.setClientSaveTime(new Timestamp(new Long(clientSaveTime)));
+        copiedNotebookItem.setClientSaveTime(new Timestamp(Long.valueOf(clientSaveTime)));
         notebookItemDao.save(copiedNotebookItem);
       } catch (JSONException e) {
         e.printStackTrace();
@@ -920,7 +920,7 @@ public class VLEServiceImpl implements VLEService {
       NotebookItem notebookItem = (NotebookItem) notebookItemDao.getById(parentNotebookItemId);
       NotebookItem copiedNotebookItem = notebookItem.copy();
       copiedNotebookItem.setWorkgroup(workgroup);
-      copiedNotebookItem.setClientSaveTime(new Timestamp(new Long(clientSaveTime)));
+      copiedNotebookItem.setClientSaveTime(new Timestamp(Long.valueOf(clientSaveTime)));
       copiedNotebookItem
           .setLocalNotebookItemId(RandomStringUtils.randomAlphanumeric(10).toLowerCase());
       copiedNotebookItem.setGroups(null);
@@ -944,7 +944,7 @@ public class VLEServiceImpl implements VLEService {
     Group period = null;
     if (periodId != null) {
       try {
-        period = groupService.retrieveById(new Long(periodId));
+        period = groupService.retrieveById(Long.valueOf(periodId));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -974,28 +974,28 @@ public class VLEServiceImpl implements VLEService {
     }
     if (runId != null) {
       try {
-        notification.setRun(runService.retrieveById(new Long(runId)));
+        notification.setRun(runService.retrieveById(Long.valueOf(runId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (periodId != null) {
       try {
-        notification.setPeriod(groupService.retrieveById(new Long(periodId)));
+        notification.setPeriod(groupService.retrieveById(Long.valueOf(periodId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (fromWorkgroupId != null) {
       try {
-        notification.setFromWorkgroup(workgroupService.retrieveById(new Long(fromWorkgroupId)));
+        notification.setFromWorkgroup(workgroupService.retrieveById(Long.valueOf(fromWorkgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
     }
     if (toWorkgroupId != null) {
       try {
-        notification.setToWorkgroup(workgroupService.retrieveById(new Long(toWorkgroupId)));
+        notification.setToWorkgroup(workgroupService.retrieveById(Long.valueOf(toWorkgroupId)));
       } catch (ObjectNotFoundException e) {
         e.printStackTrace();
       }
@@ -1022,11 +1022,11 @@ public class VLEServiceImpl implements VLEService {
       notification.setData(data);
     }
     if (timeGenerated != null) {
-      Timestamp timeGeneratedTimestamp = new Timestamp(new Long(timeGenerated));
+      Timestamp timeGeneratedTimestamp = new Timestamp(Long.valueOf(timeGenerated));
       notification.setTimeGenerated(timeGeneratedTimestamp);
     }
     if (timeDismissed != null) {
-      Timestamp timeDismissedTimestamp = new Timestamp(new Long(timeDismissed));
+      Timestamp timeDismissedTimestamp = new Timestamp(Long.valueOf(timeDismissed));
       notification.setTimeDismissed(timeDismissedTimestamp);
     }
     Calendar now = Calendar.getInstance();

@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -67,10 +67,9 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userImplRoot.get("id"), user.getId()));
     predicates.add(cb.equal(runImplRoot.get("id"), run.getId()));
-    predicates.add(cb.equal(runImplRoot.get("id"), workgroupImplRoot.get("run")));
-    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
-    predicates
-        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
+    predicates.add(cb.equal(runImplRoot, workgroupImplRoot.get("run")));
+    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot));
+    predicates.add(cb.isMember(user, persistentGroupRoot.<Set<User>> get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> runResultList = query.getResultList();
@@ -86,9 +85,8 @@ public class HibernateWorkgroupDao extends AbstractHibernateDao<Workgroup>
     Root<UserImpl> userImplRoot = cq.from(UserImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userImplRoot.get("id"), user.getId()));
-    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot.get("id")));
-    predicates
-        .add(cb.isMember(userImplRoot.get("id"), persistentGroupRoot.<Set<User>> get("members")));
+    predicates.add(cb.equal(workgroupImplRoot.get("group"), persistentGroupRoot));
+    predicates.add(cb.isMember(user, persistentGroupRoot.<Set<User>> get("members")));
     cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> runResultList = query.getResultList();

@@ -1,6 +1,6 @@
 package org.wise.portal.domain.work;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 
@@ -44,7 +44,9 @@ public class AchievementTest extends DomainTest {
   @Test
   public void serialize() throws JsonProcessingException {
     String json = mapper.writeValueAsString(achievement);
-    assertEquals("{\"id\":12,\"runId\":1,\"workgroupId\":64,\"achievementId\":\"achievement_1\","
-        + "\"type\":\"milestoneReport\",\"achievementTime\":1,\"data\":{}}", json);
+    assertEquals("""
+        {"id":12,"runId":1,"workgroupId":64,"achievementId":"achievement_1",\
+        "type":"milestoneReport","achievementTime":1,"data":{}}\
+        """, json);
   }
 }

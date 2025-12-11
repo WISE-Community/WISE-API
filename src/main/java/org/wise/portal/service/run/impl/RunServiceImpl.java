@@ -82,16 +82,18 @@ import org.wise.portal.service.workgroup.WorkgroupService;
 @Service
 public class RunServiceImpl implements RunService {
 
-  private String DEFAULT_RUNCODE_PREFIXES = "Ant,Ape,Asp,Badger,Bat,Bear,Bee,Beetle,Bird,Bison,Boa,"
-      + "Bobcat,Bug,Camel,Carp,Cat,Cicada,Clam,Cobra,Cougar,Cow,Coyote,Crab,Crane,Crow,Deer,Dingo,"
-      + "Dodo,Dog,Donkey,Dragon,Duck,Eagle,Eel,Elk,Emu,Falcon,Ferret,Finch,Fish,Flea,Fly,Fox,Frog,"
-      + "Gator,Gecko,Goat,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Ibex,Iguana,Impala,Jackal,"
-      + "Jaguar,Kiwi,Koala,Krill,Leech,Lemur,Liger,Lion,Lizard,Llama,Loon,Lynx,Mako,Manta,Mantis,"
-      + "Marmot,Mink,Mole,Monkey,Moose,Moth,Mouse,Mule,Newt,Nutria,Orca,Otter,Owl,Ox,Oyster,Panda,"
-      + "Parrot,Pig,Pigeon,Pika,Poodle,Prawn,Puffin,Pug,Puma,Python,Quail,Rabbit,Ray,Rhino,Robin,"
-      + "Sable,Salmon,Seal,Shark,Sheep,Shrimp,Skunk,Sloth,Slug,Snail,Snake,Spider,Squid,Stoat,"
-      + "Stork,Swan,Tapir,Thrush,Tiger,Toad,Toucan,Trout,Tuna,Turkey,Turtle,Urchin,Viper,Wasp,"
-      + "Whale,Wolf,Wombat,Worm,Yak,Yeti,Zebra";
+  private String DEFAULT_RUNCODE_PREFIXES = """
+      Ant,Ape,Asp,Badger,Bat,Bear,Bee,Beetle,Bird,Bison,Boa,\
+      Bobcat,Bug,Camel,Carp,Cat,Cicada,Clam,Cobra,Cougar,Cow,Coyote,Crab,Crane,Crow,Deer,Dingo,\
+      Dodo,Dog,Donkey,Dragon,Duck,Eagle,Eel,Elk,Emu,Falcon,Ferret,Finch,Fish,Flea,Fly,Fox,Frog,\
+      Gator,Gecko,Goat,Goose,Gopher,Guppy,Hare,Hawk,Heron,Horse,Hyena,Ibex,Iguana,Impala,Jackal,\
+      Jaguar,Kiwi,Koala,Krill,Leech,Lemur,Liger,Lion,Lizard,Llama,Loon,Lynx,Mako,Manta,Mantis,\
+      Marmot,Mink,Mole,Monkey,Moose,Moth,Mouse,Mule,Newt,Nutria,Orca,Otter,Owl,Ox,Oyster,Panda,\
+      Parrot,Pig,Pigeon,Pika,Poodle,Prawn,Puffin,Pug,Puma,Python,Quail,Rabbit,Ray,Rhino,Robin,\
+      Sable,Salmon,Seal,Shark,Sheep,Shrimp,Skunk,Sloth,Slug,Snail,Snake,Spider,Squid,Stoat,\
+      Stork,Swan,Tapir,Thrush,Tiger,Toad,Toucan,Trout,Tuna,Turkey,Turtle,Urchin,Viper,Wasp,\
+      Whale,Wolf,Wombat,Worm,Yak,Yeti,Zebra\
+      """;
 
   private static final int MAX_RUNCODE_DIGIT = 10000;
 
@@ -218,7 +220,7 @@ public class RunServiceImpl implements RunService {
 
     // set default survey template for this run, if any
     try {
-      Portal portal = portalService.getById(new Integer(1));
+      Portal portal = portalService.getById(Integer.valueOf(1));
       String runSurveyTemplate = portal.getRunSurveyTemplate();
       if (runSurveyTemplate != null) {
         run.setSurvey(runSurveyTemplate);

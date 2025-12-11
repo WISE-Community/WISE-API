@@ -25,15 +25,16 @@ package org.wise.portal.presentation.web.controllers.admin;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.wise.portal.domain.authentication.MutableGrantedAuthority;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.authentication.UserDetailsService;
@@ -54,7 +55,7 @@ public class ManageUserRolesController {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected String handleGET(HttpServletRequest request, ModelMap modelMap) {
     List<MutableGrantedAuthority> allAuthorities = userDetailsService.retrieveAllAuthorities();
     modelMap.put("allAuthorities", allAuthorities);
@@ -64,7 +65,7 @@ public class ManageUserRolesController {
     return "admin/account/manageuserroles";
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected String handlePOST(HttpServletRequest request, ModelMap modelMap) throws Exception {
     List<MutableGrantedAuthority> allAuthorities = userDetailsService.retrieveAllAuthorities();
     modelMap.put("allAuthorities", allAuthorities);

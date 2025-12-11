@@ -2,7 +2,10 @@ package org.wise.portal.presentation.web.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.model.Permission;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.project.Project;
@@ -26,9 +29,9 @@ public class UpdateProjectSharedPermissionsAPIController {
    * Project Owner
    * The Shared Owners and their permission numbers
    */
-  @RequestMapping(value = "/view", method = RequestMethod.GET)
-  protected String viewProjectPermissions(@RequestParam(value = "min", required = false) Long min,
-                                          @RequestParam(value = "max", required = false) Long max) {
+  @GetMapping("/view")
+  protected String viewProjectPermissions(@RequestParam(required = false) Long min,
+      @RequestParam(required = false) Long max) {
     User signedInUser = ControllerUtil.getSignedInUser();
     if (signedInUser.isAdmin()) {
       long startTime = System.currentTimeMillis();
@@ -36,7 +39,7 @@ public class UpdateProjectSharedPermissionsAPIController {
       Integer sharedProjectsCount = 0;
 
       List<Project> allSharedProjects = projectService.getAllSharedProjects();
-      for (Project project: allSharedProjects) {
+      for (Project project : allSharedProjects) {
         Long projectId = (Long) project.getId();
         if (isInRange(projectId, min, max)) {
           outputProject(projectsSB, project);
@@ -69,9 +72,9 @@ public class UpdateProjectSharedPermissionsAPIController {
    * permission 16. For those shared owners with permission 16, add the permission 1 (view), and the
    * permission 2 (edit) if they do not already have them.
    */
-  @RequestMapping(value = "/update", method = RequestMethod.GET)
-  protected String updateProjectPermissions(@RequestParam(value = "min", required = false) Long min,
-                                            @RequestParam(value = "max", required = false) Long max) {
+  @GetMapping("/update")
+  protected String updateProjectPermissions(@RequestParam(required = false) Long min,
+      @RequestParam(required = false) Long max) {
     User signedInUser = ControllerUtil.getSignedInUser();
     if (signedInUser.isAdmin()) {
       long startTime = System.currentTimeMillis();
@@ -81,7 +84,7 @@ public class UpdateProjectSharedPermissionsAPIController {
       int sharedOwnersChangedCount = 0;
 
       List<Project> allSharedProjects = projectService.getAllSharedProjects();
-      for (Project project: allSharedProjects) {
+      for (Project project : allSharedProjects) {
         Long projectId = (Long) project.getId();
         if (isInRange(projectId, min, max)) {
           int tempSharedOwnersChangedCount = updatePermissionsIfNecessary(project);
@@ -139,7 +142,7 @@ public class UpdateProjectSharedPermissionsAPIController {
     outputLineBreak(sb);
 
     Set<User> sharedOwners = project.getSharedowners();
-    for (User sharedOwner: sharedOwners) {
+    for (User sharedOwner : sharedOwners) {
       outputSharedTeacherPermissions(sb, project, sharedOwner);
       outputLineBreak(sb);
     }
@@ -159,7 +162,8 @@ public class UpdateProjectSharedPermissionsAPIController {
     return outputString(sb, "Project Owner: " + project.getOwner().getUserDetails().getUsername());
   }
 
-  private StringBuffer outputSharedTeacherPermissions(StringBuffer sb, Project project, User sharedOwner) {
+  private StringBuffer outputSharedTeacherPermissions(StringBuffer sb, Project project,
+      User sharedOwner) {
     MutableUserDetails userDetails = sharedOwner.getUserDetails();
     String username = userDetails.getUsername();
     outputString(sb, username);
@@ -168,10 +172,12 @@ public class UpdateProjectSharedPermissionsAPIController {
     return sb;
   }
 
-  private StringBuffer ouputSharedTeacherPermissionIds(StringBuffer sb, Project project, User sharedOwner) {
+  private StringBuffer ouputSharedTeacherPermissionIds(StringBuffer sb, Project project,
+      User sharedOwner) {
     StringBuffer sbPermissionIds = new StringBuffer();
-    List<Permission> sharedTeacherPermissions = projectService.getSharedTeacherPermissions(project, sharedOwner);
-    for (Permission permission: sharedTeacherPermissions) {
+    List<Permission> sharedTeacherPermissions = projectService.getSharedTeacherPermissions(project,
+        sharedOwner);
+    for (Permission permission : sharedTeacherPermissions) {
       if (sbPermissionIds.length() != 0) {
         sbPermissionIds.append(",");
       }
@@ -186,9 +192,11 @@ public class UpdateProjectSharedPermissionsAPIController {
     int sharedOwnersChangedCount = 0;
     Long projectId = (Long) project.getId();
     Set<User> sharedOwners = project.getSharedowners();
-    for (User sharedOwner: sharedOwners) {
-      List<Permission> sharedTeacherPermissions = projectService.getSharedTeacherPermissions(project, sharedOwner);
-      boolean changed = addViewAndEditPermissionToAdminPermission(projectId, sharedOwner.getId(), sharedTeacherPermissions);
+    for (User sharedOwner : sharedOwners) {
+      List<Permission> sharedTeacherPermissions = projectService
+          .getSharedTeacherPermissions(project, sharedOwner);
+      boolean changed = addViewAndEditPermissionToAdminPermission(projectId, sharedOwner.getId(),
+          sharedTeacherPermissions);
       if (changed) {
         sharedOwnersChangedCount += 1;
       }
@@ -196,12 +204,13 @@ public class UpdateProjectSharedPermissionsAPIController {
     return sharedOwnersChangedCount;
   }
 
-  private boolean addViewAndEditPermissionToAdminPermission(Long projectId, Long userId, List<Permission> sharedTeacherPermissions) {
+  private boolean addViewAndEditPermissionToAdminPermission(Long projectId, Long userId,
+      List<Permission> sharedTeacherPermissions) {
     boolean hasPermission1 = false;
     boolean hasPermission2 = false;
     boolean hasPermission16 = false;
 
-    for (Permission permission: sharedTeacherPermissions) {
+    for (Permission permission : sharedTeacherPermissions) {
       int mask = permission.getMask();
       if (mask == 1) {
         hasPermission1 = true;
@@ -255,11 +264,13 @@ public class UpdateProjectSharedPermissionsAPIController {
     return outputString(sb, "Shared Projects: " + sharedProjectsCount);
   }
 
-  private StringBuffer outputSharedProjectsChangedCount(StringBuffer sb, int sharedProjectsChangedCount) {
+  private StringBuffer outputSharedProjectsChangedCount(StringBuffer sb,
+      int sharedProjectsChangedCount) {
     return outputString(sb, "Shared Projects Changed: " + sharedProjectsChangedCount);
   }
 
-  private StringBuffer outputSharedOwnersChangedCount(StringBuffer sb, int sharedOwnersChangedCount) {
+  private StringBuffer outputSharedOwnersChangedCount(StringBuffer sb,
+      int sharedOwnersChangedCount) {
     return outputString(sb, "Shared Owners Changed: " + sharedOwnersChangedCount);
   }
 

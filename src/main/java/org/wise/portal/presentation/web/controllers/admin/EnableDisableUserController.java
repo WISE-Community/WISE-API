@@ -25,14 +25,15 @@ package org.wise.portal.presentation.web.controllers.admin;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.user.UserService;
 
@@ -48,14 +49,14 @@ public class EnableDisableUserController {
   @Autowired
   private UserService userService;
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected String handleGET(ModelMap modelMap) {
     List<User> disabledUsers = userService.retrieveDisabledUsers();
     modelMap.put("disabledUsers", disabledUsers);
     return "/admin/account/enabledisableuser";
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected String handlePOST(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     String doEnable = request.getParameter("doEnable");

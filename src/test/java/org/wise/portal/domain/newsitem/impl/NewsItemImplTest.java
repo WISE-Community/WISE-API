@@ -22,11 +22,14 @@
  */
 package org.wise.portal.domain.newsitem.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.newsitem.NewsItem;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
@@ -35,7 +38,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
  * @author patrick lawler
  *
  */
-public class NewsItemImplTest extends TestCase{
+public class NewsItemImplTest{
 
 	private Date date;
 	
@@ -46,9 +49,9 @@ public class NewsItemImplTest extends TestCase{
 	private String title;
 	
 	private User owner;
-	
-	@Override
-	protected void setUp() {
+
+  @BeforeEach
+  public void setUp() {
 		date = Calendar.getInstance().getTime();
 		news = "Hey there, how's it going!";
 		owner = new UserImpl();
@@ -60,15 +63,16 @@ public class NewsItemImplTest extends TestCase{
 		newsItem.setOwner(owner);
 		newsItem.setTitle(title);
 	}
-	
-	@Override
-	protected void tearDown() {
+
+  @AfterEach
+  public void tearDown() {
 		date = null;
 		news = null;
 		newsItem = null;
 	}
-	
-	public void testNewsItem(){
+
+  @Test
+  public void testNewsItem() {
 		assertEquals(newsItem.getDate(), date);
 		assertEquals(newsItem.getNews(), news);
 		assertEquals(newsItem.getOwner(), owner);

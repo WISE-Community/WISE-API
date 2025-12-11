@@ -61,12 +61,32 @@ import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.wise.portal.domain.group.impl.StringToGroupConverter;
+import org.wise.portal.domain.peergroup.impl.StringToPeerGroupConverter;
+import org.wise.portal.domain.project.impl.StringToProjectConverter;
+import org.wise.portal.domain.run.impl.StringToRunConverter;
+import org.wise.portal.domain.workgroup.impl.StringToWorkgroupConverter;
 
 @EnableWebMvc
 @Configuration
 @ComponentScan(basePackages = { "org.wise.portal.presentation", "org.wise.portal.service",
-    "org.wise.portal.dao", "org.wise.vle.web", "org.wise.vle.utils" })
+    "org.wise.portal.dao", "org.wise.vle.web", "org.wise.vle.utils", "org.wise.portal.domain" })
 public class WebConfig implements WebMvcConfigurer {
+
+  @Autowired
+  private StringToProjectConverter stringToProjectConverter;
+
+  @Autowired
+  private StringToRunConverter stringToRunConverter;
+
+  @Autowired
+  private StringToWorkgroupConverter stringToWorkgroupConverter;
+
+  @Autowired
+  private StringToPeerGroupConverter stringToPeerGroupConverter;
+
+  @Autowired
+  private StringToGroupConverter stringToGroupConverter;
 
   @Value("${google_analytics_id:}")
   private String googleAnalyticsId;
@@ -76,6 +96,15 @@ public class WebConfig implements WebMvcConfigurer {
 
   @Autowired
   private ObjectMapper objectMapper;
+
+  @Override
+  public void addFormatters(org.springframework.format.FormatterRegistry registry) {
+    registry.addConverter(stringToProjectConverter);
+    registry.addConverter(stringToRunConverter);
+    registry.addConverter(stringToWorkgroupConverter);
+    registry.addConverter(stringToPeerGroupConverter);
+    registry.addConverter(stringToGroupConverter);
+  }
 
   public void addResourceHandlers(final ResourceHandlerRegistry registry) {
     registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
@@ -192,7 +221,7 @@ public class WebConfig implements WebMvcConfigurer {
     SimpleUrlHandlerMapping simpleUrlHandlerMapping = new SimpleUrlHandlerMapping();
     simpleUrlHandlerMapping.setOrder(2);
     Properties mappings = new Properties();
-    mappings.setProperty("/**/*", "urlFilenameViewController");
+    mappings.setProperty("/**", "urlFilenameViewController");
     simpleUrlHandlerMapping.setMappings(mappings);
     simpleUrlHandlerMapping.setInterceptors(localeChangeInterceptor());
     return simpleUrlHandlerMapping;

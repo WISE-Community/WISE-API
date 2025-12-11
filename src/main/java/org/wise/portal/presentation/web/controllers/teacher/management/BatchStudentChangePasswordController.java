@@ -25,17 +25,14 @@ package org.wise.portal.presentation.web.controllers.teacher.management;
 
 import java.util.Iterator;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.BatchStudentChangePasswordParameters;
@@ -86,7 +83,7 @@ public class BatchStudentChangePasswordController {
    * @return the path of the view to display
    * @throws Exception
    */
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   public String initializeForm(ModelMap model, HttpServletRequest request) throws Exception {
     User user = ControllerUtil.getSignedInUser();
     Run run = runService.retrieveById(Long.parseLong(request.getParameter("runId")));
@@ -112,9 +109,9 @@ public class BatchStudentChangePasswordController {
    * @param bindingResult the object used for validation in which errors will be stored
    * @param sessionStatus the session status object
    */
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected String onSubmit(
-      @ModelAttribute("batchStudentChangePasswordParameters") BatchStudentChangePasswordParameters batchStudentChangePasswordParameters,
+      @ModelAttribute BatchStudentChangePasswordParameters batchStudentChangePasswordParameters,
       BindingResult bindingResult,
       SessionStatus sessionStatus) {
     String view = "";

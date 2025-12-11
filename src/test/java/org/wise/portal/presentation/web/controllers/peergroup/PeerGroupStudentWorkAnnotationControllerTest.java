@@ -1,7 +1,7 @@
 package org.wise.portal.presentation.web.controllers.peergroup;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.access.AccessDeniedException;
@@ -66,7 +66,7 @@ public class PeerGroupStudentWorkAnnotationControllerTest
     expect(projectService.getProjectContent(project1)).andReturn(project_sans_reference_component);
   }
 
-  @Ignore
+  @Disabled
   public void getStudentDataForDynamicPrompt_ReturnReferenceComponentWork() throws Exception {
     expectUserInPeerGroup();
     expectValidDynamicPromptContent();

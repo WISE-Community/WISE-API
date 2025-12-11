@@ -25,14 +25,14 @@ package org.wise.portal.domain.portal.impl;
 
 import java.util.Properties;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -73,16 +73,16 @@ public class PortalImpl implements Portal {
   private String comments;
 
   @Column(name = "settings", length = 32768, columnDefinition = "text")
-  private String settings;  // text (blob) 2^15
+  private String settings; // text (blob) 2^15
 
   @Column(name = "projectLibraryGroups", length = 32768, columnDefinition = "text")
   private String projectLibraryGroups;
 
   @Column(name = "run_survey_template", length = 32768, columnDefinition = "text")
-  private String runSurveyTemplate;  // text (blob) 2^15
+  private String runSurveyTemplate; // text (blob) 2^15
 
   @Column(name = "projectMetadataSettings", length = 32768, columnDefinition = "text")
-  private String projectMetadataSettings;  // text (blob) 2^15
+  private String projectMetadataSettings; // text (blob) 2^15
 
   @Column(name = "announcement", length = 32768, columnDefinition = "text")
   private String announcement;
@@ -91,7 +91,7 @@ public class PortalImpl implements Portal {
   private String structures;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", columnDefinition = "tinyint")
   public Integer id = null;
 
@@ -105,7 +105,7 @@ public class PortalImpl implements Portal {
       return settings.getBoolean("isLoginAllowed");
     } catch (JSONException e) {
     }
-    return true;  // allow login by default if there was an exception
+    return true; // allow login by default if there was an exception
   }
 
   public void setLoginAllowed(boolean loginAllowed) {
@@ -123,7 +123,7 @@ public class PortalImpl implements Portal {
       return settings.getBoolean("isSendStatisticsToHub");
     } catch (JSONException e) {
     }
-    return false;  // don't send statistics by default if there was an exception
+    return false; // don't send statistics by default if there was an exception
   }
 
   public void setSendStatisticsToHub(boolean doSendStatistics) {

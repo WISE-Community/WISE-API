@@ -41,9 +41,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
 import javax.management.timer.Timer;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.text.WordUtils;
@@ -791,9 +791,12 @@ public class ProjectServiceImpl implements ProjectService {
       authors = parentAuthors;
     }
     license += WordUtils.wrap(
-        "License pertains to original content created "
-            + "by the author(s). Authors are responsible for the usage and "
-            + "attribution of any third-party content linked to or included in " + "this work.",
+        """
+        License pertains to original content created \
+        by the author(s). Authors are responsible for the usage and \
+        attribution of any third-party content linked to or included in \
+        this work.\
+        """,
         72);
     String ccLicenseText = "";
     InputStream ccLicense = FileManager.class.getClassLoader().getResourceAsStream("cc-by-sa.txt");

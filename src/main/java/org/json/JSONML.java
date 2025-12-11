@@ -218,8 +218,8 @@ public class JSONML {
 	            }
 		    } else {
 		    	if (ja != null) {
-		    		ja.put(token instanceof String ? 
-		    				JSONObject.stringToValue((String)token) : token);
+		    		ja.put(token instanceof String s ? 
+		    				JSONObject.stringToValue(s) : token);
 		    	}
 		    }
         }
@@ -321,9 +321,9 @@ public class JSONML {
 		sb.append(tagName);
 		
 		e = ja.opt(1);
-		if (e instanceof JSONObject) {
+		if (e instanceof JSONObject object) {
 			i = 2;
-			jo = (JSONObject)e;
+			jo = object;
 			
 // Emit the attributes
 			
@@ -359,10 +359,10 @@ public class JSONML {
 			    if (e != null) {
 			    	if (e instanceof String) {
 			    		sb.append(XML.escape(e.toString()));
-					} else if (e instanceof JSONObject) {
-						sb.append(toString((JSONObject)e));
-					} else if (e instanceof JSONArray) {
-						sb.append(toString((JSONArray)e));
+					} else if (e instanceof JSONObject object) {
+						sb.append(toString(object));
+					} else if (e instanceof JSONArray array) {
+						sb.append(toString(array));
 					}
 			    }
 			} while (i < length);
@@ -438,10 +438,10 @@ public class JSONML {
 			    if (e != null) {
 			    	if (e instanceof String) {
 			    		sb.append(XML.escape(e.toString()));
-					} else if (e instanceof JSONObject) {
-						sb.append(toString((JSONObject)e));
-					} else if (e instanceof JSONArray) {
-						sb.append(toString((JSONArray)e));
+					} else if (e instanceof JSONObject object) {
+						sb.append(toString(object));
+					} else if (e instanceof JSONArray array) {
+						sb.append(toString(array));
 					}
 			    }
 			}

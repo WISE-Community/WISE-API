@@ -37,7 +37,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.vle.domain.PersistableDomain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -45,65 +45,68 @@ import java.sql.Timestamp;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "notification",  indexes = {
+@Table(name = "notification", indexes = {
     @Index(columnList = "runId", name = "notificationRunIdIndex"),
     @Index(columnList = "toWorkgroupId", name = "notificationToWorkgroupIdIndex"),
-    @Index(columnList = "fromWorkgroupId", name = "notificationFromWorkgroupIdIndex")
-})
+    @Index(columnList = "fromWorkgroupId", name = "notificationFromWorkgroupIdIndex") })
 @Getter
 @Setter
 public class Notification extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId", nullable = false)
   @JsonIgnore
   private Run run;
 
-  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "periodId", nullable = false)
   @JsonIgnore
   private Group period;
 
-  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "toWorkgroupId", nullable = false)
   @JsonIgnore
   private Workgroup toWorkgroup;
 
-  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "fromWorkgroupId", nullable = false)
   @JsonIgnore
   private Workgroup fromWorkgroup;
 
   @Column(name = "groupId", length = 30)
-  private String groupId;  // id of the group of notifications this notification belongs to, if any.
+  private String groupId; // id of the group of notifications this notification belongs to, if any.
 
   @Column(name = "nodeId", length = 30)
-  private String nodeId;  // which node created this notification, if any
+  private String nodeId; // which node created this notification, if any
 
   @Column(name = "componentId", length = 30)
-  private String componentId;  // which component created this notification, if any
+  private String componentId; // which component created this notification, if any
 
   @Column(name = "componentType", length = 30)
-  private String componentType;  // type of component that created this notification, if any
+  private String componentType; // type of component that created this notification, if any
 
   @Column(name = "type", nullable = false)
-  private String type;  // type of this notification, ex: component, node, vle, teacherToStudent, etc
+  private String type; // type of this notification, ex: component, node, vle, teacherToStudent, etc
 
   @Column(name = "message", nullable = false)
-  private String message;  // message of the notification
+  private String message; // message of the notification
 
   @Column(name = "data", length = 5120000, columnDefinition = "mediumtext")
-  private String data;  // other specific information about this notification
+  private String data; // other specific information about this notification
 
   @Column(name = "timeGenerated", nullable = false)
-  private Timestamp timeGenerated;  // when this notification was generated, client time
+  private Timestamp timeGenerated; // when this notification was generated, client time
 
   @Column(name = "timeDismissed")
-  private Timestamp timeDismissed;  // when this notification was dismissed, client time
+  private Timestamp timeDismissed; // when this notification was dismissed, client time
 
   @Column(name = "serverSaveTime", nullable = false)
   private Timestamp serverSaveTime;

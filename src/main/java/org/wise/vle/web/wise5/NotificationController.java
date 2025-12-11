@@ -22,10 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.notification.NotificationService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
@@ -60,22 +58,17 @@ public class NotificationController {
     notification.convertToClientNotification();
     JSONObject message = new JSONObject();
     message.put("type", "notification");
-    message.put("topic", String.format("/topic/workgroup/%s", notification.getToWorkgroupId()));
+    message.put("topic", "/topic/workgroup/%s".formatted(notification.getToWorkgroupId()));
     message.put("notification", notification.toJSON());
     redisPublisher.publish(message.toString());
   }
 
   @GetMapping("/notification/{runId}")
-  protected List<Notification> getNotifications(
-      Authentication auth,
-      @PathVariable("runId") RunImpl run,
-      @RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "toWorkgroupId", required = false) WorkgroupImpl toWorkgroup,
-      @RequestParam(value = "groupId", required = false) String groupId,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
-      @RequestParam(value = "componentId", required = false) String componentId)
-      throws ObjectNotFoundException {
+  protected List<Notification> getNotifications(Authentication auth, @PathVariable("runId") Run run,
+      @RequestParam(required = false) Integer id, @RequestParam(required = false) Integer periodId,
+      @RequestParam(value = "toWorkgroupId", required = false) Workgroup toWorkgroup,
+      @RequestParam(required = false) String groupId, @RequestParam(required = false) String nodeId,
+      @RequestParam(required = false) String componentId) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (toWorkgroup != null) {
       if (isStudentAndNotAllowedToSaveNotification(user, run, toWorkgroup)) {
@@ -89,7 +82,7 @@ public class NotificationController {
   }
 
   @PostMapping("/notification/{runId}")
-  protected Notification saveNotification(@PathVariable("runId") RunImpl run,
+  protected Notification saveNotification(@PathVariable("runId") Run run,
       @RequestBody Notification notification, Authentication authentication) throws Exception {
     User user = userService.retrieveUserByUsername(authentication.getName());
     Workgroup fromWorkgroup = notification.getFromWorkgroup();
@@ -120,13 +113,12 @@ public class NotificationController {
 
   private boolean isStudentAndNotAllowedToSaveNotification(User user, Run run,
       Workgroup fromWorkgroup) {
-    return user.getUserDetails() instanceof StudentUserDetails &&
-      (!run.isStudentAssociatedToThisRun(user) ||
-        !fromWorkgroup.getMembers().contains(user));
+    return user.getUserDetails() instanceof StudentUserDetails
+        && (!run.isStudentAssociatedToThisRun(user) || !fromWorkgroup.getMembers().contains(user));
   }
 
   @PostMapping("/notification/{runId}/dismiss")
-  protected Notification dismissNotification(@PathVariable("runId") RunImpl run,
+  protected Notification dismissNotification(@PathVariable("runId") Run run,
       @RequestBody Notification notification, Authentication authentication)
       throws IOException, ObjectNotFoundException, JSONException {
     User user = userService.retrieveUserByUsername(authentication.getName());
@@ -150,8 +142,7 @@ public class NotificationController {
   }
 
   private boolean canDismissNotification(User user, Notification notification, Run run) {
-    return user.isAdmin() ||
-        runService.hasRunPermission(run, user, BasePermission.READ) ||
-        notification.getToWorkgroup().getMembers().contains(user);
+    return user.isAdmin() || runService.hasRunPermission(run, user, BasePermission.READ)
+        || notification.getToWorkgroup().getMembers().contains(user);
   }
 }

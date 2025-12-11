@@ -27,7 +27,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class StudentServiceImplTest {
 
   private Run run;
 
-  private final Long runId = new Long(3);
+  private final Long runId = Long.valueOf(3);
 
   @BeforeEach
   public void setUp() throws Exception {

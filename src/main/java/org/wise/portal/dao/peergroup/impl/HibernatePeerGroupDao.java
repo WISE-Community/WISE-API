@@ -27,12 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.LockModeType;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -66,9 +66,8 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping.getId()));
-    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>> get("members")));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping));
+    predicates.add(cb.isMember(workgroup, peerGroupImplRoot.<Set<Workgroup>> get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     query.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -86,9 +85,9 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
     Root<PeerGroupingImpl> peerGroupingImplRoot = cq.from(PeerGroupingImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run.getId()));
+    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run));
     predicates.add(cb.equal(peerGroupingImplRoot.get("tag"), tag));
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGroupingImplRoot.get("id")));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGroupingImplRoot));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();

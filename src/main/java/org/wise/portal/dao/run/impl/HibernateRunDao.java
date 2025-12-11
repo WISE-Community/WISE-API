@@ -29,11 +29,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.ObjectNotFoundException;
@@ -114,7 +114,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
     Root<PersistentGroup> periodGroupRoot = cq.from(PersistentGroup.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.isMember(userRoot.get("id"), periodGroupRoot.<Set<User>> get("members")));
+    predicates.add(cb.isMember(user, periodGroupRoot.<Set<User>>get("members")));
     predicates.add(cb.isMember(periodGroupRoot, runRoot.<Set<PersistentGroup>> get("periods")));
     cq.select(runRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
@@ -150,10 +150,7 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<RunImpl> cq = cb.createQuery(RunImpl.class);
     Root<RunImpl> runRoot = cq.from(RunImpl.class);
-    Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    cq.select(runRoot)
-        .where(cb.and(cb.equal(userRoot.get("id"), owner.getId()),
-            cb.isMember(userRoot.get("id"), runRoot.<Set<User>> get("sharedowners"))))
+    cq.select(runRoot).where(cb.isMember(owner, runRoot.<Set<User>> get("sharedowners")))
         .orderBy(cb.desc(runRoot.get("id")));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
     List<RunImpl> runResultList = query.getResultList();

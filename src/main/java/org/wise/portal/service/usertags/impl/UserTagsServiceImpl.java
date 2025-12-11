@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.proxy.HibernateProxyHelper;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -94,8 +94,8 @@ public class UserTagsServiceImpl implements UserTagsService {
   }
 
   private MutableAclTargetObjectIdentity getMutableObjectIdentity(Project project) {
-    ObjectIdentity objectIdentity = new ObjectIdentityImpl(
-        HibernateProxyHelper.getClassWithoutInitializingProxy(project), project.getId());
+    ObjectIdentity objectIdentity = new ObjectIdentityImpl(Hibernate.getClass(project),
+        project.getId());
     return aclTargetObjectIdentityDao.retrieveByObjectIdentity(objectIdentity);
   }
 

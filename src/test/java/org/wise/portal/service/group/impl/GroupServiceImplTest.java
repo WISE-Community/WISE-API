@@ -27,9 +27,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.reset;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +40,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.security.acls.domain.BasePermission;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.group.GroupDao;
@@ -175,7 +172,7 @@ public class GroupServiceImplTest {
     group3.setName(DEFAULT_GROUP_NAMES[2]);
     group3.setParent(group1);
 
-    expect(groupDao.getById(new Long(3))).andReturn(group1);
+    expect(groupDao.getById(Long.valueOf(3))).andReturn(group1);
     groupDao.save(group3);
     expectLastCall();
     replay(groupDao);
@@ -186,7 +183,7 @@ public class GroupServiceImplTest {
 
     GroupParameters groupParameters = new GroupParameters();
     groupParameters.setName(DEFAULT_GROUP_NAMES[2]);
-    groupParameters.setParentId(new Long(3));
+    groupParameters.setParentId(Long.valueOf(3));
     group3 = groupService.createGroup(groupParameters);
     verify(groupDao);
     reset(groupDao);
@@ -341,7 +338,7 @@ public class GroupServiceImplTest {
 
   @Test
   public void retrieveById_WithNonExistingGroupId_ShouldThrowException() throws Exception {
-    Long groupId = new Long(-1);
+    Long groupId = Long.valueOf(-1);
     expect(groupDao.getById(groupId)).andThrow(new ObjectNotFoundException(groupId, Group.class));
     replay(groupDao);
 

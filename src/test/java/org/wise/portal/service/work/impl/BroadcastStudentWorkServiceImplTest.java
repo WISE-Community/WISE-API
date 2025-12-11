@@ -38,8 +38,10 @@ public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   @Test
   public void broadcastToClassroom_PublishClassroomTopic() {
-    redisPublisher.publish("{\"topic\":\"/topic/classroom/1/2\","
-        + "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToClassroom\"}");
+    redisPublisher.publish("""
+        {"topic":"/topic/classroom/1/2",\
+        "studentWork":{"periodId":2,"runId":1},"type":"studentWorkToClassroom"}\
+        """);
     expectLastCall();
     replay(redisPublisher);
     service.broadcastToClassroom(studentWork);
@@ -48,8 +50,10 @@ public class BroadcastStudentWorkServiceImplTest extends WISEServiceTest {
 
   @Test
   public void broadcastToTeacher_PublishTeacherRunTopic() {
-    redisPublisher.publish("{\"topic\":\"/topic/teacher/1\","
-        + "\"studentWork\":{\"periodId\":2,\"runId\":1},\"type\":\"studentWorkToTeacher\"}");
+    redisPublisher.publish("""
+        {"topic":"/topic/teacher/1",\
+        "studentWork":{"periodId":2,"runId":1},"type":"studentWorkToTeacher"}\
+        """);
     expectLastCall();
     replay(redisPublisher);
     service.broadcastToTeacher(studentWork);

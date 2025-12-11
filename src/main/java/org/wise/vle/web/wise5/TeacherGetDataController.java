@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -29,29 +28,27 @@ public class TeacherGetDataController {
   private VLEService vleService;
 
   @GetMapping("/api/teacher/data")
-  protected HashMap<String, Object> getData(@RequestParam("runId") RunImpl run,
-      @RequestParam(value = "getStudentWork", defaultValue = "false") boolean getStudentWork,
-      @RequestParam(value = "getEvents", defaultValue = "false") boolean getEvents,
-      @RequestParam(value = "getAnnotations", defaultValue = "false") boolean getAnnotations,
-      @RequestParam(value = "id", required = false) Integer id,
-      @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "workgroupId", required = false) Integer workgroupId,
-      @RequestParam(value = "isAutoSave", required = false) Boolean isAutoSave,
-      @RequestParam(value = "isSubmit", required = false) Boolean isSubmit,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
-      @RequestParam(value = "componentId", required = false) String componentId,
-      @RequestParam(value = "componentType", required = false) String componentType,
-      @RequestParam(value = "context", required = false) String context,
-      @RequestParam(value = "category", required = false) String category,
-      @RequestParam(value = "event", required = false) String event,
-      @RequestParam(value = "fromWorkgroupId", required = false) Integer fromWorkgroupId,
-      @RequestParam(value = "toWorkgroupId", required = false) Integer toWorkgroupId,
-      @RequestParam(value = "studentWorkId", required = false) Integer studentWorkId,
-      @RequestParam(value = "localNotebookItemId", required = false) String localNotebookItemId,
-      @RequestParam(value = "notebookItemId", required = false) Integer notebookItemId,
-      @RequestParam(value = "annotationType", required = false) String annotationType,
-      @RequestParam(value = "components", required = false) String components,
-      @RequestParam(value = "onlyGetLatest", required = false) Boolean onlyGetLatest) {
+  protected HashMap<String, Object> getData(@RequestParam("runId") Run run,
+      @RequestParam(defaultValue = "false") boolean getStudentWork,
+      @RequestParam(defaultValue = "false") boolean getEvents,
+      @RequestParam(defaultValue = "false") boolean getAnnotations,
+      @RequestParam(required = false) Integer id, @RequestParam(required = false) Integer periodId,
+      @RequestParam(required = false) Integer workgroupId,
+      @RequestParam(required = false) Boolean isAutoSave,
+      @RequestParam(required = false) Boolean isSubmit,
+      @RequestParam(required = false) String nodeId,
+      @RequestParam(required = false) String componentId,
+      @RequestParam(required = false) String componentType,
+      @RequestParam(required = false) String context,
+      @RequestParam(required = false) String category, @RequestParam(required = false) String event,
+      @RequestParam(required = false) Integer fromWorkgroupId,
+      @RequestParam(required = false) Integer toWorkgroupId,
+      @RequestParam(required = false) Integer studentWorkId,
+      @RequestParam(required = false) String localNotebookItemId,
+      @RequestParam(required = false) Integer notebookItemId,
+      @RequestParam(required = false) String annotationType,
+      @RequestParam(required = false) String components,
+      @RequestParam(required = false) Boolean onlyGetLatest) {
     if (canGetData(run)) {
       HashMap<String, Object> data = new HashMap<String, Object>();
       int runId = run.getId().intValue();

@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,8 +15,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.wise.portal.domain.project.impl.ProjectImpl;
-import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.project.Project;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -37,10 +37,10 @@ public class TeacherPostDataController {
 
   @PostMapping("/api/teacher/data")
   public void postData(HttpServletResponse response,
-      @RequestParam(value = "projectId", required = false) ProjectImpl project,
-      @RequestParam(value = "runId", required = false) RunImpl run,
-      @RequestParam(value = "annotations", required = false) String annotations,
-      @RequestParam(value = "events", required = false) String events) {
+      @RequestParam(value = "projectId", required = false) Project project,
+      @RequestParam(value = "runId", required = false) Run run,
+      @RequestParam(required = false) String annotations,
+      @RequestParam(required = false) String events) {
     JSONObject result = new JSONObject();
     try {
       User signedInUser = ControllerUtil.getSignedInUser();
@@ -222,7 +222,7 @@ public class TeacherPostDataController {
     annotation.convertToClientAnnotation();
     JSONObject message = new JSONObject();
     message.put("type", "annotationToStudent");
-    message.put("topic", String.format("/topic/workgroup/%s", toWorkgroupId));
+    message.put("topic", "/topic/workgroup/%s".formatted(toWorkgroupId));
     message.put("annotation", annotation.toJSON());
     redisPublisher.publish(message.toString());
   }
@@ -232,7 +232,7 @@ public class TeacherPostDataController {
     notification.convertToClientNotification();
     JSONObject message = new JSONObject();
     message.put("type", "notification");
-    message.put("topic", String.format("/topic/workgroup/%s", toWorkgroupId));
+    message.put("topic", "/topic/workgroup/%s".formatted(toWorkgroupId));
     message.put("notification", notification.toJSON());
     redisPublisher.publish(message.toString());
   }

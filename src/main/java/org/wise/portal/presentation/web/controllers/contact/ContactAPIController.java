@@ -11,7 +11,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.general.contactwise.IssueType;
@@ -24,7 +27,7 @@ import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,17 +61,17 @@ public class ContactAPIController {
 
   private static final String userAgentParseURL = "http://api.whatismybrowser.com/api/v1/user_agent_parse";
 
-  @RequestMapping(value = "", method = RequestMethod.POST)
-  protected String sendContactMessage(@RequestParam(value = "name") String name,
-      @RequestParam(value = "email", required = false) String email,
-      @RequestParam(value = "teacherUsername", required = false) String teacherUsername,
-      @RequestParam(value = "issueType") String issueType,
-      @RequestParam(value = "summary") String summary,
-      @RequestParam(value = "description") String description,
-      @RequestParam(value = "runId", required = false) Long runId,
-      @RequestParam(value = "projectId", required = false) Integer projectId,
-      @RequestParam(value = "userAgent", required = false) String userAgent,
-      @RequestParam(value = "recaptchaResponse", required = false) String recaptchaResponse)
+  @PostMapping("")
+  protected String sendContactMessage(@RequestParam String name,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) String teacherUsername,
+      @RequestParam String issueType,
+      @RequestParam String summary,
+      @RequestParam String description,
+      @RequestParam(required = false) Long runId,
+      @RequestParam(required = false) Integer projectId,
+      @RequestParam(required = false) String userAgent,
+      @RequestParam(required = false) String recaptchaResponse)
       throws JSONException {
     if (this.isAuthorized(recaptchaResponse)) {
       boolean isStudent = isStudent();

@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
-import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
@@ -98,19 +98,19 @@ public class StudentStatusController {
     Long workgroupId = null;
 
     try {
-      runId = new Long(runIdString);
+      runId = Long.valueOf(runIdString);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
 
     try {
-      periodId = new Long(periodIdString);
+      periodId = Long.valueOf(periodIdString);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
 
     try {
-      workgroupId = new Long(workgroupIdString);
+      workgroupId = Long.valueOf(workgroupIdString);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
@@ -160,7 +160,7 @@ public class StudentStatusController {
 
   @GetMapping("/{workgroupId}")
   StudentStatus getStudentStatus(Authentication auth,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup) throws AccessDeniedException {
+      @PathVariable("workgroupId") Workgroup workgroup) throws AccessDeniedException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (workgroupService.isUserInWorkgroupForRun(user, workgroup.getRun(), workgroup)) {
       return vleService.getStudentStatusByWorkgroupId(workgroup.getId());

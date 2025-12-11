@@ -47,7 +47,7 @@ public class HibernateAclTargetObjectIdentityDaoTest
 
     private static final String AUTHORITY = "some authority";
 
-    private static final Long ID = new Long(42);
+    private static final Long ID = Long.valueOf(42);
 
     private MutableAclTargetObject aclTargetObject;
 

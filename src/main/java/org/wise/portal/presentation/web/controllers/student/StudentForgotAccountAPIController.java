@@ -36,9 +36,9 @@ public class StudentForgotAccountAPIController {
   private Properties i18nProperties;
 
   @GetMapping("/username/search")
-  protected String getStudentUsernames(@RequestParam("firstName") String firstName,
-      @RequestParam("lastName") String lastName, @RequestParam("birthMonth") Integer birthMonth,
-      @RequestParam("birthDay") Integer birthDay) {
+  protected String getStudentUsernames(@RequestParam String firstName,
+      @RequestParam String lastName, @RequestParam Integer birthMonth,
+      @RequestParam Integer birthDay) {
     List<User> accountsThatMatch = userService.retrieveStudentsByNameAndBirthday(firstName,
         lastName, birthMonth, birthDay);
     return getUsernamesJSON(accountsThatMatch).toString();
@@ -54,7 +54,7 @@ public class StudentForgotAccountAPIController {
   }
 
   @GetMapping("/password/security-question")
-  protected String getSecurityQuestion(@RequestParam("username") String username)
+  protected String getSecurityQuestion(@RequestParam String username)
       throws JSONException {
     User user = userService.retrieveUserByUsername(username);
     JSONObject response;
@@ -71,8 +71,8 @@ public class StudentForgotAccountAPIController {
   }
 
   @PostMapping("/password/security-question")
-  protected String checkSecurityAnswer(@RequestParam("username") String username,
-      @RequestParam("answer") String answer, @RequestParam("token") String token)
+  protected String checkSecurityAnswer(@RequestParam String username,
+      @RequestParam String answer, @RequestParam String token)
       throws JSONException {
     if (ControllerUtil.isReCaptchaEnabled() && !ControllerUtil.isReCaptchaResponseValid(token)) {
       return ControllerUtil.createErrorResponse("recaptchaResponseInvalid").toString();
@@ -93,9 +93,9 @@ public class StudentForgotAccountAPIController {
 
   @PostMapping("/password/change")
   protected ResponseEntity<Map<String, Object>> changePassword(
-      @RequestParam("username") String username, @RequestParam("answer") String answer,
-      @RequestParam("password") String password,
-      @RequestParam("confirmPassword") String confirmPassword) throws JSONException {
+      @RequestParam String username, @RequestParam String answer,
+      @RequestParam String password,
+      @RequestParam String confirmPassword) throws JSONException {
     User user = userService.retrieveUserByUsername(username);
     if (user == null) {
       return ResponseEntityGenerator.createError("invalidUsername");

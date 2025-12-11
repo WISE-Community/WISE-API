@@ -4,8 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.newsitem.NewsItem;
 import org.wise.portal.service.newsitem.NewsItemService;
@@ -19,7 +19,7 @@ public class NewsAPIController {
   @Autowired
   private NewsItemService newsItemService;
 
-  @RequestMapping(value = "", method = RequestMethod.GET)
+  @GetMapping("")
   protected String getNews() {
     List<NewsItem> newsItems = newsItemService.retrieveAllNewsItem();
     JSONArray newsItemsJSON = getNewsItemsJSON(newsItems);

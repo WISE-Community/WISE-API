@@ -59,7 +59,7 @@ public class UserTagController {
   }
 
   @PutMapping("/user/tag/{tagId}")
-  protected Map<String, Object> updateTag(Authentication auth, @PathVariable("tagId") Long tagId,
+  protected Map<String, Object> updateTag(Authentication auth, @PathVariable Long tagId,
       @RequestBody Map<String, Object> tag) throws TagAlreadyExistsException {
     User user = userService.retrieveUserByUsername(auth.getName());
     String tagText = ((String) tag.get("text")).trim();
@@ -74,7 +74,7 @@ public class UserTagController {
   }
 
   @DeleteMapping("/user/tag/{tagId}")
-  protected Map<String, Object> deleteTag(Authentication auth, @PathVariable("tagId") Long tagId) {
+  protected Map<String, Object> deleteTag(Authentication auth, @PathVariable Long tagId) {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag tag = userTagsService.get(tagId);
     userTagsService.deleteTag(user, tag);

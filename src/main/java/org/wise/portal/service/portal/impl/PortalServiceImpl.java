@@ -48,6 +48,7 @@ public class PortalServiceImpl implements PortalService {
 
   private String defaultAnnouncement = "{\"visible\":false,\"bannerText\":\"\",\"bannerButton\":\"\",\"title\":\"\",\"content\":\"\",\"buttons\":[]}";
 
+  @Transactional()
   public Portal getById(Serializable id) throws ObjectNotFoundException {
     return portalDao.getById(id);
   }

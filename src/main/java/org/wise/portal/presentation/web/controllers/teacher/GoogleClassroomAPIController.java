@@ -19,17 +19,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.authentication.UserDetailsService;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
@@ -67,7 +64,7 @@ public class GoogleClassroomAPIController {
     SCOPES.add(ClassroomScopes.CLASSROOM_COURSEWORK_STUDENTS);
   }
 
-  @RequestMapping(value = "/oauth", method = RequestMethod.GET)
+  @GetMapping("/oauth")
   private String googleOAuthToken(@RequestParam String code, HttpServletRequest request)
       throws GeneralSecurityException, IOException {
     String state = request.getParameter("state");
@@ -127,15 +124,15 @@ public class GoogleClassroomAPIController {
     return new Classroom.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(applicationName).build();
   }
 
-  @RequestMapping(value = "/get-authorization-url", method = RequestMethod.GET)
-  protected String getClassroomAuthorizationUrl(@RequestParam("username") String username) throws Exception {
+  @GetMapping("/get-authorization-url")
+  protected String getClassroomAuthorizationUrl(@RequestParam String username) throws Exception {
     JSONObject response = new JSONObject();
     response.put("authorizationUrl", authorize(username).getLeft());
     return response.toString();
   }
 
-  @RequestMapping(value = "/list-courses", method = RequestMethod.GET)
-  protected List<Course> getClassroomCourses(@RequestParam("username") String username) throws Exception {
+  @GetMapping("/list-courses")
+  protected List<Course> getClassroomCourses(@RequestParam String username) throws Exception {
     Credential credential = authorize(username).getRight();
     if (credential == null) {
       return null;
@@ -154,13 +151,13 @@ public class GoogleClassroomAPIController {
     return activeCourses;
   }
 
-  @RequestMapping(value = "/create-assignment", method = RequestMethod.POST)
+  @PostMapping("/create-assignment")
   protected String addToClassroom(HttpServletRequest request,
-                                  @RequestParam("accessCode") String accessCode,
-                                  @RequestParam("unitTitle") String unitTitle,
-                                  @RequestParam("username") String username,
-                                  @RequestParam("endTime") String endTime,
-                                  @RequestParam("description") String description,
+                                  @RequestParam String accessCode,
+                                  @RequestParam String unitTitle,
+                                  @RequestParam String username,
+                                  @RequestParam String endTime,
+                                  @RequestParam String description,
                                   @RequestParam("courseIds") String courseIdsString) throws Exception {
     JSONObject response = new JSONObject();
     ImmutablePair<String, Credential> pair = authorize(username);

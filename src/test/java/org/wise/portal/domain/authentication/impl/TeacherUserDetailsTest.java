@@ -22,20 +22,20 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
-
-import junit.framework.TestCase;
 
 /**
  * @author Sally Ahn
  * @version $Id$
  */
-public class TeacherUserDetailsTest extends TestCase {
+public class TeacherUserDetailsTest {
 
 	private TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
 	
@@ -62,8 +62,9 @@ public class TeacherUserDetailsTest extends TestCase {
 	private static final int NUMBEROFLOGINS = 3;
 	
 	private static final String DISPLAYNAME ="Mr. Right";
-	
-	public void testGetInfo() {
+
+  @Test
+  public void testGetInfo() {
 		teacherUserDetails.setCity(CITY);
 		teacherUserDetails.setCountry(COUNTRY);
 		teacherUserDetails.setState(STATE);

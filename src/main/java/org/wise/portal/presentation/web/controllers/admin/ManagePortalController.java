@@ -29,8 +29,9 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.service.portal.PortalService;
@@ -50,9 +51,9 @@ public class ManagePortalController {
   @Autowired
   private ProjectService projectService;
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected String showPortalSettings(ModelMap modelMap,
-      @RequestParam(value = "portalId", defaultValue = "1") Integer portalId) throws Exception {
+      @RequestParam(defaultValue = "1") Integer portalId) throws Exception {
     Portal portal = portalService.getById(portalId);
     modelMap.put("portal", portal);
     modelMap.put("defaultAnnouncement", portalService.getDefaultAnnouncement());
@@ -61,12 +62,12 @@ public class ManagePortalController {
     return "admin/portal/manage";
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected void savePortalChanges(
       ModelMap modelMap,
-      @RequestParam(value = "portalId", defaultValue = "1") Integer portalId,
-      @RequestParam(value = "attr") String attr,
-      @RequestParam(value = "val") String val) throws Exception {
+      @RequestParam(defaultValue = "1") Integer portalId,
+      @RequestParam String attr,
+      @RequestParam String val) throws Exception {
     Portal portal = portalService.getById(portalId);
     try {
       if (attr.equals("portalName")) {

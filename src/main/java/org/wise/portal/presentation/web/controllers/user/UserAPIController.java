@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,7 +95,7 @@ public class UserAPIController {
 
   @GetMapping("/info")
   HashMap<String, Object> getUserInfo(Authentication auth,
-      @RequestParam(value = "username", required = false) String username) {
+      @RequestParam(required = false) String username) {
     HashMap<String, Object> info = new HashMap<String, Object>();
     if (auth != null) {
       User user = userService.retrieveUserByUsername(auth.getName());
@@ -180,8 +180,8 @@ public class UserAPIController {
   }
 
   @PostMapping("/check-authentication")
-  HashMap<String, Object> checkAuthentication(@RequestParam("username") String username,
-      @RequestParam("password") String password) {
+  HashMap<String, Object> checkAuthentication(@RequestParam String username,
+      @RequestParam String password) {
     User user = userService.retrieveUserByUsername(username);
     HashMap<String, Object> response = new HashMap<String, Object>();
     if (user == null) {
@@ -200,8 +200,8 @@ public class UserAPIController {
 
   @PostMapping("/password")
   ResponseEntity<Map<String, Object>> changePassword(Authentication auth,
-      @RequestParam("oldPassword") String oldPassword,
-      @RequestParam("newPassword") String newPassword) {
+      @RequestParam String oldPassword,
+      @RequestParam String newPassword) {
     if (!passwordService.isValid(newPassword)) {
       Map<String, Object> map = passwordService.getErrors(newPassword);
       return ResponseEntityGenerator.createError(map);
@@ -315,8 +315,8 @@ public class UserAPIController {
     map.put("firstName", userDetails.getFirstname());
     map.put("lastName", userDetails.getLastname());
     map.put("isGoogleUser", userDetails.isGoogleUser());
-    if (userDetails instanceof TeacherUserDetails) {
-      map.put("displayName", ((TeacherUserDetails) userDetails).getDisplayname());
+    if (userDetails instanceof TeacherUserDetails details) {
+      map.put("displayName", details.getDisplayname());
     }
     return map;
   }

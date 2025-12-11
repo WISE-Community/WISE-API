@@ -100,7 +100,7 @@ public class StudentServiceImpl implements StudentService {
     try {
       JSONObject message = new JSONObject();
       message.put("type", "newWorkgroupJoinedRun");
-      message.put("topic", String.format("/topic/classroom/%s/%s", run.getId(), period.getId()));
+      message.put("topic", "/topic/classroom/%s/%s".formatted(run.getId(), period.getId()));
       redisPublisher.publish(message.toString());
     } catch (JSONException e) {
       e.printStackTrace();

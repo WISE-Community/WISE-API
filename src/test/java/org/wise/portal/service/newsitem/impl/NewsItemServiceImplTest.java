@@ -27,10 +27,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -72,7 +69,7 @@ public class NewsItemServiceImplTest {
 
   private Date date2 = Calendar.getInstance().getTime();
 
-  private Integer itemIdNotInDB = new Integer(-1);
+  private Integer itemIdNotInDB = Integer.valueOf(-1);
 
   private String news1 = "Hot off the presses!";
 
@@ -130,7 +127,7 @@ public class NewsItemServiceImplTest {
 
   @Test
   public void deleteNewsItem_ExistingNewsItemID_ShouldSucceed() throws Exception {
-    Integer id = new Integer(3);
+    Integer id = Integer.valueOf(3);
     newsItem1.setId(id);
     expect(newsItemDao.getById(id)).andReturn(newsItem1);
     newsItemDao.delete(newsItem1);
@@ -174,7 +171,7 @@ public class NewsItemServiceImplTest {
 
   @Test
   public void retrieveById_ValidItemId_ShouldSucceed() throws ObjectNotFoundException {
-    Integer id = new Integer(3);
+    Integer id = Integer.valueOf(3);
     expect(newsItemDao.getById(id)).andReturn(newsItem1);
     replay(newsItemDao);
 
@@ -200,7 +197,7 @@ public class NewsItemServiceImplTest {
 
   @Test
   public void updateNewsItem_ExistingNewsItem_ShouldSucceed() throws Exception {
-    Integer id = new Integer(3);
+    Integer id = Integer.valueOf(3);
     expect(newsItemDao.getById(id)).andReturn(newsItem1);
     newsItemDao.save(isA(NewsItem.class));
     expectLastCall();

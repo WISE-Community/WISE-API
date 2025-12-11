@@ -67,7 +67,7 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expect(runService.getProjectRuns(projectId1)).andReturn(projectRunList);
     expect(runService.isAllowedToGradeStudentWork(run1, teacher1)).andReturn(true);
     replay(runService);
-    expect(portalService.getById(new Integer(1))).andReturn(new PortalImpl());
+    expect(portalService.getById(Integer.valueOf(1))).andReturn(new PortalImpl());
     expect(portalService.getDefaultProjectMetadataSettings()).andReturn("");
     replay(portalService);
     expect(request.getLocale()).andReturn(Locale.US);

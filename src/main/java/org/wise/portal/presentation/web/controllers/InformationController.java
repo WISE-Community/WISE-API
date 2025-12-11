@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -55,7 +55,6 @@ import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
@@ -114,7 +113,7 @@ public class InformationController {
    * periods given runcode
    */
   @RequestMapping("/runInfo")
-  public void handleRunInfo(@RequestParam("runcode") String runcode, HttpServletResponse response)
+  public void handleRunInfo(@RequestParam String runcode, HttpServletResponse response)
       throws Exception {
     try {
       Run run = runService.retrieveRunByRuncode(runcode);
@@ -205,8 +204,7 @@ public class InformationController {
 
   @GetMapping("/config/studentRun/{runId}")
   public void getConfigWISE5StudentRun(HttpServletRequest request, HttpServletResponse response,
-      @PathVariable("runId") RunImpl run)
-      throws ObjectNotFoundException, IOException, JSONException {
+      @PathVariable("runId") Run run) throws ObjectNotFoundException, IOException, JSONException {
     JSONObject config = new JSONObject();
     config.put("mode", "studentRun");
     getRunConfigParameters(request, config, run);
@@ -217,7 +215,7 @@ public class InformationController {
 
   @GetMapping("/config/classroomMonitor/{runId}")
   public void getConfigWISE5ClassroomMonitor(HttpServletRequest request,
-      HttpServletResponse response, @PathVariable("runId") RunImpl run)
+      HttpServletResponse response, @PathVariable("runId") Run run)
       throws ObjectNotFoundException, IOException, JSONException {
     JSONObject config = new JSONObject();
     config.put("mode", "classroomMonitor");
@@ -496,7 +494,7 @@ public class InformationController {
          * This is set if the request is to preview the project and use a specific workgroup id.
          * This is usually used to test branching based on workgroup id.
          */
-        config.put("workgroupId", new Integer(workgroupIdString));
+        config.put("workgroupId", Integer.valueOf(workgroupIdString));
       }
     } catch (JSONException e) {
       e.printStackTrace();
@@ -599,8 +597,8 @@ public class InformationController {
   }
 
   private void addStudentMaxTotalAssetSize(JSONObject config) throws JSONException {
-    Long studentMaxTotalAssetsSizeBytes = new Long(
-        appProperties.getProperty("student_max_total_assets_size", "5242880"));
+    Long studentMaxTotalAssetsSizeBytes = Long
+        .valueOf(appProperties.getProperty("student_max_total_assets_size", "5242880"));
     config.put("studentMaxTotalAssetsSize", studentMaxTotalAssetsSizeBytes);
   }
 
@@ -771,12 +769,28 @@ public class InformationController {
    */
   private void addDummyUserInfoToConfig(JSONObject config) {
     try {
-      String dummyUserInfoJSONString = "{\"myUserInfo\": {" + "\"periodId\": 1,"
-          + "\"workgroupId\": 1," + "\"myClassInfo\": {" + "\"classmateUserInfos\": [],"
-          + "\"sharedTeacherUserInfos\": []," + "\"periods\": [{" + "\"periodId\": 1,"
-          + "\"periodName\": \"1\"" + "}]," + "\"teacherUserInfo\": {" + "\"workgroupId\": 1,"
-          + "\"username\": \"Preview Teacher\"" + "}" + "}," + "\"userIds\": [1],"
-          + "\"periodName\": \"1\"," + "\"username\": \"Preview Team\"" + "}" + "}";
+      String dummyUserInfoJSONString = """
+          {"myUserInfo": {\
+          "periodId": 1,\
+          "workgroupId": 1,\
+          "myClassInfo": {\
+          "classmateUserInfos": [],\
+          "sharedTeacherUserInfos": [],\
+          "periods": [{\
+          "periodId": 1,\
+          "periodName": "1"\
+          }],\
+          "teacherUserInfo": {\
+          "workgroupId": 1,\
+          "username": "Preview Teacher"\
+          }\
+          },\
+          "userIds": [1],\
+          "periodName": "1",\
+          "username": "Preview Team"\
+          }\
+          }\
+          """;
       JSONObject userInfoJSONObject = new JSONObject(dummyUserInfoJSONString);
       config.put("userInfo", userInfoJSONObject);
     } catch (JSONException e) {

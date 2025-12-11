@@ -39,9 +39,9 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -71,7 +71,6 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
-import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.project.impl.ProjectMetadataImpl;
 import org.wise.portal.domain.project.impl.ProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectType;
@@ -130,7 +129,6 @@ public class AuthorAPIController {
 
   private String featuredProjectIconsFolderRelativePath;
 
-  @Autowired
   public AuthorAPIController(Environment appProperties) {
     featuredProjectIconsFolderRelativePath = appProperties.getProperty("project_icons_base_dir");
   }
@@ -139,7 +137,7 @@ public class AuthorAPIController {
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
       HttpServletResponse response) throws Exception {
     try {
-      Portal portal = portalService.getById(new Integer(1));
+      Portal portal = portalService.getById(Integer.valueOf(1));
       if (!portal.isLoginAllowed()) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -183,7 +181,7 @@ public class AuthorAPIController {
     pParams.setOwner(user);
     pParams.setProjectname(projectName);
     pParams.setProjectType(ProjectType.LD);
-    pParams.setWiseVersion(new Integer(5));
+    pParams.setWiseVersion(Integer.valueOf(5));
 
     ProjectMetadata metadata = new ProjectMetadataImpl();
     metadata.setTitle(projectName);
@@ -247,12 +245,12 @@ public class AuthorAPIController {
   @PostMapping("/project/save/{projectId}")
   @ResponseBody
   protected SimpleResponse saveProject(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project, @RequestBody String projectJSONString)
+      @PathVariable("projectId") Project project, @RequestBody String projectJSONString)
       throws JSONException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       try {
-        projectService.evictProjectContentCache(project.getId());
+        projectService.evictProjectContentCache((Long) project.getId());
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
@@ -287,7 +285,7 @@ public class AuthorAPIController {
     config.put("teacherDataURL", contextPath + "/api/teacher/data");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
 
-    Portal portal = portalService.getById(new Integer(1));
+    Portal portal = portalService.getById(Integer.valueOf(1));
     String projectMetadataSettings = portal.getProjectMetadataSettings();
     if (projectMetadataSettings == null) {
       projectMetadataSettings = portalService.getDefaultProjectMetadataSettings();
@@ -324,7 +322,7 @@ public class AuthorAPIController {
         projectMap.put("id", project.getId());
         projectMap.put("name", project.getName());
         String projectIdString = project.getId().toString();
-        Long projectId = new Long(projectIdString);
+        Long projectId = Long.valueOf(projectIdString);
         Run run = getRun(projectId, runsOwnedByUser);
         if (run != null) {
           projectMap.put("runId", run.getId());
@@ -346,7 +344,7 @@ public class AuthorAPIController {
         projectMap.put("id", project.getId());
         projectMap.put("name", project.getName());
         String projectIdString = project.getId().toString();
-        Long projectId = new Long(projectIdString);
+        Long projectId = Long.valueOf(projectIdString);
         Run run = getRun(projectId, sharedRuns);
         if (run != null) {
           projectMap.put("runId", run.getId());
@@ -379,7 +377,7 @@ public class AuthorAPIController {
   @GetMapping("/config/{projectId}")
   @ResponseBody
   protected HashMap<String, Object> getAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request, @PathVariable("projectId") ProjectImpl project)
+      HttpServletRequest request, @PathVariable("projectId") Project project)
       throws IOException, ObjectNotFoundException {
     HashMap<String, Object> config = getDefaultAuthorProjectConfig(auth, request);
     String contextPath = request.getContextPath();
@@ -389,14 +387,15 @@ public class AuthorAPIController {
     String projectBaseURL = projectURL.substring(0, projectURL.indexOf("project.json"));
     Long projectAssetTotalSizeMax = project.getMaxTotalAssetsSize();
     if (projectAssetTotalSizeMax == null) {
-      projectAssetTotalSizeMax = new Long(
-          appProperties.getProperty("project_max_total_assets_size", "15728640"));
+      projectAssetTotalSizeMax = Long
+          .valueOf(appProperties.getProperty("project_max_total_assets_size", "15728640"));
     }
 
-    config.put("projectId", project.getId());
+    config.put("projectId", (Long) project.getId());
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
+    config.put("projectAssetURL",
+        contextPath + "/api/author/project/asset/" + (Long) project.getId());
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("OPENAI_API_KEY")));
@@ -414,7 +413,7 @@ public class AuthorAPIController {
       config.put("saveProjectURL", contextPath + "/api/author/project/save/" + project.getId());
       config.put("commitProjectURL", contextPath + "/project/commit/" + project.getId());
     }
-    List<Run> projectRuns = runService.getProjectRuns(project.getId());
+    List<Run> projectRuns = runService.getProjectRuns((Long) project.getId());
     if (projectRuns.size() > 0) {
       Run projectRun = projectRuns.get(0);
       config.put("canGradeStudentWork", runService.isAllowedToGradeStudentWork(projectRun, user));
@@ -443,23 +442,22 @@ public class AuthorAPIController {
   @PostMapping("/project/notify/{projectId}/{isBegin}")
   @ResponseBody
   protected void notifyAuthorBeginEnd(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project, @PathVariable boolean isBegin)
-      throws Exception {
+      @PathVariable("projectId") Project project, @PathVariable boolean isBegin) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       if (isBegin) {
-        sessionService.addCurrentAuthor(project.getId(), auth.getName());
+        sessionService.addCurrentAuthor((Long) project.getId(), auth.getName());
       } else {
-        sessionService.removeCurrentAuthor(project.getId(), auth.getName());
+        sessionService.removeCurrentAuthor((Long) project.getId(), auth.getName());
       }
-      notifyCurrentAuthors(project.getId());
+      notifyCurrentAuthors((Long) project.getId());
     }
   }
 
   private void notifyCurrentAuthors(Long projectId) throws JSONException {
     JSONObject message = new JSONObject();
     message.put("type", "currentAuthors");
-    message.put("topic", String.format("/topic/current-authors/%s", projectId));
+    message.put("topic", "/topic/current-authors/%s".formatted(projectId));
     message.put("currentAuthors", sessionService.getCurrentAuthors(projectId));
     redisPublisher.publish(message.toString());
   }
@@ -538,9 +536,11 @@ public class AuthorAPIController {
     String stepsTextModified = stepsText.replaceAll("%20", " ");
 
     // Regex string to match asset file references in the step/component content. e.g. carbon.png
-    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
-        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
-        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
+    String patternString = """
+        ('|"|\\\\'|\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]\
+        (png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS\
+        |txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?('|"|\\\\'|\\\\")\
+        """;
     Pattern pattern = Pattern.compile(patternString);
     Matcher matcher = pattern.matcher(stepsTextModified);
     HashSet<String> fileNames = new HashSet<String>();

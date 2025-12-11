@@ -22,6 +22,8 @@
  */
 package org.wise.portal.presentation.web.controllers.admin;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.easymock.EasyMock;
@@ -38,13 +40,11 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.run.impl.RunServiceImpl;
 
-import junit.framework.TestCase;
-
 /**
  * @author patrick lawler
  */
 @ExtendWith(EasyMockExtension.class)
-public class FindProjectRunsControllerTest extends TestCase {
+public class FindProjectRunsControllerTest {
 
   @TestSubject
   private FindProjectRunsController controller = new FindProjectRunsController();

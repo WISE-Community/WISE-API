@@ -34,9 +34,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -270,7 +270,7 @@ public class ShareProjectController {
   protected void unshareSelfFromProject(
       @RequestParam("projectId") String projectIdStr,
       HttpServletResponse response) throws Exception {
-    Long projectId = new Long(projectIdStr);
+    Long projectId = Long.valueOf(projectIdStr);
     Project project = projectService.getById(projectId);
     String username = ControllerUtil.getSignedInUser().getUserDetails().getUsername();
     User user = userService.retrieveUserByUsername(username);

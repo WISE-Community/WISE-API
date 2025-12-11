@@ -59,8 +59,8 @@ public class FindProjectRunsController {
 
   @GetMapping
   protected String findRun(
-      @RequestParam(value = "runLookupType", required = true) String runLookupType,
-      @RequestParam(value = "runLookupValue", required = true) String runLookupValue,
+      @RequestParam(required = true) String runLookupType,
+      @RequestParam(required = true) String runLookupValue,
       ModelMap modelMap) {
     List<Run> runList = new ArrayList<Run>();
     if ("runId".equals(runLookupType)) {
