@@ -57,9 +57,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
-import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
-import org.wise.portal.presentation.web.filters.MicrosoftOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationSuccessHandler;
@@ -92,10 +90,8 @@ public class WebSecurityConfig {
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
         .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
-        .addFilterAfter(googleOpenIdConnectFilter(), OpenSessionInViewFilter.class)
-        .addFilterAfter(microsoftOpenIdConnectFilter(), OpenSessionInViewFilter.class)
         .addFilterAfter(authenticationProcessingFilter(authenticationManager),
-            GoogleOpenIdConnectFilter.class)
+            SecurityContextHolderAwareRequestFilter.class)
         .authorizeHttpRequests(
             auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
@@ -139,22 +135,6 @@ public class WebSecurityConfig {
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
     filter.setAuthenticationFailureHandler(authFailureHandler());
     filter.setFilterProcessesUrl("/api/j_acegi_security_check");
-    return filter;
-  }
-
-  @Bean
-  public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
-    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/api/google-login");
-    filter.setAuthenticationSuccessHandler(authSuccessHandler());
-    filter.setAuthenticationFailureHandler(authFailureHandler());
-    return filter;
-  }
-
-  @Bean
-  public MicrosoftOpenIdConnectFilter microsoftOpenIdConnectFilter() {
-    MicrosoftOpenIdConnectFilter filter = new MicrosoftOpenIdConnectFilter("/api/microsoft-login");
-    filter.setAuthenticationSuccessHandler(authSuccessHandler());
-    filter.setAuthenticationFailureHandler(microsoftAuthFailureHandler());
     return filter;
   }
 

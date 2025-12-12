@@ -400,6 +400,15 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-oauth2-client</artifactId>
+    <version>6.5.7</version>
+</dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
     </dependency>
     <dependency>
@@ -435,26 +444,7 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-oauth2-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security.oauth</groupId>
-      <artifactId>spring-security-oauth2</artifactId>
-      <version>2.5.2.RELEASE</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-jwt</artifactId>
-      <version>1.1.1.RELEASE</version>
-    </dependency>
 
-    <dependency>
-      <groupId>com.auth0</groupId>
-      <artifactId>jwks-rsa</artifactId>
-      <version>${jwks-rsa.version}</version>
-    </dependency>
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
@@ -595,9 +585,6 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-security-oauth2.version>2.2.5.RELEASE</spring-security-oauth2.version>
-
-    <jwks-rsa.version>0.3.0</jwks-rsa.version>
     <powermock.version>1.7.4</powermock.version>
     <startup.listeners>
     </startup.listeners>
