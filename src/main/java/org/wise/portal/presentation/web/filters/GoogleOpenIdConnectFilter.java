@@ -24,6 +24,8 @@
 package org.wise.portal.presentation.web.filters;
 
 import java.io.IOException;
+import java.util.Map;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,8 +43,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.jwt.Jwt;
 import org.springframework.security.jwt.JwtHelper;
-// import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-// import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.service.session.SessionService;
 
@@ -59,39 +61,38 @@ public class GoogleOpenIdConnectFilter extends AbstractOpenIdConnectFilter {
   public Authentication attemptAuthentication(HttpServletRequest request,
       HttpServletResponse response) throws AuthenticationException, IOException {
     saveRequestParams(request);
-    return null;
-    // OAuth2AccessToken accessToken = getAccessToken();
-    // try {
-    //   final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();
-    //   String kid = JwtHelper.headers(idToken).get("kid");
-    //   final Jwt tokenDecoded = JwtHelper.decodeAndVerify(idToken, verifier(kid));
-    //   final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(),
-    //       Map.class);
-    //   verifyClaims(authInfo);
-    //   final UserDetails user = userDetailsService.loadUserByGoogleUserId(authInfo.get("sub"));
-    //   invalidateAccesToken();
-    //   if (user != null) {
-    //     return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-    //   } else {
-    //     throw new BadCredentialsException("google user not found");
-    //   }
-    // } catch (final Exception e) {
-    //   throw new BadCredentialsException("Could not obtain user details from token", e);
-    // }
+    OAuth2AccessToken accessToken = getAccessToken();
+    try {
+      final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();
+      String kid = JwtHelper.headers(idToken).get("kid");
+      final Jwt tokenDecoded = JwtHelper.decodeAndVerify(idToken, verifier(kid));
+      final Map<String, String> authInfo = new ObjectMapper().readValue(tokenDecoded.getClaims(),
+          Map.class);
+      verifyClaims(authInfo);
+      final UserDetails user = userDetailsService.loadUserByGoogleUserId(authInfo.get("sub"));
+      invalidateAccesToken();
+      if (user != null) {
+        return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+      } else {
+        throw new BadCredentialsException("google user not found");
+      }
+    } catch (final Exception e) {
+      throw new BadCredentialsException("Could not obtain user details from token", e);
+    }
   }
 
-  // private void invalidateAccesToken() {
-  //   openIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken) null);
-  // }
+  private void invalidateAccesToken() {
+    openIdRestTemplate.getOAuth2ClientContext().setAccessToken((OAuth2AccessToken) null);
+  }
 
-  // @Override
-  // protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-  //     FilterChain chain, Authentication authentication) throws IOException, ServletException {
-  //   UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-  //   sessionService.addSignedInUser(userDetails);
-  //   userDetailsService.updateStatsOnSuccessfulLogin((MutableUserDetails) userDetails);
-  //   super.successfulAuthentication(request, response, chain, authentication);
-  // }
+  @Override
+  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+      FilterChain chain, Authentication authentication) throws IOException, ServletException {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    sessionService.addSignedInUser(userDetails);
+    userDetailsService.updateStatsOnSuccessfulLogin((MutableUserDetails) userDetails);
+    super.successfulAuthentication(request, response, chain, authentication);
+  }
 
   @Value("${google.clientId:}")
   protected void setClientId(String clientId) {
@@ -108,9 +109,9 @@ public class GoogleOpenIdConnectFilter extends AbstractOpenIdConnectFilter {
     this.jwkUrl = jwkUrl;
   }
 
-  // @Autowired
-  // @Qualifier("googleOpenIdRestTemplate")
-  // protected void setOpenIdRestTemplate(OAuth2RestTemplate template) {
-  //   this.openIdRestTemplate = template;
-  // }
+  @Autowired
+  @Qualifier("googleOpenIdRestTemplate")
+  protected void setOpenIdRestTemplate(OAuth2RestTemplate template) {
+    this.openIdRestTemplate = template;
+  }
 }

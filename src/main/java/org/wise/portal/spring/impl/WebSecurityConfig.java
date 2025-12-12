@@ -108,6 +108,7 @@ public class WebSecurityConfig {
                 .hasAnyRole("TEACHER").requestMatchers(new AntPathRequestMatcher("/student/**"))
                 .hasAnyRole("STUDENT").requestMatchers(new AntPathRequestMatcher("/studentStatus"))
                 .hasAnyRole("TEACHER", "STUDENT")
+                .requestMatchers(new AntPathRequestMatcher("/api/google-login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/*/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/teacher/**")).hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/sso/discourse"))
