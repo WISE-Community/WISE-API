@@ -99,7 +99,7 @@ public class StudentAPIController extends UserAPIController {
   @Autowired
   private Properties i18nProperties;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
 
   @GetMapping("/runs")

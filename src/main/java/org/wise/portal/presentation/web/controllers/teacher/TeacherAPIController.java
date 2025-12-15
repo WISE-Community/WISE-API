@@ -59,10 +59,10 @@ public class TeacherAPIController extends UserAPIController {
   @Autowired
   private UserTagsService userTagsService;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
 
-  @Value("${google.clientSecret:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-secret}")
   private String googleClientSecret;
 
   @GetMapping("/runs")

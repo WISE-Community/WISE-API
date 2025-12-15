@@ -85,10 +85,10 @@ public class UserAPIController {
   @Autowired
   protected StudentService studentService;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id:}")
   protected String googleClientId = "";
 
-  @Value("${google.clientSecret:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
   private String googleClientSecret = "";
 
   protected static final String PROJECT_THUMB_PATH = "/assets/project_thumb.png";
@@ -200,8 +200,7 @@ public class UserAPIController {
 
   @PostMapping("/password")
   ResponseEntity<Map<String, Object>> changePassword(Authentication auth,
-      @RequestParam String oldPassword,
-      @RequestParam String newPassword) {
+      @RequestParam String oldPassword, @RequestParam String newPassword) {
     if (!passwordService.isValid(newPassword)) {
       Map<String, Object> map = passwordService.getErrors(newPassword);
       return ResponseEntityGenerator.createError(map);

@@ -58,6 +58,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
 import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
+import org.wise.portal.presentation.web.filters.OAuth2AuthenticationFailureHandler;
+import org.wise.portal.presentation.web.filters.OAuth2AuthenticationSuccessHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationSuccessHandler;
@@ -104,6 +106,8 @@ public class WebSecurityConfig {
                 .hasAnyRole("TEACHER").requestMatchers(new AntPathRequestMatcher("/student/**"))
                 .hasAnyRole("STUDENT").requestMatchers(new AntPathRequestMatcher("/studentStatus"))
                 .hasAnyRole("TEACHER", "STUDENT")
+                .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/google-login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/*/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/teacher/**")).hasAnyRole("TEACHER")
@@ -118,6 +122,9 @@ public class WebSecurityConfig {
                 .requestMatchers(new AntPathRequestMatcher("/")).permitAll().anyRequest()
                 .authenticated())
         .formLogin(form -> form.loginPage("/login").permitAll())
+        .oauth2Login(oauth2 -> oauth2.loginPage("/login")
+            .successHandler(oauth2AuthenticationSuccessHandler())
+            .failureHandler(oauth2AuthenticationFailureHandler()))
         .logout(logout -> logout.addLogoutHandler(wiseLogoutHandler())
             .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
             .logoutSuccessHandler((request, response, authentication) -> response
@@ -141,6 +148,16 @@ public class WebSecurityConfig {
   @Bean
   public OpenSessionInViewFilter openSessionInViewFilter() {
     return new OpenSessionInViewFilter();
+  }
+
+  @Bean
+  public OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
+    return new OAuth2AuthenticationSuccessHandler();
+  }
+
+  @Bean
+  public OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler() {
+    return new OAuth2AuthenticationFailureHandler();
   }
 
   @Bean
