@@ -19,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -97,7 +98,7 @@ public class UserAPIController {
   HashMap<String, Object> getUserInfo(Authentication auth,
       @RequestParam(required = false) String username) {
     HashMap<String, Object> info = new HashMap<String, Object>();
-    if (auth != null) {
+    if (auth != null && !(auth instanceof OAuth2AuthenticationToken)) {
       User user = userService.retrieveUserByUsername(auth.getName());
       info.put("id", user.getId());
       MutableUserDetails ud = user.getUserDetails();

@@ -84,7 +84,6 @@ import org.wise.portal.service.student.StudentService;
  */
 @RestController
 @RequestMapping("/api/student")
-@Secured({ "ROLE_STUDENT" })
 public class StudentAPIController extends UserAPIController {
 
   @Autowired
@@ -112,6 +111,7 @@ public class StudentAPIController extends UserAPIController {
     return runList;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/run/launch")
   HashMap<String, Object> launchRun(Authentication auth, @RequestParam Long runId,
       @RequestParam(required = false) Long workgroupId, @RequestParam String presentUserIds,
@@ -220,6 +220,7 @@ public class StudentAPIController extends UserAPIController {
    *         information about the run. If the student is not successfully added to the run, we will
    *         return a map containing an error field with an error string.
    */
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/run/register")
   HashMap<String, Object> addStudentToRun(Authentication auth, @RequestParam String runCode,
       @RequestParam String period) {
@@ -361,6 +362,7 @@ public class StudentAPIController extends UserAPIController {
     return questions;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/profile/update")
   SimpleResponse updateProfile(Authentication auth, @RequestParam String language) {
     User user = userService.retrieveUserByUsername(auth.getName());
@@ -370,6 +372,7 @@ public class StudentAPIController extends UserAPIController {
     return new SimpleResponse("success", "profileUpdated");
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @GetMapping("/teacher-list")
   Set<HashMap<String, String>> getAssociatedTeachers(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
@@ -385,6 +388,7 @@ public class StudentAPIController extends UserAPIController {
     return teachers;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @GetMapping("/can-be-added-to-workgroup")
   HashMap<String, Object> canBeAddedToWorkgroup(Authentication auth, @RequestParam Long runId,
       @RequestParam(required = false) Long workgroupId, @RequestParam Long userId)
