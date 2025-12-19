@@ -70,10 +70,10 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project>
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    Subquery<RunImpl> runProjectIds = getRunProjectIds(cq);
+    Subquery<Long> runProjectIds = getRunProjectIds(cq);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.isMember(userRoot.get("id"), projectRoot.<Set<User>> get("sharedowners")));
+    predicates.add(cb.equal(userRoot, user));
+    predicates.add(cb.isMember(user, projectRoot.<Set<User>> get("sharedowners")));
     predicates.add(cb.not(projectRoot.get("id").in(runProjectIds)));
     cq.select(projectRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
@@ -81,8 +81,8 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project>
     return (List<Project>) (Object) projectResultList;
   }
 
-  private Subquery<RunImpl> getRunProjectIds(CriteriaQuery cq) {
-    Subquery<RunImpl> runsSubquery = cq.subquery(RunImpl.class);
+  private Subquery<Long> getRunProjectIds(CriteriaQuery cq) {
+    Subquery<Long> runsSubquery = cq.subquery(Long.class);
     Root<RunImpl> runRoot = runsSubquery.from(RunImpl.class);
     runsSubquery.select(runRoot.get("project").get("id"));
     return runsSubquery;
@@ -185,10 +185,10 @@ public class HibernateProjectDao extends AbstractHibernateDao<Project>
     CriteriaQuery<ProjectImpl> cq = cb.createQuery(ProjectImpl.class);
     Root<ProjectImpl> projectRoot = cq.from(ProjectImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
-    Subquery<RunImpl> runProjectIds = getRunProjectIds(cq);
+    Subquery<Long> runProjectIds = getRunProjectIds(cq);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(userRoot.get("id"), user.getId()));
-    predicates.add(cb.equal(userRoot.get("id"), projectRoot.get("owner")));
+    predicates.add(cb.equal(userRoot, user));
+    predicates.add(cb.equal(userRoot, projectRoot.get("owner")));
     predicates.add(cb.not(projectRoot.get("id").in(runProjectIds)));
     cq.select(projectRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<ProjectImpl> query = entityManager.createQuery(cq);
