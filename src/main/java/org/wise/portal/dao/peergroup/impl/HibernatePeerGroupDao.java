@@ -31,6 +31,7 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -103,8 +104,7 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
     List<Predicate> predicates = new ArrayList<>();
     predicates.add(cb.equal(workgroupImplRoot.get("id"), workgroup.getId()));
-    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>> get("members")));
+    predicates.add(cb.isMember(workgroup, peerGroupImplRoot.<Set<Workgroup>> get("members")));
     cq.select(peerGroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupImpl> query = entityManager.createQuery(cq);
     List<PeerGroupImpl> resultList = query.getResultList();
@@ -117,13 +117,11 @@ public class HibernatePeerGroupDao extends AbstractHibernateDao<PeerGroup>
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<WorkgroupImpl> cq = cb.createQuery(WorkgroupImpl.class);
     Root<PeerGroupImpl> peerGroupImplRoot = cq.from(PeerGroupImpl.class);
-    Root<WorkgroupImpl> workgroupImplRoot = cq.from(WorkgroupImpl.class);
+    Join<PeerGroupImpl, WorkgroupImpl> membersJoin = peerGroupImplRoot.join("members");
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping.getId()));
-    predicates.add(cb.equal(workgroupImplRoot.get("period"), period.getId()));
-    predicates.add(cb.isMember(workgroupImplRoot.get("id"),
-        peerGroupImplRoot.<Set<Workgroup>> get("members")));
-    cq.select(workgroupImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
+    predicates.add(cb.equal(peerGroupImplRoot.get("peerGrouping"), peerGrouping));
+    predicates.add(cb.equal(membersJoin.get("period"), period));
+    cq.select(membersJoin).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<WorkgroupImpl> query = entityManager.createQuery(cq);
     List<WorkgroupImpl> resultList = query.getResultList();
     return (List<Workgroup>) (Object) resultList;

@@ -35,6 +35,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -75,7 +76,7 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   @Column(name = "OPTLOCK")
   private Integer version = null;
 
-  @OneToOne(targetEntity = RunImpl.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "run_fk", nullable = false)
   private Run run;
 
@@ -83,7 +84,7 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   @JoinColumn(name = "group_fk", nullable = false)
   private Group group = new PersistentGroup();
 
-  @OneToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "period")
   private Group period;
 
