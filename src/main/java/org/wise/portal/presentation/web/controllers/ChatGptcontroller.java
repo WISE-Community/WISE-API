@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.annotation.Secured;
@@ -36,13 +35,14 @@ public class ChatGptcontroller {
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestMethod("POST");
       connection.setRequestProperty("Authorization", "Bearer " + openaiApiKey);
-      connection.setRequestProperty("Content-Type", "application/json");
+      connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+      connection.setRequestProperty("Accept-Charset", "UTF-8");
       connection.setDoOutput(true);
       OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
       writer.write(body);
       writer.flush();
       writer.close();
-      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"ISO-8859-1"));
       String line;
       StringBuffer response = new StringBuffer();
       while ((line = br.readLine()) != null) {
