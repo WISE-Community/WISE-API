@@ -35,7 +35,6 @@ public class ChatbotServiceImpl implements ChatbotService {
 	@Transactional(readOnly = true)
 	public List<Chat> getAllChats(Run run, Workgroup workgroup) {
 		return chatDao.getChatsByRunAndWorkgroup(run, workgroup);
-
 	}
 
 	@Override
@@ -65,12 +64,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 		if (existingChat == null) {
 			throw new IllegalArgumentException("Chat not found with id: " + chatId);
 		}
-
-		// Verify the chat belongs to the specified run and workgroup
-		if (!existingChat.getRun().equals(run) || !existingChat.getWorkgroup().equals(workgroup)) {
-			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
-		}
-
+		validateChatOwnership(existingChat, run, workgroup);
 		if (updatedChat.getTitle() != null) {
 			existingChat.setTitle(updatedChat.getTitle());
 		}
@@ -105,12 +99,14 @@ public class ChatbotServiceImpl implements ChatbotService {
 		if (chat == null) {
 			throw new IllegalArgumentException("Chat not found with id: " + chatId);
 		}
+		validateChatOwnership(chat, run, workgroup);
+		chat.setDeleted(true);
+		chatDao.save(chat);
+	}
 
-		// Verify the chat belongs to the specified run and workgroup
+	private void validateChatOwnership(Chat chat, Run run, Workgroup workgroup) {
 		if (!chat.getRun().equals(run) || !chat.getWorkgroup().equals(workgroup)) {
 			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
 		}
-		chat.setDeleted(true);
-		chatDao.save(chat);
 	}
 }
