@@ -145,7 +145,7 @@ public class ChatbotServiceImpl implements ChatbotService {
 		if (!chat.getRun().getId().equals(runId) || !chat.getWorkgroup().getId().equals(workgroupId)) {
 			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
 		}
-
-		chatDao.delete(chat);
+		chat.setDeleted(true);
+		chatDao.save(chat);
 	}
 }

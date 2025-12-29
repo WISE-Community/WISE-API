@@ -75,6 +75,9 @@ public class Chat extends PersistableDomain {
 	@Column(name = "lastUpdated", nullable = false)
 	private Timestamp lastUpdated;
 
+	@Column(name = "isDeleted", nullable = false)
+	private boolean isDeleted = false;
+
 	@OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@OrderBy("timestamp ASC")
 	private List<ChatMessage> messages = new ArrayList<>();

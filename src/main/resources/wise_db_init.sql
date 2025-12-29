@@ -97,6 +97,7 @@ create table chatbot_chats (
     title varchar(255),
     createdAt datetime not null,
     lastUpdated datetime not null,
+    isDeleted bit not null default 0,
     index chatbotChatsRunIdIndex (runId),
     index chatbotChatsWorkgroupIdIndex (workgroupId),
     constraint chatbotChatsRunIdFK foreign key (runId) references runs (id),
