@@ -10,10 +10,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.chatbot.ChatDao;
-import org.wise.portal.dao.run.RunDao;
-import org.wise.portal.dao.workgroup.WorkgroupDao;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.chatbot.ChatbotService;
@@ -34,75 +31,43 @@ public class ChatbotServiceImpl implements ChatbotService {
 	@Autowired
 	private ChatDao<Chat> chatDao;
 
-	@Autowired
-	private RunDao<Run> runDao;
-
-	@Autowired
-	private WorkgroupDao<Workgroup> workgroupDao;
-
 	@Override
 	@Transactional(readOnly = true)
-	public List<Chat> getAllChats(Long runId, Long workgroupId) {
-		try {
-			Run run = runDao.getById(runId);
-			Workgroup workgroup = workgroupDao.getById(workgroupId);
-			return chatDao.getChatsByRunAndWorkgroup(run, workgroup);
-		} catch (ObjectNotFoundException e) {
-			throw new IllegalArgumentException("Run or Workgroup not found", e);
-		}
+	public List<Chat> getAllChats(Run run, Workgroup workgroup) {
+		return chatDao.getChatsByRunAndWorkgroup(run, workgroup);
+
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public Chat getChat(Long runId, Long workgroupId, Long chatId) {
-		Chat chat = chatDao.getChatById(chatId);
-		if (chat == null) {
-			throw new IllegalArgumentException("Chat not found with id: " + chatId);
+	@Transactional
+	public Chat createChat(Run run, Workgroup workgroup, Chat chat) {
+		chat.setRun(run);
+		chat.setWorkgroup(workgroup);
+
+		Timestamp now = Timestamp.from(Instant.now());
+		if (chat.getCreatedAt() == null) {
+			chat.setCreatedAt(now);
 		}
-		// Verify the chat belongs to the specified run and workgroup
-		if (!chat.getRun().getId().equals(runId) || !chat.getWorkgroup().getId().equals(workgroupId)) {
-			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
+		if (chat.getLastUpdated() == null) {
+			chat.setLastUpdated(now);
 		}
+		if (chat.getMessages() != null) {
+			chat.getMessages().forEach(message -> message.setChat(chat));
+		}
+		chatDao.save(chat);
 		return chat;
 	}
 
 	@Override
 	@Transactional
-	public Chat createChat(Long runId, Long workgroupId, Chat chat) {
-		try {
-			Run run = runDao.getById(runId);
-			Workgroup workgroup = workgroupDao.getById(workgroupId);
-			chat.setRun(run);
-			chat.setWorkgroup(workgroup);
-
-			Timestamp now = Timestamp.from(Instant.now());
-			if (chat.getCreatedAt() == null) {
-				chat.setCreatedAt(now);
-			}
-			if (chat.getLastUpdated() == null) {
-				chat.setLastUpdated(now);
-			}
-			if (chat.getMessages() != null) {
-				chat.getMessages().forEach(message -> message.setChat(chat));
-			}
-			chatDao.save(chat);
-			return chat;
-		} catch (ObjectNotFoundException e) {
-			throw new IllegalArgumentException("Run or Workgroup not found", e);
-		}
-	}
-
-	@Override
-	@Transactional
-	public Chat updateChat(Long runId, Long workgroupId, Long chatId, Chat updatedChat) {
+	public Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat updatedChat) {
 		Chat existingChat = chatDao.getChatById(chatId);
 		if (existingChat == null) {
 			throw new IllegalArgumentException("Chat not found with id: " + chatId);
 		}
 
 		// Verify the chat belongs to the specified run and workgroup
-		if (!existingChat.getRun().getId().equals(runId)
-		    || !existingChat.getWorkgroup().getId().equals(workgroupId)) {
+		if (!existingChat.getRun().equals(run) || !existingChat.getWorkgroup().equals(workgroup)) {
 			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
 		}
 
@@ -135,14 +100,14 @@ public class ChatbotServiceImpl implements ChatbotService {
 
 	@Override
 	@Transactional
-	public void deleteChat(Long runId, Long workgroupId, Long chatId) {
+	public void deleteChat(Run run, Workgroup workgroup, Long chatId) {
 		Chat chat = chatDao.getChatById(chatId);
 		if (chat == null) {
 			throw new IllegalArgumentException("Chat not found with id: " + chatId);
 		}
 
 		// Verify the chat belongs to the specified run and workgroup
-		if (!chat.getRun().getId().equals(runId) || !chat.getWorkgroup().getId().equals(workgroupId)) {
+		if (!chat.getRun().equals(run) || !chat.getWorkgroup().equals(workgroup)) {
 			throw new IllegalArgumentException("Chat does not belong to the specified run and workgroup");
 		}
 		chat.setDeleted(true);

@@ -2,6 +2,8 @@ package org.wise.portal.service.chatbot;
 
 import java.util.List;
 
+import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.chatbot.Chat;
 
 /**
@@ -14,49 +16,39 @@ public interface ChatbotService {
 	/**
 	 * Get all chats for a specific run and workgroup
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run 
+	 * @param workgroup the workgroup 
 	 * @return list of all chats
 	 */
-	List<Chat> getAllChats(Long runId, Long workgroupId);
-
-	/**
-	 * Get a specific chat by ID
-	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
-	 * @param chatId the chat ID
-	 * @return the requested chat
-	 */
-	Chat getChat(Long runId, Long workgroupId, Long chatId);
+	List<Chat> getAllChats(Run run, Workgroup workgroup);
 
 	/**
 	 * Create a new chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run
+	 * @param workgroup the workgroup
 	 * @param chat the chat data
 	 * @return the created chat with generated ID
 	 */
-	Chat createChat(Long runId, Long workgroupId, Chat chat);
+	Chat createChat(Run run, Workgroup workgroup, Chat chat);
 
 	/**
 	 * Update an existing chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run
+	 * @param workgroup the workgroup
 	 * @param chatId the chat ID
 	 * @param chat the updated chat data
 	 * @return the updated chat
 	 */
-	Chat updateChat(Long runId, Long workgroupId, Long chatId, Chat chat);
+	Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat chat);
 
 	/**
 	 * Delete a chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run
+	 * @param workgroup the workgroup
 	 * @param chatId the chat ID
 	 */
-	void deleteChat(Long runId, Long workgroupId, Long chatId);
+	void deleteChat(Run run, Workgroup workgroup, Long chatId);
 }

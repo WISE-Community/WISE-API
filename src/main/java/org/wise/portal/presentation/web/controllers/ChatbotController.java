@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.chatbot.ChatbotService;
 import org.wise.vle.domain.chatbot.Chat;
 
@@ -33,72 +35,58 @@ public class ChatbotController {
 	/**
 	 * Get all chats for a specific run and workgroup
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run ID
+	 * @param workgroup the workgroup ID
 	 * @return list of all chats
 	 */
-	@GetMapping("/chats/{runId}/{workgroupId}")
-	public ResponseEntity<List<Chat>> getAllChats(@PathVariable Long runId,
-	    @PathVariable Long workgroupId) {
-		return ResponseEntity.ok(chatbotService.getAllChats(runId, workgroupId));
-	}
-
-	/**
-	 * Get a specific chat by ID
-	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
-	 * @param chatId the chat ID
-	 * @return the requested chat
-	 */
-	@GetMapping("/chats/{runId}/{workgroupId}/{chatId}")
-	public ResponseEntity<Chat> getChat(@PathVariable Long runId, @PathVariable Long workgroupId,
-	    @PathVariable Long chatId) {
-		return ResponseEntity.ok(chatbotService.getChat(runId, workgroupId, chatId));
+	@GetMapping("/chats/{run}/{workgroup}")
+	public ResponseEntity<List<Chat>> getAllChats(@PathVariable RunImpl run,
+	    @PathVariable WorkgroupImpl workgroup) {
+		return ResponseEntity.ok(chatbotService.getAllChats(run, workgroup));
 	}
 
 	/**
 	 * Create a new chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run ID
+	 * @param workgroup the workgroup ID
 	 * @param chat the chat data
-	 * @return the created chat with generated ID
+	 * @return the created chat 
 	 */
-	@PostMapping("/chats/{runId}/{workgroupId}")
-	public ResponseEntity<Chat> createChat(@PathVariable Long runId, @PathVariable Long workgroupId,
-	    @RequestBody Chat chat) {
+	@PostMapping("/chats/{run}/{workgroup}")
+	public ResponseEntity<Chat> createChat(@PathVariable RunImpl run,
+	    @PathVariable WorkgroupImpl workgroup, @RequestBody Chat chat) {
 		return ResponseEntity.status(HttpStatus.CREATED)
-		    .body(chatbotService.createChat(runId, workgroupId, chat));
+		    .body(chatbotService.createChat(run, workgroup, chat));
 	}
 
 	/**
 	 * Update an existing chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run ID
+	 * @param workgroup the workgroup ID
 	 * @param chatId the chat ID
 	 * @param chat the updated chat data
 	 * @return the updated chat
 	 */
-	@PutMapping("/chats/{runId}/{workgroupId}/{chatId}")
-	public ResponseEntity<Chat> updateChat(@PathVariable Long runId, @PathVariable Long workgroupId,
-	    @PathVariable Long chatId, @RequestBody Chat chat) {
-		return ResponseEntity.ok(chatbotService.updateChat(runId, workgroupId, chatId, chat));
+	@PutMapping("/chats/{run}/{workgroup}/{chatId}")
+	public ResponseEntity<Chat> updateChat(@PathVariable RunImpl run,
+	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId, @RequestBody Chat chat) {
+		return ResponseEntity.ok(chatbotService.updateChat(run, workgroup, chatId, chat));
 	}
 
 	/**
 	 * Delete a chat
 	 * 
-	 * @param runId the run ID
-	 * @param workgroupId the workgroup ID
+	 * @param run the run ID
+	 * @param workgroup the workgroup ID
 	 * @param chatId the chat ID
 	 * @return success response
 	 */
-	@DeleteMapping("/chats/{runId}/{workgroupId}/{chatId}")
-	public ResponseEntity<Void> deleteChat(@PathVariable Long runId, @PathVariable Long workgroupId,
-	    @PathVariable Long chatId) {
-		chatbotService.deleteChat(runId, workgroupId, chatId);
+	@DeleteMapping("/chats/{run}/{workgroup}/{chatId}")
+	public ResponseEntity<Void> deleteChat(@PathVariable RunImpl run,
+	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId) {
+		chatbotService.deleteChat(run, workgroup, chatId);
 		return ResponseEntity.noContent().build();
 	}
 }
