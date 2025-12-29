@@ -90,6 +90,31 @@ create table annotations (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table chatbot_chats (
+    id bigint not null auto_increment,
+    runId bigint not null,
+    workgroupId bigint not null,
+    title varchar(255),
+    createdAt datetime not null,
+    lastUpdated datetime not null,
+    index chatbotChatsRunIdIndex (runId),
+    index chatbotChatsWorkgroupIdIndex (workgroupId),
+    constraint chatbotChatsRunIdFK foreign key (runId) references runs (id),
+    constraint chatbotChatsWorkgroupIdFK foreign key (workgroupId) references workgroups (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table chatbot_messages (
+    id bigint not null auto_increment,
+    chatId bigint not null,
+    role varchar(20) not null,
+    content text not null,
+    timestamp datetime,
+    index chatbotMessagesChatIdIndex (chatId),
+    constraint chatbotMessagesChatIdFK foreign key (chatId) references chatbot_chats (id) on delete cascade,
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 create table events (
     id integer not null auto_increment,
     category varchar(255) not null,
