@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.chatbot.ChatbotService;
@@ -68,10 +69,12 @@ public class ChatbotController {
 	 * @param chatId the chat ID
 	 * @param chat the updated chat data
 	 * @return the updated chat
+	 * @throws ObjectNotFoundException when the chat is not found
 	 */
 	@PutMapping("/chats/{run}/{workgroup}/{chatId}")
 	public ResponseEntity<Chat> updateChat(@PathVariable RunImpl run,
-	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId, @RequestBody Chat chat) {
+	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId, @RequestBody Chat chat)
+	    throws ObjectNotFoundException {
 		return ResponseEntity.ok(chatbotService.updateChat(run, workgroup, chatId, chat));
 	}
 
@@ -82,10 +85,11 @@ public class ChatbotController {
 	 * @param workgroup the workgroup ID
 	 * @param chatId the chat ID
 	 * @return success response
+	 * @throws ObjectNotFoundException when the chat is not found
 	 */
 	@DeleteMapping("/chats/{run}/{workgroup}/{chatId}")
 	public ResponseEntity<Void> deleteChat(@PathVariable RunImpl run,
-	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId) {
+	    @PathVariable WorkgroupImpl workgroup, @PathVariable Long chatId) throws ObjectNotFoundException {
 		chatbotService.deleteChat(run, workgroup, chatId);
 		return ResponseEntity.noContent().build();
 	}

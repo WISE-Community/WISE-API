@@ -73,13 +73,4 @@ public class HibernateChatDao extends AbstractHibernateDao<Chat> implements Chat
 		TypedQuery<Chat> query = entityManager.createQuery(cq);
 		return (List<Chat>) (Object) query.getResultList();
 	}
-
-	@Override
-	public Chat getChatById(Long id) {
-		try {
-			return getById(id);
-		} catch (Exception e) {
-			return null;
-		}
-	}
 }

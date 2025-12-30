@@ -10,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.chatbot.ChatDao;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
@@ -59,11 +60,9 @@ public class ChatbotServiceImpl implements ChatbotService {
 
 	@Override
 	@Transactional
-	public Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat updatedChat) {
-		Chat existingChat = chatDao.getChatById(chatId);
-		if (existingChat == null) {
-			throw new IllegalArgumentException("Chat not found with id: " + chatId);
-		}
+	public Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat updatedChat)
+	    throws ObjectNotFoundException {
+		Chat existingChat = chatDao.getById(chatId);
 		validateChatOwnership(existingChat, run, workgroup);
 		if (updatedChat.getTitle() != null) {
 			existingChat.setTitle(updatedChat.getTitle());
@@ -94,11 +93,8 @@ public class ChatbotServiceImpl implements ChatbotService {
 
 	@Override
 	@Transactional
-	public void deleteChat(Run run, Workgroup workgroup, Long chatId) {
-		Chat chat = chatDao.getChatById(chatId);
-		if (chat == null) {
-			throw new IllegalArgumentException("Chat not found with id: " + chatId);
-		}
+	public void deleteChat(Run run, Workgroup workgroup, Long chatId) throws ObjectNotFoundException {
+		Chat chat = chatDao.getById(chatId);
 		validateChatOwnership(chat, run, workgroup);
 		chat.setDeleted(true);
 		chatDao.save(chat);

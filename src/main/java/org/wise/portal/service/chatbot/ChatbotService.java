@@ -2,6 +2,7 @@ package org.wise.portal.service.chatbot;
 
 import java.util.List;
 
+import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.chatbot.Chat;
@@ -28,7 +29,7 @@ public interface ChatbotService {
 	 * @param run the run
 	 * @param workgroup the workgroup
 	 * @param chat the chat data
-	 * @return the created chat with generated ID
+	 * @return the created chat
 	 */
 	Chat createChat(Run run, Workgroup workgroup, Chat chat);
 
@@ -40,8 +41,10 @@ public interface ChatbotService {
 	 * @param chatId the chat ID
 	 * @param chat the updated chat data
 	 * @return the updated chat
+	 * @throws ObjectNotFoundException when the chat is not found 
 	 */
-	Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat chat);
+	Chat updateChat(Run run, Workgroup workgroup, Long chatId, Chat chat)
+	    throws ObjectNotFoundException;
 
 	/**
 	 * Delete a chat
@@ -49,6 +52,7 @@ public interface ChatbotService {
 	 * @param run the run
 	 * @param workgroup the workgroup
 	 * @param chatId the chat ID
+	 * @throws ObjectNotFoundException when the chat is not found 
 	 */
-	void deleteChat(Run run, Workgroup workgroup, Long chatId);
+	void deleteChat(Run run, Workgroup workgroup, Long chatId) throws ObjectNotFoundException;
 }

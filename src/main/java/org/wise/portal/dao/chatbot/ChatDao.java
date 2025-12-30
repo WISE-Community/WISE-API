@@ -45,12 +45,4 @@ public interface ChatDao<T extends Chat> extends SimpleDao<T> {
 	 * @return list of chats
 	 */
 	List<Chat> getChatsByRunAndWorkgroup(Run run, Workgroup workgroup);
-
-	/**
-	 * Get a specific chat by ID
-	 * 
-	 * @param id the chat ID
-	 * @return the chat, or null if not found
-	 */
-	Chat getChatById(Long id);
 }
