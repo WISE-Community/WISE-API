@@ -61,6 +61,9 @@ public class ChatMessage extends PersistableDomain {
 	@Column(name = "timestamp", nullable = true)
 	private Timestamp timestamp;
 
+	@Column(name = "nodeId", length = 30, nullable = true)
+	private String nodeId;
+
 	@Transient
 	private Long chatId;
 
