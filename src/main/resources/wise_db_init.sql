@@ -111,7 +111,7 @@ create table chatbot_messages (
     role varchar(20) not null,
     content text not null,
     timestamp datetime,
-    nodeId varchar(30),
+    nodeId varchar(30) not null,
     index chatbotMessagesChatIdIndex (chatId),
     constraint chatbotMessagesChatIdFK foreign key (chatId) references chatbot_chats (id) on delete cascade,
     primary key (id)
