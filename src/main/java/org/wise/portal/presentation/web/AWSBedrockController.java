@@ -27,19 +27,22 @@ public class AWSBedrockController {
 	@Secured("ROLE_USER")
 	@PostMapping
 	protected String sendChatMessage(@RequestBody String body) {
-		String awsBedrockApiKey = appProperties.getProperty("aws.bedrock.api.key");
-		if (awsBedrockApiKey == null || awsBedrockApiKey.isEmpty()) {
+		String apiKey = appProperties.getProperty("aws.bedrock.api.key");
+		if (apiKey == null || apiKey.isEmpty()) {
 			throw new RuntimeException("aws.bedrock.api.key is not set");
 		}
-		String awsBedrockApiUrl = appProperties.getProperty("aws.bedrock.api.url");
-		if (awsBedrockApiUrl == null || awsBedrockApiUrl.isEmpty()) {
-			throw new RuntimeException("aws.bedrock.api.url is not set");
+		String apiEndpoint = appProperties.getProperty("aws.bedrock.runtime.endpoint");
+		if (apiEndpoint == null || apiEndpoint.isEmpty()) {
+			throw new RuntimeException("aws.bedrock.runtime.endpoint is not set");
 		}
+		// assume openai-only support for now. We'll add other models later.
+		apiEndpoint += "/openai/v1/chat/completions";
+
 		try {
-			URL url = new URL(awsBedrockApiUrl);
+			URL url = new URL(apiEndpoint);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Authorization", "Bearer " + awsBedrockApiKey);
+			connection.setRequestProperty("Authorization", "Bearer " + apiKey);
 			connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 			connection.setRequestProperty("Accept-Charset", "UTF-8");
 			connection.setDoOutput(true);
