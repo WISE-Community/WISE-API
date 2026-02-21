@@ -91,7 +91,7 @@ public class TranslateProjectAPIController {
   private String convertLanguageToAWSCode(String language) throws IllegalArgumentException {
     return switch (language) {
       case "English" -> "en";
-      case "Spanish" -> "es";
+      case "Spanish" -> "es-MX";
       case "Italian" -> "it";
       case "Japanese" -> "ja";
       case "German" -> "de";
