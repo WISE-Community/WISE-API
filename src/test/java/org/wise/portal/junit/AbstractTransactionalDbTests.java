@@ -22,17 +22,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.easymock.EasyMockExtension;
 import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -81,8 +76,6 @@ public abstract class AbstractTransactionalDbTests
   @Autowired
   protected SessionFactory sessionFactory;
 
-  protected HibernateFlusher toilet;
-
   @Autowired
   private HibernateProjectDao projectDao;
 
@@ -122,8 +115,10 @@ public abstract class AbstractTransactionalDbTests
   }
 
   public void setUp() throws Exception {
-    toilet = new HibernateFlusher();
-    toilet.setSessionFactory(sessionFactory);
+  }
+
+  public void flush() {
+    this.sessionFactory.getCurrentSession().flush();
   }
 
   public User createUser() {

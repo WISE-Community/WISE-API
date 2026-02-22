@@ -71,7 +71,7 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
     String runCode = UNUSED_RUN_CODE;
     run1 = createProjectAndRun(id, projectName, teacher2, startTime, runCode);
     runDao.save(run1);
-    toilet.flush();
+    flush();
     assertNumRuns(4);
   }
 
@@ -80,7 +80,7 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
     run1.setProject(null);
     try {
       runDao.save(run1);
-      toilet.flush();
+      flush();
       fail("Exception expected to be thrown but was not");
     } catch (Exception e) {
     }

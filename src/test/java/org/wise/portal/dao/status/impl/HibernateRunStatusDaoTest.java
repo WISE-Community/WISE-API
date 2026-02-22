@@ -59,7 +59,7 @@ public class HibernateRunStatusDaoTest extends AbstractTransactionalDbTests {
     Long runId = 1L;
     Timestamp timeStamp = new Timestamp(Calendar.getInstance().getTimeInMillis());
     runStatusDao.save(createMockRunStatus(runId, timeStamp));
-    toilet.flush();
+    flush();
 
     List<?> fetchedRunStatusList = retrieveRunStatusFromDb();
     Map<?, ?> fetchedRunStatusMap = (Map<?, ?>) fetchedRunStatusList.get(0);
@@ -74,7 +74,7 @@ public class HibernateRunStatusDaoTest extends AbstractTransactionalDbTests {
     Long existingRunId = 37L;
     Timestamp timeStamp = new Timestamp(Calendar.getInstance().getTimeInMillis());
     runStatusDao.save(createMockRunStatus(existingRunId, timeStamp));
-    toilet.flush();
+    flush();
 
     RunStatus runStatus = runStatusDao.getRunStatusByRunId(existingRunId);
     assertTrue(runStatus instanceof RunStatus);
@@ -91,7 +91,7 @@ public class HibernateRunStatusDaoTest extends AbstractTransactionalDbTests {
     Long nonExistingRunId = 999L;
     Timestamp timeStamp = new Timestamp(Calendar.getInstance().getTimeInMillis());
     runStatusDao.save(createMockRunStatus(existingRunId, timeStamp));
-    toilet.flush();
+    flush();
 
     assertNull(runStatusDao.getRunStatusByRunId(nonExistingRunId));
   }

@@ -23,13 +23,10 @@
  */
 package org.wise.portal.spring.impl;
 
-import java.util.Properties;
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.ehcache.EhCacheFactoryBean;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -37,10 +34,11 @@ import org.springframework.security.acls.domain.AclAuthorizationStrategy;
 import org.springframework.security.acls.domain.AclAuthorizationStrategyImpl;
 import org.springframework.security.acls.domain.ConsoleAuditLogger;
 import org.springframework.security.acls.domain.DefaultPermissionGrantingStrategy;
-import org.springframework.security.acls.domain.EhCacheBasedAclCache;
+import org.springframework.security.acls.domain.SpringCacheBasedAclCache;
 import org.springframework.security.acls.jdbc.BasicLookupStrategy;
 import org.springframework.security.acls.jdbc.JdbcMutableAclService;
 import org.springframework.security.acls.jdbc.LookupStrategy;
+import org.springframework.security.acls.model.AclCache;
 import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.wise.portal.domain.authentication.MutableAclSid;
@@ -60,22 +58,13 @@ public class ACLContext {
   @Autowired
   Environment appProperties;
 
-  @Bean
-  public EhCacheBasedAclCache aclCache() {
-    return new EhCacheBasedAclCache(aclEhCacheFactoryBean().getObject(), permissionGrantingStrategy(), aclAuthorizationStrategy());
-  }
+  @Autowired
+  CacheManager cacheManager;
 
   @Bean
-  public EhCacheFactoryBean aclEhCacheFactoryBean() {
-    EhCacheFactoryBean ehCacheFactoryBean = new EhCacheFactoryBean();
-    ehCacheFactoryBean.setCacheManager(aclCacheManager().getObject());
-    ehCacheFactoryBean.setCacheName("aclCache");
-    return ehCacheFactoryBean;
-  }
-
-  @Bean
-  public EhCacheManagerFactoryBean aclCacheManager() {
-    return new EhCacheManagerFactoryBean();
+  public AclCache aclCache() {
+    return new SpringCacheBasedAclCache(cacheManager.getCache("aclCache"),
+        permissionGrantingStrategy(), aclAuthorizationStrategy());
   }
 
   @Bean
@@ -90,14 +79,17 @@ public class ACLContext {
 
   @Bean
   public LookupStrategy lookupStrategy() {
-    return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(), new ConsoleAuditLogger());
+    return new BasicLookupStrategy(dataSource, aclCache(), aclAuthorizationStrategy(),
+        new ConsoleAuditLogger());
   }
 
   @Bean
   public MutableAclService aclservice() {
-    JdbcMutableAclService aclService = new JdbcMutableAclService(dataSource, lookupStrategy(), aclCache());
+    JdbcMutableAclService aclService = new JdbcMutableAclService(dataSource, lookupStrategy(),
+        aclCache());
     if (appProperties.containsProperty("spring.datasource.driver-class-name")) {
-      String driverClass = (String) appProperties.getProperty("spring.datasource.driver-class-name");
+      String driverClass = (String) appProperties
+          .getProperty("spring.datasource.driver-class-name");
       if ("com.mysql.cj.jdbc.Driver".equals(driverClass)) {
         aclService.setClassIdentityQuery("SELECT @@IDENTITY");
         aclService.setSidIdentityQuery("SELECT @@IDENTITY");

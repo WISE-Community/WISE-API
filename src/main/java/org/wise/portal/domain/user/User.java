@@ -48,6 +48,8 @@ public interface User extends Persistable, Comparable<User> {
 
   boolean isStudent();
 
+  boolean isSurveyStudent();
+
   boolean isTeacher();
 
   boolean isTrustedAuthor();

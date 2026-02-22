@@ -30,7 +30,6 @@ import lombok.Setter;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.user.User;
 
-import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -69,6 +68,8 @@ public class RunParameters implements Serializable {
   private Date endTime = null;
 
   private Boolean isLockedAfterEndDate = false;
+
+  private boolean isSurvey = false;
 
   public String printAllPeriods() {
     String allPeriods = null;

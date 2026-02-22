@@ -90,6 +90,33 @@ create table annotations (
     primary key (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+create table chatbot_chats (
+    id bigint not null auto_increment,
+    runId bigint not null,
+    workgroupId bigint not null,
+    title varchar(255),
+    createdAt datetime not null,
+    lastUpdated datetime not null,
+    isDeleted bit not null default 0,
+    index chatbotChatsRunIdIndex (runId),
+    index chatbotChatsWorkgroupIdIndex (workgroupId),
+    constraint chatbotChatsRunIdFK foreign key (runId) references runs (id),
+    constraint chatbotChatsWorkgroupIdFK foreign key (workgroupId) references workgroups (id),
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table chatbot_messages (
+    id bigint not null auto_increment,
+    chatId bigint not null,
+    role varchar(20) not null,
+    content text not null,
+    timestamp datetime,
+    nodeId varchar(30) not null,
+    index chatbotMessagesChatIdIndex (chatId),
+    constraint chatbotMessagesChatIdFK foreign key (chatId) references chatbot_chats (id) on delete cascade,
+    primary key (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 create table events (
     id integer not null auto_increment,
     category varchar(255) not null,
@@ -330,6 +357,7 @@ create table runs (
     end_time datetime,
     extras mediumtext,
     info varchar(255),
+    isSurvey bit not null default 0,
     lastRun datetime,
     loggingLevel integer,
     maxWorkgroupSize integer,
@@ -563,7 +591,7 @@ CREATE TABLE `acl_object_identity_to_user_tags` (
 
 -- initial data for wise below
 
-INSERT INTO granted_authorities VALUES (1,'ROLE_USER',0),(2,'ROLE_ADMINISTRATOR',0),(3,'ROLE_TEACHER',0),(4,'ROLE_STUDENT',0),(5,'ROLE_AUTHOR',0),(6,'ROLE_RESEARCHER',0),(7,'ROLE_TRUSTED_AUTHOR',0),(8,'ROLE_TRANSLATOR',0);
+INSERT INTO granted_authorities VALUES (1,'ROLE_USER',0),(2,'ROLE_ADMINISTRATOR',0),(3,'ROLE_TEACHER',0),(4,'ROLE_STUDENT',0),(5,'ROLE_AUTHOR',0),(6,'ROLE_RESEARCHER',0),(7,'ROLE_TRUSTED_AUTHOR',0),(8,'ROLE_TRANSLATOR',0),(9, 'ROLE_SURVEY_STUDENT', 0);
 
 INSERT INTO portal (id,portalname,settings,announcement,projectLibraryGroups,projectMetadataSettings,run_survey_template,sendmail_on_exception,OPTLOCK) VALUES (1,'My Production WISE Site (change me)','{isLoginAllowed:true}','{"visible":false,"bannerText":"","bannerButton":"","title":"","content":"","buttons":[]}','[]','{"fields":[{"name":"Title","key":"title","type":"input"},{"name":"Summary","key":"summary","type":"textarea"},{"name":"Language","key":"language","type":"radio","choices":["English","Chinese (Simplified)","Chinese (Traditional)","Dutch","German","Greek","Hebrew","Japanese","Korean","Portuguese","Spanish","Thai","Turkish"]},{"name":"Subject","key":"subject","type":"radio","choices":["Life Science","Physical Science","Earth Science","General Science","Biology","Chemistry","Physics","Other"]},{"name":"Time Required to Complete Project","key":"time","type":"input"},{"name":"Supported Devices","key":"supportedDevices","type":"checkbox","choices":["PC","Tablet"]}],"i18n":{"lifeScience":{"en":"Life Science","ja":"ライフサイエンス"},"earthScience":{"en":"Earth Science","ja":"地球科学"},"physicalScience":{"en":"Physical Science","ja":"物理科学","es":"ciencia física"}}}','{"save_time":null,"items":[{"id":"recommendProjectToOtherTeachers","type":"radio","prompt":"How likely would you recommend this project to other teachers?","choices":[{"id":"5","text":"Extremely likely"},{"id":"4","text":"Very likely"},{"id":"3","text":"Moderately likely"},{"id":"2","text":"Slightly likely"},{"id":"1","text":"Not at all likely"}],"answer":null},{"id":"runProjectAgain","type":"radio","prompt":"How likely would you run this project again?","choices":[{"id":"5","text":"Extremely likely"},{"id":"4","text":"Very likely"},{"id":"3","text":"Moderately likely"},{"id":"2","text":"Slightly likely"},{"id":"1","text":"Not at all likely"}],"answer":null},{"id":"useWISEAgain","type":"radio","prompt":"How likely would you use WISE again in your classroom?","choices":[{"id":"5","text":"Extremely likely"},{"id":"4","text":"Very likely"},{"id":"3","text":"Moderately likely"},{"id":"2","text":"Slightly likely"},{"id":"1","text":"Not at all likely"}],"answer":null},{"id":"adviceForOtherTeachers","type":"textarea","prompt":"Please share any advice for other teachers about this project or about WISE in general.","answer":null},{"id":"technicalProblems","type":"textarea","prompt":"Please write about any technical problems that you had while running this project.","answer":null},{"id":"generalFeedback","type":"textarea","prompt":"Please provide any other feedback to WISE staff.","answer":null}]}',1,0);
 

@@ -30,91 +30,90 @@ import org.wise.portal.spring.SpringConfiguration;
  * @author Cynick Young
  */
 public abstract class AbstractTransactionalDaoTests<DAO extends SimpleDao<OBJECT>, OBJECT extends Persistable>
-		extends AbstractTransactionalDbTests {
+    extends AbstractTransactionalDbTests {
 
-	protected DAO dao;
+  protected DAO dao;
 
-	protected OBJECT dataObject;
+  protected OBJECT dataObject;
 
-	private static final Long NON_EXISTENT_PK = new Long(666);
+  private static final Long NON_EXISTENT_PK = new Long(666);
 
-	/**
-	 * Test method for
-	 * {@link org.wise.portal.dao.impl.AbstractHibernateDao#delete(java.lang.Object)}.
-	 */
-	public void testDelete() {
-		this.verifyDataStoreIsEmpty();
+  /**
+   * Test method for
+   * {@link org.wise.portal.dao.impl.AbstractHibernateDao#delete(java.lang.Object)}.
+   */
+  public void testDelete() {
+    this.verifyDataStoreIsEmpty();
 
-		// save and delete the data object using dao
-		this.dao.save(this.dataObject);
-		this.dao.delete(this.dataObject);
+    // save and delete the data object using dao
+    this.dao.save(this.dataObject);
+    this.dao.delete(this.dataObject);
 
-		// * NOTE * must flush to test delete
-		// see http://forum.springframework.org/showthread.php?t=18263 for
-		// explanation
-		this.toilet.flush();
+    // * NOTE * must flush to test delete
+    // see http://forum.springframework.org/showthread.php?t=18263 for
+    // explanation
+    this.flush();
 
-		this.verifyDataStoreIsEmpty();
-	}
+    this.verifyDataStoreIsEmpty();
+  }
 
-	/**
-	 * Test method for
-	 * {@link org.wise.portal.dao.impl.AbstractHibernateDao#save(java.lang.Object)}.
-	 */
-	public abstract void testSave();
+  /**
+   * Test method for
+   * {@link org.wise.portal.dao.impl.AbstractHibernateDao#save(java.lang.Object)}.
+   */
+  public abstract void testSave();
 
-	/**
-	 * Test method for
-	 * {@link org.wise.portal.dao.impl.AbstractHibernateDao#getList()}.
-	 */
-	public void testGetList() {
-		this.verifyDataStoreIsEmpty();
-		List<OBJECT> actualList = this.dao.getList();
-		assertTrue(actualList.isEmpty());
+  /**
+   * Test method for
+   * {@link org.wise.portal.dao.impl.AbstractHibernateDao#getList()}.
+   */
+  public void testGetList() {
+    this.verifyDataStoreIsEmpty();
+    List<OBJECT> actualList = this.dao.getList();
+    assertTrue(actualList.isEmpty());
 
-		this.dao.save(this.dataObject);
-		List<?> expectedList = this.retrieveDataObjectListFromDb();
-		assertEquals(1, expectedList.size());
+    this.dao.save(this.dataObject);
+    List<?> expectedList = this.retrieveDataObjectListFromDb();
+    assertEquals(1, expectedList.size());
 
-		actualList = this.dao.getList();
-		assertEquals(1, actualList.size());
-		assertEquals(this.dataObject, actualList.get(0));
-	}
+    actualList = this.dao.getList();
+    assertEquals(1, actualList.size());
+    assertEquals(this.dataObject, actualList.get(0));
+  }
 
-	/**
-	 * Test method for
-	 * {@link org.wise.portal.dao.impl.AbstractHibernateDao#getById(java.lang.Long)}.
-	 */
-	public void testGetById() throws Exception {
-		this.verifyDataStoreIsEmpty();
-		try {
-			this.dao.getById(NON_EXISTENT_PK);
-			fail("Expected ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
+  /**
+   * Test method for
+   * {@link org.wise.portal.dao.impl.AbstractHibernateDao#getById(java.lang.Long)}.
+   */
+  public void testGetById() throws Exception {
+    this.verifyDataStoreIsEmpty();
+    try {
+      this.dao.getById(NON_EXISTENT_PK);
+      fail("Expected ObjectNotFoundException");
+    } catch (ObjectNotFoundException e) {
 
-		}
-		this.dao.save(this.dataObject);
-		List<OBJECT> actualList = this.dao.getList();
-		OBJECT actualObject = actualList.get(0);
+    }
+    this.dao.save(this.dataObject);
+    List<OBJECT> actualList = this.dao.getList();
+    OBJECT actualObject = actualList.get(0);
 
-		assertTrue(this.dataObject.getId() instanceof Long);
-		assertEquals(actualObject, this.dao.getById((Long) this.dataObject
-				.getId()));
-	}
+    assertTrue(this.dataObject.getId() instanceof Long);
+    assertEquals(actualObject, this.dao.getById((Long) this.dataObject.getId()));
+  }
 
-	protected final void verifyDataStoreIsEmpty() {
-		assertTrue(retrieveDataObjectListFromDb().isEmpty());
-	}
+  protected final void verifyDataStoreIsEmpty() {
+    assertTrue(retrieveDataObjectListFromDb().isEmpty());
+  }
 
-	protected abstract List<?> retrieveDataObjectListFromDb();
+  protected abstract List<?> retrieveDataObjectListFromDb();
 
-	/**
-	 * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDownAfterTransaction()
-	 */
-	@Override
-	protected void onTearDownAfterTransaction() throws Exception {
-		super.onTearDownAfterTransaction();
-		this.dao = null;
-		this.dataObject = null;
-	}
+  /**
+   * @see org.springframework.test.AbstractTransactionalSpringContextTests#onTearDownAfterTransaction()
+   */
+  @Override
+  protected void onTearDownAfterTransaction() throws Exception {
+    super.onTearDownAfterTransaction();
+    this.dao = null;
+    this.dataObject = null;
+  }
 }

@@ -101,6 +101,9 @@ public class RunImpl implements Run {
   private static final String COLUMN_NAME_EXTRAS = "extras";
 
   @Transient
+  private static final String COLUMN_NAME_IS_SURVEY = "isSurvey";
+
+  @Transient
   private static final String COLUMN_NAME_MAX_WORKGROUP_SIZE = "maxWorkgroupSize";
 
   @Transient
@@ -198,6 +201,9 @@ public class RunImpl implements Run {
   @Getter
   @Setter
   private String info; // other info pertaining to the run
+
+  @Column(name = COLUMN_NAME_IS_SURVEY)
+  private boolean isSurvey;
 
   @Column(name = COLUMN_NAME_MAX_WORKGROUP_SIZE, nullable = true)
   @Getter
@@ -427,7 +433,7 @@ public class RunImpl implements Run {
 
     /**
      * Compares the user names of two User objects
-     * 
+     *
      * @param user1
      *                a user object
      * @param user2
@@ -479,5 +485,13 @@ public class RunImpl implements Run {
 
   public void setLockedAfterEndDate(boolean isLockedAfterEndDate) {
     this.isLockedAfterEndDate = isLockedAfterEndDate;
+  }
+
+  public boolean isSurvey() {
+    return isSurvey;
+  }
+
+  public void setIsSurvey(boolean isSurvey) {
+    this.isSurvey = isSurvey;
   }
 }

@@ -62,6 +62,7 @@ public class RunInfoAPIController {
     info.put("teacherFirstName", owner.getUserDetails().getFirstname());
     info.put("teacherLastName", owner.getUserDetails().getLastname());
     info.put("wiseVersion", run.getProject().getWiseVersion());
+    info.put("isSurvey", run.isSurvey());
     return info;
   }
 

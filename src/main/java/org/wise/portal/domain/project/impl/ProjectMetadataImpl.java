@@ -134,6 +134,10 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
 
   @Getter
   @Setter
+  private String locations;
+
+  @Getter
+  @Setter
   private String standards;
 
   @Getter
@@ -333,6 +337,8 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
     }
     setLessonPlan(lessonPlan);
 
+    setLocations(metadataJSON.optString("locations", "[]"));
+
     String standards = metadataJSON.optString("standards", this.standardsDefault);
     setStandards(standards);
 
@@ -467,6 +473,19 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
         metadata.put("tools", toolsJSON);
       } else {
         metadata.put("tools", new JSONObject());
+      }
+
+      String locationsString = metadata.getString("locations");
+      if (locationsString != null && locationsString != "null") {
+        JSONArray locationsJSON;
+        try {
+          locationsJSON = new JSONArray(locationsString);
+        } catch (JSONException e) {
+          locationsJSON = new JSONArray();
+        }
+        metadata.put("locations", locationsJSON);
+      } else {
+        metadata.put("locations", new JSONArray());
       }
 
       String standardsString = metadata.getString("standards");

@@ -26,15 +26,12 @@ package org.wise.portal.dao.peergrouping.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.peergrouping.PeerGroupingDao;
@@ -48,14 +45,6 @@ import org.wise.portal.domain.run.Run;
 @Repository
 public class HibernatePeerGroupingDao extends AbstractHibernateDao<PeerGrouping>
     implements PeerGroupingDao<PeerGrouping> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  @Override
-  protected String getFindAllQuery() {
-    return "from PeerGroupingImpl";
-  }
 
   @Override
   protected Class<? extends PeerGrouping> getDataObjectClass() {
@@ -73,10 +62,5 @@ public class HibernatePeerGroupingDao extends AbstractHibernateDao<PeerGrouping>
     cq.select(peerGroupingImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupingImpl> query = entityManager.createQuery(cq);
     return (PeerGroupingImpl) query.getResultStream().findFirst().orElse(null);
-  }
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
   }
 }

@@ -131,16 +131,6 @@ public class RunServiceImplTest {
   }
 
   @Test
-  public void getRunList_OneRunInDB_ShouldReturnOneRun() {
-    List<Run> expectedList = new LinkedList<Run>();
-    expectedList.add(new RunImpl());
-    expect(runDao.getList()).andReturn(expectedList);
-    replay(runDao);
-    assertEquals(expectedList, runService.getRunList());
-    verify(runDao);
-  }
-
-  @Test
   public void getRunList_User_ShouldReturnRunsAccessibleByUser() {
     User user = new UserImpl();
     List<Group> expectedGroups = new LinkedList<Group>();

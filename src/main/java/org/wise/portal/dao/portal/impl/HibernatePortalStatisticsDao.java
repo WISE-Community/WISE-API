@@ -25,14 +25,11 @@ package org.wise.portal.dao.portal.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.portal.PortalStatisticsDao;
@@ -43,21 +40,8 @@ import org.wise.portal.domain.portal.impl.PortalStatisticsImpl;
 public class HibernatePortalStatisticsDao extends AbstractHibernateDao<PortalStatistics>
     implements PortalStatisticsDao<PortalStatistics> {
 
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory().getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
-
   @Override
   protected Class<? extends PortalStatistics> getDataObjectClass() {
-    return null;
-  }
-
-  @Override
-  protected String getFindAllQuery() {
     return null;
   }
 

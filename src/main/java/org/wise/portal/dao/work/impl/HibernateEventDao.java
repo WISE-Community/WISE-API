@@ -26,15 +26,12 @@ package org.wise.portal.dao.work.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.hibernate.Session;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
@@ -50,22 +47,7 @@ import org.wise.vle.domain.work.Event;
  * @author Hiroki Terashima
  */
 @Repository
-public class HibernateEventDao extends AbstractHibernateDao<Event>
-    implements EventDao<Event> {
-
-  @PersistenceContext
-  private EntityManager entityManager;
-
-  private CriteriaBuilder getCriteriaBuilder() {
-    Session session = this.getHibernateTemplate().getSessionFactory()
-        .getCurrentSession();
-    return session.getCriteriaBuilder();
-  }
-
-  @Override
-  protected String getFindAllQuery() {
-    return null;
-  }
+public class HibernateEventDao extends AbstractHibernateDao<Event> implements EventDao<Event> {
 
   @Override
   protected Class<? extends Event> getDataObjectClass() {
@@ -74,18 +56,15 @@ public class HibernateEventDao extends AbstractHibernateDao<Event>
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<Event> getEventsByParams(Integer id, Run run, Group period,
-      Workgroup workgroup, String nodeId, String componentId,
-      String componentType, String context, String category, String event,
-      List<JSONObject> components) {
+  public List<Event> getEventsByParams(Integer id, Run run, Group period, Workgroup workgroup,
+      String nodeId, String componentId, String componentType, String context, String category,
+      String event, List<JSONObject> components) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<Event> cq = cb.createQuery(Event.class);
     Root<Event> eventRoot = cq.from(Event.class);
-    List<Predicate> predicates = getEventsByParamsPredicates(cb, eventRoot, id,
-        run, period, workgroup, nodeId, componentId, componentType, context,
-        category, event, components);
-    cq.select(eventRoot)
-        .where(predicates.toArray(new Predicate[predicates.size()]))
+    List<Predicate> predicates = getEventsByParamsPredicates(cb, eventRoot, id, run, period,
+        workgroup, nodeId, componentId, componentType, context, category, event, components);
+    cq.select(eventRoot).where(predicates.toArray(new Predicate[predicates.size()]))
         .orderBy(cb.asc(eventRoot.get("serverSaveTime")));
     TypedQuery<Event> query = entityManager.createQuery(cq);
     return (List<Event>) (Object) query.getResultList();
@@ -144,9 +123,8 @@ public class HibernateEventDao extends AbstractHibernateDao<Event>
     return user != null && user.isTeacher();
   }
 
-  private List<Predicate> getEventsByParamsPredicates(CriteriaBuilder cb,
-      Root<Event> eventRoot, Integer id, Run run, Group period,
-      Workgroup workgroup, String nodeId, String componentId,
+  private List<Predicate> getEventsByParamsPredicates(CriteriaBuilder cb, Root<Event> eventRoot,
+      Integer id, Run run, Group period, Workgroup workgroup, String nodeId, String componentId,
       String componentType, String context, String category, String event,
       List<JSONObject> components) {
     List<Predicate> predicates = new ArrayList<>();
@@ -188,8 +166,7 @@ public class HibernateEventDao extends AbstractHibernateDao<Event>
           Predicate nodeIdPredicate = null;
           Predicate componentIdPredicate = null;
           if (component.has("nodeId")) {
-            nodeIdPredicate = cb.equal(eventRoot.get("nodeId"),
-                component.getString("nodeId"));
+            nodeIdPredicate = cb.equal(eventRoot.get("nodeId"), component.getString("nodeId"));
           } else {
             nodeIdPredicate = cb.isNull(eventRoot.get("nodeId"));
           }
@@ -199,14 +176,13 @@ public class HibernateEventDao extends AbstractHibernateDao<Event>
           } else {
             componentIdPredicate = cb.isNull(eventRoot.get("componentId"));
           }
-          componentsPredicates
-              .add(cb.and(nodeIdPredicate, componentIdPredicate));
+          componentsPredicates.add(cb.and(nodeIdPredicate, componentIdPredicate));
         } catch (JSONException e) {
           e.printStackTrace();
         }
       }
-      predicates.add(cb.or(componentsPredicates
-          .toArray(new Predicate[componentsPredicates.size()])));
+      predicates
+          .add(cb.or(componentsPredicates.toArray(new Predicate[componentsPredicates.size()])));
     }
     return predicates;
   }

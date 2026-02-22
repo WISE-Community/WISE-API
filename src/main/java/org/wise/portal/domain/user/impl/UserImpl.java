@@ -78,6 +78,10 @@ public class UserImpl implements User {
     return userDetails.hasGrantedAuthority(UserDetailsService.STUDENT_ROLE);
   }
 
+  public boolean isSurveyStudent() {
+    return userDetails.hasGrantedAuthority(UserDetailsService.SURVEY_STUDENT_ROLE);
+  }
+
   public boolean isTeacher() {
     return userDetails.hasGrantedAuthority(UserDetailsService.TEACHER_ROLE);
   }
@@ -110,6 +114,9 @@ public class UserImpl implements User {
     }
     if (this.isStudent()) {
       roles.add("student");
+    }
+    if (this.isSurveyStudent()) {
+      roles.add("surveyStudent");
     }
     return roles;
   }

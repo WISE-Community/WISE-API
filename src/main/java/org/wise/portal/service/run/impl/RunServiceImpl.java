@@ -126,13 +126,6 @@ public class RunServiceImpl implements RunService {
   private PeerGroupingService peerGroupingService;
 
   @Transactional(readOnly = true)
-  public List<Run> getRunList() {
-    // for some reason, runDao.getList returns all runs, when it should
-    // only return runs with the right privileges according to Acegi.
-    return runDao.getList();
-  }
-
-  @Transactional(readOnly = true)
   public List<Run> getRunList(User user) {
     return runDao.getRunListByUser(user);
   }
@@ -199,6 +192,7 @@ public class RunServiceImpl implements RunService {
     run.setStarttime(runParameters.getStartTime());
     run.setRuncode(generateUniqueRunCode(runParameters.getLocale()));
     run.setOwner(runParameters.getOwner());
+    run.setIsSurvey(runParameters.isSurvey());
     run.setMaxWorkgroupSize(runParameters.getMaxWorkgroupSize());
     run.setProject(project);
     run.setName("" + runParameters.getProject().getName());
@@ -239,11 +233,11 @@ public class RunServiceImpl implements RunService {
   }
 
   @Transactional()
-  public Run createRun(Long projectId, User user, Set<String> periodNames,
+  public Run createRun(Long projectId, User user, Set<String> periodNames, boolean isSurvey,
       Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
       Locale locale) throws Exception {
     Project project = projectService.copyProject(projectId, user);
-    RunParameters runParameters = createRunParameters(project, user, periodNames,
+    RunParameters runParameters = createRunParameters(project, user, periodNames, isSurvey,
         maxStudentsPerTeam, startDate, endDate, isLockedAfterEndDate, locale);
     Run run = createRun(runParameters);
     createTeacherWorkgroup(run, user);
@@ -252,8 +246,8 @@ public class RunServiceImpl implements RunService {
   }
 
   public RunParameters createRunParameters(Project project, User user, Set<String> periodNames,
-      Integer maxStudentsPerTeam, Long startDate, Long endDate, Boolean isLockedAfterEndDate,
-      Locale locale) {
+      boolean isSurvey, Integer maxStudentsPerTeam, Long startDate, Long endDate,
+      Boolean isLockedAfterEndDate, Locale locale) {
     RunParameters runParameters = new RunParameters();
     runParameters.setOwner(user);
     runParameters.setName(project.getName());
@@ -261,6 +255,7 @@ public class RunServiceImpl implements RunService {
     runParameters.setLocale(locale);
     runParameters.setPostLevel(5);
     runParameters.setPeriodNames(periodNames);
+    runParameters.setSurvey(isSurvey);
     runParameters.setMaxWorkgroupSize(maxStudentsPerTeam);
     runParameters.setStartTime(new Date(startDate));
     if (endDate == null || endDate <= startDate) {
