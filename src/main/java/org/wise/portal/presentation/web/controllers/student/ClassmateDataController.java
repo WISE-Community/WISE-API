@@ -57,8 +57,11 @@ public abstract class ClassmateDataController {
   }
 
   protected boolean isTeacherOfRun(Authentication auth, Run run) {
-    User user = userService.retrieveUser((TeacherUserDetails) auth.getPrincipal());
-    return user != null && run.isTeacherAssociatedToThisRun(user);
+    if (isTeacher(auth)) {
+      User user = userService.retrieveUser((TeacherUserDetails) auth.getPrincipal());
+      return user != null && run.isTeacherAssociatedToThisRun(user);
+    }
+    return false;
   }
 
   protected boolean isComponentType(Run run, String nodeId, String componentId,
@@ -75,8 +78,7 @@ public abstract class ClassmateDataController {
     return projectContent.getComponent(nodeId, componentId);
   }
 
-  protected List<ProjectComponent> getProjectComponents(Run run)
-      throws IOException, JSONException {
+  protected List<ProjectComponent> getProjectComponents(Run run) throws IOException, JSONException {
     String projectString = projectService.getProjectContent(run.getProject());
     JSONObject projectJSON = new JSONObject(projectString);
     ProjectContent projectContent = new ProjectContent(projectJSON);
@@ -92,8 +94,7 @@ public abstract class ClassmateDataController {
     return vleService.getStudentWork(run, period, nodeId, componentId);
   }
 
-  protected List<StudentWork> getLatestStudentWork(Run run, String nodeId,
-      String componentId) {
+  protected List<StudentWork> getLatestStudentWork(Run run, String nodeId, String componentId) {
     return vleService.getLatestStudentWork(run, nodeId, componentId);
   }
 
