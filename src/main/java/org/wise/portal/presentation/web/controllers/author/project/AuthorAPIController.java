@@ -400,6 +400,7 @@ public class AuthorAPIController {
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("OPENAI_API_KEY")));
+    config.put("translationServiceEnabled", this.awsPropertiesConfigured());
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
     config.put("importStepsURL",
         contextPath + "/api/author/project/importSteps/" + project.getId());
@@ -422,6 +423,12 @@ public class AuthorAPIController {
       config.put("runCode", projectRun.getRuncode());
     }
     return config;
+  }
+
+  private boolean awsPropertiesConfigured() {
+    return !(StringUtils.isEmpty(appProperties.getProperty("aws.accessKeyId")) 
+          || StringUtils.isEmpty(appProperties.getProperty("aws.secretAccessKey")) 
+          || StringUtils.isEmpty(appProperties.getProperty("aws.region")));
   }
 
   /**
