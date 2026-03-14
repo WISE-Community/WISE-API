@@ -62,7 +62,8 @@ public class TranslateProjectAPIController {
   }
 
   @PostMapping("suggest")
-  protected String getSuggestedTranslation(Authentication auth, @RequestBody TranslatableText translatableText) throws IOException, IllegalArgumentException {
+  protected String getSuggestedTranslation(Authentication auth, @RequestBody TranslatableText translatableText) 
+    throws IOException, IllegalArgumentException, ResponseStatusException {
     if (accessKey.equals("") || secretKey.equals("") || region.equals("")) {
       throw new ResponseStatusException(
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -71,8 +72,7 @@ public class TranslateProjectAPIController {
     } else {
       TranslateClient translateClient = buildTranslateClient();
       TranslateTextRequest request = buildTranslateTextRequest(translatableText);
-      TranslateTextResponse textResponse = translateClient.translateText(request);
-      return textResponse.translatedText();
+      return this.translateText(translateClient, request);
     }
   }
 
@@ -90,5 +90,18 @@ public class TranslateProjectAPIController {
                 .sourceLanguageCode(translatableText.getSrcLangCode())
                 .targetLanguageCode(translatableText.getTargetLangCode())
                 .build();
+  }
+
+  private String translateText(TranslateClient client, TranslateTextRequest request) throws ResponseStatusException {
+    TranslateTextResponse textResponse;
+      try {
+        textResponse = client.translateText(request);
+      } catch (Exception e) {
+        throw new ResponseStatusException(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "Translation failed"
+        );
+      }
+      return textResponse.translatedText();
   }
 }
