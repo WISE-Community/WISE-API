@@ -43,7 +43,8 @@ public class ChatGptController {
       writer.write(body);
       writer.flush();
       writer.close();
-      BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(),"ISO-8859-1"));
+      BufferedReader br = new BufferedReader(
+          new InputStreamReader(connection.getInputStream(), "UTF-8"));
       String line;
       StringBuffer response = new StringBuffer();
       while ((line = br.readLine()) != null) {
