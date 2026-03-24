@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class TranslatableText {
-  private String srcLangCode;
-  private String targetLangCode;
-  private String srcText;
+  protected String srcLangCode;
+  protected String targetLangCode;
+  protected String srcText;
 
   public TranslatableText(String srcLang, String targetLang, String srcText) {
     this.srcLangCode = this.convertLanguageToAWSCode(srcLang);
