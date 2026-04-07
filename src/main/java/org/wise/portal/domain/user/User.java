@@ -55,4 +55,6 @@ public interface User extends Persistable, Comparable<User> {
   boolean isTrustedAuthor();
 
   List<String> getRoles();
+
+  boolean isEnabled();
 }
