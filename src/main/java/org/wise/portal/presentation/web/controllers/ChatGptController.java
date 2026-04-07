@@ -29,7 +29,7 @@ public class ChatGptController {
   @PostMapping
   protected String sendChatMessage(@RequestBody String body) {
     if (openAiApiKey == null || openAiApiKey.isEmpty()) {
-      throw new RuntimeException("OPENAI_API_KEY is not set");
+      throw new RuntimeException("openai.api.key is not set");
     }
     try {
       URL url = new URL(openAiChatApiUrl);

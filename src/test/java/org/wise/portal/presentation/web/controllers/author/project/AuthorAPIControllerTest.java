@@ -80,7 +80,7 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(appProperties.getProperty("curriculum_base_www"))
         .andReturn("http://localhost:8080/curriculum");
-    expect(appProperties.getProperty("OPENAI_API_KEY")).andReturn("OPENAPIKEY");
+    expect(appProperties.getProperty("openai.api.key")).andReturn("OPENAPIKEY");
     replay(appProperties);
     Map<String, Object> config = authorAPIController.getAuthorProjectConfig(teacherAuth, request,
         project1);

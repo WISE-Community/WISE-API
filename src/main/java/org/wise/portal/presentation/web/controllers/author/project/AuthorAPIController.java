@@ -399,7 +399,7 @@ public class AuthorAPIController {
     config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
-    config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("OPENAI_API_KEY")));
+    config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("openai.api.key")));
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
     config.put("importStepsURL",
         contextPath + "/api/author/project/importSteps/" + project.getId());
