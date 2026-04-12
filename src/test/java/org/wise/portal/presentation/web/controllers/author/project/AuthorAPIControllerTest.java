@@ -81,6 +81,9 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     expect(appProperties.getProperty("curriculum_base_www"))
         .andReturn("http://localhost:8080/curriculum");
     expect(appProperties.getProperty("openai.api.key")).andReturn("OPENAPIKEY");
+    expect(appProperties.getProperty("aws.accessKeyId")).andReturn("ACCESSKEY");
+    expect(appProperties.getProperty("aws.secretAccessKey")).andReturn("SECRETKEY");
+    expect(appProperties.getProperty("aws.region")).andReturn("us-west-1");
     replay(appProperties);
     Map<String, Object> config = authorAPIController.getAuthorProjectConfig(teacherAuth, request,
         project1);
