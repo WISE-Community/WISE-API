@@ -399,7 +399,7 @@ public class AuthorAPIController {
     config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
-    config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("OPENAI_API_KEY")));
+    config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("openai.api.key")));
     config.put("translationServiceEnabled", this.awsPropertiesConfigured());
     config.put("cRaterRequestURL", contextPath + "/api/c-rater");
     config.put("importStepsURL",
@@ -426,9 +426,9 @@ public class AuthorAPIController {
   }
 
   private boolean awsPropertiesConfigured() {
-    return !(StringUtils.isEmpty(appProperties.getProperty("aws.accessKeyId")) 
-          || StringUtils.isEmpty(appProperties.getProperty("aws.secretAccessKey")) 
-          || StringUtils.isEmpty(appProperties.getProperty("aws.region")));
+    return !(StringUtils.isEmpty(appProperties.getProperty("aws.accessKeyId"))
+        || StringUtils.isEmpty(appProperties.getProperty("aws.secretAccessKey"))
+        || StringUtils.isEmpty(appProperties.getProperty("aws.region")));
   }
 
   /**
