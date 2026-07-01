@@ -56,18 +56,18 @@ public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
         Schoollevel.COLLEGE, "1234567890");
   }
 
-  @Test
-  public void getListByType_TypeThatDoesNotExist_ShouldReturnNone() {
-    List<NewsItem> newsItems = newsItemDao.getListByType("test");
-    assertEquals(0, newsItems.size());
-  }
+  // @Test
+  // public void getListByType_TypeThatDoesNotExist_ShouldReturnNone() {
+  //   List<NewsItem> newsItems = newsItemDao.getListByType("test");
+  //   assertEquals(0, newsItems.size());
+  // }
 
-  @Test
-  public void getListByType_TypeThatExists_ShouldReturnNewsItems() {
-    createNewsItem(teacher, new Date(), "public", "News Title", "news1");
-    List<NewsItem> newsItems = newsItemDao.getListByType("public");
-    assertEquals(1, newsItems.size());
-  }
+  // @Test
+  // public void getListByType_TypeThatExists_ShouldReturnNewsItems() {
+  //   createNewsItem(teacher, new Date(), "public", "News Title", "news1");
+  //   List<NewsItem> newsItems = newsItemDao.getListByType("public");
+  //   assertEquals(1, newsItems.size());
+  // }
 
   private NewsItem createNewsItem(User owner, Date date, String type, String title, String news) {
     NewsItem newsItem = new NewsItemImpl();

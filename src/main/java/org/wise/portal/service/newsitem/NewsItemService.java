@@ -25,6 +25,7 @@ package org.wise.portal.service.newsitem;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.newsitem.NewsItem;
@@ -48,16 +49,17 @@ public interface NewsItemService {
   NewsItem createNewsItem(Date date, User owner, String title, String news, String type);
 
   /**
-   * Retrieves all NewsItem from the data store.
+   * Retrieves the latest NewsItems from the data store.
+   * @param number the number of news items to return. Get all if number is not present or negative.
+   * @param type the type of news items to retrieve. Get all if type is not present.
+   * @return a Set of NewsItem
+   */
+  List<NewsItem> retrieveLatestNewsItems(Optional<Integer> number, Optional<String> type);
+
+  /** Retrieves all NewsItem from the data store.
    * @return a Set of NewsItem
    */
   List<NewsItem> retrieveAllNewsItem();
-
-  /**
-   * Retrieves all NewsItem by specified type
-   * @return a Set of NewsItem of specified type
-   */
-  List<NewsItem> retrieveByType(String type);
 
   /**
    * Retrieves a NewsItem given an ID

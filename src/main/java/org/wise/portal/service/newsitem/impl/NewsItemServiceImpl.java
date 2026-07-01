@@ -35,6 +35,7 @@ import org.wise.portal.service.newsitem.NewsItemService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Patrick Lawler
@@ -45,12 +46,12 @@ public class NewsItemServiceImpl implements NewsItemService {
   @Autowired
   private NewsItemDao<NewsItem> newsItemDao;
 
-  public List<NewsItem> retrieveAllNewsItem() {
-    return newsItemDao.getList();
+  public List<NewsItem> retrieveLatestNewsItems(Optional<Integer> number, Optional<String> type) {
+    return newsItemDao.getLatestNews(number, type);
   }
 
-  public List<NewsItem> retrieveByType(String type) {
-    return newsItemDao.getListByType(type);
+  public List<NewsItem> retrieveAllNewsItem() {
+    return this.retrieveLatestNewsItems(Optional.empty(), Optional.empty());
   }
 
   public NewsItem retrieveById(Integer id) throws ObjectNotFoundException {

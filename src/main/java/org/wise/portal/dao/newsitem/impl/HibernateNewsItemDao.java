@@ -24,6 +24,7 @@
 package org.wise.portal.dao.newsitem.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -50,13 +51,21 @@ public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
 
   @Override
   @SuppressWarnings("unchecked")
-  public List<NewsItem> getListByType(String type) {
+  public List<NewsItem> getLatestNews(Optional<Integer> number, Optional<String> type) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<NewsItemImpl> cq = cb.createQuery(NewsItemImpl.class);
     Root<NewsItemImpl> newsItemRoot = cq.from(NewsItemImpl.class);
-    cq.select(newsItemRoot).where(cb.equal(newsItemRoot.get("type"), type))
-        .orderBy(cb.desc(newsItemRoot.get("id")));
+
+    cq.select(newsItemRoot);
+    if (type.isPresent()) {
+      cq.where(cb.equal(newsItemRoot.get("type"), type.get()));
+    }
+    cq.orderBy(cb.desc(newsItemRoot.get("id")));
+
     TypedQuery<NewsItemImpl> query = entityManager.createQuery(cq);
+    if (number.isPresent() && number.get() >= 0) {
+      query.setMaxResults(number.get());
+    }
     return (List<NewsItem>) (Object) query.getResultList();
   }
 }
