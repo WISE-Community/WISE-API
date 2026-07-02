@@ -5,7 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,22 +22,23 @@ public class NewsAPIController {
   private NewsItemService newsItemService;
 
   @GetMapping()
-  protected String getNews(@RequestParam Optional<Integer> num, @RequestParam Optional<String> type) {
-    List<NewsItem> newsItems = newsItemService.retrieveLatestNewsItems(num, type);
-    return this.convertNewsToJSONString(newsItems);
+  protected String getAllNews(@RequestParam Optional<Integer> num, @RequestParam Optional<String> type) {
+    List<NewsItem> newsItems = this.newsItemService.retrieveLatestNews(num, type);
+    return this.getNewsItemsJSONString(newsItems);
   }
 
-  private String convertNewsToJSONString(List<NewsItem> newsItems) {
-    JSONArray newsItemsJSON = this.getNewsItemsJSON(newsItems);
-    return newsItemsJSON.toString();
+  @GetMapping("/home")
+  protected String getHomePageNews(@RequestParam Optional<String> type) {
+    List<NewsItem> newsItems = this.newsItemService.retrieveAndCacheHomePageNews(type);
+    return this.getNewsItemsJSONString(newsItems);
   }
 
-  private JSONArray getNewsItemsJSON(List<NewsItem> newsItems) {
+  private String getNewsItemsJSONString(List<NewsItem> newsItems) {
     JSONArray newsItemsJSON = new JSONArray();
     for (NewsItem newsItem: newsItems) {
       newsItemsJSON.put(getNewsItemJSON(newsItem));
     }
-    return newsItemsJSON;
+    return newsItemsJSON.toString();
   }
 
   private JSONObject getNewsItemJSON(NewsItem newsItem) {

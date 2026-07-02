@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.newsitem.impl;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -52,7 +53,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Table(name = NewsItemImpl.DATA_STORE_NAME)
 @Getter
 @Setter
-public class NewsItemImpl implements NewsItem, Comparable<NewsItem> {
+public class NewsItemImpl implements NewsItem, Comparable<NewsItem>, Serializable {
 
   @Transient
   public static final String DATA_STORE_NAME = "newsitem";

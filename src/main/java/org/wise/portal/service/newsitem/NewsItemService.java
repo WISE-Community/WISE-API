@@ -54,7 +54,14 @@ public interface NewsItemService {
    * @param type the type of news items to retrieve. Get all if type is not present.
    * @return a Set of NewsItem
    */
-  List<NewsItem> retrieveLatestNewsItems(Optional<Integer> number, Optional<String> type);
+  List<NewsItem> retrieveLatestNews(Optional<Integer> number, Optional<String> type);
+
+  /**
+   * Uses cached value or retrieves and caches the latest three NewsItems from the data store.
+   * @param type the type of news items to retrieve. Get all if type is not present.
+   * @return a Set of NewsItem
+   */
+  List<NewsItem> retrieveAndCacheHomePageNews(Optional<String> type);
 
   /** Retrieves all NewsItem from the data store.
    * @return a Set of NewsItem
