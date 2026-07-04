@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
@@ -162,7 +163,7 @@ public class NewsItemServiceImplTest {
     List<NewsItem> newsItemsInDB = new ArrayList<NewsItem>();
     newsItemsInDB.add(newsItem1);
     newsItemsInDB.add(newsItem2);
-    expect(newsItemDao.getList()).andReturn(newsItemsInDB);
+    expect(newsItemDao.getLatestNews(Optional.empty(), Optional.empty())).andReturn(newsItemsInDB);
     replay(newsItemDao);
 
     List<NewsItem> newsItemsFromDB = newsItemServiceImpl.retrieveAllNewsItem();
