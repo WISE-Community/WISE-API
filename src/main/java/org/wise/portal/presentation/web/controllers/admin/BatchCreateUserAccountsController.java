@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -55,6 +56,7 @@ import org.wise.portal.service.user.UserService;
  *
  * @author Hiroki Terashima
  */
+@Secured("ROLE_ADMINISTRATOR")
 @Controller
 @RequestMapping("/admin/account/batchcreateuseraccounts.html")
 public class BatchCreateUserAccountsController {

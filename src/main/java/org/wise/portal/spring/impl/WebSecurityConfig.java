@@ -85,14 +85,25 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
-        .authorizeRequests().antMatchers("/api/login/impersonate")
-        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/admin/**")
-        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/author/**").hasAnyRole("TEACHER")
+        .authorizeRequests()
+        // User, role, portal, news and destructive maintenance endpoints must be
+        // restricted to administrators. They were previously reachable by researchers
+        // through the broad "/admin/**" rule, which let a researcher grant themselves
+        // the administrator role or manage other users' accounts. These more specific
+        // rules are listed first so they take precedence over the broader ones below.
+        .antMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
+            "/admin/mergeProjectMetadata", "/admin/run/replacebase64withpng.html", "/api/admin/**")
+        .hasRole("ADMINISTRATOR")
+        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
+        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
+        .antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
-        .antMatchers("/student/account/info").hasAnyRole("TEACHER").antMatchers("/student/**")
-        .hasAnyRole("STUDENT").antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
-        .antMatchers("/teacher/**").hasAnyRole("TEACHER").antMatchers("/sso/discourse")
-        .hasAnyRole("TEACHER", "STUDENT").antMatchers("/").permitAll();
+        .antMatchers("/student/account/info").hasAnyRole("TEACHER")
+        .antMatchers("/student/**").hasAnyRole("STUDENT")
+        .antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/teacher/**").hasAnyRole("TEACHER")
+        .antMatchers("/sso/discourse").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
