@@ -1,5 +1,6 @@
 package org.wise.portal.presentation.web.controllers.student;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +35,10 @@ public class StudentForgotAccountAPIController {
 
   @Autowired
   private Properties i18nProperties;
+
+  private static final int MAX_FAILED_ANSWER_ATTEMPTS = 5;
+
+  private static final int FAILED_ANSWER_ATTEMPT_WINDOW_MINUTES = 10;
 
   @GetMapping("/username/search")
   protected String getStudentUsernames(@RequestParam("firstName") String firstName,
@@ -80,9 +85,13 @@ public class StudentForgotAccountAPIController {
     User user = userService.retrieveUserByUsername(username);
     JSONObject response;
     if (user != null) {
-      if (isAnswerCorrect(user, answer)) {
+      if (isTooManyFailedAnswerAttempts(user)) {
+        response = ControllerUtil.createErrorResponse("tooManyFailedAnswerAttempts");
+      } else if (isAnswerCorrect(user, answer)) {
+        clearFailedAnswerAttempts(user);
         response = ControllerUtil.createSuccessResponse("correctAnswer");
       } else {
+        recordFailedAnswerAttempt(user);
         response = ControllerUtil.createErrorResponse("incorrectAnswer");
       }
     } else {
@@ -99,6 +108,8 @@ public class StudentForgotAccountAPIController {
     User user = userService.retrieveUserByUsername(username);
     if (user == null) {
       return ResponseEntityGenerator.createError("invalidUsername");
+    } else if (isTooManyFailedAnswerAttempts(user)) {
+      return ResponseEntityGenerator.createError("tooManyFailedAnswerAttempts");
     } else {
       if (isAnswerCorrect(user, answer)) {
         if (!passwordService.isValid(password)) {
@@ -106,10 +117,12 @@ public class StudentForgotAccountAPIController {
         } else if (!isPasswordsMatch(password, confirmPassword)) {
           return ResponseEntityGenerator.createError("passwordsDoNotMatch");
         } else {
+          clearFailedAnswerAttempts(user);
           userService.updateUserPassword(user, password);
           return ResponseEntityGenerator.createSuccess("passwordChanged");
         }
       } else {
+        recordFailedAnswerAttempt(user);
         return ResponseEntityGenerator.createError("incorrectAnswer");
       }
     }
@@ -130,6 +143,49 @@ public class StudentForgotAccountAPIController {
   private boolean isAnswerCorrect(User user, String answer) {
     String accountSecurityAnswer = getAccountAnswer(user);
     return answer != null && answer.equals(accountSecurityAnswer);
+  }
+
+  /**
+   * The security answer is compared in plain text and answers are low entropy, so without a
+   * limit an attacker could brute force the answer and take over a student account. Allow only
+   * a small number of failed attempts within a short window before the reset is temporarily
+   * blocked, matching the throttling the teacher password reset flow already uses. The counter
+   * reuses the shared failed password reset verification fields on the user details.
+   */
+  private boolean isTooManyFailedAnswerAttempts(User user) {
+    MutableUserDetails userDetails = user.getUserDetails();
+    Date recentFailedAttemptTime = userDetails.getRecentFailedVerificationCodeAttemptTime();
+    Integer failedAttempts = userDetails.getNumberOfRecentFailedVerificationCodeAttempts();
+    if (recentFailedAttemptTime == null || failedAttempts == null) {
+      return false;
+    }
+    return isWithinAttemptWindow(recentFailedAttemptTime)
+        && failedAttempts >= MAX_FAILED_ANSWER_ATTEMPTS;
+  }
+
+  private void recordFailedAnswerAttempt(User user) {
+    MutableUserDetails userDetails = user.getUserDetails();
+    if (!isWithinAttemptWindow(userDetails.getRecentFailedVerificationCodeAttemptTime())) {
+      userDetails.clearNumberOfRecentFailedVerificationCodeAttempts();
+    }
+    userDetails.setRecentFailedVerificationCodeAttemptTime(new Date());
+    userDetails.incrementNumberOfRecentFailedVerificationCodeAttempts();
+    userService.updateUser(user);
+  }
+
+  private void clearFailedAnswerAttempts(User user) {
+    MutableUserDetails userDetails = user.getUserDetails();
+    userDetails.clearRecentFailedVerificationCodeAttemptTime();
+    userDetails.clearNumberOfRecentFailedVerificationCodeAttempts();
+    userService.updateUser(user);
+  }
+
+  private boolean isWithinAttemptWindow(Date date) {
+    if (date == null) {
+      return false;
+    }
+    long difference = new Date().getTime() - date.getTime();
+    return difference < ControllerUtil.convertMinutesToMilliseconds(FAILED_ANSWER_ATTEMPT_WINDOW_MINUTES);
   }
 
   private boolean isPasswordBlank(String password1, String password2) {
