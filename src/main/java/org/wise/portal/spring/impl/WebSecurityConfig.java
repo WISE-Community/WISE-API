@@ -101,7 +101,27 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
         .antMatchers("/teacher/**").hasAnyRole("TEACHER")
         .antMatchers("/sso/discourse").hasAnyRole("TEACHER", "STUDENT")
-        .antMatchers("/").permitAll();
+        // Endpoints that must stay reachable without authentication: sign-in and its
+        // OAuth callbacks, account registration, account and password recovery, the
+        // contact form, the public home, news, library and preview content, and the
+        // application bootstrap configuration. Every request that does not match a rule
+        // above falls through to the final rule and now requires authentication, rather
+        // than being permitted by default. The framework error dispatch and favicon are
+        // included so that an error raised while serving a public page renders the error
+        // response instead of being turned into an authentication redirect.
+        .antMatchers("/", "/login", "/login/**", "/error", "/errors/**", "/favicon.ico",
+            "/run-survey/**", "/previewproject.html").permitAll()
+        .antMatchers("/api/j_acegi_security_check", "/api/google-login", "/api/microsoft-login",
+            "/api/logout").permitAll()
+        .antMatchers("/api/student/register", "/api/student/register/questions",
+            "/api/teacher/register", "/api/contact").permitAll()
+        .antMatchers("/api/student/forgot/**", "/api/teacher/forgot/**").permitAll()
+        .antMatchers("/api/user/config", "/api/user/info", "/api/user/languages",
+            "/api/announcement", "/api/news", "/api/project/library", "/api/project/community",
+            "/api/config/vle", "/api/config/preview/**", "/api/project/info/*",
+            "/api/run/info", "/api/runInfo", "/api/session/renew",
+            "/api/google-user/check-user-exists").permitAll()
+        .anyRequest().authenticated();
     http.formLogin().loginPage("/login").permitAll();
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
