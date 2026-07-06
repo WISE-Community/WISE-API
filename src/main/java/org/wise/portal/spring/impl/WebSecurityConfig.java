@@ -86,6 +86,14 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
         .authorizeRequests()
+        // Static assets served by the resource handlers configured in WebConfig are public
+        // content (portal scripts, themes and translations, the runtime engine, project
+        // files and project icons). They must stay reachable without signing in, now that
+        // unmatched requests are denied by default, otherwise the login and public preview
+        // pages would fail to load their assets. Student uploaded files are intentionally
+        // excluded so they continue to require authentication.
+        .antMatchers("/pages/resources/**", "/portal/javascript/**", "/portal/themes/**",
+            "/portal/translate/**", "/vle/**", "/curriculum/**", "/projectIcons/**").permitAll()
         // Matched the way Spring MVC matches, so a trailing slash cannot slip an exact path
         // past these rules and into the broader "/admin/**" rule below.
         .mvcMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
