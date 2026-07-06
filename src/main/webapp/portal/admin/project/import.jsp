@@ -86,6 +86,7 @@
 		<div id="importFromHubDiv" style="background:#FFF9EF; padding: 10px">
 			<h3>Select a WISE Project to Import</h3>
 			<form action="importFromHub" method="POST">
+				<sec:csrfInput/>
 				<select id="importableWISEProjects" name="importableProjectId"></select>
 				<button type="submit">Import</button>
 			</form>

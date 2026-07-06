@@ -16,6 +16,7 @@
 </c:if>
 
 <script src="${contextPath}/<spring:theme code="jquerysource"/>" type="text/javascript"></script>
+<script src="${contextPath}/<spring:theme code="generalsource"/>" type="text/javascript"></script>
 <script src="${contextPath}/<spring:theme code="jquerymigrate.js"/>" type="text/javascript"></script>
 <script src="${contextPath}/<spring:theme code="projecttags.js"/>" type="text/javascript"></script>
 <script src="${contextPath}/<spring:theme code="jqueryuisource"/>" type="text/javascript"></script>
