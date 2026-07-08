@@ -24,7 +24,6 @@
 package org.wise.portal.dao.newsitem.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
 import org.wise.portal.dao.newsitem.NewsItemDao;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 
 /**
@@ -50,21 +50,35 @@ public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
   }
 
   @Override
+  public List<NewsItem> getNewsPageNews(NewsType type) {
+    return getLatestNews(-1, type);
+  }
+
+  @Override
+  public List<NewsItem> getHomePageNews(NewsType type) {
+    return getLatestNews(3, type);
+  }
+
+  @Override
+  public List<NewsItem> getAllNews() {
+    return getLatestNews(-1, NewsType.PUBLIC_AND_TEACHER);
+  }
+
   @SuppressWarnings("unchecked")
-  public List<NewsItem> getLatestNews(Optional<Integer> number, Optional<String> type) {
+  private List<NewsItem> getLatestNews(int number, NewsType type) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<NewsItemImpl> cq = cb.createQuery(NewsItemImpl.class);
     Root<NewsItemImpl> newsItemRoot = cq.from(NewsItemImpl.class);
 
     cq.select(newsItemRoot);
-    if (type.isPresent()) {
-      cq.where(cb.equal(newsItemRoot.get("type"), type.get()));
+    if (type.equals(NewsType.PUBLIC_ONLY)) {
+      cq.where(cb.equal(newsItemRoot.get("type"), "public"));
     }
     cq.orderBy(cb.desc(newsItemRoot.get("id")));
 
     TypedQuery<NewsItemImpl> query = entityManager.createQuery(cq);
-    if (number.isPresent() && number.get() >= 0) {
-      query.setMaxResults(number.get());
+    if (number >= 0) {
+      query.setMaxResults(number);
     }
     return (List<NewsItem>) (Object) query.getResultList();
   }

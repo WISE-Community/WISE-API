@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.service.newsitem.NewsItemService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/news", produces = "application/json;charset=UTF-8")
@@ -22,14 +22,16 @@ public class NewsAPIController {
   private NewsItemService newsItemService;
 
   @GetMapping()
-  protected String getAllNews(@RequestParam Optional<Integer> num, @RequestParam Optional<String> type) {
-    List<NewsItem> newsItems = this.newsItemService.retrieveLatestNews(num, type);
+  protected String getNewsPageNews(@RequestParam String type) {
+    NewsType newsType = NewsType.stringToNewsType(type);
+    List<NewsItem> newsItems = this.newsItemService.retrieveNewsPageNews(newsType);
     return this.getNewsItemsJSONString(newsItems);
   }
 
   @GetMapping("/home")
-  protected String getHomePageNews(@RequestParam Optional<String> type) {
-    List<NewsItem> newsItems = this.newsItemService.retrieveAndCacheHomePageNews(type);
+  protected String getHomePageNews(@RequestParam String type) {
+    NewsType newsType = NewsType.stringToNewsType(type);
+    List<NewsItem> newsItems = this.newsItemService.retrieveAndCacheHomePageNews(newsType);
     return this.getNewsItemsJSONString(newsItems);
   }
 

@@ -26,20 +26,19 @@ package org.wise.portal.service.newsitem.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.newsitem.NewsItemDao;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.newsitem.NewsItemService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import javax.management.timer.Timer;
 
 /**
@@ -51,23 +50,20 @@ public class NewsItemServiceImpl implements NewsItemService {
   @Autowired
   private NewsItemDao<NewsItem> newsItemDao;
 
-  @Autowired
-  private CacheManager cacheManager;
-
   @Override
-  public List<NewsItem> retrieveLatestNews(Optional<Integer> number, Optional<String> type) {
-    return newsItemDao.getLatestNews(number, type);
+  public List<NewsItem> retrieveNewsPageNews(NewsType type) {
+    return newsItemDao.getNewsPageNews(type);
   }
 
   @Override
-  @Cacheable(value = "newsItems", key = "#type.orElse('all')")
-  public List<NewsItem> retrieveAndCacheHomePageNews(Optional<String> type) {
-    return newsItemDao.getLatestNews(Optional.of(3), type);
+  @Cacheable(value = "newsItems", key = "#type")
+  public List<NewsItem> retrieveAndCacheHomePageNews(NewsType type) {
+    return newsItemDao.getHomePageNews(type);
   }
   
   @Override
   public List<NewsItem> retrieveAllNewsItem() {
-    return newsItemDao.getLatestNews(Optional.empty(), Optional.empty());
+    return newsItemDao.getAllNews();
   }
 
   @Override
