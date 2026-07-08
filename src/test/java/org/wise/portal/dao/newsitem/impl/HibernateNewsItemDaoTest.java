@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,18 +57,27 @@ public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
         Schoollevel.COLLEGE, "1234567890");
   }
 
-  // @Test
-  // public void getListByType_TypeThatDoesNotExist_ShouldReturnNone() {
-  //   List<NewsItem> newsItems = newsItemDao.getListByType("test");
-  //   assertEquals(0, newsItems.size());
-  // }
+  @Test
+  public void getLatestNews_TypeThatDoesNotExist_ShouldReturnNone() {
+    List<NewsItem> newsItems = newsItemDao.getLatestNews(Optional.empty(), Optional.of("test"));
+    assertEquals(0, newsItems.size());
+  }
 
-  // @Test
-  // public void getListByType_TypeThatExists_ShouldReturnNewsItems() {
-  //   createNewsItem(teacher, new Date(), "public", "News Title", "news1");
-  //   List<NewsItem> newsItems = newsItemDao.getListByType("public");
-  //   assertEquals(1, newsItems.size());
-  // }
+  @Test
+  public void getLatestNews_TypeThatExists_ShouldReturnNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 2", "news2");
+    List<NewsItem> newsItems = newsItemDao.getLatestNews(Optional.empty(), Optional.of("public"));
+    assertEquals(1, newsItems.size());
+  }
+
+  @Test
+  public void getLatestNews_NumberSpecified_ShouldReturnNumberOfNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "public", "News Title 2", "news2");
+    List<NewsItem> newsItems = newsItemDao.getLatestNews(Optional.of(1), Optional.empty());
+    assertEquals(1, newsItems.size());
+  }
 
   private NewsItem createNewsItem(User owner, Date date, String type, String title, String news) {
     NewsItem newsItem = new NewsItemImpl();
