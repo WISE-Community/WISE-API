@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ import org.wise.portal.service.user.UserService;
  * Only accessed by a WISE admin user.
  * @author Hiroki Terashima
  */
+@Secured("ROLE_ADMINISTRATOR")
 @Controller
 @RequestMapping("/admin/account/enabledisableuser")
 public class EnableDisableUserController {

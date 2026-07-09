@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -44,6 +45,7 @@ import org.wise.portal.service.user.UserService;
  *
  * @author Hiroki Terashima
  */
+@Secured("ROLE_ADMINISTRATOR")
 @Controller
 @RequestMapping("/admin/account/manageuserroles.html")
 public class ManageUserRolesController {

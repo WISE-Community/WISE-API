@@ -24,6 +24,7 @@
 package org.wise.portal.presentation.web.controllers.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.wise.portal.domain.project.Project;
@@ -42,6 +43,7 @@ import java.util.List;
  * Admin utility functions like db migrations and batch scripts
  * @author Hiroki Terashima
  */
+@Secured("ROLE_ADMINISTRATOR")
 @Controller
 public class AdminUtilsController {
 

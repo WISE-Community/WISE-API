@@ -85,14 +85,23 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
-        .authorizeRequests().antMatchers("/api/login/impersonate")
-        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/admin/**")
-        .hasAnyRole("ADMINISTRATOR", "RESEARCHER").antMatchers("/author/**").hasAnyRole("TEACHER")
+        .authorizeRequests()
+        // Matched the way Spring MVC matches, so a trailing slash cannot slip an exact path
+        // past these rules and into the broader "/admin/**" rule below.
+        .mvcMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
+            "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
+            "/admin/run/replacebase64withpng.html", "/api/admin/**")
+        .hasRole("ADMINISTRATOR")
+        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
+        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
+        .antMatchers("/author/**").hasAnyRole("TEACHER")
         .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
-        .antMatchers("/student/account/info").hasAnyRole("TEACHER").antMatchers("/student/**")
-        .hasAnyRole("STUDENT").antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
-        .antMatchers("/teacher/**").hasAnyRole("TEACHER").antMatchers("/sso/discourse")
-        .hasAnyRole("TEACHER", "STUDENT").antMatchers("/").permitAll();
+        .antMatchers("/student/account/info").hasAnyRole("TEACHER")
+        .antMatchers("/student/**").hasAnyRole("STUDENT")
+        .antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/teacher/**").hasAnyRole("TEACHER")
+        .antMatchers("/sso/discourse").hasAnyRole("TEACHER", "STUDENT")
+        .antMatchers("/").permitAll();
     http.formLogin().loginPage("/login").permitAll();
     http.logout().addLogoutHandler(wiseLogoutHandler())
         .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
