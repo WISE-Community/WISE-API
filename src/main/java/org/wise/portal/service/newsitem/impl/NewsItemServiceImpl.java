@@ -24,17 +24,22 @@
 package org.wise.portal.service.newsitem.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.newsitem.NewsItemDao;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.newsitem.NewsItemService;
 
 import java.util.Date;
 import java.util.List;
+import javax.management.timer.Timer;
 
 /**
  * @author Patrick Lawler
@@ -45,14 +50,23 @@ public class NewsItemServiceImpl implements NewsItemService {
   @Autowired
   private NewsItemDao<NewsItem> newsItemDao;
 
+  @Override
+  public List<NewsItem> retrieveNewsPageNews(NewsType type) {
+    return newsItemDao.getNewsPageNews(type);
+  }
+
+  @Override
+  @Cacheable(value = "newsItems", key = "#type")
+  public List<NewsItem> retrieveAndCacheHomePageNews(NewsType type) {
+    return newsItemDao.getHomePageNews(type);
+  }
+  
+  @Override
   public List<NewsItem> retrieveAllNewsItem() {
-    return newsItemDao.getList();
+    return newsItemDao.getAllNews();
   }
 
-  public List<NewsItem> retrieveByType(String type) {
-    return newsItemDao.getListByType(type);
-  }
-
+  @Override
   public NewsItem retrieveById(Integer id) throws ObjectNotFoundException {
     try {
       return newsItemDao.getById(id);
@@ -62,6 +76,7 @@ public class NewsItemServiceImpl implements NewsItemService {
   }
 
   @Transactional
+  @CacheEvict(value = "newsItems", allEntries = true)
   public NewsItem createNewsItem(Date date, User owner, String title, String news, String type) {
     NewsItem newsItem = new NewsItemImpl();
     newsItem.setDate(date);
@@ -74,6 +89,7 @@ public class NewsItemServiceImpl implements NewsItemService {
   }
 
   @Transactional
+  @CacheEvict(value = "newsItems", allEntries = true)
   public void updateNewsItem(Integer id, Date date, User owner, String title,
       String news, String type) throws ObjectNotFoundException {
     NewsItem newsItem = newsItemDao.getById(id);
@@ -86,8 +102,14 @@ public class NewsItemServiceImpl implements NewsItemService {
   }
 
   @Transactional
+  @CacheEvict(value = "newsItems", allEntries = true)
   public void deleteNewsItem(Integer id) throws ObjectNotFoundException {
     NewsItem newsItem = newsItemDao.getById(id);
     newsItemDao.delete(newsItem);
+  }
+
+  @Scheduled(fixedRate = Timer.ONE_HOUR)
+  @CacheEvict(value = "newsItems", allEntries = true)
+  public void evictNewsItemsCache() {
   }
 }

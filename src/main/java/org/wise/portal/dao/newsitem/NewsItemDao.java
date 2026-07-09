@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.wise.portal.dao.SimpleDao;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 
 /**
  * @author Patrick Lawler
@@ -34,6 +35,9 @@ import org.wise.portal.domain.newsitem.NewsItem;
  */
 public interface NewsItemDao<T extends NewsItem> extends SimpleDao<NewsItem> {
 
-  List<NewsItem> getListByType(String type);
+  List<NewsItem> getNewsPageNews(NewsType type);
 
+  List<NewsItem> getHomePageNews(NewsType type);
+
+  List<NewsItem> getAllNews();
 }
