@@ -51,21 +51,21 @@ public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
 
   @Override
   public List<NewsItem> getNewsPageNews(NewsType type) {
-    return getLatestNews(-1, type);
+    return getLatestNews(false, type);
   }
 
   @Override
   public List<NewsItem> getHomePageNews(NewsType type) {
-    return getLatestNews(3, type);
+    return getLatestNews(true, type);
   }
 
   @Override
   public List<NewsItem> getAllNews() {
-    return getLatestNews(-1, NewsType.PUBLIC_AND_TEACHER);
+    return getLatestNews(false, NewsType.PUBLIC_AND_TEACHER);
   }
 
   @SuppressWarnings("unchecked")
-  private List<NewsItem> getLatestNews(int number, NewsType type) {
+  private List<NewsItem> getLatestNews(boolean limitQuery, NewsType type) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<NewsItemImpl> cq = cb.createQuery(NewsItemImpl.class);
     Root<NewsItemImpl> newsItemRoot = cq.from(NewsItemImpl.class);
@@ -77,8 +77,8 @@ public class HibernateNewsItemDao extends AbstractHibernateDao<NewsItem>
     cq.orderBy(cb.desc(newsItemRoot.get("id")));
 
     TypedQuery<NewsItemImpl> query = entityManager.createQuery(cq);
-    if (number >= 0) {
-      query.setMaxResults(number);
+    if (limitQuery) {
+      query.setMaxResults(3);
     }
     return (List<NewsItem>) (Object) query.getResultList();
   }
