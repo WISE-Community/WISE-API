@@ -58,12 +58,12 @@
                 </div>
                 <div class="panelContent">
 
-                    <div class="sectionHead" style="padding-top: 0;">
-                        <spring:message code='admin.index.userManagement' />
-                    </div>
-                    <div class="sectionContent">
-                        <h5>
-                            <sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
+                    <sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
+                        <div class="sectionHead" style="padding-top: 0;">
+                            <spring:message code='admin.index.userManagement' />
+                        </div>
+                        <div class="sectionContent">
+                            <h5>
                                 <spring:message code='admin.index.list' />
                                 <spring:message code='admin.index.allUsersWhoLoggedIn' />
                                 <a href="${contextPath}/admin/account/show-online-users">
@@ -76,34 +76,34 @@
                                     <spring:message code='thisMonth' /></a> |
                                 <a href="${contextPath}/admin/account/show-recent-users?duration=thisYear">
                                     <spring:message code='thisYear' /></a>
-                            </sec:authorize>
-                        </h5>
-                        <h5>
-                            <spring:message code='admin.index.find' />
-                            <a href="${contextPath}/admin/account/lookupuser?userType=teacher">
-                                <spring:message code='teacher_cap' /></a> |
-                            <a href="${contextPath}/admin/account/lookupuser?userType=student">
-                                <spring:message code='student_cap' /></a>
-                        </h5>
-                        <h5>
-                            <spring:message code='admin.index.list' />
-                            <a href="${contextPath}/admin/account/show-all-users?userType=teacher">
-                                <spring:message code='admin.index.allTeachers' /></a> |
-                            <a href="${contextPath}/admin/account/show-all-users?userType=student">
-                                <spring:message code='admin.index.allStudents' /></a>
-
-                        </h5>
-                        <h5>
-                            <a href="${contextPath}/admin/account/enabledisableuser">
-                                <spring:message code='admin.index.enableDisableUser' /></a>
-                        </h5>
-                        <c:if test="${isBatchCreateUserAccountsEnabled}">
-                            <h5>
-                                <a href="${contextPath}/admin/account/batchcreateuseraccounts.html">
-                                    <spring:message code='admin.index.batchCreateUserAccounts' /></a>
                             </h5>
-                        </c:if>
-                    </div>
+                            <h5>
+                                <spring:message code='admin.index.find' />
+                                <a href="${contextPath}/admin/account/lookupuser?userType=teacher">
+                                    <spring:message code='teacher_cap' /></a> |
+                                <a href="${contextPath}/admin/account/lookupuser?userType=student">
+                                    <spring:message code='student_cap' /></a>
+                            </h5>
+                            <h5>
+                                <spring:message code='admin.index.list' />
+                                <a href="${contextPath}/admin/account/show-all-users?userType=teacher">
+                                    <spring:message code='admin.index.allTeachers' /></a> |
+                                <a href="${contextPath}/admin/account/show-all-users?userType=student">
+                                    <spring:message code='admin.index.allStudents' /></a>
+
+                            </h5>
+                            <h5>
+                                <a href="${contextPath}/admin/account/enabledisableuser">
+                                    <spring:message code='admin.index.enableDisableUser' /></a>
+                            </h5>
+                            <c:if test="${isBatchCreateUserAccountsEnabled}">
+                                <h5>
+                                    <a href="${contextPath}/admin/account/batchcreateuseraccounts.html">
+                                        <spring:message code='admin.index.batchCreateUserAccounts' /></a>
+                                </h5>
+                            </c:if>
+                        </div>
+                    </sec:authorize>
 
                     <div class="sectionHead">
                         <spring:message code='admin.index.projectRunManagement' />

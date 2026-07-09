@@ -86,13 +86,9 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
         .authorizeRequests()
-        // User, role, portal, news and destructive maintenance endpoints must be
-        // restricted to administrators. They were previously reachable by researchers
-        // through the broad "/admin/**" rule, which let a researcher grant themselves
-        // the administrator role or manage other users' accounts. These more specific
-        // rules are listed first so they take precedence over the broader ones below.
         .antMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
-            "/admin/mergeProjectMetadata", "/admin/run/replacebase64withpng.html", "/api/admin/**")
+            "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
+            "/admin/run/replacebase64withpng.html", "/api/admin/**")
         .hasRole("ADMINISTRATOR")
         .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
         .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
