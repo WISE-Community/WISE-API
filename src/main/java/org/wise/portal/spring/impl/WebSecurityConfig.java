@@ -86,7 +86,9 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
         .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
         .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
         .authorizeRequests()
-        .antMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
+        // Matched the way Spring MVC matches, so a trailing slash cannot slip an exact path
+        // past these rules and into the broader "/admin/**" rule below.
+        .mvcMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
             "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
             "/admin/run/replacebase64withpng.html", "/api/admin/**")
         .hasRole("ADMINISTRATOR")
