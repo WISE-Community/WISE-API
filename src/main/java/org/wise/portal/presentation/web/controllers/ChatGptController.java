@@ -26,7 +26,7 @@ public class ChatGptController {
 
   @ResponseBody
   @Secured("ROLE_USER")
-  @PostMapping
+  @PostMapping(produces = "application/json;charset=UTF-8")
   protected String sendChatMessage(@RequestBody String body) {
     if (openAiApiKey == null || openAiApiKey.isEmpty()) {
       throw new RuntimeException("openai.api.key is not set");
@@ -44,7 +44,7 @@ public class ChatGptController {
       writer.flush();
       writer.close();
       BufferedReader br = new BufferedReader(
-          new InputStreamReader(connection.getInputStream(), "ISO-8859-1"));
+          new InputStreamReader(connection.getInputStream(), "UTF-8"));
       String line;
       StringBuffer response = new StringBuffer();
       while ((line = br.readLine()) != null) {
