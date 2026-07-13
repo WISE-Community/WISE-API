@@ -26,7 +26,7 @@ public class ChatGptController {
 
   @ResponseBody
   @Secured("ROLE_USER")
-  @PostMapping
+  @PostMapping(produces = "application/json;charset=UTF-8")
   protected String sendChatMessage(@RequestBody String body) {
     if (openAiApiKey == null || openAiApiKey.isEmpty()) {
       throw new RuntimeException("openai.api.key is not set");
