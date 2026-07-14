@@ -156,10 +156,9 @@ public class StudentForgotAccountAPIController {
     MutableUserDetails userDetails = user.getUserDetails();
     Date recentFailedAttemptTime = userDetails.getRecentFailedVerificationCodeAttemptTime();
     Integer failedAttempts = userDetails.getNumberOfRecentFailedVerificationCodeAttempts();
-    if (recentFailedAttemptTime == null || failedAttempts == null) {
-      return false;
-    }
-    return isWithinAttemptWindow(recentFailedAttemptTime)
+    return recentFailedAttemptTime != null 
+        && failedAttempts != null
+        && isWithinAttemptWindow(recentFailedAttemptTime)
         && failedAttempts >= MAX_FAILED_ANSWER_ATTEMPTS;
   }
 
