@@ -227,7 +227,7 @@ public class TeacherAPIController extends UserAPIController {
 
   private String getVerificationUrl(HttpServletRequest request, String username,
                                     String verificationCode) {
-    return String.format("%s/api/teacher/verify?username=%s&code=%s", 
+    return String.format("%s/api/user/verify?username=%s&code=%s", 
                          ControllerUtil.getPortalUrlString(request), username, verificationCode);
   }
 
