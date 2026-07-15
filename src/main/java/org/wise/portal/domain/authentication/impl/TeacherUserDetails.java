@@ -94,6 +94,12 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   private static final String COLUMN_NAME_HOW_HEAR = "howDidYouHearAboutUs";
 
   @Transient
+  private static final String COLUMN_NAME_VERIFIED = "isVerified";
+
+  @Transient
+  private static final String COLUMN_NAME_VERIFICATION_CODE = "verificationCode";
+
+  @Transient
   private static final long serialVersionUID = 1L;
 
   @Column(name = TeacherUserDetails.COLUMN_NAME_FIRSTNAME, nullable = false)
@@ -163,6 +169,16 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   @Getter
   @Setter
   private String howDidYouHearAboutUs;
+
+  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFIED, nullable = false)
+  @Getter
+  @Setter
+  private boolean verified = false;
+
+  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFICATION_CODE)
+  @Getter
+  @Setter
+  private String verificationCode;
 
   public String getCoreUsername() {
     return (firstname + lastname).replaceAll("[\\s-]+", "");

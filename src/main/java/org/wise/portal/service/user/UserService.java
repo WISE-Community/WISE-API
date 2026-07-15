@@ -155,6 +155,8 @@ public interface UserService {
 
   User retrieveTeacherByUsername(String username);
 
+  User retrieveTeacherByVerificationCode(String verificationCode);
+
   List<User> retrieveTeachersByDisplayName(String displayName);
 
   List<User> retrieveTeachersByCity(String city);

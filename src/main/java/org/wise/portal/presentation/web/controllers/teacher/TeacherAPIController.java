@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -178,19 +179,22 @@ public class TeacherAPIController extends UserAPIController {
     tud.setHowDidYouHearAboutUs(teacherFields.get("howDidYouHearAboutUs"));
     Locale locale = request.getLocale();
     tud.setLanguage(locale.getLanguage());
+    tud.setVerified(false);
+    String verificationCode = UUID.randomUUID().toString();
+    tud.setVerificationCode(verificationCode);
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
     String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
-    Boolean iSendEmailEnabled = Boolean.valueOf(sendEmailEnabledStr);
+    Boolean isSendEmailEnabled = Boolean.valueOf(sendEmailEnabledStr);
     boolean socialAccount = this.isSet(googleUserId) || this.isSet(microsoftUserId);
-    if (iSendEmailEnabled) {
-      sendCreateTeacherAccountEmail(email, displayName, username, socialAccount, locale, request);
+    if (isSendEmailEnabled) {
+      sendCreateTeacherAccountEmail(email, displayName, username, socialAccount, locale, verificationCode, request);
     }
     return createRegisterSuccessResponse(username);
   }
 
   private void sendCreateTeacherAccountEmail(String email, String displayName, String username,
-      boolean socialAccount, Locale locale, HttpServletRequest request) {
+      boolean socialAccount, Locale locale, String verificationCode, HttpServletRequest request) {
     String fromEmail = appProperties.getProperty("portalemailaddress");
     String[] recipients = { email };
     String defaultSubject = messageSource.getMessage(
@@ -209,15 +213,22 @@ public class TeacherAPIController extends UserAPIController {
           "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmailBodyNoUsername",
           new Object[] { displayName, gettingStartedUrl }, defaultBody, locale);
     } else {
+      String verificationUrl = getVerificationUrl(request, username, verificationCode);
       message = messageSource.getMessage(
           "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmailBody",
-          new Object[] { displayName, username, gettingStartedUrl }, defaultBody, locale);
+          new Object[] { displayName, username, verificationUrl, gettingStartedUrl }, defaultBody, locale);
     }
     try {
       mailService.postMail(recipients, subject, message, fromEmail);
     } catch (MessagingException e) {
       e.printStackTrace();
     }
+  }
+
+  private String getVerificationUrl(HttpServletRequest request, String username,
+                                    String verificationCode) {
+    return String.format("%s/api/teacher/verify?username=%s&code=%s", 
+                         ControllerUtil.getPortalUrlString(request), username, verificationCode);
   }
 
   private String getGettingStartedUrl(HttpServletRequest request) {

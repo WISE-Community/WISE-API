@@ -208,6 +208,10 @@ public class UserServiceImpl implements UserService {
     return userDao.retrieveTeacherByUsername(username);
   }
 
+  public User retrieveTeacherByVerificationCode(String verificationCode) {
+    return userDao.retrieveTeacherByVerificationCode(verificationCode);
+  }
+
   public List<User> retrieveTeachersByDisplayName(String displayName) {
     return userDao.retrieveTeachersByDisplayName(displayName);
   }

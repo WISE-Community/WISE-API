@@ -148,8 +148,11 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
   }
 
   public User retrieveTeacherByUsername(String username) {
-    List<User> resultList = retrieveTeachersByFieldValue("username", username);
-    return resultList.isEmpty() ? null : resultList.get(0);
+    return retrieveTeacherByFieldValue("username", username);
+  }
+
+  public User retrieveTeacherByVerificationCode(String verificationCode) {
+    return retrieveTeacherByFieldValue("verificationCode", verificationCode);
   }
 
   public List<User> retrieveTeachersByDisplayName(String displayName) {
@@ -176,6 +179,11 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     return retrieveTeachersByFieldValue("emailAddress", emailAddress);
   }
 
+  private User retrieveTeacherByFieldValue(String field, String value) {
+    List<User> resultList = retrieveTeachersByFieldValue(field, value);
+    return resultList.isEmpty() ? null : resultList.get(0);
+  }
+  
   @SuppressWarnings("unchecked")
   private List<User> retrieveTeachersByFieldValue(String field, String value) {
     CriteriaBuilder cb = getCriteriaBuilder();

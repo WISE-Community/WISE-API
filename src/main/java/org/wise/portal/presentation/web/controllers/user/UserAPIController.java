@@ -118,6 +118,7 @@ public class UserAPIController {
         info.put("country", tud.getCountry());
         info.put("schoolName", tud.getSchoolname());
         info.put("schoolLevel", tud.getSchoollevel());
+        info.put("isVerified", tud.isVerified());
       }
       return info;
     } else {
