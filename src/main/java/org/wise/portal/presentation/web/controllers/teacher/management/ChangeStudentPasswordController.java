@@ -47,6 +47,10 @@ public class ChangeStudentPasswordController {
           return ResponseEntityGenerator.createError(passwordService.getErrors(newStudentPassword));
         }
         User studentUser = userService.retrieveById(studentId);
+        if (!run.isStudentAssociatedToThisRun(studentUser)) {
+          throw new AccessDeniedException(
+              "User does not have permission to change this student's password");
+        }
         userService.updateUserPassword(studentUser, newStudentPassword);
         return ResponseEntityGenerator.createSuccess("passwordUpdated");
       } else {

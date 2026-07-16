@@ -116,6 +116,36 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   }
 
   @Test
+  public void changeStudentPassword_StudentNotInRun_ThrowAccessDenied() throws Exception {
+    setupChangeStudentPasswordExpect();
+    expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
+    expect(userService.retrieveById(student2Id)).andReturn(student2);
+    replayServices();
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, student2Id, TEACHER_PASSWORD_CORRECT,
+          STUDENT_PASSWORD_VALID);
+      fail("Expected AccessDeniedException to be thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyServices();
+  }
+
+  @Test
+  public void changeStudentPassword_TargetUserIsTeacher_ThrowAccessDenied() throws Exception {
+    setupChangeStudentPasswordExpect();
+    expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
+    expect(userService.retrieveById(teacher2Id)).andReturn(teacher2);
+    replayServices();
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, teacher2Id, TEACHER_PASSWORD_CORRECT,
+          STUDENT_PASSWORD_VALID);
+      fail("Expected AccessDeniedException to be thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyServices();
+  }
+
+  @Test
   public void changeStudentPassword_validTeacherPassword_ChangeStudentPassword() throws Exception {
     setupChangeStudentPasswordExpect();
     expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
