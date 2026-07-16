@@ -239,6 +239,26 @@ public class TeacherAPIController extends UserAPIController {
     return value != null && !value.isEmpty();
   }
 
+  @PostMapping("/verify-email")
+  @Secured({ "ROLE_ANONYMOUS" })
+  ResponseEntity<Map<String, Object>> resendCreateTeacherAccountEmail(@RequestParam String username, HttpServletRequest request) {
+    User user = userService.retrieveTeacherByUsername(username);
+    if (user == null) {
+      return ResponseEntityGenerator.createError("usernameNotFound");
+    }
+    TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+    if (tud.isVerified()) {
+      return ResponseEntityGenerator.createError("accountAlreadyVerified");
+    }
+    String email = tud.getEmailAddress();
+    String displayName = tud.getFirstname() + " " + tud.getLastname();
+    String verificationCode = tud.getVerificationCode();
+    userService.updateUser(user);
+    Locale locale = request.getLocale();
+    sendCreateTeacherAccountEmail(email, displayName, username, false, locale, verificationCode, request);
+    return createRegisterSuccessResponse(username);
+  }
+
   private List<HashMap<String, Object>> getRunSharedOwnersList(Run run) {
     List<HashMap<String, Object>> sharedOwners = new ArrayList<HashMap<String, Object>>();
     for (User sharedOwner : run.getSharedowners()) {
