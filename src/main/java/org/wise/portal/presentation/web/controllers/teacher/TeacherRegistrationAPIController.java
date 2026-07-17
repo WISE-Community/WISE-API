@@ -51,16 +51,19 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
     if (isSendEmailEnabled()) {
-      boolean socialAccount = isSet(tud.getGoogleUserId()) || isSet(tud.getMicrosoftUserId());
       sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
-                              socialAccount, locale, request);
+                              isSocialAccount(tud), locale, request);
     }
     return createRegisterSuccessResponse(username);
   }
 
-  private Boolean isSendEmailEnabled() {
+  private boolean isSendEmailEnabled() {
     String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
     return Boolean.valueOf(sendEmailEnabledStr);
+  }
+
+  private boolean isSocialAccount(TeacherUserDetails tud) {
+      return isSet(tud.getGoogleUserId()) || isSet(tud.getMicrosoftUserId());
   }
 
   private void sendWelcomeTeacherEmail(String email, String displayName, String username,
