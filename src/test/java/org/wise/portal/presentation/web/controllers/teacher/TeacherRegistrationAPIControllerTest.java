@@ -22,12 +22,13 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.usertags.UserTagsService;
 
 @ExtendWith(EasyMockExtension.class)
 public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
-
+  
   @TestSubject
   private TeacherRegistrationAPIController teacherRegistrationAPIController = new TeacherRegistrationAPIController();
 
@@ -37,11 +38,19 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
   @Mock
   private UserTagsService userTagsService;
 
+  @Mock
+  private PasswordService passwordService;
+
   @Test
   public void createTeacherAccount_InvalidPassword_ReturnError()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> teacherFields = createDefaultTeacherFields();
     teacherFields.put("password", PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
+    expect(passwordService.isValid(PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT)).andReturn(false);
+    Map<String, Object> errors = new HashMap<>();
+    errors.put("messageCode", "invalidPassword");
+    expect(passwordService.getErrors(PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT)).andReturn(errors);
+    replay(passwordService);
     ResponseEntity<Map<String, Object>> response = teacherRegistrationAPIController
         .createTeacherAccount(teacherFields, request);
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -62,7 +71,7 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
-  }
+  } 
 
   private HashMap<String, String> createDefaultTeacherFields() {
     HashMap<String, String> fields = new HashMap<String, String>();
