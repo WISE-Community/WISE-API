@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -175,7 +176,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
     tud.setVerified(isSocialAccount);
-    tud.setVerificationCode(UUID.randomUUID().toString());
+    setVerificationCode(tud);
     return tud;
   }
 
@@ -190,6 +191,18 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
       setRandomPassword(tud);
     } else {
       tud.setPassword(teacherFields.get("password"));
+    }
+  }
+  
+  private void setVerificationCode(TeacherUserDetails tud) {
+    boolean isCodeSet = false;
+    while (!isCodeSet) {
+      try {
+        tud.setVerificationCode(UUID.randomUUID().toString());
+        isCodeSet = true;
+      } catch (DataIntegrityViolationException e) {
+        continue;
+      }
     }
   }
 

@@ -175,7 +175,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   @Setter
   private boolean verified = false;
 
-  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFICATION_CODE)
+  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFICATION_CODE, unique = true)
   @Getter
   @Setter
   private String verificationCode;
