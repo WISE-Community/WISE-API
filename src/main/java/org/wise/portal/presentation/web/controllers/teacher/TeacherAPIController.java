@@ -327,4 +327,19 @@ public class TeacherAPIController extends UserAPIController {
     }
     return response;
   }
+
+  @GetMapping("/is-verified")
+  public boolean isUserVerified(@RequestParam String username) {
+    User user = userService.retrieveTeacherByUsername(username);
+    return !this.isTeacher(user) || this.isTeacherVerified(user); // Only teachers need to verify their accounts
+  }
+
+  protected boolean isTeacher(User user) {
+    return user != null && !user.getRoles().contains("ROLE_STUDENT");
+  }
+
+  private boolean isTeacherVerified(User user) {
+    TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+    return tud.isVerified();
+  }
 }

@@ -172,4 +172,26 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   private void setRandomPassword(TeacherUserDetails tud) {
     tud.setPassword(RandomStringUtils.random(10, true, true));
   }
+
+  @GetMapping("/verify")
+  public void openVerificationLink(@RequestParam String code, @RequestParam String username,
+                                   HttpServletResponse response) throws IOException {
+    boolean verified = this.verifyTeacherAccount(code);
+    response.sendRedirect("/login?verified=" + verified + "&username=" + username);
+  }
+
+  private boolean verifyTeacherAccount(String verificationCode) {
+    User user = userService.retrieveTeacherByVerificationCode(verificationCode);
+    if (this.isTeacher(user)) {
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+      if (!tud.isVerified()) {
+        tud.setVerified(true);
+        userService.updateUser(user);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  
 }
