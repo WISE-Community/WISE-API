@@ -1,17 +1,22 @@
 package org.wise.portal.presentation.web.controllers.teacher;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -28,10 +33,12 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 public class TeacherRegistrationAPIController extends TeacherAPIController {
 
   private final String emailCodePrefix = 
-    "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmail";
-  private final String welcomeBodyCode = this.emailCodePrefix + "Body";
-  private final String welcomeSocialAccountBodyCode = this.emailCodePrefix + "BodyNoUsername";
-  private final String welcomeSubjectCode = this.emailCodePrefix + "Subject";
+    "presentation.web.controllers.teacher.registerTeacherController.";
+  private final String verifyBodyCode = this.emailCodePrefix + "verifyTeacherEmailBody";
+  private final String verifySubjectCode = this.emailCodePrefix + "verifyTeacherEmailSubject";
+  private final String welcomeBodyCode = this.emailCodePrefix + "welcomeTeacherEmailBody";
+  private final String welcomeSocialAccountBodyCode = this.emailCodePrefix + "welcomeTeacherEmailBodyNoUsername";
+  private final String welcomeSubjectCode = this.emailCodePrefix + "welcomeTeacherEmailSubject";
  
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
@@ -47,12 +54,17 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
         passwordService.getErrors(teacherFields.get("password")));
     }
     Locale locale = request.getLocale();
-    TeacherUserDetails tud = createTeacherUserDetails(teacherFields, locale);
+    boolean isSocialAccount = isSocialAccount(teacherFields);
+    TeacherUserDetails tud = createTeacherUserDetails(teacherFields, isSocialAccount, locale);
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
     if (isSendEmailEnabled()) {
-      sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
-                              isSocialAccount(tud), locale, request);
+      if (isSocialAccount) {
+        sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
+                                true, locale, request);
+      } else {
+        sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
+      }
     }
     return createRegisterSuccessResponse(username);
   }
@@ -62,8 +74,8 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     return Boolean.valueOf(sendEmailEnabledStr);
   }
 
-  private boolean isSocialAccount(TeacherUserDetails tud) {
-      return isSet(tud.getGoogleUserId()) || isSet(tud.getMicrosoftUserId());
+  private boolean isSocialAccount(Map<String, String> teacherFields) {
+      return isSet(teacherFields.get("googleUserId")) || isSet(tud.getMicrosoftUserId());
   }
 
   private void sendWelcomeTeacherEmail(String email, String displayName, String username,
@@ -91,6 +103,20 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
 
   private String getGettingStartedUrl(HttpServletRequest request) {
     return ControllerUtil.getPortalUrlString(request) + "/help/getting-started";
+  }
+
+  private void sendVerifyTeacherEmail(String email, String verificationCode, 
+                                      Locale locale, HttpServletRequest request) {
+    String subject = getEmailMessage(this.verifySubjectCode, this.verifySubjectCode, null, locale);
+    String verificationUrl = getVerificationUrl(verificationCode, request);
+    Object[] args = new Object[] { verificationUrl };
+    String body = getEmailMessage(this.verifyBodyCode, this.verifyBodyCode, args, locale);
+    this.sendEmail(email, subject, body);
+  }
+
+  private String getVerificationUrl(String verificationCode, HttpServletRequest request) {
+    return String.format("%s/api/teacher/register/verify?code=%s", 
+                         ControllerUtil.getPortalUrlString(request), verificationCode);
   }
 
   private void sendEmail(String email, String subject, String body) {
@@ -133,7 +159,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields, 
-                                                      Locale locale) {
+                                                      boolean isSocialAccount, Locale locale) {
     TeacherUserDetails tud = new TeacherUserDetails();
     tud.setFirstname(teacherFields.get("firstName"));
     tud.setLastname(teacherFields.get("lastName"));
@@ -148,6 +174,8 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     tud.setLanguage(locale.getLanguage());
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
+    tud.setVerified(isSocialAccount);
+    tud.setVerificationCode(UUID.randomUUID().toString());
     return tud;
   }
 
@@ -174,24 +202,45 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   @GetMapping("/verify")
-  public void openVerificationLink(@RequestParam String code, @RequestParam String username,
-                                   HttpServletResponse response) throws IOException {
-    boolean verified = this.verifyTeacherAccount(code);
-    response.sendRedirect("/login?verified=" + verified + "&username=" + username);
+  @Secured({ "ROLE_ANONYMOUS" })
+  public void openVerificationLink(@RequestParam String code, HttpServletResponse response, 
+                                   HttpServletRequest request) throws IOException {
+    boolean verified = this.verifyTeacherAccount(code, request);
+    User user = userService.retrieveTeacherByVerificationCode(code);
+    response.sendRedirect("/login?verified=" + verified + "&username=" + user.getUserDetails().getUsername());
   }
 
-  private boolean verifyTeacherAccount(String verificationCode) {
+  private boolean verifyTeacherAccount(String verificationCode, HttpServletRequest request) {
     User user = userService.retrieveTeacherByVerificationCode(verificationCode);
     if (this.isTeacher(user)) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       if (!tud.isVerified()) {
         tud.setVerified(true);
         userService.updateUser(user);
+        sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), 
+                                false, request.getLocale(), request);
         return true;
       }
     }
     return false;
   }
 
-  
+  @PostMapping("send-verify-email")
+  @Secured({ "ROLE_ANONYMOUS" })
+  ResponseEntity<Map<String, Object>> sendVerificationEmail(@RequestParam String username, 
+                                                            HttpServletRequest request) {
+    User user = userService.retrieveTeacherByUsername(username);
+    if (this.isTeacher(user)) {
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+      if (tud.isVerified()) {
+        return ResponseEntityGenerator.createError("Teacher already verified"); //TODO: error message codes point where?
+      } else {
+        sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
+                               request.getLocale(), request);
+        return createRegisterSuccessResponse(username);
+      }
+    } else {
+      return ResponseEntityGenerator.createError("Not a teacher"); //TODO: error message codes point where?
+    }
+  }
 }

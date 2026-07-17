@@ -329,6 +329,7 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @GetMapping("/is-verified")
+  @Secured({ "ROLE_ANONYMOUS" })
   public boolean isUserVerified(@RequestParam String username) {
     User user = userService.retrieveTeacherByUsername(username);
     return !this.isTeacher(user) || this.isTeacherVerified(user); // Only teachers need to verify their accounts
