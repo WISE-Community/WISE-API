@@ -75,6 +75,7 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   private void setupChangeStudentPasswordExpect() throws Exception {
     expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveById(student1Id)).andReturn(student1);
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
   }
 
@@ -117,8 +118,8 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
 
   @Test
   public void changeStudentPassword_StudentNotInRun_ThrowAccessDenied() throws Exception {
-    setupChangeStudentPasswordExpect();
-    expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
     expect(userService.retrieveById(student2Id)).andReturn(student2);
     replayServices();
     try {
@@ -132,8 +133,8 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
 
   @Test
   public void changeStudentPassword_TargetUserIsTeacher_ThrowAccessDenied() throws Exception {
-    setupChangeStudentPasswordExpect();
-    expect(userService.isPasswordCorrect(teacher1, TEACHER_PASSWORD_CORRECT)).andReturn(true);
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
     expect(userService.retrieveById(teacher2Id)).andReturn(teacher2);
     replayServices();
     try {
