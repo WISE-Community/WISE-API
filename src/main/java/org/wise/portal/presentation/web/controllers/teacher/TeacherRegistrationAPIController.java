@@ -76,7 +76,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private boolean isSocialAccount(Map<String, String> teacherFields) {
-      return isSet(teacherFields.get("googleUserId")) || isSet(tud.getMicrosoftUserId());
+      return isSet(teacherFields.get("googleUserId")) || isSet(teacherFields.get("microsoftUserId"));
   }
 
   private void sendWelcomeTeacherEmail(String email, String displayName, String username,
