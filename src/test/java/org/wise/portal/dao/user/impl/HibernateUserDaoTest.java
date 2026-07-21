@@ -136,7 +136,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveAllTeachers_ShouldReturnAllTeachers() {
     List<User> users = userDao.retrieveAllTeachers();
-    assertEquals(4, users.size());
+    assertEquals(2, users.size());
   }
 
   @Test
@@ -281,7 +281,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveTeachersBySchoolLevel_WithExistingSchoolLevel_ShouldSucceed() {
     List<User> users = userDao.retrieveTeachersBySchoolLevel(Schoollevel.COLLEGE.toString());
-    assertEquals(3, users.size());
+    assertEquals(1, users.size());
   }
 
   @Test

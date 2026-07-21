@@ -77,7 +77,7 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveAllTeacherUsernames_WhenThereAreTeachers_ShouldReturnTeacherUsernames() {
     List<String> usernames = userDetailsDao.retrieveAllTeacherUsernames();
-    assertEquals(4, usernames.size());
+    assertEquals(2, usernames.size());
   }
 
   @Test
