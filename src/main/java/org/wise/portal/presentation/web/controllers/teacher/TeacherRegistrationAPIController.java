@@ -216,15 +216,24 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
 
   @GetMapping("/verify")
   @Secured({ "ROLE_ANONYMOUS" })
-  public void openVerificationLink(@RequestParam String code, HttpServletResponse response, 
-                                   HttpServletRequest request) throws IOException {
-    boolean verified = this.verifyTeacherAccount(code, request);
+  public void verifyTeacherAndRedirect(@RequestParam String code, HttpServletResponse response,
+                                       HttpServletRequest request) throws IOException {
     User user = userService.retrieveTeacherByVerificationCode(code);
-    response.sendRedirect("/login?verified=" + verified + "&username=" + user.getUserDetails().getUsername());
+    if (user == null) {
+      response.sendRedirect("/login?verified=error");
+    } else {
+      boolean verified = this.verifyTeacherAccount(user, request);
+      String redirectLink = getRedirectLink(user, verified);
+      response.sendRedirect(redirectLink);
+    }
   }
 
-  private boolean verifyTeacherAccount(String verificationCode, HttpServletRequest request) {
-    User user = userService.retrieveTeacherByVerificationCode(verificationCode);
+  private String getRedirectLink(User user, boolean verified) {
+    return String.format("/login?verified=%s&username=%s", 
+                         verified, user.getUserDetails().getUsername());
+  }
+
+  private boolean verifyTeacherAccount(User user, HttpServletRequest request) {
     if (this.isTeacher(user)) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       if (!tud.isVerified()) {
