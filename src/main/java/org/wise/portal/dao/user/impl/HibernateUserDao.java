@@ -151,10 +151,6 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     return retrieveTeacherByFieldValue("username", username);
   }
 
-  public User retrieveTeacherByVerificationCode(String verificationCode) {
-    return retrieveTeacherByFieldValue("verificationCode", verificationCode);
-  }
-
   public List<User> retrieveTeachersByDisplayName(String displayName) {
     return retrieveTeachersByFieldValue("displayname", displayName);
   }
@@ -177,6 +173,10 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
 
   public List<User> retrieveTeachersByEmail(String emailAddress) {
     return retrieveTeachersByFieldValue("emailAddress", emailAddress);
+  }
+
+  public User retrieveTeacherByVerificationCode(String verificationCode) {
+    return retrieveTeacherByFieldValue("verificationCode", verificationCode);
   }
 
   private User retrieveTeacherByFieldValue(String field, String value) {

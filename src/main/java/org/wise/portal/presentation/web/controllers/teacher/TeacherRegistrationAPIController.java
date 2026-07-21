@@ -5,7 +5,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,14 +31,6 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 @RestController
 @RequestMapping("/api/teacher/register")
 public class TeacherRegistrationAPIController extends TeacherAPIController {
-
-  private final String emailCodePrefix = 
-    "presentation.web.controllers.teacher.registerTeacherController.";
-  private final String verifyBodyCode = this.emailCodePrefix + "verifyTeacherEmailBody";
-  private final String verifySubjectCode = this.emailCodePrefix + "verifyTeacherEmailSubject";
-  private final String welcomeBodyCode = this.emailCodePrefix + "welcomeTeacherEmailBody";
-  private final String welcomeSocialAccountBodyCode = this.emailCodePrefix + "welcomeTeacherEmailBodyNoUsername";
-  private final String welcomeSubjectCode = this.emailCodePrefix + "welcomeTeacherEmailSubject";
  
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
@@ -59,75 +50,22 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     TeacherUserDetails tud = createTeacherUserDetails(teacherFields, isSocialAccount, locale);
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
-    if (isSendEmailEnabled()) {
-      if (isSocialAccount) {
-        sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
-                                true, locale, request);
-      } else {
-        sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
-      }
-    }
+    sendNewTeacherEmail(request, locale, isSocialAccount, tud, username);
     return createRegisterSuccessResponse(username);
   }
 
-  private boolean isSendEmailEnabled() {
-    String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
-    return Boolean.valueOf(sendEmailEnabledStr);
+  private void sendNewTeacherEmail(HttpServletRequest request, Locale locale, boolean isSocialAccount,
+      TeacherUserDetails tud, String username) {
+    if (isSocialAccount) {
+      this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
+                                true, locale, request);
+    } else {
+      this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
+    }
   }
 
   private boolean isSocialAccount(Map<String, String> teacherFields) {
       return isSet(teacherFields.get("googleUserId")) || isSet(teacherFields.get("microsoftUserId"));
-  }
-
-  private void sendWelcomeTeacherEmail(String email, String displayName, String username,
-                                       boolean socialAccount, Locale locale, 
-                                       HttpServletRequest request) {
-    String subject = getEmailMessage(this.welcomeSubjectCode, this.welcomeSubjectCode, null, locale);
-    String body = getWelcomeTeacherBody(displayName, username, socialAccount, locale, request);
-    this.sendEmail(email, subject, body);
-  }
-
-  private String getEmailMessage(String defaultCode, String code, Object[] args, Locale locale) {
-    String defaultMessage = messageSource.getMessage(defaultCode, args, Locale.US);
-    return messageSource.getMessage(code, args, defaultMessage, locale);
-  }
-
-  private String getWelcomeTeacherBody(String displayName, String username, boolean socialAccount,
-                                       Locale locale, HttpServletRequest request) {
-    String gettingStartedUrl = getGettingStartedUrl(request);
-    String code = socialAccount ? this.welcomeSocialAccountBodyCode : this.welcomeBodyCode;
-    Object[] args = socialAccount 
-      ? new Object[] { displayName, gettingStartedUrl } 
-      : new Object[] { displayName, username, gettingStartedUrl };
-    return getEmailMessage(this.welcomeBodyCode, code, args, locale);
-  }
-
-  private String getGettingStartedUrl(HttpServletRequest request) {
-    return ControllerUtil.getPortalUrlString(request) + "/help/getting-started";
-  }
-
-  private void sendVerifyTeacherEmail(String email, String verificationCode, 
-                                      Locale locale, HttpServletRequest request) {
-    String subject = getEmailMessage(this.verifySubjectCode, this.verifySubjectCode, null, locale);
-    String verificationUrl = getVerificationUrl(verificationCode, request);
-    Object[] args = new Object[] { verificationUrl };
-    String body = getEmailMessage(this.verifyBodyCode, this.verifyBodyCode, args, locale);
-    this.sendEmail(email, subject, body);
-  }
-
-  private String getVerificationUrl(String verificationCode, HttpServletRequest request) {
-    return String.format("%s/api/teacher/register/verify?code=%s", 
-                         ControllerUtil.getPortalUrlString(request), verificationCode);
-  }
-
-  private void sendEmail(String email, String subject, String body) {
-    String fromEmail = appProperties.getProperty("portalemailaddress");
-    String[] recipients = { email };
-    try {
-      mailService.postMail(recipients, subject, body, fromEmail);
-    } catch (MessagingException e) {
-      e.printStackTrace();
-    }
   }
 
   private void validateTeacherFields(Map<String, String> teacherFields) 
@@ -219,12 +157,24 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   public void verifyTeacherAndRedirect(@RequestParam String code, HttpServletResponse response,
                                        HttpServletRequest request) throws IOException {
     User user = userService.retrieveTeacherByVerificationCode(code);
+    String link;
     if (user == null) {
-      response.sendRedirect("/login?verified=error");
+      link = "/login?verified=error";
+    } else if (!isTeacher(user)) {
+      link = getRedirectLink(user, false);
     } else {
-      boolean verified = this.verifyTeacherAccount(user, request);
-      String redirectLink = getRedirectLink(user, verified);
-      response.sendRedirect(redirectLink);
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+      boolean verified = verifyTeacherAccount(user, tud, request);
+      sendWelcomeEmailIfNecessary(tud, verified, request);
+      link = getRedirectLink(user, verified);
+    }
+    response.sendRedirect(link);
+  }
+
+  private void sendWelcomeEmailIfNecessary(TeacherUserDetails tud, boolean verified, HttpServletRequest request) {
+    if (verified) {
+      this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
+                                               false, request.getLocale(), request);
     }
   }
 
@@ -233,18 +183,14 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
                          verified, user.getUserDetails().getUsername());
   }
 
-  private boolean verifyTeacherAccount(User user, HttpServletRequest request) {
-    if (this.isTeacher(user)) {
-      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-      if (!tud.isVerified()) {
-        tud.setVerified(true);
-        userService.updateUser(user);
-        sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), 
-                                false, request.getLocale(), request);
-        return true;
-      }
+  private boolean verifyTeacherAccount(User user, TeacherUserDetails tud, HttpServletRequest request) {
+    if (!tud.isVerified()) {
+      tud.setVerified(true);
+      userService.updateUser(user);
+      return true;
+    } else {
+      return false;
     }
-    return false;
   }
 
   @PostMapping("send-verify-email")
@@ -252,13 +198,13 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   ResponseEntity<Map<String, Object>> sendVerificationEmail(@RequestParam String username, 
                                                             HttpServletRequest request) {
     User user = userService.retrieveTeacherByUsername(username);
-    if (this.isTeacher(user)) {
+    if (isTeacher(user)) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       if (tud.isVerified()) {
         return ResponseEntityGenerator.createError("Teacher already verified"); //TODO: error message codes point where?
       } else {
-        sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
-                               request.getLocale(), request);
+        this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
+                                                request.getLocale(), request);
         return createRegisterSuccessResponse(username);
       }
     } else {
