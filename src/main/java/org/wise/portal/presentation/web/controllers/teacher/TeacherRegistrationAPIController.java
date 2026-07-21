@@ -177,8 +177,8 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private void sendWelcomeEmailIfNecessary(User user, String link, HttpServletRequest request) {
-    TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
     if (link.contains("verified=true")) {
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
                                                false, request.getLocale(), request);
     }
