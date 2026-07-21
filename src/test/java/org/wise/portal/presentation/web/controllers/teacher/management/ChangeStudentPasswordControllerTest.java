@@ -75,6 +75,7 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
   private void setupChangeStudentPasswordExpect() throws Exception {
     expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveById(student1Id)).andReturn(student1);
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
   }
 
@@ -112,6 +113,36 @@ public class ChangeStudentPasswordControllerTest extends APIControllerTest {
     ResponseEntity<Map<String, Object>> response = controller.changeStudentPassword(teacherAuth,
         runId1, student1Id, TEACHER_PASSWORD_CORRECT, STUDENT_PASSWORD_INVALID);
     assertResponseValues(response, HttpStatus.BAD_REQUEST, "invalidPassword");
+    verifyServices();
+  }
+
+  @Test
+  public void changeStudentPassword_StudentNotInRun_ThrowAccessDenied() throws Exception {
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveById(student2Id)).andReturn(student2);
+    replayServices();
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, student2Id, TEACHER_PASSWORD_CORRECT,
+          STUDENT_PASSWORD_VALID);
+      fail("Expected AccessDeniedException to be thrown");
+    } catch (AccessDeniedException e) {
+    }
+    verifyServices();
+  }
+
+  @Test
+  public void changeStudentPassword_TargetUserIsTeacher_ThrowAccessDenied() throws Exception {
+    expect(runService.retrieveById(runId1)).andReturn(run1);
+    expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
+    expect(userService.retrieveById(teacher2Id)).andReturn(teacher2);
+    replayServices();
+    try {
+      controller.changeStudentPassword(teacherAuth, runId1, teacher2Id, TEACHER_PASSWORD_CORRECT,
+          STUDENT_PASSWORD_VALID);
+      fail("Expected AccessDeniedException to be thrown");
+    } catch (AccessDeniedException e) {
+    }
     verifyServices();
   }
 
