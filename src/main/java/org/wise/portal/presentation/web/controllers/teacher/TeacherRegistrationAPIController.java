@@ -157,6 +157,12 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   public void verifyTeacherAndRedirect(@RequestParam String code, HttpServletResponse response,
                                        HttpServletRequest request) throws IOException {
     User user = userService.retrieveTeacherByVerificationCode(code);
+    String link = verifyTeacherIfNecessaryAndGetLoginLink(request, user);
+    sendWelcomeEmailIfNecessary(user, link, request);
+    response.sendRedirect(link);
+  }
+
+  private String verifyTeacherIfNecessaryAndGetLoginLink(HttpServletRequest request, User user) {
     String link;
     if (user == null) {
       link = "/login?verified=error";
@@ -165,14 +171,14 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     } else {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       boolean verified = verifyTeacherAccount(user, tud, request);
-      sendWelcomeEmailIfNecessary(tud, verified, request);
       link = getRedirectLink(user, verified);
     }
-    response.sendRedirect(link);
+    return link;
   }
 
-  private void sendWelcomeEmailIfNecessary(TeacherUserDetails tud, boolean verified, HttpServletRequest request) {
-    if (verified) {
+  private void sendWelcomeEmailIfNecessary(User user, String link, HttpServletRequest request) {
+    TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+    if (link.contains("verified=true")) {
       this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
                                                false, request.getLocale(), request);
     }
