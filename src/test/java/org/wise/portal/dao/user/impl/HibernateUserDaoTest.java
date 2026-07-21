@@ -32,8 +32,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
+import org.wise.portal.service.authentication.DuplicateUsernameException;
 
 /**
  * @author Geoffrey Kwan
@@ -48,15 +50,28 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @BeforeEach
   public void setUp() throws Exception {
-    teacher1 = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
+    teacher1 = createVerificationTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
-        Schoollevel.COLLEGE, "1234567890");
-    teacher2 = createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
+        Schoollevel.COLLEGE, "1234567890", "abcd1234", true);
+    teacher2 = createVerificationTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
-        Schoollevel.HIGH_SCHOOL, "abcdefghij");
+        Schoollevel.HIGH_SCHOOL, "abcdefghij", "1234abcd", false);
     student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
         Gender.MALE);
     student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+  }
+
+  public User createVerificationTeacherUser(String firstName, String lastName, String username,
+      String displayName, String password, String city, String state, String country, String email,
+      String schoolName, Schoollevel schoolLevel, String googleUserId, String verificationCode,
+      boolean isVerified)
+      throws DuplicateUsernameException {
+    User teacher = createTeacherUser(firstName, lastName, username, displayName, password, city, 
+      state, country, email, schoolName, schoolLevel, googleUserId);
+    TeacherUserDetails tud = (TeacherUserDetails) teacher.getUserDetails();
+    tud.setVerificationCode(verificationCode);
+    tud.setVerified(isVerified);
+    return teacher;
   }
 
   @Test
@@ -242,6 +257,18 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   public void retrieveTeachersByEmail_WithExistingEmail_ShouldSucceed() {
     List<User> users = userDao.retrieveTeachersByEmail("mrspuff@bikinibottom.com");
     assertEquals(1, users.size());
+  }
+
+  @Test
+  public void retrieveTeacherByVerificationCode_WithNonExistingCode_ShouldNotReturnAnyUser() {
+    User user = userDao.retrieveTeacherByVerificationCode("wxyz6789");
+    assertNull(user);
+  }
+
+  @Test
+  public void retrieveTeacherByVerificationCode_WithExistingCode_ShouldSucceed() {
+    User user = userDao.retrieveTeacherByVerificationCode("abcd1234");
+    assertEquals(teacher1.getId(), user.getId());
   }
 
   @Test

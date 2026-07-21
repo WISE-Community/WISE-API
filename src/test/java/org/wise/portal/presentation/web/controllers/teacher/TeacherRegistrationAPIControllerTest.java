@@ -1,20 +1,25 @@
 package org.wise.portal.presentation.web.controllers.teacher;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -22,6 +27,7 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.mail.MailService;
 import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -31,6 +37,15 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
   
   @TestSubject
   private TeacherRegistrationAPIController teacherRegistrationAPIController = new TeacherRegistrationAPIController();
+
+  @Mock
+  private HttpServletResponse response;
+  
+  @Mock
+  private MailService mailService;
+  
+  @Mock
+  private MessageSource messageSource;
 
   @Mock
   private UserDetailsService userDetailsService;
@@ -66,11 +81,16 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
     replay(userService);
+    mailService.sendWelcomeTeacherEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
+                                true, Locale.US, request);
+    expectLastCall();
+    replay(mailService);
     ResponseEntity<Map<String, Object>> response = teacherRegistrationAPIController
         .createTeacherAccount(teacherFields, request);
     assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
+    verify(mailService);
   } 
 
   private HashMap<String, String> createDefaultTeacherFields() {
@@ -82,5 +102,87 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     fields.put("birthDay", "1");
     fields.put("gender", "MALE");
     return fields;
+  }
+
+  @Test
+  public void verifyTeacherAndRedirect_TeacherUnverified_RedirectsWithVerifiedTrue() throws IOException {
+    createTeachers();
+    expect(userService.retrieveTeacherByVerificationCode("efgh5678")).andReturn(teacher2);
+    userService.updateUser(teacher2);
+    expectLastCall();
+    replay(userService);
+    TeacherUserDetails tud = (TeacherUserDetails) teacher2.getUserDetails();
+    mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
+    expectLastCall();
+    replay(mailService);
+    response.sendRedirect("/login?verified=true&username=" + tud.getUsername());
+    expectLastCall();
+    replay(response);
+    teacherRegistrationAPIController.verifyTeacherAndRedirect("efgh5678", response, request);
+    verify(userService);
+    verify(mailService);
+    verify(response);
+  }
+
+  @Test
+  public void verifyTeacherAndRedirect_TeacherAlreadyVerified_RedirectsWithVerifiedFalse() throws IOException {
+    createTeachers();
+    expect(userService.retrieveTeacherByVerificationCode("abcd1234")).andReturn(teacher1);
+    replay(userService);
+    response.sendRedirect("/login?verified=false&username=" + teacher1.getUserDetails().getUsername());
+    expectLastCall();
+    replay(response);
+    teacherRegistrationAPIController.verifyTeacherAndRedirect("abcd1234", response, request);
+    verify(userService);
+    verify(response);
+  }
+
+  @Test
+  public void verifyTeacherAndRedirect_InvalidVerificationCode_RedirectsWithVerificationError() throws IOException {
+    expect(userService.retrieveTeacherByVerificationCode("")).andReturn(null);
+    replay(userService);
+    response.sendRedirect("/login?verified=error");
+    expectLastCall();
+    replay(response);
+    teacherRegistrationAPIController.verifyTeacherAndRedirect("", response, request);
+    verify(userService);
+    verify(response);
+  }
+
+  @Test
+  public void sendVerificationEmail_UserIsUnverifiedTeacher_SendEmail() {
+    this.createTeachers();
+    expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
+    replay(userService);
+    mailService.sendVerifyTeacherEmail("", "efgh5678", null, request);
+    expectLastCall();
+    replay(mailService);
+    ResponseEntity<Map<String, Object>> response = 
+      teacherRegistrationAPIController.sendVerificationEmail(TEACHER2_USERNAME, request);
+    assertEquals(TEACHER2_USERNAME, response.getBody().get("username"));
+    verify(userService);
+    verify(mailService);
+
+  }
+
+  @Test
+  public void sendVerificationEmail_UserIsVerifiedTeacher_ReturnError() {
+    this.createTeachers();
+    expect(userService.retrieveTeacherByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    ResponseEntity<Map<String, Object>> response = 
+      teacherRegistrationAPIController.sendVerificationEmail(TEACHER_USERNAME, request);
+    assertEquals("Teacher already verified", response.getBody().get("messageCode"));
+    verify(userService);
+  }
+
+  @Test
+  public void sendVerificationEmail_UserIsNotTeacher_ReturnError() {
+    expect(userService.retrieveTeacherByUsername(STUDENT_USERNAME)).andReturn(null);
+    replay(userService);
+    ResponseEntity<Map<String, Object>> response = 
+      teacherRegistrationAPIController.sendVerificationEmail(STUDENT_USERNAME, request);
+    assertEquals("Not a teacher", response.getBody().get("messageCode"));
+    verify(userService);
   }
 }

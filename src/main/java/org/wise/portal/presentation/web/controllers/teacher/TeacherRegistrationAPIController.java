@@ -201,14 +201,14 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     if (isTeacher(user)) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       if (tud.isVerified()) {
-        return ResponseEntityGenerator.createError("Teacher already verified"); //TODO: error message codes point where?
+        return ResponseEntityGenerator.createError("Teacher already verified");
       } else {
         this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
                                                 request.getLocale(), request);
         return createRegisterSuccessResponse(username);
       }
     } else {
-      return ResponseEntityGenerator.createError("Not a teacher"); //TODO: error message codes point where?
+      return ResponseEntityGenerator.createError("Not a teacher"); 
     }
   }
 }
