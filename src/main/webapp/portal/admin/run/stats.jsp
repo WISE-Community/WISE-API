@@ -35,14 +35,15 @@ th {
 <h3><spring:message code="run_plural" /> ${period} (${fn:length(runs)} <spring:message code="run_plural" />)</h3>
 <table id="runStatsTable" border="1">
 	<thead>
-		<tr><th><spring:message code="run_id" /> (<spring:message code="run_accessCode" />)</th>
+		<tr>
+			<th><spring:message code="run_id" /> (<spring:message code="run_accessCode" />)</th>
 			<th><spring:message code="run_name" /> (<spring:message code="wiseVersion" />)</th>
 			<th><spring:message code="admin.run.owners" /></th>
 			<c:if test="${period!=null}">
 				<th><spring:message code="admin.run.accessCount" /> ${period}</th>
 			</c:if>
 			<th><spring:message code="admin.run.totalAccessCount" /></th>
-			<th><spring:message code="available_actions" /></th></tr>
+		</tr>
 	</thead>
 	<tbody>
 		<c:forEach var="run" items="${runs}">
@@ -57,8 +58,6 @@ th {
 					<td>${fn:length(run.studentAttendance)}</td>
 				</c:if>
 				<td>${run.timesRun}</td>
-			    <td>
-			    </td>
 			</tr>
 		</c:forEach>
 	</tbody>
