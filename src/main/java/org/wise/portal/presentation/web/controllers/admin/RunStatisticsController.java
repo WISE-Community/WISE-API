@@ -34,7 +34,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.attendance.StudentAttendance;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.service.attendance.StudentAttendanceService;
@@ -79,13 +78,29 @@ public class RunStatisticsController {
     }
     modelMap.put("runs", runs);
     modelMap.put("period", period);
+    modelMap.put("totalAttendanceWithinLookBackPeriod", getTotalAttendanceWithinPeriod(runs));
+    modelMap.put("totalAttendance", getTotalAttendance(runs));
     return "admin/run/stats";
   }
 
   @RequestMapping(value = "/admin/run/stats-by-activity", method = RequestMethod.GET)
   protected String showRunStatisticsByActivity(HttpServletRequest request, ModelMap modelMap)
       throws Exception {
-    modelMap.put("runs", runService.getRunsByActivity());
+    List<Run> runs = runService.getRunsByActivity();
+    modelMap.put("runs", runs);
+    modelMap.put("totalAttendance", getTotalAttendance(runs));
     return "admin/run/stats";
+  }
+
+  private int getTotalAttendanceWithinPeriod(List<Run> runs) {
+    return runs.stream()
+               .map(run -> run.getStudentAttendance().size())
+               .reduce(0, (acc, timesRun) -> acc += timesRun);
+  }
+
+  private int getTotalAttendance(List<Run> runs) {
+    return runs.stream()
+               .map(run -> run.getTimesRun())
+               .reduce(0, (acc, timesRun) -> acc += timesRun);
   }
 }

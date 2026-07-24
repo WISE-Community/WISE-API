@@ -33,6 +33,17 @@ th {
 <h5 style="color:#0000CC;"><a href="${contextPath}/admin"><spring:message code="returnToMainAdminPage" /></a></h5>
 
 <h3><spring:message code="run_plural" /> ${period} (${fn:length(runs)} <spring:message code="run_plural" />)</h3>
+<br />
+<c:if test="${fn:length(runs) > 0}">
+	<c:if test="${period!=null}">
+		<h4>
+			<spring:message code="admin.run.accessCountWithinPeriodAllListed" />
+			${period}: ${totalAttendanceWithinLookBackPeriod}
+		</h4>
+	</c:if>
+	<h4><spring:message code="admin.run.totalAccessCountAllListed" />: ${totalAttendance}</h4>
+	<br />
+</c:if>
 <table id="runStatsTable" border="1">
 	<thead>
 		<tr>
