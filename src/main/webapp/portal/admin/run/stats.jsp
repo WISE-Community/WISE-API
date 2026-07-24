@@ -48,7 +48,7 @@ th {
 	<tbody>
 		<c:forEach var="run" items="${runs}">
 			<tr>
-				<td>${run.id} (${run.runcode})</td>
+				<td><a href="${contextPath}/preview/unit/${run.id}" target="_blank">${run.id} (${run.runcode})</a></td>
 				<td>${run.name} (${run.project.wiseVersion})</td>
 				<td>
 						<a onclick='impersonateUser("${run.owner.userDetails.username}", "teacher")'>${run.owner.userDetails.username}</a><br/>
