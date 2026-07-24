@@ -104,7 +104,7 @@ public abstract class AbstractTransactionalDbTests
 
   @Container
   static final GenericContainer redisContainer = new GenericContainer(
-      DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+      DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
 
   static {
     redisContainer.start();
