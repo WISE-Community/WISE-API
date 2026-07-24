@@ -103,8 +103,12 @@ public abstract class AbstractTransactionalDbTests
   private Long nextAvailableProjectId = 1L;
 
   @Container
-  static GenericContainer redisContainer = new GenericContainer(
+  static final GenericContainer redisContainer = new GenericContainer(
       DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+
+  static {
+    redisContainer.start();
+  }
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
