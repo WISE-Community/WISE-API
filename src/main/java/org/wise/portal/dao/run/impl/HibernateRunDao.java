@@ -176,7 +176,9 @@ public class HibernateRunDao extends AbstractHibernateDao<Run> implements RunDao
     Calendar c = Calendar.getInstance();
     c.add(Calendar.DAY_OF_YEAR, -days);
     Date compareDate = c.getTime();
-    cq.select(runRoot).where(cb.greaterThanOrEqualTo(runRoot.get("lastRun"), compareDate));
+    cq.select(runRoot)
+      .where(cb.greaterThanOrEqualTo(runRoot.get("lastRun"), compareDate))
+      .orderBy(cb.desc(runRoot.get("id")));
     TypedQuery<RunImpl> query = entityManager.createQuery(cq);
     List<RunImpl> runResultList = query.getResultList();
     return (List<Run>) (Object) runResultList;
