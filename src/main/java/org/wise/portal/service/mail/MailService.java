@@ -107,7 +107,7 @@ public class MailService implements IMailFacade {
     }
   }
 
-  private boolean isSendEmailEnabled() {
+  public boolean isSendEmailEnabled() {
     String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
     return Boolean.valueOf(sendEmailEnabledStr);
   }

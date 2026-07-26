@@ -56,4 +56,6 @@ public interface IMailFacade {
 
   void sendVerifyTeacherEmail(String email, String verificationCode, Locale locale, 
       HttpServletRequest request);
+
+  boolean isSendEmailEnabled();
 }

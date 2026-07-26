@@ -113,7 +113,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     tud.setLanguage(locale.getLanguage());
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
-    tud.setVerified(isSocialAccount);
+    tud.setVerified(isSocialAccount || !mailService.isSendEmailEnabled());
     setVerificationCode(tud);
     return tud;
   }
