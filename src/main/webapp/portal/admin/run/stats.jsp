@@ -33,21 +33,33 @@ th {
 <h5 style="color:#0000CC;"><a href="${contextPath}/admin"><spring:message code="returnToMainAdminPage" /></a></h5>
 
 <h3><spring:message code="run_plural" /> ${period} (${fn:length(runs)} <spring:message code="run_plural" />)</h3>
+<br />
+<c:if test="${fn:length(runs) > 0}">
+	<c:if test="${period!=null}">
+		<h4>
+			<spring:message code="admin.run.accessCountWithinPeriodAllListed" />
+			${period}: ${totalAttendanceWithinLookBackPeriod}
+		</h4>
+	</c:if>
+	<h4><spring:message code="admin.run.totalAccessCountAllListed" />: ${totalAttendance}</h4>
+	<br />
+</c:if>
 <table id="runStatsTable" border="1">
 	<thead>
-		<tr><th><spring:message code="run_id" /> (<spring:message code="run_accessCode" />)</th>
+		<tr>
+			<th><spring:message code="run_id" /> (<spring:message code="run_accessCode" />)</th>
 			<th><spring:message code="run_name" /> (<spring:message code="wiseVersion" />)</th>
 			<th><spring:message code="admin.run.owners" /></th>
 			<c:if test="${period!=null}">
 				<th><spring:message code="admin.run.accessCount" /> ${period}</th>
 			</c:if>
 			<th><spring:message code="admin.run.totalAccessCount" /></th>
-			<th><spring:message code="available_actions" /></th></tr>
+		</tr>
 	</thead>
 	<tbody>
 		<c:forEach var="run" items="${runs}">
 			<tr>
-				<td>${run.id} (${run.runcode})</td>
+				<td><a href="${contextPath}/preview/unit/${run.id}" target="_blank">${run.id} (${run.runcode})</a></td>
 				<td>${run.name} (${run.project.wiseVersion})</td>
 				<td>
 						<a onclick='impersonateUser("${run.owner.userDetails.username}", "teacher")'>${run.owner.userDetails.username}</a><br/>
@@ -57,8 +69,6 @@ th {
 					<td>${fn:length(run.studentAttendance)}</td>
 				</c:if>
 				<td>${run.timesRun}</td>
-			    <td>
-			    </td>
 			</tr>
 		</c:forEach>
 	</tbody>
