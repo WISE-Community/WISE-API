@@ -59,7 +59,7 @@ public class RemoveStudentRunControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void removeStudent_Student_RemoveStudentFromRun() throws Exception {
+  public void removeStudent_TargetUserIsStudent_RemoveStudentFromRun() throws Exception {
     expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
     expect(userService.retrieveById(student1Id)).andReturn(student1);
