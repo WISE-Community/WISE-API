@@ -21,38 +21,46 @@ public class TeacherVerificationAPIController extends TeacherAPIController {
   @GetMapping()
   @Secured({ "ROLE_ANONYMOUS" })
   public void verifyTeacherAndRedirect(@RequestParam String code, HttpServletResponse response,
-                                       HttpServletRequest request) throws IOException {
+      HttpServletRequest request) throws IOException {
     User user = userService.retrieveTeacherByVerificationCode(code);
-    String link = verifyTeacherIfNecessaryAndGetLoginLink(request, user);
-    sendWelcomeEmailIfNecessary(user, link, request);
+    boolean verified = verifyTeacher(user, request);
+    String link = getLoginLink(request, user, verified);
+    sendWelcomeEmail(user, link, request);
     response.sendRedirect(link);
   }
 
-  private String verifyTeacherIfNecessaryAndGetLoginLink(HttpServletRequest request, User user) {
+  private boolean verifyTeacher(User user, HttpServletRequest request) {
+    if (user != null) {
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+      return verifyTeacherAccount(user, tud, request);
+    } else {
+      return false;
+    }
+  }
+
+  private String getLoginLink(HttpServletRequest request, User user, boolean verified) {
     String link;
     if (user == null) {
       link = "/login?verified=error";
     } else if (!isTeacher(user)) {
       link = getRedirectLink(user, false);
     } else {
-      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-      boolean verified = verifyTeacherAccount(user, tud, request);
       link = getRedirectLink(user, verified);
     }
     return link;
   }
 
-  private void sendWelcomeEmailIfNecessary(User user, String link, HttpServletRequest request) {
+  private void sendWelcomeEmail(User user, String link, HttpServletRequest request) {
     if (link.contains("verified=true")) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
       this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
-                                               false, request.getLocale(), request);
+          false, request.getLocale(), request);
     }
   }
 
   private String getRedirectLink(User user, boolean verified) {
     return String.format("/login?verified=%s&username=%s", 
-                         verified, user.getUserDetails().getUsername());
+        verified, user.getUserDetails().getUsername());
   }
 
   private boolean verifyTeacherAccount(User user, TeacherUserDetails tud, HttpServletRequest request) {

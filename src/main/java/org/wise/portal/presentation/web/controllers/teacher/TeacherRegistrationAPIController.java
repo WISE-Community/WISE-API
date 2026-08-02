@@ -30,7 +30,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
  
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
-  ResponseEntity<Map<String, Object>> createTeacherAccount( // TODO: indent
+  ResponseEntity<Map<String, Object>> createTeacherAccount(
       @RequestBody Map<String, String> teacherFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
     try {
@@ -39,7 +39,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
       return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
     } catch (InvalidPasswordException e) {
       return ResponseEntityGenerator.createError(
-        passwordService.getErrors(teacherFields.get("password")));
+          passwordService.getErrors(teacherFields.get("password")));
     }
     Locale locale = request.getLocale();
     boolean isSocialAccount = isSocialAccount(teacherFields);
@@ -54,18 +54,18 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
       TeacherUserDetails tud, String username) {
     if (isSocialAccount) {
       this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
-                                true, locale, request);
+          true, locale, request);
     } else {
       this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
     }
   }
 
   private boolean isSocialAccount(Map<String, String> teacherFields) {
-      return isSet(teacherFields.get("googleUserId")) || isSet(teacherFields.get("microsoftUserId"));
+    return isSet(teacherFields.get("googleUserId")) || isSet(teacherFields.get("microsoftUserId"));
   }
 
   private void validateTeacherFields(Map<String, String> teacherFields) 
-    throws RecaptchaVerificationException, InvalidNameException, InvalidPasswordException {
+      throws RecaptchaVerificationException, InvalidNameException, InvalidPasswordException {
     validateReCaptcha(teacherFields.get("token"));
     validateFirstAndLastName(teacherFields.get("firstName"), teacherFields.get("lastName"));
     validatePassword(teacherFields.get("password"));
@@ -80,7 +80,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private void validateFirstAndLastName(String firstName, String lastName) 
-    throws InvalidNameException {
+      throws InvalidNameException {
     if (!isFirstNameAndLastNameValid(firstName, lastName)) {
       String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
       throw new InvalidNameException(messageCode);
@@ -94,7 +94,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields, 
-                                                      boolean isSocialAccount, Locale locale) { // TODO: indent
+      boolean isSocialAccount, Locale locale) {
     TeacherUserDetails tud = new TeacherUserDetails();
     tud.setFirstname(teacherFields.get("firstName"));
     tud.setLastname(teacherFields.get("lastName"));

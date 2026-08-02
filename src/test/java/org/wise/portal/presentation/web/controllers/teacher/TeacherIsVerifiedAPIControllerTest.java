@@ -21,7 +21,7 @@ public class TeacherIsVerifiedAPIControllerTest extends APIControllerTest {
   public void isVerifiedTeacherOrNonTeacher_UserIsAStudent_ReturnTrue() {
     expect(userService.retrieveTeacherByUsername(STUDENT_USERNAME)).andReturn(null);
     replay(userService);
-    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerifiedTeacherOrNonTeacher(STUDENT_USERNAME);
+    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerified(STUDENT_USERNAME);
     assertTrue(isVerifiedTeacher);
     verify(userService); 
   }
@@ -30,7 +30,7 @@ public class TeacherIsVerifiedAPIControllerTest extends APIControllerTest {
   public void isVerifiedTeacherOrNonTeacher_UserDoesNotExist_ReturnTrue() {
     expect(userService.retrieveTeacherByUsername("")).andReturn(null);
     replay(userService);
-    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerifiedTeacherOrNonTeacher("");
+    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerified("");
     assertTrue(isVerifiedTeacher);
     verify(userService); 
   }
@@ -40,7 +40,7 @@ public class TeacherIsVerifiedAPIControllerTest extends APIControllerTest {
     this.createTeachers();
     expect(userService.retrieveTeacherByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     replay(userService);
-    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerifiedTeacherOrNonTeacher(TEACHER_USERNAME);
+    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerified(TEACHER_USERNAME);
     assertTrue(isVerifiedTeacher);
     verify(userService); 
   }
@@ -50,7 +50,7 @@ public class TeacherIsVerifiedAPIControllerTest extends APIControllerTest {
     this.createTeachers();
     expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
     replay(userService);
-    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerifiedTeacherOrNonTeacher(TEACHER2_USERNAME);
+    boolean isVerifiedTeacher = teacherIsVerifiedAPIController.isVerified(TEACHER2_USERNAME);
     assertFalse(isVerifiedTeacher);
     verify(userService); 
   } 

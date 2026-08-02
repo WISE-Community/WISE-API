@@ -28,8 +28,6 @@ import java.util.Locale;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
-
 /**
  * @author Anthony Perritano
  */

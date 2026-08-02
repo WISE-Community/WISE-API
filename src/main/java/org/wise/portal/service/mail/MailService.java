@@ -35,7 +35,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 
 /**
@@ -118,7 +117,7 @@ public class MailService implements IMailFacade {
   }
 
   private String getWelcomeTeacherBody(String displayName, String username, boolean socialAccount,
-                                       Locale locale, HttpServletRequest request) {
+      Locale locale, HttpServletRequest request) {
     String gettingStartedUrl = getGettingStartedUrl(request);
     String code = socialAccount ? this.welcomeSocialAccountBodyCode : this.welcomeBodyCode;
     Object[] args = socialAccount 
@@ -133,7 +132,7 @@ public class MailService implements IMailFacade {
 
   private String getVerificationUrl(String verificationCode, HttpServletRequest request) {
     return String.format("%s/api/teacher/register/verify?code=%s", 
-                         ControllerUtil.getPortalUrlString(request), verificationCode);
+        ControllerUtil.getPortalUrlString(request), verificationCode);
   }
 
   private void sendEmail(String email, String subject, String body) {

@@ -21,7 +21,7 @@ public class TeacherVerificationEmailAPIController extends TeacherAPIController 
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
   ResponseEntity<Map<String, Object>> sendVerificationEmail(@RequestParam String username, 
-                                                            HttpServletRequest request) { // TODO: indent
+      HttpServletRequest request) {
     User user = userService.retrieveTeacherByUsername(username);
     if (isTeacher(user)) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
@@ -29,7 +29,7 @@ public class TeacherVerificationEmailAPIController extends TeacherAPIController 
         return ResponseEntityGenerator.createError("Teacher already verified");
       } else {
         this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
-                                                request.getLocale(), request);
+            request.getLocale(), request);
         return createRegisterSuccessResponse(username);
       }
     } else {

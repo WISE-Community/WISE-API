@@ -62,5 +62,4 @@ public class TeacherVerificationEmailAPIControllerTest extends APIControllerTest
     assertEquals("Not a teacher", response.getBody().get("messageCode"));
     verify(userService);
   }
-  
 }
