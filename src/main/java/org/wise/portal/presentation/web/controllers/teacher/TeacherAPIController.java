@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -328,19 +327,7 @@ public class TeacherAPIController extends UserAPIController {
     return response;
   }
 
-  @GetMapping("/is-verified")
-  @Secured({ "ROLE_ANONYMOUS" })
-  public boolean isVerifiedTeacherOrNonTeacher(@RequestParam String username) {
-    User user = userService.retrieveTeacherByUsername(username);
-    return !this.isTeacher(user) || this.isTeacherVerified(user); // Only teachers need to verify their accounts
-  }
-
   protected boolean isTeacher(User user) {
     return user != null && !user.getRoles().contains("ROLE_STUDENT");
-  }
-
-  private boolean isTeacherVerified(User user) {
-    TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-    return tud.isVerified();
   }
 }

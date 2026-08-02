@@ -6,9 +6,7 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
@@ -434,43 +432,5 @@ public class TeacherAPIControllerTest extends APIControllerTest {
         .andReturn("http://localhost:8080/curriculum/1/project.json");
     expect(projectService.getLicensePath(isA(Project.class)))
         .andReturn("http://localhost:8080/curriculum/1/license.txt");
-  }
-
-  @Test
-  public void isVerifiedTeacherOrNonTeacher_UserIsAStudent_ReturnTrue() {
-    expect(userService.retrieveTeacherByUsername(STUDENT_USERNAME)).andReturn(null);
-    replay(userService);
-    boolean isVerifiedTeacher = teacherAPIController.isVerifiedTeacherOrNonTeacher(STUDENT_USERNAME);
-    assertTrue(isVerifiedTeacher);
-    verify(userService); 
-  }
-
-  @Test
-  public void isVerifiedTeacherOrNonTeacher_UserDoesNotExist_ReturnTrue() {
-    expect(userService.retrieveTeacherByUsername("")).andReturn(null);
-    replay(userService);
-    boolean isVerifiedTeacher = teacherAPIController.isVerifiedTeacherOrNonTeacher("");
-    assertTrue(isVerifiedTeacher);
-    verify(userService); 
-  }
-
-  @Test
-  public void isVerifiedTeacherOrNonTeacher_TeacherIsVerified_ReturnTrue() {
-    this.createTeachers();
-    expect(userService.retrieveTeacherByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    replay(userService);
-    boolean isVerifiedTeacher = teacherAPIController.isVerifiedTeacherOrNonTeacher(TEACHER_USERNAME);
-    assertTrue(isVerifiedTeacher);
-    verify(userService); 
-  }
-
-  @Test
-  public void isVerifiedTeacherOrNonTeacher_TeacherIsUnverified_ReturnFalse() {
-    this.createTeachers();
-    expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
-    replay(userService);
-    boolean isVerifiedTeacher = teacherAPIController.isVerifiedTeacherOrNonTeacher(TEACHER2_USERNAME);
-    assertFalse(isVerifiedTeacher);
-    verify(userService); 
   }
 }
