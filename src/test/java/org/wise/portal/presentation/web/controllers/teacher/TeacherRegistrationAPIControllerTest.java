@@ -102,41 +102,4 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     fields.put("gender", "MALE");
     return fields;
   }
-
-  @Test
-  public void sendVerificationEmail_UserIsUnverifiedTeacher_SendEmail() {
-    this.createTeachers();
-    expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
-    replay(userService);
-    mailService.sendVerifyTeacherEmail("", "efgh5678", null, request);
-    expectLastCall();
-    replay(mailService);
-    ResponseEntity<Map<String, Object>> response = 
-      teacherRegistrationAPIController.sendVerificationEmail(TEACHER2_USERNAME, request);
-    assertEquals(TEACHER2_USERNAME, response.getBody().get("username"));
-    verify(userService);
-    verify(mailService);
-
-  }
-
-  @Test
-  public void sendVerificationEmail_UserIsVerifiedTeacher_ReturnError() {
-    this.createTeachers();
-    expect(userService.retrieveTeacherByUsername(TEACHER_USERNAME)).andReturn(teacher1);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = 
-      teacherRegistrationAPIController.sendVerificationEmail(TEACHER_USERNAME, request);
-    assertEquals("Teacher already verified", response.getBody().get("messageCode"));
-    verify(userService);
-  }
-
-  @Test
-  public void sendVerificationEmail_UserIsNotTeacher_ReturnError() {
-    expect(userService.retrieveTeacherByUsername(STUDENT_USERNAME)).andReturn(null);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = 
-      teacherRegistrationAPIController.sendVerificationEmail(STUDENT_USERNAME, request);
-    assertEquals("Not a teacher", response.getBody().get("messageCode"));
-    verify(userService);
-  }
 }

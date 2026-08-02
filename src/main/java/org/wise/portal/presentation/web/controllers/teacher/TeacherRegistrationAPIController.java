@@ -13,7 +13,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -31,7 +30,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
  
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
-  ResponseEntity<Map<String, Object>> createTeacherAccount(
+  ResponseEntity<Map<String, Object>> createTeacherAccount( // TODO: indent
       @RequestBody Map<String, String> teacherFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
     try {
@@ -95,7 +94,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields, 
-                                                      boolean isSocialAccount, Locale locale) {
+                                                      boolean isSocialAccount, Locale locale) { // TODO: indent
     TeacherUserDetails tud = new TeacherUserDetails();
     tud.setFirstname(teacherFields.get("firstName"));
     tud.setLastname(teacherFields.get("lastName"));
@@ -147,24 +146,5 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
 
   private void setRandomPassword(TeacherUserDetails tud) {
     tud.setPassword(RandomStringUtils.random(10, true, true));
-  }
-
-  @PostMapping("send-verify-email")
-  @Secured({ "ROLE_ANONYMOUS" })
-  ResponseEntity<Map<String, Object>> sendVerificationEmail(@RequestParam String username, 
-                                                            HttpServletRequest request) {
-    User user = userService.retrieveTeacherByUsername(username);
-    if (isTeacher(user)) {
-      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-      if (tud.isVerified()) {
-        return ResponseEntityGenerator.createError("Teacher already verified");
-      } else {
-        this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
-                                                request.getLocale(), request);
-        return createRegisterSuccessResponse(username);
-      }
-    } else {
-      return ResponseEntityGenerator.createError("Not a teacher"); 
-    }
   }
 }
