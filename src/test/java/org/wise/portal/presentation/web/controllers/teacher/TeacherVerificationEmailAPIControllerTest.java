@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.ResponseEntity;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
-import org.wise.portal.service.mail.MailService;
+import org.wise.portal.service.mail.teacher.TeacherMailService;
 
 @ExtendWith(EasyMockExtension.class)
 public class TeacherVerificationEmailAPIControllerTest extends APIControllerTest {
@@ -24,21 +24,21 @@ public class TeacherVerificationEmailAPIControllerTest extends APIControllerTest
   private TeacherVerificationEmailAPIController teacherVerificationEmailAPIController = new TeacherVerificationEmailAPIController();
 
   @Mock
-  private MailService mailService;
+  private TeacherMailService teacherMailService;
 
   @Test
   public void sendVerificationEmail_UserIsUnverifiedTeacher_SendEmail() {
     this.createTeachers();
     expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
     replay(userService);
-    mailService.sendVerifyTeacherEmail("", "efgh5678", null, request);
+    teacherMailService.sendVerifyTeacherEmail("", "efgh5678", null, request);
     expectLastCall();
-    replay(mailService);
+    replay(teacherMailService);
     ResponseEntity<Map<String, Object>> response = 
       teacherVerificationEmailAPIController.sendVerificationEmail(TEACHER2_USERNAME, request);
     assertEquals(TEACHER2_USERNAME, response.getBody().get("username"));
     verify(userService);
-    verify(mailService);
+    verify(teacherMailService);
 
   }
 

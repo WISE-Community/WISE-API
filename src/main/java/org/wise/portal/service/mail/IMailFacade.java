@@ -48,12 +48,4 @@ public interface IMailFacade {
 
   void postMail(String recipients[], String subject, String message , String from, String[] cc)
       throws MessagingException;
-
-  void sendWelcomeTeacherEmail(String email, String displayName, String username, 
-      boolean socialAccount, Locale locale, HttpServletRequest request);
-
-  void sendVerifyTeacherEmail(String email, String verificationCode, Locale locale, 
-      HttpServletRequest request);
-
-  boolean isSendEmailEnabled();
 }

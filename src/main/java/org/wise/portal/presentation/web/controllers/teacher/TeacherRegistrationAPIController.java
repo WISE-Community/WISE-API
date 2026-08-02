@@ -53,10 +53,10 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   private void sendNewTeacherEmail(HttpServletRequest request, Locale locale, boolean isSocialAccount,
       TeacherUserDetails tud, String username) {
     if (isSocialAccount) {
-      this.mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
+      this.teacherMailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
           true, locale, request);
     } else {
-      this.mailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
+      this.teacherMailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
     }
   }
 
@@ -109,7 +109,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     tud.setLanguage(locale.getLanguage());
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
-    tud.setVerified(isSocialAccount || !mailService.isSendEmailEnabled());
+    tud.setVerified(isSocialAccount || !teacherMailService.isSendEmailEnabled());
     setVerificationCode(tud);
     return tud;
   }

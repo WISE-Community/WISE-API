@@ -26,7 +26,7 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
-import org.wise.portal.service.mail.MailService;
+import org.wise.portal.service.mail.teacher.TeacherMailService;
 import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -41,7 +41,7 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
   private HttpServletResponse response;
   
   @Mock
-  private MailService mailService;
+  private TeacherMailService teacherMailService;
   
   @Mock
   private MessageSource messageSource;
@@ -80,16 +80,16 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
     replay(userService);
-    mailService.sendWelcomeTeacherEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
+    teacherMailService.sendWelcomeTeacherEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
                                 true, Locale.US, request);
     expectLastCall();
-    replay(mailService);
+    replay(teacherMailService);
     ResponseEntity<Map<String, Object>> response = teacherRegistrationAPIController
         .createTeacherAccount(teacherFields, request);
     assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
-    verify(mailService);
+    verify(teacherMailService);
   } 
 
   private HashMap<String, String> createDefaultTeacherFields() {

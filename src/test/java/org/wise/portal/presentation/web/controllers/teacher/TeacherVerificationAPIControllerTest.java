@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.presentation.web.TeacherVerificationAPIController;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
-import org.wise.portal.service.mail.MailService;
+import org.wise.portal.service.mail.teacher.TeacherMailService;
 
 @ExtendWith(EasyMockExtension.class)
 public class TeacherVerificationAPIControllerTest extends APIControllerTest {
@@ -29,7 +29,7 @@ public class TeacherVerificationAPIControllerTest extends APIControllerTest {
   private HttpServletResponse response;
   
   @Mock
-  private MailService mailService;
+  private TeacherMailService teacherMailService;
 
   @Test
   public void verifyTeacherAndRedirect_TeacherUnverified_RedirectsWithVerifiedTrue() throws IOException {
@@ -39,15 +39,15 @@ public class TeacherVerificationAPIControllerTest extends APIControllerTest {
     expectLastCall();
     replay(userService);
     TeacherUserDetails tud = (TeacherUserDetails) teacher2.getUserDetails();
-    mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
+    teacherMailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
     expectLastCall();
-    replay(mailService);
+    replay(teacherMailService);
     response.sendRedirect("/login?verified=true&username=" + tud.getUsername());
     expectLastCall();
     replay(response);
     teacherVerificationAPIController.verifyTeacherAndRedirect("efgh5678", response, request);
     verify(userService);
-    verify(mailService);
+    verify(teacherMailService);
     verify(response);
   }
 
