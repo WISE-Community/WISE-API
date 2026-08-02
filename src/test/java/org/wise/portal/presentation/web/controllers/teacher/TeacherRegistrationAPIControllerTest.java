@@ -7,7 +7,6 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -102,51 +101,6 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     fields.put("birthDay", "1");
     fields.put("gender", "MALE");
     return fields;
-  }
-
-  @Test
-  public void verifyTeacherAndRedirect_TeacherUnverified_RedirectsWithVerifiedTrue() throws IOException {
-    createTeachers();
-    expect(userService.retrieveTeacherByVerificationCode("efgh5678")).andReturn(teacher2);
-    userService.updateUser(teacher2);
-    expectLastCall();
-    replay(userService);
-    TeacherUserDetails tud = (TeacherUserDetails) teacher2.getUserDetails();
-    mailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
-    expectLastCall();
-    replay(mailService);
-    response.sendRedirect("/login?verified=true&username=" + tud.getUsername());
-    expectLastCall();
-    replay(response);
-    teacherRegistrationAPIController.verifyTeacherAndRedirect("efgh5678", response, request);
-    verify(userService);
-    verify(mailService);
-    verify(response);
-  }
-
-  @Test
-  public void verifyTeacherAndRedirect_TeacherAlreadyVerified_RedirectsWithVerifiedFalse() throws IOException {
-    createTeachers();
-    expect(userService.retrieveTeacherByVerificationCode("abcd1234")).andReturn(teacher1);
-    replay(userService);
-    response.sendRedirect("/login?verified=false&username=" + teacher1.getUserDetails().getUsername());
-    expectLastCall();
-    replay(response);
-    teacherRegistrationAPIController.verifyTeacherAndRedirect("abcd1234", response, request);
-    verify(userService);
-    verify(response);
-  }
-
-  @Test
-  public void verifyTeacherAndRedirect_InvalidVerificationCode_RedirectsWithVerificationError() throws IOException {
-    expect(userService.retrieveTeacherByVerificationCode("")).andReturn(null);
-    replay(userService);
-    response.sendRedirect("/login?verified=error");
-    expectLastCall();
-    replay(response);
-    teacherRegistrationAPIController.verifyTeacherAndRedirect("", response, request);
-    verify(userService);
-    verify(response);
   }
 
   @Test
