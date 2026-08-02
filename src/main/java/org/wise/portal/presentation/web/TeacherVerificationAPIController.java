@@ -23,31 +23,28 @@ public class TeacherVerificationAPIController extends TeacherAPIController {
   public void verifyTeacherAndRedirect(@RequestParam String code, HttpServletResponse response,
       HttpServletRequest request) throws IOException {
     User user = userService.retrieveTeacherByVerificationCode(code);
-    boolean verified = verifyTeacher(user, request);
-    String link = getLoginLink(request, user, verified);
+    boolean verified = verifyTeacher(user);
+    String link = getLoginLink(user, verified);
     sendWelcomeEmail(user, link, request);
     response.sendRedirect(link);
   }
 
-  private boolean verifyTeacher(User user, HttpServletRequest request) {
+  private boolean verifyTeacher(User user) {
     if (user != null) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-      return verifyTeacherAccount(user, tud, request);
+      return verifyTeacherAccount(user, tud);
     } else {
       return false;
     }
   }
 
-  private String getLoginLink(HttpServletRequest request, User user, boolean verified) {
-    String link;
-    if (user == null) {
-      link = "/login?verified=error";
-    } else if (!isTeacher(user)) {
-      link = getRedirectLink(user, false);
-    } else {
-      link = getRedirectLink(user, verified);
+  private String getLoginLink(User user, boolean verified) {
+    StringBuilder link = new StringBuilder("/login?verified=");
+    link.append(user == null ? "error" : verified);
+    if (user != null) {
+      link.append("&username=").append(user.getUserDetails().getUsername());
     }
-    return link;
+    return link.toString();
   }
 
   private void sendWelcomeEmail(User user, String link, HttpServletRequest request) {
@@ -58,12 +55,7 @@ public class TeacherVerificationAPIController extends TeacherAPIController {
     }
   }
 
-  private String getRedirectLink(User user, boolean verified) {
-    return String.format("/login?verified=%s&username=%s", 
-        verified, user.getUserDetails().getUsername());
-  }
-
-  private boolean verifyTeacherAccount(User user, TeacherUserDetails tud, HttpServletRequest request) {
+  private boolean verifyTeacherAccount(User user, TeacherUserDetails tud) {
     if (!tud.isVerified()) {
       tud.setVerified(true);
       userService.updateUser(user);
