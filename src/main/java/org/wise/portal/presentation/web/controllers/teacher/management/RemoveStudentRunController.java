@@ -33,6 +33,10 @@ public class RemoveStudentRunController {
     Run run = runService.retrieveById(runId);
     if (runService.hasWritePermission(auth, run)) {
       User studentUser = userService.retrieveById(studentId);
+      if (!studentUser.isStudent()) {
+        throw new AccessDeniedException(
+            "User does not have permission to remove this user from run");
+      }
       studentService.removeStudentFromRun(studentUser, run);
     } else {
       throw new AccessDeniedException("User does not have permission to remove student from run");
