@@ -79,7 +79,7 @@ public class TeacherMailServiceImpl extends MailService implements TeacherMailSe
   }
 
   private String getVerificationUrl(String verificationCode, HttpServletRequest request) {
-    return String.format("%s/api/teacher/register/verify?code=%s", 
+    return String.format("%s/api/teacher/verify?code=%s", 
         ControllerUtil.getPortalUrlString(request), verificationCode);
   }
 
