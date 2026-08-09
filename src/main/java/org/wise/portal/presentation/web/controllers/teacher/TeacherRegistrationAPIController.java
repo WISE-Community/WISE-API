@@ -110,7 +110,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
     tud.setVerified(isSocialAccount || !teacherMailService.isSendEmailEnabled());
-    setVerificationCode(tud);
+    tud.setVerificationCode(UUID.randomUUID().toString());
     return tud;
   }
 
@@ -125,18 +125,6 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
       setRandomPassword(tud);
     } else {
       tud.setPassword(teacherFields.get("password"));
-    }
-  }
-  
-  private void setVerificationCode(TeacherUserDetails tud) {
-    boolean isCodeSet = false;
-    while (!isCodeSet) {
-      try {
-        tud.setVerificationCode(UUID.randomUUID().toString());
-        isCodeSet = true;
-      } catch (DataIntegrityViolationException e) {
-        continue;
-      }
     }
   }
 
