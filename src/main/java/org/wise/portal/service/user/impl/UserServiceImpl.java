@@ -110,13 +110,12 @@ public class UserServiceImpl implements UserService {
     details.setNumberOfLogins(0);
     details.setSignupdate(Calendar.getInstance().getTime());
 
-    String currentUsernameSuffix = null;
+    String currentUsernameSuffix = "";
     User createdUser = null;
     boolean done = false;
 
     while (!done) {
       try {
-        currentUsernameSuffix = details.getNextUsernameSuffix(currentUsernameSuffix);
         String coreUsername = details.getCoreUsername();
         details.setUsername(coreUsername + currentUsernameSuffix);
         checkUserErrors(userDetails.getUsername(), getVerificationCode(userDetails));
@@ -128,8 +127,7 @@ public class UserServiceImpl implements UserService {
         userDao.save(createdUser);
         done = true;
       } catch (DuplicateUsernameException e) {
-        // the username already exists; try the next possible username
-        continue;
+        currentUsernameSuffix = details.getNextUsernameSuffix(currentUsernameSuffix);
       } catch (DuplicateVerificationCodeException e) {
         TeacherUserDetails tud = (TeacherUserDetails) details;
         tud.setVerificationCode(UUID.randomUUID().toString());

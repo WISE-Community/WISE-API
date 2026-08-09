@@ -199,9 +199,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
    */
   public String getNextUsernameSuffix(String currentUsernameSuffix) {
     String nextUsernameSuffix = "";
-    if (currentUsernameSuffix == null) {
-      nextUsernameSuffix = "";
-    } else if ("".equals(currentUsernameSuffix)) {
+    if ("".equals(currentUsernameSuffix)) {
       nextUsernameSuffix = "1";
     } else {
       try {
