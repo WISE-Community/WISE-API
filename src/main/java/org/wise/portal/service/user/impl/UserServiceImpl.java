@@ -22,6 +22,8 @@ package org.wise.portal.service.user.impl;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -32,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
+import org.wise.portal.dao.authentication.TeacherUserDetailsDao;
 import org.wise.portal.dao.authentication.UserDetailsDao;
 import org.wise.portal.dao.user.UserDao;
 import org.wise.portal.domain.authentication.MutableGrantedAuthority;
@@ -43,6 +46,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
 import org.wise.portal.presentation.web.exception.IncorrectPasswordException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
+import org.wise.portal.service.authentication.DuplicateVerificationCodeException;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.user.UserService;
 
@@ -56,16 +60,19 @@ import org.wise.portal.service.user.UserService;
 public class UserServiceImpl implements UserService {
 
   @Autowired
-  private UserDetailsDao<MutableUserDetails> userDetailsDao;
+  private GrantedAuthorityDao<MutableGrantedAuthority> grantedAuthorityDao;
 
   @Autowired
-  private GrantedAuthorityDao<MutableGrantedAuthority> grantedAuthorityDao;
+  protected PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private TeacherUserDetailsDao teacherUserDetailsDao;
 
   @Autowired
   private UserDao<User> userDao;
 
   @Autowired
-  protected PasswordEncoder passwordEncoder;
+  private UserDetailsDao<MutableUserDetails> userDetailsDao;
 
   @Transactional(readOnly = true)
   public User retrieveUser(UserDetails userDetails) {
@@ -112,7 +119,7 @@ public class UserServiceImpl implements UserService {
         currentUsernameSuffix = details.getNextUsernameSuffix(currentUsernameSuffix);
         String coreUsername = details.getCoreUsername();
         details.setUsername(coreUsername + currentUsernameSuffix);
-        checkUserErrors(userDetails.getUsername());
+        checkUserErrors(userDetails.getUsername(), getVerificationCode(userDetails));
         assignRole(userDetails, UserDetailsService.USER_ROLE);
         encodePassword(userDetails);
 
@@ -123,9 +130,21 @@ public class UserServiceImpl implements UserService {
       } catch (DuplicateUsernameException e) {
         // the username already exists; try the next possible username
         continue;
+      } catch (DuplicateVerificationCodeException e) {
+        TeacherUserDetails tud = (TeacherUserDetails) details;
+        tud.setVerificationCode(UUID.randomUUID().toString());
       }
     }
     return createdUser;
+  }
+
+  private Optional<String> getVerificationCode(MutableUserDetails userDetails) {
+    if ((userDetails instanceof TeacherUserDetails)) {
+      TeacherUserDetails tud = (TeacherUserDetails) userDetails;
+      return Optional.of(tud.getVerificationCode());
+    } else {
+      return Optional.empty();
+    }
   }
 
   void encodePassword(MutableUserDetails userDetails) {
@@ -142,12 +161,18 @@ public class UserServiceImpl implements UserService {
    * a user with the same username
    *
    * @param username The username to check for in the data store
+   * @param verificationCode The verification code to check for in the data store
    * @throws DuplicateUsernameException if the username is the same as a username already in data
-   * store.
+   * @throws DuplicateVerificationCodeException if the verification code is the same as a 
+   *   verification code already in data store.
    */
-  private void checkUserErrors(final String username) throws DuplicateUsernameException {
+  private void checkUserErrors(final String username, final Optional<String> verificationCode) 
+      throws DuplicateUsernameException, DuplicateVerificationCodeException {
     if (userDetailsDao.hasUsername(username)) {
       throw new DuplicateUsernameException(username);
+    } else if (verificationCode.isPresent() 
+        && teacherUserDetailsDao.hasVerificationCode(verificationCode.get())) {
+      throw new DuplicateVerificationCodeException(verificationCode.get());
     }
   }
 
