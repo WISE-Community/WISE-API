@@ -52,10 +52,13 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
+import org.wise.portal.presentation.web.filters.CsrfCookieFilter;
 import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
 import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.MicrosoftOpenIdConnectFilter;
@@ -79,7 +82,9 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()
+    http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .and()
+        .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
         .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
         .addFilterAfter(oAuth2ClientContextFilter(), OpenSessionInViewFilter.class)
         .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
