@@ -80,7 +80,7 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
     replay(userService);
-    teacherMailService.sendWelcomeTeacherEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
+    teacherMailService.sendWelcomeEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
                                 true, Locale.US, request);
     expectLastCall();
     replay(teacherMailService);

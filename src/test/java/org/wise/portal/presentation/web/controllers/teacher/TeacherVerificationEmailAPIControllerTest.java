@@ -31,7 +31,7 @@ public class TeacherVerificationEmailAPIControllerTest extends APIControllerTest
     this.createTeachers();
     expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
     replay(userService);
-    teacherMailService.sendVerifyTeacherEmail("", "efgh5678", null, request);
+    teacherMailService.sendVerifyEmail("", "efgh5678", null, request);
     expectLastCall();
     replay(teacherMailService);
     ResponseEntity<Map<String, Object>> response = 

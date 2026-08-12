@@ -32,7 +32,7 @@ public class TeacherMailServiceImpl extends MailService implements TeacherMailSe
   }
 
   @Override
-  public void sendWelcomeTeacherEmail(String email, String displayName, String username,
+  public void sendWelcomeEmail(String email, String displayName, String username,
       boolean socialAccount, Locale locale, HttpServletRequest request) {
     if (isSendEmailEnabled()) {
       String subject = getEmailMessage(this.welcomeSubjectCode, this.welcomeSubjectCode, null, locale);
@@ -42,7 +42,7 @@ public class TeacherMailServiceImpl extends MailService implements TeacherMailSe
   }
 
   @Override
-  public void sendVerifyTeacherEmail(String email, String verificationCode, 
+  public void sendVerifyEmail(String email, String verificationCode, 
       Locale locale, HttpServletRequest request) {
     if (isSendEmailEnabled()) {
       String subject = getEmailMessage(this.verifySubjectCode, this.verifySubjectCode, null, locale);

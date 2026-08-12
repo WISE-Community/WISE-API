@@ -50,7 +50,7 @@ public class TeacherVerificationAPIController extends TeacherAPIController {
   private void sendWelcomeEmail(User user, String link, HttpServletRequest request) {
     if (link.contains("verified=true")) {
       TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
-      this.teacherMailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
+      this.teacherMailService.sendWelcomeEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(),
           false, request.getLocale(), request);
     }
   }

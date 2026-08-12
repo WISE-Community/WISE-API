@@ -28,7 +28,7 @@ public class TeacherVerificationEmailAPIController extends TeacherAPIController 
       if (tud.isVerified()) {
         return ResponseEntityGenerator.createError("Teacher already verified");
       } else {
-        this.teacherMailService.sendVerifyTeacherEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
+        this.teacherMailService.sendVerifyEmail(tud.getEmailAddress(), tud.getVerificationCode(), 
             request.getLocale(), request);
         return createRegisterSuccessResponse(username);
       }

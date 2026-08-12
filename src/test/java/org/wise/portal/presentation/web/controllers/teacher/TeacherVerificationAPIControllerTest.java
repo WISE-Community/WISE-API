@@ -39,7 +39,7 @@ public class TeacherVerificationAPIControllerTest extends APIControllerTest {
     expectLastCall();
     replay(userService);
     TeacherUserDetails tud = (TeacherUserDetails) teacher2.getUserDetails();
-    teacherMailService.sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
+    teacherMailService.sendWelcomeEmail(tud.getEmailAddress(), tud.getDisplayname(), tud.getUsername(), false, null, request);
     expectLastCall();
     replay(teacherMailService);
     response.sendRedirect("/login?verified=true&username=" + tud.getUsername());
