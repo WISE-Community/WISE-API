@@ -23,10 +23,7 @@
  */
 package org.wise.portal.service.mail;
 
-import java.util.Locale;
-
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Anthony Perritano
