@@ -25,6 +25,7 @@ package org.wise.portal.domain.authentication.impl;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -177,7 +178,6 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
 
   @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFICATION_CODE, unique = true)
   @Getter
-  @Setter
   private String verificationCode;
 
   public String getCoreUsername() {
@@ -251,5 +251,9 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
 
   public void setEmailValid(boolean emailValid) {
     this.emailValid = emailValid;
+  }
+
+  public void setVerificationCode() {
+    this.verificationCode = UUID.randomUUID().toString();
   }
 }

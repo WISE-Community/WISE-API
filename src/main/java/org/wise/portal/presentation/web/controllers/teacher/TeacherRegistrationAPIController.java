@@ -110,7 +110,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
     tud.setVerified(isSocialAccount || !teacherMailService.isSendEmailEnabled());
-    tud.setVerificationCode(UUID.randomUUID().toString());
+    tud.setVerificationCode();
     return tud;
   }
 

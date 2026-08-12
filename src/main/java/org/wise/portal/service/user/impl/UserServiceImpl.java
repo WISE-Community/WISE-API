@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
         currentUsernameSuffix = details.getNextUsernameSuffix(currentUsernameSuffix);
       } catch (DuplicateVerificationCodeException e) {
         TeacherUserDetails tud = (TeacherUserDetails) details;
-        tud.setVerificationCode(UUID.randomUUID().toString());
+        tud.setVerificationCode();
       }
     }
     return createdUser;
