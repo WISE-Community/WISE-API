@@ -52,10 +52,10 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   public void setUp() throws Exception {
     teacher1 = createVerificationTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
-        Schoollevel.COLLEGE, "1234567890", "abcd1234", true);
+        Schoollevel.COLLEGE, "1234567890", true);
     teacher2 = createVerificationTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
-        Schoollevel.HIGH_SCHOOL, "abcdefghij", "1234abcd", false);
+        Schoollevel.HIGH_SCHOOL, "abcdefghij", false);
     student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
         Gender.MALE);
     student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
@@ -63,8 +63,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   public User createVerificationTeacherUser(String firstName, String lastName, String username,
       String displayName, String password, String city, String state, String country, String email,
-      String schoolName, Schoollevel schoolLevel, String googleUserId, String verificationCode,
-      boolean isVerified)
+      String schoolName, Schoollevel schoolLevel, String googleUserId, boolean isVerified)
       throws DuplicateUsernameException {
     User teacher = createTeacherUser(firstName, lastName, username, displayName, password, city, 
       state, country, email, schoolName, schoolLevel, googleUserId);
@@ -267,7 +266,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveTeacherByVerificationCode_WithExistingCode_ShouldSucceed() {
-    User user = userDao.retrieveTeacherByVerificationCode("abcd1234");
+    TeacherUserDetails tud = (TeacherUserDetails) teacher1.getUserDetails();
+    User user = userDao.retrieveTeacherByVerificationCode(tud.getVerificationCode());
     assertEquals(teacher1.getId(), user.getId());
   }
 
