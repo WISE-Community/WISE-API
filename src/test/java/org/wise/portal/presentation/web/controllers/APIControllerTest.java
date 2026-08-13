@@ -271,7 +271,7 @@ public abstract class APIControllerTest {
     teacherUserDetails.setSchoollevel(schoolLevel);
     teacherUserDetails.setNumberOfLogins(numberOfLogins);
     teacherUserDetails.setVerified(isVerified);
-    teacherUserDetails.setVerificationCode(verificationCode);
+    teacherUserDetails.setVerificationCode();
     PersistentGrantedAuthority teacherAuthority = new PersistentGrantedAuthority();
     teacherAuthority.setAuthority(UserDetailsService.TEACHER_ROLE);
     teacherUserDetails.setAuthorities(new GrantedAuthority[] { teacherAuthority });

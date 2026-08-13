@@ -69,7 +69,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     User teacher = createTeacherUser(firstName, lastName, username, displayName, password, city, 
       state, country, email, schoolName, schoolLevel, googleUserId);
     TeacherUserDetails tud = (TeacherUserDetails) teacher.getUserDetails();
-    tud.setVerificationCode(verificationCode);
+    tud.setVerificationCode();
     tud.setVerified(isVerified);
     return teacher;
   }

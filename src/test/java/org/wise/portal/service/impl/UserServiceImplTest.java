@@ -23,6 +23,7 @@
 package org.wise.portal.service.impl;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -85,8 +86,6 @@ public class UserServiceImplTest {
 
   private static final String LASTNAME = "Bob";
 
-  private static final String VERIFICATION_CODE = "1234567890";
-
   private static Date BIRTHDAY;
 
   private static int BIRTHYEAR = 1990;
@@ -140,8 +139,7 @@ public class UserServiceImplTest {
     teacherUserDetails.setPassword(PASSWORD);
     teacherUserDetails.setFirstname(FIRSTNAME);
     teacherUserDetails.setLastname(LASTNAME);
-    teacherUserDetails.setVerificationCode(VERIFICATION_CODE);
-
+    teacherUserDetails.setVerificationCode();
     userAuthority = new PersistentGrantedAuthority();
     userAuthority.setAuthority(UserDetailsService.USER_ROLE);
     studentAuthority = new PersistentGrantedAuthority();
@@ -189,7 +187,7 @@ public class UserServiceImplTest {
     expectTeacherAuthorityLookup();
     expect(userDetailsDao.hasUsername("BillyBob")).andReturn(false);
     replay(userDetailsDao);
-    expect(teacherUserDetailsDao.hasVerificationCode(VERIFICATION_CODE)).andReturn(false);
+    expect(teacherUserDetailsDao.hasVerificationCode(anyString())).andReturn(false);
     replay(teacherUserDetailsDao);
     expect(passwordEncoder.encode(teacherUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
@@ -210,7 +208,7 @@ public class UserServiceImplTest {
     expectTeacherAuthorityLookup();
     expect(userDetailsDao.hasUsername("BillyBob")).andReturn(false);
     replay(userDetailsDao);
-    expect(teacherUserDetailsDao.hasVerificationCode(VERIFICATION_CODE)).andReturn(false);
+    expect(teacherUserDetailsDao.hasVerificationCode(anyString())).andReturn(false);
     replay(teacherUserDetailsDao);
     expect(passwordEncoder.encode(teacherUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);

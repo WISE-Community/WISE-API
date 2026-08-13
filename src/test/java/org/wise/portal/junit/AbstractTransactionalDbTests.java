@@ -151,7 +151,7 @@ public abstract class AbstractTransactionalDbTests
     userDetails.setSchoolname(schoolName);
     userDetails.setSchoollevel(schoolLevel);
     userDetails.setGoogleUserId(googleUserId);
-    userDetails.setVerificationCode("1234567890");
+    userDetails.setVerificationCode();
     User user = userService.createUser(userDetails);
     userDao.save(user);
     return user;

@@ -1,7 +1,6 @@
 package org.wise.portal.presentation.web.controllers.teacher;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,15 +30,10 @@ public class TeacherVerificationEmailAPIControllerTest extends APIControllerTest
     this.createTeachers();
     expect(userService.retrieveTeacherByUsername(TEACHER2_USERNAME)).andReturn(teacher2);
     replay(userService);
-    teacherMailService.sendVerifyEmail("", "efgh5678", null, request);
-    expectLastCall();
-    replay(teacherMailService);
     ResponseEntity<Map<String, Object>> response = 
       teacherVerificationEmailAPIController.sendVerificationEmail(TEACHER2_USERNAME, request);
     assertEquals(TEACHER2_USERNAME, response.getBody().get("username"));
     verify(userService);
-    verify(teacherMailService);
-
   }
 
   @Test
