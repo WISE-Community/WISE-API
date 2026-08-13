@@ -84,11 +84,7 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
         try {
           unsuccessfulAuthentication(request, response,
               new RecaptchaVerificationException("Recaptcha verification failed"));
-        } catch (IOException e) {
-
-        } catch (ServletException e) {
-
-        }
+        } catch (IOException | ServletException e) {} 
         return null;
       }
     }
@@ -105,11 +101,7 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
         try {
           unsuccessfulAuthentication(request, response,
               new TeacherVerificationException("Teacher verification failed"));
-        } catch (IOException e) {
-
-        } catch (ServletException e) {
-
-        }
+        } catch (IOException | ServletException e) {}
         return null;
       }
     }
