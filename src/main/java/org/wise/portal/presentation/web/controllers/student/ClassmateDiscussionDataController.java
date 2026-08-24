@@ -18,7 +18,7 @@ import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
 @RestController
-@Secured("ROLE_STUDENT")
+@Secured({ "ROLE_STUDENT", "ROLE_TEACHER" })
 @RequestMapping("/api/classmate/discussion")
 public class ClassmateDiscussionDataController extends ClassmateDataController {
 
@@ -50,7 +50,7 @@ public class ClassmateDiscussionDataController extends ClassmateDataController {
 
   private boolean isAllowedToGetData(Authentication auth, Run run, Group period, String nodeId,
       String componentId) throws IOException, JSONException, ObjectNotFoundException {
-    return isStudentInRunAndPeriod(auth, run, period)
+    return (isTeacherOfRun(auth, run) || isStudentInRunAndPeriod(auth, run, period))
         && isDiscussionComponent(run, nodeId, componentId);
   }
 

@@ -174,8 +174,11 @@ public class TeacherPostDataController {
     try {
       Notification notification = this.createNotificationForAnnotation(annotation);
       Long toWorkgroupId = notification.getToWorkgroup().getId();
-      broadcastAnnotationToStudent(toWorkgroupId, annotation);
-      broadcastNotificationToStudent(toWorkgroupId, notification);
+      this.broadcastAnnotationToStudent(toWorkgroupId, annotation);
+      if (annotation.getType().equals("inappropriateFlag")) {
+        this.broadcastAnnotationToClassroom(annotation);
+      }
+      this.broadcastNotificationToStudent(toWorkgroupId, notification);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -217,7 +220,7 @@ public class TeacherPostDataController {
     return notification;
   }
 
-  public void broadcastAnnotationToStudent(Long toWorkgroupId, Annotation annotation)
+  private void broadcastAnnotationToStudent(Long toWorkgroupId, Annotation annotation)
       throws JSONException {
     annotation.convertToClientAnnotation();
     JSONObject message = new JSONObject();
@@ -227,7 +230,17 @@ public class TeacherPostDataController {
     redisPublisher.publish(message.toString());
   }
 
-  public void broadcastNotificationToStudent(Long toWorkgroupId, Notification notification)
+  private void broadcastAnnotationToClassroom(Annotation annotation) throws JSONException {
+    annotation.convertToClientAnnotation();
+    JSONObject message = new JSONObject();
+    message.put("type", "annotationToClassroom");
+    message.put("topic", String.format("/topic/classroom/%s/%s", annotation.getRun().getId(),
+        annotation.getPeriod().getId()));
+    message.put("annotation", annotation.toJSON());
+    redisPublisher.publish(message.toString());
+  }
+
+  private void broadcastNotificationToStudent(Long toWorkgroupId, Notification notification)
       throws JSONException {
     notification.convertToClientNotification();
     JSONObject message = new JSONObject();
@@ -236,4 +249,5 @@ public class TeacherPostDataController {
     message.put("notification", notification.toJSON());
     redisPublisher.publish(message.toString());
   }
+
 }

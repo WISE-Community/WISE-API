@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
@@ -57,16 +58,39 @@ public class HibernateNewsItemDaoTest extends AbstractTransactionalDbTests {
   }
 
   @Test
-  public void getListByType_TypeThatDoesNotExist_ShouldReturnNone() {
-    List<NewsItem> newsItems = newsItemDao.getListByType("test");
-    assertEquals(0, newsItems.size());
+  public void getNewsPageNews_WithPublicOnlyType_ShouldReturnAllNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 2", "news2");
+    List<NewsItem> newsItems = newsItemDao.getNewsPageNews(NewsType.PUBLIC_ONLY);
+    assertEquals(1, newsItems.size());
   }
 
   @Test
-  public void getListByType_TypeThatExists_ShouldReturnNewsItems() {
-    createNewsItem(teacher, new Date(), "public", "News Title", "news1");
-    List<NewsItem> newsItems = newsItemDao.getListByType("public");
-    assertEquals(1, newsItems.size());
+  public void getNewsPageNews_WithPublicAndTeacherType_ShouldReturnAllNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 2", "news2");
+    List<NewsItem> newsItems = newsItemDao.getNewsPageNews(NewsType.PUBLIC_AND_TEACHER);
+    assertEquals(2, newsItems.size());
+  }
+
+  @Test
+  public void getHomePageNews_ShouldReturnThreeNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 2", "news2");
+    createNewsItem(teacher, new Date(), "public", "News Title 3", "news3");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 4", "news4");
+    List<NewsItem> newsItems = newsItemDao.getHomePageNews(NewsType.PUBLIC_AND_TEACHER);
+    assertEquals(3, newsItems.size());
+  }
+
+  @Test
+  public void getAllNews_ShouldReturnAllNewsItems() {
+    createNewsItem(teacher, new Date(), "public", "News Title 1", "news1");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 2", "news2");
+    createNewsItem(teacher, new Date(), "public", "News Title 3", "news3");
+    createNewsItem(teacher, new Date(), "teacherOnly", "News Title 4", "news4");
+    List<NewsItem> newsItems = newsItemDao.getAllNews();
+    assertEquals(4, newsItems.size());
   }
 
   private NewsItem createNewsItem(User owner, Date date, String type, String title, String news) {

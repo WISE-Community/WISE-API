@@ -75,13 +75,29 @@ public class RunStatisticsController {
     }
     modelMap.put("runs", runs);
     modelMap.put("period", period);
+    modelMap.put("totalAttendanceWithinLookBackPeriod", getTotalAttendanceWithinPeriod(runs));
+    modelMap.put("totalAttendance", getTotalAttendance(runs));
     return "admin/run/stats";
   }
 
   @GetMapping("/admin/run/stats-by-activity")
   protected String showRunStatisticsByActivity(HttpServletRequest request, ModelMap modelMap)
       throws Exception {
-    modelMap.put("runs", runService.getRunsByActivity());
+    List<Run> runs = runService.getRunsByActivity();
+    modelMap.put("runs", runs);
+    modelMap.put("totalAttendance", getTotalAttendance(runs));
     return "admin/run/stats";
+  }
+
+  private int getTotalAttendanceWithinPeriod(List<Run> runs) {
+    return runs.stream()
+               .map(run -> run.getStudentAttendance().size())
+               .reduce(0, (acc, timesRun) -> acc += timesRun);
+  }
+
+  private int getTotalAttendance(List<Run> runs) {
+    return runs.stream()
+               .map(run -> run.getTimesRun())
+               .reduce(0, (acc, timesRun) -> acc += timesRun);
   }
 }

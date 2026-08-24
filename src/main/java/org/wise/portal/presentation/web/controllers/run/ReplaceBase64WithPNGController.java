@@ -3,6 +3,7 @@ package org.wise.portal.presentation.web.controllers.run;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ import java.util.regex.Pattern;
  * student data, it will replace the Base64 string with a reference to that png image in the
  * studentuploads folder.
  */
+@Secured("ROLE_ADMINISTRATOR")
 @Controller
 @RequestMapping("/admin/run/replacebase64withpng.html")
 public class ReplaceBase64WithPNGController {

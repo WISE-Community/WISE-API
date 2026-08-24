@@ -37,6 +37,7 @@ public class RedisMessageSubscriber implements MessageListener {
         createAndSendWebSocketMessage("newStudentAchievement", messageJSON, "achievement");
         break;
       case "annotationToStudent":
+      case "annotationToClassroom":
         createAndSendWebSocketMessage("annotation", messageJSON, "annotation");
         break;
       case "notification":

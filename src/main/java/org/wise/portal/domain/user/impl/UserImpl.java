@@ -157,4 +157,9 @@ public class UserImpl implements User {
   public int compareTo(User o) {
     return getId().compareTo(o.getId());
   }
+
+  @Override
+  public boolean isEnabled() {
+    return this.getUserDetails().isEnabled();
+  }
 }

@@ -39,7 +39,7 @@ public class ChangeStudentPasswordController {
       @RequestParam String newStudentPassword)
       throws ObjectNotFoundException, IncorrectPasswordException {
     Run run = runService.retrieveById(runId);
-    if (runService.hasWritePermission(auth, run)) {
+    if (isAllowed(auth, run, studentId)) {
       User teacherUser = userService.retrieveUserByUsername(auth.getName());
       boolean isTeacherGoogleUser = teacherUser.getUserDetails().isGoogleUser();
       if (isTeacherPasswordCorrect(isTeacherGoogleUser, teacherUser, teacherPassword)) {
@@ -56,6 +56,12 @@ public class ChangeStudentPasswordController {
       throw new AccessDeniedException(
           "User does not have permission to change this student's password");
     }
+  }
+
+  private boolean isAllowed(Authentication auth, Run run, Long studentId)
+      throws ObjectNotFoundException {
+    return runService.hasWritePermission(auth, run)
+        && run.isStudentAssociatedToThisRun(userService.retrieveById(studentId));
   }
 
   private boolean isTeacherPasswordCorrect(boolean isGoogleUser, User teacherUser,

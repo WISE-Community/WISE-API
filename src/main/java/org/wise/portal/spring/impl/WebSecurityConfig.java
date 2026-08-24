@@ -75,9 +75,6 @@ public class WebSecurityConfig {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  // @Autowired
-  // private AuthenticationManager authenticationManager;
-
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
       throws Exception {
@@ -95,7 +92,12 @@ public class WebSecurityConfig {
         .addFilterAfter(authenticationProcessingFilter(authenticationManager),
             SecurityContextHolderAwareRequestFilter.class)
         .authorizeHttpRequests(
-            auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
+            auth -> auth
+                .requestMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
+                    "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
+                    "/admin/run/replacebase64withpng.html", "/api/admin/**")
+                .hasRole("ADMINISTRATOR")
+                .requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
                 .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
@@ -108,9 +110,9 @@ public class WebSecurityConfig {
                 .hasAnyRole("TEACHER", "STUDENT")
                 .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/google-login")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/teacher/register")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/student/register")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/teacher/register")).anonymous()
+                .requestMatchers(new AntPathRequestMatcher("/api/student/register")).anonymous()
+                .requestMatchers(new AntPathRequestMatcher("/api/student/register/questions")).anonymous()
                 .requestMatchers(new AntPathRequestMatcher("/api/*/register/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/teacher/**")).hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/sso/discourse"))
@@ -121,8 +123,8 @@ public class WebSecurityConfig {
                 .permitAll().requestMatchers(new AntPathRequestMatcher("/api/user/info"))
                 .permitAll().requestMatchers(new AntPathRequestMatcher("/api/user/config"))
                 .permitAll().requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/")).permitAll().anyRequest()
-                .authenticated())
+                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                .anyRequest().authenticated())
         .formLogin(form -> form.loginPage("/login").permitAll())
         .oauth2Login(oauth2 -> oauth2.loginPage("/login")
             .successHandler(oauth2AuthenticationSuccessHandler())
@@ -132,7 +134,6 @@ public class WebSecurityConfig {
             .logoutSuccessHandler((request, response, authentication) -> response
                 .setStatus(HttpServletResponse.SC_OK)))
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
-
     return http.build();
   }
 

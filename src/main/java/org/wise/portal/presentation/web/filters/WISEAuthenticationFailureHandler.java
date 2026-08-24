@@ -83,10 +83,6 @@ public class WISEAuthenticationFailureHandler extends SimpleUrlAuthenticationFai
         userDetails.setRecentFailedLoginTime(currentTime);
         userService.updateUser(user);
       }
-    } else if (request.getServletPath().contains("google-login")) {
-      response.sendRedirect(
-          appProperties.getProperty("wise.hostname") + "/join?googleUserNotFound=true");
-      return;
     }
     if (exception instanceof RecaptchaVerificationException) {
       try {

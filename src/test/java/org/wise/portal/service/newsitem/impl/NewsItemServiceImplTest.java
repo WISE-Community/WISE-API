@@ -44,6 +44,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.newsitem.NewsItemDao;
 import org.wise.portal.domain.newsitem.NewsItem;
+import org.wise.portal.domain.newsitem.NewsType;
 import org.wise.portal.domain.newsitem.impl.NewsItemImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
@@ -155,14 +156,14 @@ public class NewsItemServiceImplTest {
   }
 
   @Test
-  public void retrieveAllNewsItem_TwoNewsItemsInDB_ShouldSucceed() {
+  public void retrieveNewsPageNews_TwoNewsItemsInDB_ShouldSucceed() {
     List<NewsItem> newsItemsInDB = new ArrayList<NewsItem>();
     newsItemsInDB.add(newsItem1);
     newsItemsInDB.add(newsItem2);
-    expect(newsItemDao.getList()).andReturn(newsItemsInDB);
+    expect(newsItemDao.getNewsPageNews(NewsType.PUBLIC_AND_TEACHER)).andReturn(newsItemsInDB);
     replay(newsItemDao);
 
-    List<NewsItem> newsItemsFromDB = newsItemServiceImpl.retrieveAllNewsItem();
+    List<NewsItem> newsItemsFromDB = newsItemServiceImpl.retrieveNewsPageNews(NewsType.PUBLIC_AND_TEACHER);
     assertEquals(newsItemsFromDB.size(), 2);
     assertTrue(newsItemsFromDB.get(0).equals(newsItem1));
     assertTrue(newsItemsFromDB.get(1).equals(newsItem2));

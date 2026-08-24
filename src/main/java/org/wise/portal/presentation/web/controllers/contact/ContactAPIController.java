@@ -172,9 +172,8 @@ public class ContactAPIController {
     addProjectAndRunDetailsToBody(body, runId, projectId);
     try {
       addUserSystemDetailsToBody(body, userAgent);
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (JSONException e) {
+    } catch (Exception e) {
+      // it's ok to not have user agent details. Allow the email to be sent.
       e.printStackTrace();
     }
     return body.toString();

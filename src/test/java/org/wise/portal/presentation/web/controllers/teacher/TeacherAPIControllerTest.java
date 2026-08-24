@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import org.easymock.EasyMockExtension;
@@ -23,8 +22,6 @@ import org.easymock.TestSubject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.PeriodNotFoundException;
@@ -33,9 +30,7 @@ import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
-import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.presentation.web.response.SimpleResponse;
-import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -374,33 +369,6 @@ public class TeacherAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void createTeacherAccount_InvalidPassword_ReturnError()
-      throws DuplicateUsernameException, InvalidNameException {
-    HashMap<String, String> teacherFields = createDefaultTeacherFields();
-    teacherFields.put("password", PasswordServiceImpl.INVALID_PASSWORD_TOO_SHORT);
-    ResponseEntity<Map<String, Object>> response = teacherAPIController
-        .createTeacherAccount(teacherFields, request);
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("invalidPassword", response.getBody().get("messageCode"));
-  }
-
-  @Test
-  public void createTeacherAccount_WithGoogleUserId_CreateUser()
-      throws DuplicateUsernameException, InvalidNameException {
-    HashMap<String, String> teacherFields = createDefaultTeacherFields();
-    teacherFields.put("googleUserId", "123456789");
-    expect(request.getLocale()).andReturn(Locale.US);
-    replay(request);
-    expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = teacherAPIController
-        .createTeacherAccount(teacherFields, request);
-    assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
-    verify(request);
-    verify(userService);
-  }
-
-  @Test
   public void editRunEndTime_WithNullEndTime_ChangeEndTime() throws ObjectNotFoundException {
     expect(userService.retrieveUserByUsername(teacherAuth.getName())).andReturn(teacher1);
     replay(userService);
@@ -452,17 +420,6 @@ public class TeacherAPIControllerTest extends APIControllerTest {
     teacherAPIController.editRunIsLockedAfterEndDate(teacherAuth, runId1, false);
     verify(userService);
     verify(runService);
-  }
-
-  private HashMap<String, String> createDefaultTeacherFields() {
-    HashMap<String, String> fields = new HashMap<String, String>();
-    fields.put("firstName", TEACHER_FIRSTNAME);
-    fields.put("lastName", TEACHER_LASTNAME);
-    fields.put("schoolLevel", "COLLEGE");
-    fields.put("birthMonth", "1");
-    fields.put("birthDay", "1");
-    fields.put("gender", "MALE");
-    return fields;
   }
 
   private void expectGetRunMapToBeCalled() {

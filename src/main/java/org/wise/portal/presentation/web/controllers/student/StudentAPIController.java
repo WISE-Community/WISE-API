@@ -285,7 +285,6 @@ public class StudentAPIController extends UserAPIController {
   }
 
   @PostMapping("/register")
-  @Secured({ "ROLE_ANONYMOUS" })
   ResponseEntity<Map<String, Object>> createStudentAccount(
       @RequestBody Map<String, String> studentFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
@@ -350,7 +349,6 @@ public class StudentAPIController extends UserAPIController {
   }
 
   @GetMapping("/register/questions")
-  @Secured({ "ROLE_ANONYMOUS" })
   List<HashMap<String, String>> getSecurityQuestions() {
     List<HashMap<String, String>> questions = new ArrayList<HashMap<String, String>>();
     for (AccountQuestion accountQuestionKey : AccountQuestion.class.getEnumConstants()) {

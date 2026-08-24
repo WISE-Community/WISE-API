@@ -86,12 +86,14 @@ public class BatchStudentChangePasswordController {
   @GetMapping
   public String initializeForm(ModelMap model, HttpServletRequest request) throws Exception {
     User user = ControllerUtil.getSignedInUser();
-    Run run = runService.retrieveById(Long.parseLong(request.getParameter("runId")));
+    Long runId = Long.parseLong(request.getParameter("runId"));
+    Run run = runService.retrieveById(runId);
 
     if (user.isAdmin() ||
         aclService.hasPermission(run, BasePermission.ADMINISTRATION, user) ||
         aclService.hasPermission(run, BasePermission.WRITE, user)) {
       BatchStudentChangePasswordParameters params = new BatchStudentChangePasswordParameters();
+      params.setRunId(runId);
       params.setGroupId(Long.parseLong(request.getParameter(GROUPID_PARAM_NAME)));
       params.setTeacherUser(user);
       model.addAttribute("batchStudentChangePasswordParameters", params);
@@ -113,7 +115,7 @@ public class BatchStudentChangePasswordController {
   protected String onSubmit(
       @ModelAttribute BatchStudentChangePasswordParameters batchStudentChangePasswordParameters,
       BindingResult bindingResult,
-      SessionStatus sessionStatus) {
+      SessionStatus sessionStatus) throws NotAuthorizedException {
     String view = "";
     try {
       changePasswordParametersValidator.validate(batchStudentChangePasswordParameters, bindingResult);
@@ -122,6 +124,7 @@ public class BatchStudentChangePasswordController {
         view = formView;
       } else {
         Long groupId = batchStudentChangePasswordParameters.getGroupId();
+        assertCanChangeGroupPasswords(batchStudentChangePasswordParameters.getRunId(), groupId);
         Group group = groupService.retrieveById(groupId);
         Iterator<User> membersIter = group.getMembers().iterator();
         User member;
@@ -139,5 +142,28 @@ public class BatchStudentChangePasswordController {
       view = formView;
     }
     return view;
+  }
+
+  /**
+   * Verify that the signed-in teacher may change the passwords of the students in the
+   * given group. The teacher must own the run and the group must be one of that run's
+   * periods, so a teacher cannot reset the passwords of another teacher's students by
+   * submitting a group id that belongs to a run they do not own.
+   */
+  private void assertCanChangeGroupPasswords(Long runId, Long groupId)
+      throws ObjectNotFoundException, NotAuthorizedException {
+    if (runId == null || groupId == null) {
+      throw new NotAuthorizedException("You are not authorized to change these passwords.");
+    }
+    User teacher = ControllerUtil.getSignedInUser();
+    Run run = runService.retrieveById(runId);
+    boolean canManageRun = teacher.isAdmin()
+        || aclService.hasPermission(run, BasePermission.ADMINISTRATION, teacher)
+        || aclService.hasPermission(run, BasePermission.WRITE, teacher);
+    boolean groupBelongsToRun = run.getPeriods().stream()
+        .anyMatch(period -> groupId.equals(period.getId()));
+    if (!canManageRun || !groupBelongsToRun) {
+      throw new NotAuthorizedException("You are not authorized to change these passwords.");
+    }
   }
 }

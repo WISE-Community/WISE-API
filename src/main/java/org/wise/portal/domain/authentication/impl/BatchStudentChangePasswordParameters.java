@@ -36,4 +36,8 @@ public class BatchStudentChangePasswordParameters extends ChangePasswordParamete
   @Getter
   @Setter
   private Long groupId;
+
+  @Getter
+  @Setter
+  private Long runId;
 }

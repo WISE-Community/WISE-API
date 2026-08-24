@@ -193,6 +193,10 @@ public class InformationController {
         addCommonConfigParameters(request, config, project, rawProjectUrl);
       } else {
         Project project = projectService.getById(Long.parseLong(projectIdStr));
+        if (!project.getOwner().isEnabled()) {
+          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+          return;
+        }
         addCommonConfigParameters(request, config, project);
       }
 
