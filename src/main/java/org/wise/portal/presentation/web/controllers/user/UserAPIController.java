@@ -80,7 +80,7 @@ public class UserAPIController {
   @Autowired
   protected MessageSource messageSource;
 
-  @Value("${microsoft.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.microsoft.client-id:}")
   protected String microsoftClientId = "";
 
   @Autowired
@@ -106,9 +106,9 @@ public class UserAPIController {
       info.put("lastName", ud.getLastname());
       info.put("username", ud.getUsername());
       info.put("isGoogleUser", ud.isGoogleUser());
+      info.put("isMicrosoftUser", ud.isMicrosoftUser());
       info.put("isPreviousAdmin", isPreviousAdmin(auth));
       info.put("language", ud.getLanguage());
-      info.put("isGoogleUser", ud.isGoogleUser());
       info.put("roles", user.getRoles());
       if (user.isTeacher()) {
         TeacherUserDetails tud = (TeacherUserDetails) ud;

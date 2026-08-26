@@ -457,4 +457,8 @@ public class PersistentUserDetails implements MutableUserDetails {
   public boolean isGoogleUser() {
     return this.googleUserId != null && !this.googleUserId.isEmpty();
   }
+
+  public boolean isMicrosoftUser() {
+    return this.microsoftUserId != null && !this.microsoftUserId.isEmpty();
+  }
 }

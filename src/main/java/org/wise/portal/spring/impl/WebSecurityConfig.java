@@ -45,6 +45,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -57,6 +58,7 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
+import org.wise.portal.presentation.web.filters.LoginRedirectUrlParameterFilter;
 import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.OAuth2AuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.OAuth2AuthenticationSuccessHandler;
@@ -88,6 +90,7 @@ public class WebSecurityConfig {
         .securityContext(securityContext -> securityContext.requireExplicitSave(false))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .addFilterBefore(new LoginRedirectUrlParameterFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
         .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
         .addFilterAfter(authenticationProcessingFilter(authenticationManager),
             SecurityContextHolderAwareRequestFilter.class)
@@ -110,9 +113,9 @@ public class WebSecurityConfig {
                 .hasAnyRole("TEACHER", "STUDENT")
                 .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/teacher/register")).anonymous()
-                .requestMatchers(new AntPathRequestMatcher("/api/student/register")).anonymous()
-                .requestMatchers(new AntPathRequestMatcher("/api/student/register/questions")).anonymous()
+                .requestMatchers(new AntPathRequestMatcher("/api/teacher/register")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/student/register")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/student/register/questions")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/*/register/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/teacher/**")).hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/sso/discourse"))

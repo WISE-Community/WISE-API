@@ -101,6 +101,16 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     return query.getResultStream().findFirst().orElse(null);
   }
 
+  public User retrieveByMicrosoftUserId(String microsoftUserId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
+    Root<UserImpl> userRoot = cq.from(UserImpl.class);
+    cq.select(userRoot)
+        .where(cb.equal(userRoot.get("userDetails").get("microsoftUserId"), microsoftUserId));
+    TypedQuery<UserImpl> query = entityManager.createQuery(cq);
+    return query.getResultStream().findFirst().orElse(null);
+  }
+
   @SuppressWarnings("unchecked")
   public List<User> retrieveDisabledUsers() {
     CriteriaBuilder cb = getCriteriaBuilder();
