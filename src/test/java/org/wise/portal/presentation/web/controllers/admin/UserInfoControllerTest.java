@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.easymock.EasyMockExtension;
@@ -91,6 +92,8 @@ public class UserInfoControllerTest extends APIControllerTest {
     String view = controller.getUserAccountInfo(adminAuth, TEACHER_USERNAME, modelMap);
     assertEquals("teacher/account/info", view);
     assertEquals(false, modelMap.get("isStudent"));
+    HashMap<String, Object> resultUserInfoMap = (HashMap<String, Object>) modelMap.get("userInfoMap");
+    assertEquals(true, resultUserInfoMap.get("Account Enabled"));
     List<Run> resultRunList = (List<Run>) modelMap.get("runList");
     assertEquals(1, resultRunList.size());
     verify(userService);

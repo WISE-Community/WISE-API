@@ -22,20 +22,20 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.authentication.Schoollevel;
-import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
-
-import junit.framework.TestCase;
 
 /**
  * @author Sally Ahn
  * @version $Id$
  */
-public class TeacherUserDetailsTest extends TestCase {
+public class TeacherUserDetailsTest {
 
 	private TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
 	
@@ -63,6 +63,7 @@ public class TeacherUserDetailsTest extends TestCase {
 	
 	private static final String DISPLAYNAME ="Mr. Right";
 	
+	@Test
 	public void testGetInfo() {
 		teacherUserDetails.setCity(CITY);
 		teacherUserDetails.setCountry(COUNTRY);
@@ -91,6 +92,7 @@ public class TeacherUserDetailsTest extends TestCase {
 		assertEquals(infoMap.get("Last Login"), LASTLOGIN);
 		assertEquals(infoMap.get("Number of Logins"), Integer.toString(NUMBEROFLOGINS));
 		assertEquals(infoMap.get("Display Name"), DISPLAYNAME);
+		assertEquals(infoMap.get("Account Enabled"), true);
 	}
 
 }
