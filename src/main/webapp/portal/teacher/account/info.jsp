@@ -13,7 +13,38 @@
     <link href="${contextPath}/<spring:theme code="rtlstylesheet"/>" rel="stylesheet" type="text/css" >
 </c:if>
 
+<script type="text/javascript" src="${contextPath}/<spring:theme code="jquerysource"/>"></script>
 <script src="${contextPath}/<spring:theme code="generalsource" />" type="text/javascript"></script>
+
+<sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
+<script type="text/javascript">
+function toggleUserAccountStatus(username, isCurrentlyEnabled) {
+	var action = isCurrentlyEnabled ? "disable" : "enable";
+	var doEnable = !isCurrentlyEnabled;
+	if (confirm("Are you sure you want to " + action + " user '" + username + "'?")) {
+		$.ajax({
+			url: "${contextPath}/admin/account/enabledisableuser",
+			type: "POST",
+			data: {
+				"doEnable": doEnable,
+				"username": username
+			},
+			success: function(data, textStatus, jqXHR) {
+				if (jqXHR.responseText === "success" || data === "success") {
+					alert("User '" + username + "' was successfully " + (doEnable ? "enabled" : "disabled") + ".");
+					location.reload();
+				} else {
+					alert(jqXHR.responseText || data);
+				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert("An error occurred: " + (jqXHR.responseText || errorThrown));
+			}
+		});
+	}
+}
+</script>
+</sec:authorize>
 
 </head>
 <body style="background: #FFFFFF;">
@@ -99,7 +130,15 @@
 		<sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
 			<tr>
 				<th><spring:message code="teacher.teacherinfo.accountEnabled" /></th>
-				<td><c:out value="${userInfoMap['Account Enabled']}" /></td>
+				<td>
+					<c:out value="${userInfoMap['Account Enabled']}" />
+					<button type="button" style="margin-left: 8px;" onclick="toggleUserAccountStatus('${userInfoMap['Username']}', ${userInfoMap['Account Enabled']})">
+						<c:choose>
+							<c:when test="${userInfoMap['Account Enabled']}">disable user</c:when>
+							<c:otherwise>enable user</c:otherwise>
+						</c:choose>
+					</button>
+				</td>
 			</tr>
 		</sec:authorize>
 	</table>
