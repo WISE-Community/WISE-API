@@ -96,6 +96,12 @@
 			<td><fmt:formatDate value="${userInfoMap['Last Login']}"
 					type="both" dateStyle="short" timeStyle="short" /></td>
 		</tr>
+		<sec:authorize access="hasRole('ROLE_ADMINISTRATOR')">
+			<tr>
+				<th><spring:message code="teacher.teacherinfo.accountEnabled" /></th>
+				<td><c:out value="${userInfoMap['Account Enabled']}" /></td>
+			</tr>
+		</sec:authorize>
 	</table>
 	<br>
 	<table style="margin: 0 auto;">
