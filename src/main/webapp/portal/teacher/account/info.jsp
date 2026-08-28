@@ -55,9 +55,7 @@ function toggleUserAccountStatus(username, isCurrentlyEnabled) {
 
 </head>
 <body style="background: #FFFFFF;">
-	<div class="dialogContent">
-		<div class="dialogSection sectionContent">
-
+		<div class="sectionContent">
 	<div id="tabs">
 		<ul>
 			<li><a href="#infoTab"><spring:message code="teacher.teacherinfo.teacherInformation" /></a></li>
@@ -197,8 +195,6 @@ function toggleUserAccountStatus(username, isCurrentlyEnabled) {
 				</c:forEach>
 			</table>
 		</div>
-	</div>
-
 	</div>
 </body>
 </html>
