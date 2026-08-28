@@ -59,8 +59,8 @@ function toggleUserAccountStatus(username, isCurrentlyEnabled) {
 	<div id="tabs">
 		<ul>
 			<li><a href="#infoTab"><spring:message code="teacher.teacherinfo.teacherInformation" /></a></li>
-			<li><a href="#runsTab"><spring:message code="student.studentinfo.runList" /></a></li>
-			<li><a href="#unitsTab"><spring:message code="teacher.teacherinfo.unitList" /></a></li>
+			<li><a href="#runsTab"><spring:message code="student.studentinfo.runList" /> (${fn:length(runList)})</a></li>
+			<li><a href="#unitsTab"><spring:message code="teacher.teacherinfo.unitList" /> (${fn:length(projectList)})</a></li>
 		</ul>
 		<div id="infoTab">
 			<table>
