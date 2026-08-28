@@ -183,7 +183,7 @@ function toggleUserAccountStatus(username, isCurrentlyEnabled) {
 				<c:forEach var="project" items="${projectList}">
 					<tr>
 						<th><spring:message code="teacher.teacherinfo.unitId" /></th>
-						<td><c:out value="${project.id}"></c:out></td>
+						<td><a target="_blank" href="${contextPath}/previewproject.html?projectId=${project.id}"><c:out value="${project.id}"></c:out></a></td>
 					</tr>
 
 					<tr>
