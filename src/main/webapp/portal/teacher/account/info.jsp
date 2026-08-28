@@ -170,6 +170,29 @@ function toggleUserAccountStatus(username, isCurrentlyEnabled) {
 			</tr>
 		</c:forEach>
 	</table>
+	<br>
+	<table style="margin: 0 auto;">
+		<tr>
+			<th colspan="2"><u><spring:message
+						code="teacher.teacherinfo.unitList" /></u></th>
+		</tr>
+
+		<c:forEach var="project" items="${projectList}">
+			<tr>
+				<th><spring:message code="teacher.teacherinfo.unitId" /></th>
+				<td><c:out value="${project.id}"></c:out></td>
+			</tr>
+
+			<tr>
+				<th><spring:message code="teacher.teacherinfo.unitName" /></th>
+				<td><c:out value="${project.name}"></c:out></td>
+			</tr>
+
+			<tr>
+				<th colspan="2"><hr></hr></th>
+			</tr>
+		</c:forEach>
+	</table>
 
 	</div>
 </body>
