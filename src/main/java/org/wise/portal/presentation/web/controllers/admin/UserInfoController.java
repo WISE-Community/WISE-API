@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.student.StudentService;
 import org.wise.portal.service.user.UserService;
@@ -55,6 +56,9 @@ public class UserInfoController {
   @Autowired
   private RunService runService;
 
+  @Autowired
+  private ProjectService projectService;
+
   @GetMapping(value = {"/student/account/info", "/teacher/account/info"})
   protected String getUserAccountInfo(Authentication auth, @RequestParam String username,
       ModelMap modelMap) throws Exception {
@@ -73,6 +77,7 @@ public class UserInfoController {
       } else {
         modelMap.put("isStudent", false);
         modelMap.put("runList", runService.getRunListByOwner(user));
+        modelMap.put("projectList", projectService.getProjectList(user));
         return "teacher/account/info";
       }
     } else {
