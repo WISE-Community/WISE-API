@@ -136,7 +136,7 @@ public abstract class APIControllerTest {
     createWorkgroups();
   }
 
-  private void createStudents() {
+  protected void createStudents() {
     student1UserDetails = createStudentUserDetails(STUDENT_FIRSTNAME, STUDENT_LASTNAME,
         STUDENT_USERNAME, Gender.MALE, 5, STUDENT1_GOOGLE_ID, STUDENT1_ACCOUNT_ANSWER);
     student1 = createStudent(student1Id, student1UserDetails);
@@ -147,13 +147,13 @@ public abstract class APIControllerTest {
     studentAuth2 = createAuthentication(student2UserDetails);
   }
 
-  private void createTeachers() {
+  protected void createTeachers() {
     teacher1UserDetails = createTeacherUserDetails(TEACHER_FIRSTNAME, TEACHER_LASTNAME,
-        TEACHER_USERNAME, Schoollevel.COLLEGE, 5);
+        TEACHER_USERNAME, Schoollevel.COLLEGE, 5, true, "abcd1234");
     teacher1 = createTeacher(teacher1Id, teacher1UserDetails);
     teacherAuth = createAuthentication(teacher1UserDetails);
     teacher2UserDetails = createTeacherUserDetails(TEACHER2_FIRSTNAME, TEACHER2_LASTNAME,
-        TEACHER2_USERNAME, Schoollevel.COLLEGE, 5);
+        TEACHER2_USERNAME, Schoollevel.COLLEGE, 5, false, "efgh5678");
     teacher2 = createTeacher(teacher2Id, teacher2UserDetails);
     teacherAuth2 = createAuthentication(teacher2UserDetails);
   }
@@ -262,13 +262,16 @@ public abstract class APIControllerTest {
   }
 
   protected TeacherUserDetails createTeacherUserDetails(String firstName, String lastName,
-      String username, Schoollevel schoolLevel, Integer numberOfLogins) {
+      String username, Schoollevel schoolLevel, Integer numberOfLogins, boolean isVerified,
+      String verificationCode) {
     TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
     teacherUserDetails.setFirstname(firstName);
     teacherUserDetails.setLastname(lastName);
     teacherUserDetails.setUsername(username);
     teacherUserDetails.setSchoollevel(schoolLevel);
     teacherUserDetails.setNumberOfLogins(numberOfLogins);
+    teacherUserDetails.setVerified(isVerified);
+    teacherUserDetails.setVerificationCode();
     PersistentGrantedAuthority teacherAuthority = new PersistentGrantedAuthority();
     teacherAuthority.setAuthority(UserDetailsService.TEACHER_ROLE);
     teacherUserDetails.setAuthorities(new GrantedAuthority[] { teacherAuthority });

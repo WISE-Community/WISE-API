@@ -30,6 +30,7 @@ import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.user.UserAPIController;
 import org.wise.portal.presentation.web.response.SimpleResponse;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.mail.teacher.TeacherMailService;
 import org.wise.portal.service.usertags.UserTagsService;
 
 /**
@@ -43,6 +44,9 @@ import org.wise.portal.service.usertags.UserTagsService;
 @RequestMapping("/api/teacher")
 @Secured({ "ROLE_TEACHER" })
 public class TeacherAPIController extends UserAPIController {
+
+  @Autowired
+  protected TeacherMailService teacherMailService;
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -325,5 +329,9 @@ public class TeacherAPIController extends UserAPIController {
       response.put("messageCode", "noPermissionToChangeIsLockedAfterEndDate");
     }
     return response;
+  }
+
+  protected boolean isTeacher(User user) {
+    return user != null && !user.getRoles().contains("ROLE_STUDENT");
   }
 }

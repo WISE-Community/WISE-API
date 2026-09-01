@@ -1,6 +1,7 @@
 package org.wise.portal.presentation.web.controllers.teacher;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -10,11 +11,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
@@ -22,6 +26,7 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.exception.InvalidNameException;
 import org.wise.portal.service.authentication.DuplicateUsernameException;
 import org.wise.portal.service.authentication.UserDetailsService;
+import org.wise.portal.service.mail.teacher.TeacherMailService;
 import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.password.impl.PasswordServiceImpl;
 import org.wise.portal.service.usertags.UserTagsService;
@@ -31,6 +36,15 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
   
   @TestSubject
   private TeacherRegistrationAPIController teacherRegistrationAPIController = new TeacherRegistrationAPIController();
+
+  @Mock
+  private HttpServletResponse response;
+  
+  @Mock
+  private TeacherMailService teacherMailService;
+  
+  @Mock
+  private MessageSource messageSource;
 
   @Mock
   private UserDetailsService userDetailsService;
@@ -66,11 +80,16 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     replay(request);
     expect(userService.createUser(isA(TeacherUserDetails.class))).andReturn(teacher1);
     replay(userService);
+    teacherMailService.sendWelcomeEmail("", TEACHER_FIRSTNAME + " " + TEACHER_LASTNAME, TEACHER_USERNAME, 
+                                true, Locale.US, request);
+    expectLastCall();
+    replay(teacherMailService);
     ResponseEntity<Map<String, Object>> response = teacherRegistrationAPIController
         .createTeacherAccount(teacherFields, request);
     assertEquals(TEACHER_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
+    verify(teacherMailService);
   } 
 
   private HashMap<String, String> createDefaultTeacherFields() {

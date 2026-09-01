@@ -45,5 +45,4 @@ public interface IMailFacade {
 
   void postMail(String recipients[], String subject, String message , String from, String[] cc)
       throws MessagingException;
-
 }

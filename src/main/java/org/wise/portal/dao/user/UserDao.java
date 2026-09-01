@@ -46,6 +46,7 @@ public interface UserDao<T extends User> extends SimpleDao<T> {
   List<User> retrieveTeachersByFirstName(String firstName);
   List<User> retrieveTeachersByLastName(String lastName);
   User retrieveTeacherByUsername(String username);
+  User retrieveTeacherByVerificationCode(String verificationCode);
   List<User> retrieveTeachersByDisplayName(String displayName);
   List<User> retrieveTeachersByCity(String city);
   List<User> retrieveTeachersByState(String state);

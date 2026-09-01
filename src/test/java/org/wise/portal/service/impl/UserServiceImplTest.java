@@ -23,6 +23,7 @@
 package org.wise.portal.service.impl;
 
 import static junit.framework.TestCase.assertTrue;
+import static org.easymock.EasyMock.anyString;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.wise.portal.dao.authentication.GrantedAuthorityDao;
+import org.wise.portal.dao.authentication.TeacherUserDetailsDao;
 import org.wise.portal.dao.authentication.UserDetailsDao;
 import org.wise.portal.dao.user.UserDao;
 import org.wise.portal.domain.authentication.Gender;
@@ -62,16 +64,19 @@ public class UserServiceImplTest {
   private UserService userService = new UserServiceImpl();
 
   @Mock
-  private UserDao<User> userDao;
-
-  @Mock
-  private UserDetailsDao<MutableUserDetails> userDetailsDao;
-
-  @Mock
   private GrantedAuthorityDao<MutableGrantedAuthority> grantedAuthorityDao;
 
   @Mock
   private PasswordEncoder passwordEncoder;
+
+  @Mock
+  private TeacherUserDetailsDao teacherUserDetailsDao;
+
+  @Mock
+  private UserDao<User> userDao;
+
+  @Mock
+  private UserDetailsDao<MutableUserDetails> userDetailsDao;
 
   private static final String PASSWORD = "password";
 
@@ -134,7 +139,7 @@ public class UserServiceImplTest {
     teacherUserDetails.setPassword(PASSWORD);
     teacherUserDetails.setFirstname(FIRSTNAME);
     teacherUserDetails.setLastname(LASTNAME);
-
+    teacherUserDetails.setVerificationCode();
     userAuthority = new PersistentGrantedAuthority();
     userAuthority.setAuthority(UserDetailsService.USER_ROLE);
     studentAuthority = new PersistentGrantedAuthority();
@@ -182,11 +187,14 @@ public class UserServiceImplTest {
     expectTeacherAuthorityLookup();
     expect(userDetailsDao.hasUsername("BillyBob")).andReturn(false);
     replay(userDetailsDao);
+    expect(teacherUserDetailsDao.hasVerificationCode(anyString())).andReturn(false);
+    replay(teacherUserDetailsDao);
     expect(passwordEncoder.encode(teacherUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
     userService.createUser(teacherUserDetails);
     verify(grantedAuthorityDao);
     verify(userDetailsDao);
+    verify(teacherUserDetailsDao);
     assertEquals("BillyBob", teacherUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, teacherUserDetails.getPassword());
     assertUserHasTeacherAuthorities();
@@ -200,11 +208,14 @@ public class UserServiceImplTest {
     expectTeacherAuthorityLookup();
     expect(userDetailsDao.hasUsername("BillyBob")).andReturn(false);
     replay(userDetailsDao);
+    expect(teacherUserDetailsDao.hasVerificationCode(anyString())).andReturn(false);
+    replay(teacherUserDetailsDao);
     expect(passwordEncoder.encode(teacherUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
     userService.createUser(teacherUserDetails);
     verify(grantedAuthorityDao);
     verify(userDetailsDao);
+    verify(teacherUserDetailsDao);
     assertEquals("BillyBob", teacherUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, teacherUserDetails.getPassword());
     assertUserHasTeacherAuthorities();

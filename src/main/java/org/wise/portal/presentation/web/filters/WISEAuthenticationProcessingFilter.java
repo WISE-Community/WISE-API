@@ -38,9 +38,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.presentation.web.exception.RecaptchaVerificationException;
+import org.wise.portal.presentation.web.exception.TeacherVerificationException;
 import org.wise.portal.service.session.SessionService;
 import org.wise.portal.service.user.UserService;
 
@@ -82,15 +84,28 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
         try {
           unsuccessfulAuthentication(request, response,
               new RecaptchaVerificationException("Recaptcha verification failed"));
-        } catch (IOException e) {
-
-        } catch (ServletException e) {
-
-        }
+        } catch (IOException | ServletException e) {} 
         return null;
       }
     }
-    return super.attemptAuthentication(request, response);
+    Authentication auth = super.attemptAuthentication(request, response);
+    return checkVerificationStatus(request, response, auth);
+  }
+
+  private Authentication checkVerificationStatus(HttpServletRequest request, HttpServletResponse response,
+      Authentication auth) {
+    User user = userService.retrieveTeacherByUsername(auth.getName());
+    if (user != null) {
+      TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
+      if (!tud.isVerified()) {
+        try {
+          unsuccessfulAuthentication(request, response,
+              new TeacherVerificationException("Teacher verification failed"));
+        } catch (IOException | ServletException e) {}
+        return null;
+      }
+    }
+    return auth;
   }
 
   @Override
@@ -112,6 +127,19 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
   protected void unsuccessfulAuthentication(HttpServletRequest request,
       HttpServletResponse response, AuthenticationException failed)
       throws IOException, ServletException {
+    checkForVerificationException(response, failed);
     super.unsuccessfulAuthentication(request, response, failed);
+  }
+
+  private void checkForVerificationException(HttpServletResponse response, AuthenticationException failed)
+      throws IOException {
+    if (failed instanceof TeacherVerificationException) {
+      response.setStatus(HttpServletResponse.SC_OK);
+      response.setContentType("application/json");
+      response.setCharacterEncoding("UTF-8");
+      response.getWriter().write(
+          "{\"isTeacherVerificationFailed\":true}"
+      );
+    }
   }
 }

@@ -25,6 +25,7 @@ package org.wise.portal.domain.authentication.impl;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -92,6 +93,12 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
 
   @Transient
   private static final String COLUMN_NAME_HOW_HEAR = "howDidYouHearAboutUs";
+
+  @Transient
+  private static final String COLUMN_NAME_VERIFIED = "isVerified";
+
+  @Transient
+  private static final String COLUMN_NAME_VERIFICATION_CODE = "verificationCode";
 
   @Transient
   private static final long serialVersionUID = 1L;
@@ -164,6 +171,15 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   @Setter
   private String howDidYouHearAboutUs;
 
+  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFIED, nullable = false)
+  @Getter
+  @Setter
+  private boolean verified = false;
+
+  @Column(name = TeacherUserDetails.COLUMN_NAME_VERIFICATION_CODE, unique = true)
+  @Getter
+  private String verificationCode;
+
   public String getCoreUsername() {
     return (firstname + lastname).replaceAll("[\\s-]+", "");
   }
@@ -183,9 +199,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
    */
   public String getNextUsernameSuffix(String currentUsernameSuffix) {
     String nextUsernameSuffix = "";
-    if (currentUsernameSuffix == null) {
-      nextUsernameSuffix = "";
-    } else if ("".equals(currentUsernameSuffix)) {
+    if ("".equals(currentUsernameSuffix)) {
       nextUsernameSuffix = "1";
     } else {
       try {
@@ -238,5 +252,9 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
 
   public void setEmailValid(boolean emailValid) {
     this.emailValid = emailValid;
+  }
+
+  public void setVerificationCode() {
+    this.verificationCode = UUID.randomUUID().toString();
   }
 }

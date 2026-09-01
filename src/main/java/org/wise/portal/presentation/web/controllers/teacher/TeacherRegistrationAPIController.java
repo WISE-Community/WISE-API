@@ -3,7 +3,6 @@ package org.wise.portal.presentation.web.controllers.teacher;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -26,12 +25,6 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 @RestController
 @RequestMapping("/api/teacher/register")
 public class TeacherRegistrationAPIController extends TeacherAPIController {
-
-  private final String emailCodePrefix = 
-    "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmail";
-  private final String welcomeBodyCode = this.emailCodePrefix + "Body";
-  private final String welcomeSocialAccountBodyCode = this.emailCodePrefix + "BodyNoUsername";
-  private final String welcomeSubjectCode = this.emailCodePrefix + "Subject";
  
   @PostMapping()
   @Secured({ "ROLE_ANONYMOUS" })
@@ -44,67 +37,33 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
       return ResponseEntityGenerator.createError("recaptchaResponseInvalid");
     } catch (InvalidPasswordException e) {
       return ResponseEntityGenerator.createError(
-        passwordService.getErrors(teacherFields.get("password")));
+          passwordService.getErrors(teacherFields.get("password")));
     }
     Locale locale = request.getLocale();
-    TeacherUserDetails tud = createTeacherUserDetails(teacherFields, locale);
+    boolean isSocialAccount = isSocialAccount(teacherFields);
+    TeacherUserDetails tud = createTeacherUserDetails(teacherFields, isSocialAccount, locale);
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
-    if (isSendEmailEnabled()) {
-      sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
-                              isSocialAccount(tud), locale, request);
-    }
+    sendNewTeacherEmail(request, locale, isSocialAccount, tud, username);
     return createRegisterSuccessResponse(username);
   }
 
-  private boolean isSendEmailEnabled() {
-    String sendEmailEnabledStr = appProperties.getProperty("send_email_enabled", "false");
-    return Boolean.valueOf(sendEmailEnabledStr);
-  }
-
-  private boolean isSocialAccount(TeacherUserDetails tud) {
-      return isSet(tud.getGoogleUserId()) || isSet(tud.getMicrosoftUserId());
-  }
-
-  private void sendWelcomeTeacherEmail(String email, String displayName, String username,
-                                       boolean socialAccount, Locale locale, 
-                                       HttpServletRequest request) {
-    String subject = getEmailMessage(this.welcomeSubjectCode, this.welcomeSubjectCode, null, locale);
-    String body = getWelcomeTeacherBody(displayName, username, socialAccount, locale, request);
-    this.sendEmail(email, subject, body);
-  }
-
-  private String getEmailMessage(String defaultCode, String code, Object[] args, Locale locale) {
-    String defaultMessage = messageSource.getMessage(defaultCode, args, Locale.US);
-    return messageSource.getMessage(code, args, defaultMessage, locale);
-  }
-
-  private String getWelcomeTeacherBody(String displayName, String username, boolean socialAccount,
-                                       Locale locale, HttpServletRequest request) {
-    String gettingStartedUrl = getGettingStartedUrl(request);
-    String code = socialAccount ? this.welcomeSocialAccountBodyCode : this.welcomeBodyCode;
-    Object[] args = socialAccount 
-      ? new Object[] { displayName, gettingStartedUrl } 
-      : new Object[] { displayName, username, gettingStartedUrl };
-    return getEmailMessage(this.welcomeBodyCode, code, args, locale);
-  }
-
-  private String getGettingStartedUrl(HttpServletRequest request) {
-    return ControllerUtil.getPortalUrlString(request) + "/help/getting-started";
-  }
-
-  private void sendEmail(String email, String subject, String body) {
-    String fromEmail = appProperties.getProperty("portalemailaddress");
-    String[] recipients = { email };
-    try {
-      mailService.postMail(recipients, subject, body, fromEmail);
-    } catch (MessagingException e) {
-      e.printStackTrace();
+  private void sendNewTeacherEmail(HttpServletRequest request, Locale locale, boolean isSocialAccount,
+      TeacherUserDetails tud, String username) {
+    if (isSocialAccount) {
+      this.teacherMailService.sendWelcomeEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
+          true, locale, request);
+    } else {
+      this.teacherMailService.sendVerifyEmail(tud.getEmailAddress(), tud.getVerificationCode(), locale, request);
     }
   }
 
+  private boolean isSocialAccount(Map<String, String> teacherFields) {
+    return isSet(teacherFields.get("googleUserId")) || isSet(teacherFields.get("microsoftUserId"));
+  }
+
   private void validateTeacherFields(Map<String, String> teacherFields) 
-    throws RecaptchaVerificationException, InvalidNameException, InvalidPasswordException {
+      throws RecaptchaVerificationException, InvalidNameException, InvalidPasswordException {
     validateReCaptcha(teacherFields.get("token"));
     validateFirstAndLastName(teacherFields.get("firstName"), teacherFields.get("lastName"));
     validatePassword(teacherFields.get("password"));
@@ -119,7 +78,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private void validateFirstAndLastName(String firstName, String lastName) 
-    throws InvalidNameException {
+      throws InvalidNameException {
     if (!isFirstNameAndLastNameValid(firstName, lastName)) {
       String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
       throw new InvalidNameException(messageCode);
@@ -133,7 +92,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields, 
-                                                      Locale locale) {
+      boolean isSocialAccount, Locale locale) {
     TeacherUserDetails tud = new TeacherUserDetails();
     tud.setFirstname(teacherFields.get("firstName"));
     tud.setLastname(teacherFields.get("lastName"));
@@ -148,6 +107,8 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     tud.setLanguage(locale.getLanguage());
     setPassword(teacherFields, tud);
     tud.setEmailValid(true);
+    tud.setVerified(isSocialAccount || !teacherMailService.isSendEmailEnabled());
+    tud.setVerificationCode();
     return tud;
   }
 
