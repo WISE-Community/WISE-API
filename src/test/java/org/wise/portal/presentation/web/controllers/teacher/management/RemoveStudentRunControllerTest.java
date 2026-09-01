@@ -70,13 +70,21 @@ public class RemoveStudentRunControllerTest extends APIControllerTest {
   }
 
   /**
-   * Both steps of removeStudentFromRun are scoped to the run, so a student who is not in the run
-   * is left untouched. Rejecting them here instead would turn a repeated removal into an error,
-   * and would leave a student who is still in a workgroup but no longer in a period with no way
-   * to be cleaned up.
+   * The student role check is the only thing this controller asks about the target user: it
+   * deliberately does not ask whether they belong to the run. Write permission on the run is
+   * checked before it, and removeStudent_NoWritePermission_ThrowAccessDenied covers that half.
+   * Rejecting a non-member here would turn a repeated removal into an error, and would leave a
+   * student who is still in a workgroup but no longer in a period with no way to be cleaned up.
+   * student2 is exactly that case in the fixture, being a member of workgroup2 under run1 while
+   * run1Period1's own member list holds only student1.
+   *
+   * <p>What this asserts is the delegation and nothing beyond it. studentService is mocked, so the
+   * claim that both steps of removeStudentFromRun are themselves scoped to the run is not tested
+   * here and belongs to that service's own tests.
    */
   @Test
-  public void removeStudent_StudentNotInRun_RemoveStudentFromRun() throws Exception {
+  public void removeStudent_StudentInWorkgroupButNotInPeriod_RemoveStudentFromRun()
+      throws Exception {
     expect(runService.retrieveById(runId1)).andReturn(run1);
     expect(runService.hasWritePermission(teacherAuth, run1)).andReturn(true);
     expect(userService.retrieveById(student2Id)).andReturn(student2);
