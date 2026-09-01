@@ -179,6 +179,7 @@ public class UserAPIController {
     return !googleClientId.isEmpty() && !googleClientSecret.isEmpty();
   }
 
+  @Secured("ROLE_USER")
   @PostMapping("/check-authentication")
   HashMap<String, Object> checkAuthentication(@RequestParam("username") String username,
       @RequestParam("password") String password) {
@@ -188,12 +189,18 @@ public class UserAPIController {
       response.put("isUsernameValid", false);
       response.put("isPasswordValid", false);
     } else {
+      boolean isPasswordValid = userService.isPasswordCorrect(user, password);
       response.put("isUsernameValid", true);
-      response.put("isPasswordValid", userService.isPasswordCorrect(user, password));
-      response.put("userId", user.getId());
-      response.put("username", user.getUserDetails().getUsername());
-      response.put("firstName", user.getUserDetails().getFirstname());
-      response.put("lastName", user.getUserDetails().getLastname());
+      response.put("isPasswordValid", isPasswordValid);
+      // Only reveal the account id and real name once the correct password has been
+      // provided, so this endpoint cannot be used to harvest user ids and real names
+      // by probing usernames.
+      if (isPasswordValid) {
+        response.put("userId", user.getId());
+        response.put("username", user.getUserDetails().getUsername());
+        response.put("firstName", user.getUserDetails().getFirstname());
+        response.put("lastName", user.getUserDetails().getLastname());
+      }
     }
     return response;
   }
