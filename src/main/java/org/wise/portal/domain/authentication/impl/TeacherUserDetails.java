@@ -228,6 +228,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
     infoMap.put("How did you hear about us", this.getHowDidYouHearAboutUs());
     infoMap.put("Email", this.getEmailAddress());
     infoMap.put("Language", this.getLanguage());
+    infoMap.put("Account Enabled", this.isEnabled());
     return infoMap;
   }
 

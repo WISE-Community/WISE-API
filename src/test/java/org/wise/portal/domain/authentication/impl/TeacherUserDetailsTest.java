@@ -38,11 +38,11 @@ import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 public class TeacherUserDetailsTest {
 
 	private TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
-	
+
 	private static final String FIRSTNAME = "test";
-	
+
 	private static final String LASTNAME = "teacher";
-	
+
 	private static final String CITY = "Berkeley";
 
 	private static final String COUNTRY = "USA";
@@ -56,11 +56,11 @@ public class TeacherUserDetailsTest {
 	private static final String SCHOOLNAME = "Berkeley";
 
 	private static final Date SIGNUPDATE = Calendar.getInstance().getTime();
-	
+
 	private static final Date LASTLOGIN = Calendar.getInstance().getTime();
-	
+
 	private static final int NUMBEROFLOGINS = 3;
-	
+
 	private static final String DISPLAYNAME ="Mr. Right";
 
   @Test
@@ -77,9 +77,9 @@ public class TeacherUserDetailsTest {
 		teacherUserDetails.setLastLoginTime(LASTLOGIN);
 		teacherUserDetails.setNumberOfLogins(NUMBEROFLOGINS);
 		teacherUserDetails.setDisplayname(DISPLAYNAME);
-		
+
 		HashMap<String, Object> infoMap = teacherUserDetails.getInfo();
-		
+
 		assertEquals(infoMap.get("City"), CITY);
 		assertEquals(infoMap.get("Country"), COUNTRY);
 		assertEquals(infoMap.get("State"), STATE);
@@ -92,6 +92,7 @@ public class TeacherUserDetailsTest {
 		assertEquals(infoMap.get("Last Login"), LASTLOGIN);
 		assertEquals(infoMap.get("Number of Logins"), Integer.toString(NUMBEROFLOGINS));
 		assertEquals(infoMap.get("Display Name"), DISPLAYNAME);
+		assertEquals(infoMap.get("Account Enabled"), true);
 	}
 
 }

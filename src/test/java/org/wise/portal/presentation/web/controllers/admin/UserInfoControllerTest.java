@@ -28,6 +28,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.easymock.EasyMockExtension;
@@ -36,6 +37,7 @@ import org.easymock.TestSubject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.ui.ModelMap;
+import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
@@ -88,13 +90,22 @@ public class UserInfoControllerTest extends APIControllerTest {
     studentRuns.add(new RunImpl());
     expect(runService.getRunListByOwner(teacher1)).andReturn(studentRuns);
     replay(runService);
+    List<Project> teacherProjects = new ArrayList<>();
+    teacherProjects.add(project1);
+    expect(projectService.getProjectList(teacher1)).andReturn(teacherProjects);
+    replay(projectService);
     String view = controller.getUserAccountInfo(adminAuth, TEACHER_USERNAME, modelMap);
     assertEquals("teacher/account/info", view);
     assertEquals(false, modelMap.get("isStudent"));
+    HashMap<String, Object> resultUserInfoMap = (HashMap<String, Object>) modelMap.get("userInfoMap");
+    assertEquals(true, resultUserInfoMap.get("Account Enabled"));
     List<Run> resultRunList = (List<Run>) modelMap.get("runList");
     assertEquals(1, resultRunList.size());
+    List<Project> resultProjectList = (List<Project>) modelMap.get("projectList");
+    assertEquals(1, resultProjectList.size());
     verify(userService);
     verify(runService);
+    verify(projectService);
   }
 
   @Test
