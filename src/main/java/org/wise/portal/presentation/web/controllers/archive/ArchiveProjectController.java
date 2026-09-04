@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.project.Project;
-import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
@@ -44,7 +43,7 @@ public class ArchiveProjectController {
 
   @PutMapping("/project/{projectId}/archived")
   protected ResponseEntity<Map<String, Object>> archiveProject(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project) {
+      @PathVariable("projectId") Project project) {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag archivedTag = getOrCreateArchivedTag(user);
     userTagsService.applyTag(project, archivedTag);
@@ -74,7 +73,7 @@ public class ArchiveProjectController {
 
   @DeleteMapping("/project/{projectId}/archived")
   protected ResponseEntity<Map<String, Object>> unarchiveProject(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project) {
+      @PathVariable("projectId") Project project) {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag archivedTag = userTagsService.get(user, ARCHIVED_TAG);
     if (archivedTag != null) {

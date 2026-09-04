@@ -28,12 +28,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.wise.vle.domain.PersistableDomain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 /**
  * Domain object representing a single message in a chatbot conversation
- * 
+ *
  * @author Hiroki Terashima
  */
 @Entity

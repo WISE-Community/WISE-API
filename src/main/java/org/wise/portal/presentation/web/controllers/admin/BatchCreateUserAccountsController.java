@@ -34,9 +34,10 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.AccountQuestion;
@@ -67,7 +68,7 @@ public class BatchCreateUserAccountsController {
   @Autowired
   private StudentService studentService;
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected ModelAndView onSubmit(
       @ModelAttribute("csvFile") BatchCreateUserAccountsUpload csvUpload,
       BindingResult result) throws Exception {
@@ -140,7 +141,7 @@ public class BatchCreateUserAccountsController {
     return modelAndView;
   }
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   public ModelAndView initializeForm(ModelMap model) {
     ModelAndView mav = new ModelAndView();
     mav.addObject("csvFile", new BatchCreateUserAccountsUpload());

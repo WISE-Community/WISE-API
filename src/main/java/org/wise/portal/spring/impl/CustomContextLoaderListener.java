@@ -22,7 +22,7 @@ package org.wise.portal.spring.impl;
 
 import java.security.InvalidParameterException;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -22,18 +22,18 @@ package org.wise.portal.domain.authentication.impl;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -52,9 +52,9 @@ import org.wise.portal.domain.authentication.MutableAclTargetObjectIdentity;
  * @author Cynick Young
  */
 @Entity
-@Table(name = PersistentAclEntry.DATA_STORE_NAME, uniqueConstraints = { @UniqueConstraint(columnNames = {
-  PersistentAclEntry.COLUMN_NAME_TARGET_OBJECT_ID,
-  PersistentAclEntry.COLUMN_NAME_ACE_ORDER }) })
+@Table(name = PersistentAclEntry.DATA_STORE_NAME, uniqueConstraints = {
+    @UniqueConstraint(columnNames = { PersistentAclEntry.COLUMN_NAME_TARGET_OBJECT_ID,
+        PersistentAclEntry.COLUMN_NAME_ACE_ORDER }) })
 public class PersistentAclEntry implements ImmutableAclEntry, Serializable {
 
   @Transient
@@ -121,7 +121,7 @@ public class PersistentAclEntry implements ImmutableAclEntry, Serializable {
   private Boolean auditFailure;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   @Setter
   private Long id;
@@ -141,10 +141,9 @@ public class PersistentAclEntry implements ImmutableAclEntry, Serializable {
    * @param auditSuccess
    * @param auditFailure
    */
-  public PersistentAclEntry(
-    MutableAclTargetObjectIdentity targetObjectIdentity,
-    Integer aceOrder, MutableAclSid sid, Permission permission,
-    Boolean granting, Boolean auditSuccess, Boolean auditFailure) {
+  public PersistentAclEntry(MutableAclTargetObjectIdentity targetObjectIdentity, Integer aceOrder,
+      MutableAclSid sid, Permission permission, Boolean granting, Boolean auditSuccess,
+      Boolean auditFailure) {
     super();
     this.targetObjectIdentity = targetObjectIdentity;
     this.aceOrder = aceOrder;
@@ -173,8 +172,7 @@ public class PersistentAclEntry implements ImmutableAclEntry, Serializable {
   }
 
   @SuppressWarnings("unused")
-  private void setTargetObjectIdentity(
-    MutableAclTargetObjectIdentity targetObjectIdentity) {
+  private void setTargetObjectIdentity(MutableAclTargetObjectIdentity targetObjectIdentity) {
     this.targetObjectIdentity = targetObjectIdentity;
   }
 

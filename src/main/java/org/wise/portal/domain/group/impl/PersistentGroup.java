@@ -23,20 +23,20 @@ package org.wise.portal.domain.group.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -76,7 +76,7 @@ public class PersistentGroup implements Group {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   @Setter
   private Long id = null;
@@ -89,7 +89,8 @@ public class PersistentGroup implements Group {
 
   // TODO: why is the EAGER fetched?
   @ManyToMany(targetEntity = UserImpl.class, fetch = FetchType.EAGER)
-  @JoinTable(name = USERS_JOIN_TABLE_NAME, joinColumns = { @JoinColumn(name = GROUPS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = USERS_JOIN_COLUMN_NAME, nullable = false))
+  @JoinTable(name = USERS_JOIN_TABLE_NAME, joinColumns = {
+      @JoinColumn(name = GROUPS_JOIN_COLUMN_NAME, nullable = false) }, inverseJoinColumns = @JoinColumn(name = USERS_JOIN_COLUMN_NAME, nullable = false))
   @Getter
   @Setter
   private Set<User> members = new HashSet<User>();
@@ -100,7 +101,7 @@ public class PersistentGroup implements Group {
   private String name;
 
   @ManyToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+  @Cascade({ org.hibernate.annotations.CascadeType.SAVE_UPDATE })
   @JoinColumn(name = COLUMN_NAME_PARENT_FK)
   @Getter
   @Setter
@@ -133,8 +134,8 @@ public class PersistentGroup implements Group {
       return true;
     if (obj == null)
       return false;
-    if (obj instanceof HibernateProxy) {
-      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+    if (obj instanceof HibernateProxy proxy) {
+      if (getClass() != proxy.getHibernateLazyInitializer().getImplementation().getClass()) {
         return false;
       }
     } else if (getClass() != obj.getClass())

@@ -17,9 +17,14 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.authentication.MutableAclTargetObject;
 import org.wise.portal.domain.authentication.impl.PersistentAclTargetObjectIdentity;
 import org.wise.portal.domain.group.impl.PersistentGroup;
@@ -29,7 +34,7 @@ import org.wise.portal.domain.group.impl.PersistentGroup;
  * 
  * @version $Id$
  */
-public class PersistentAclTargetObjectIdentityTest extends TestCase {
+public class PersistentAclTargetObjectIdentityTest {
 
     private static final String CLASSNAME = "net.sf.sail.webapp.domain.group.impl.PersistentGroup";
 
@@ -37,30 +42,31 @@ public class PersistentAclTargetObjectIdentityTest extends TestCase {
 
     private MutableAclTargetObject targetObject;
 
-    /**
-     * @see junit.framework.TestCase#setUp()
+  /**
+   * @see 
      */
-    protected void setUp() throws Exception {
-        super.setUp();
+  @BeforeEach
+  public void setUp() throws Exception {
         this.targetObjectIdentity = new PersistentAclTargetObjectIdentity();
         this.targetObject = EasyMock.createMock(MutableAclTargetObject.class);
         this.targetObjectIdentity.setAclTargetObject(targetObject);
     }
 
-    /**
-     * @see junit.framework.TestCase#tearDown()
+  /**
+   * @see 
      */
-    protected void tearDown() throws Exception {
-        super.tearDown();
+  @AfterEach
+  public void tearDown() throws Exception {
         this.targetObject = null;
         this.targetObjectIdentity = null;
     }
 
-    /**
-     * Test method for
-     * {@link net.sf.sail.webapp.domain.authentication.impl.PersistentAclTargetObjectIdentity#getJavaType()}.
-     */
-    public void testGetJavaType() {
+  /**
+   * Test method for
+   * {@link net.sf.sail.webapp.domain.authentication.impl.PersistentAclTargetObjectIdentity#getJavaType()}.
+   */
+  @Test
+  public void testGetJavaType() {
         EasyMock.expect(this.targetObject.getClassname()).andReturn(CLASSNAME);
         EasyMock.replay(this.targetObject);
 

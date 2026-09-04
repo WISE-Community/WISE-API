@@ -1,13 +1,13 @@
 package org.wise.portal.domain.run;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Set;
 import java.util.TreeSet;
 
-import junit.framework.TestCase;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.internal.runners.TestClassRunner;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
@@ -19,7 +19,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
  *
  */
 @RunWith(TestClassRunner.class)
-public class StudentRunInfoTest extends TestCase {
+public class StudentRunInfoTest {
 
   private static final String THIS_RUN_NAME = "this run name";
 
@@ -37,7 +37,7 @@ public class StudentRunInfoTest extends TestCase {
 
   private StudentRunInfo thatStudentRunInfo;
 
-  @Before
+  @BeforeEach
   public void setup() {
     thisTeacher = new UserImpl();
     thatTeacher = new UserImpl();
@@ -61,7 +61,8 @@ public class StudentRunInfoTest extends TestCase {
     thatStudentRunInfo.setRun(thatRun);
   }
 
-  @After
+  @AfterEach
+  @AfterEach
   public void tearDown() {
     thisTeacher = null;
     thatTeacher = null;
@@ -71,6 +72,7 @@ public class StudentRunInfoTest extends TestCase {
     thatStudentRunInfo = null;
   }
 
+  @Test
   @Test
   public void testCompareTo() {
     thatRun.setName(THIS_RUN_NAME);

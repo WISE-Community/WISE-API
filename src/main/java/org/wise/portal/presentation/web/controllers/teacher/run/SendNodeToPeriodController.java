@@ -33,7 +33,7 @@ public class SendNodeToPeriodController {
       JSONObject msg = new JSONObject();
       msg.put("type", "node");
       msg.put("node", new JSONObject(node));
-      msg.put("topic", String.format("/topic/classroom/%s/%s", run.getId(), periodId));
+      msg.put("topic", "/topic/classroom/%s/%s".formatted(run.getId(), periodId));
       redisPublisher.publish(msg.toString());
     }
   }

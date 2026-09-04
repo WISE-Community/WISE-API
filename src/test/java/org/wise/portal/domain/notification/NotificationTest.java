@@ -3,7 +3,7 @@ package org.wise.portal.domain.notification;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 
@@ -15,7 +15,6 @@ import org.easymock.Mock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
@@ -82,11 +81,14 @@ public class NotificationTest extends DomainTest {
   public void serialize() throws Exception {
     String json = mapper.writeValueAsString(notification);
     assertEquals(
-        "{\"id\":22,\"runId\":1,\"periodId\":100," + "\"toWorkgroupId\":64,\"fromWorkgroupId\":68,"
-            + "\"type\":\"teacherToStudent\",\"message\":\"teacher gave you feedback\","
-            + "\"groupId\":null,\"nodeId\":null,\"componentId\":null,\"componentType\":null,"
-            + "\"data\":{\"annotationId\":543543},\"timeGenerated\":1,"
-            + "\"serverSaveTime\":2,\"timeDismissed\":3}",
+        """
+        {"id":22,"runId":1,"periodId":100,\
+        "toWorkgroupId":64,"fromWorkgroupId":68,\
+        "type":"teacherToStudent","message":"teacher gave you feedback",\
+        "groupId":null,"nodeId":null,"componentId":null,"componentType":null,\
+        "data":{"annotationId":543543},"timeGenerated":1,\
+        "serverSaveTime":2,"timeDismissed":3}\
+        """,
         json);
   }
 
@@ -98,12 +100,15 @@ public class NotificationTest extends DomainTest {
     expect(groupService.retrieveById(100L)).andReturn(period);
     replay(workgroupService, runService, groupService);
     Notification notification = mapper
-        .readValue("{\"id\":22,\"toWorkgroupId\":64,\"fromWorkgroupId\":68,"
-            + "\"runId\":1,\"periodId\":100," + "\"groupId\":\"public-1\",\"nodeId\":\"node33\","
-            + "\"componentId\":\"xyzabc\",\"componentType\":\"OpenResponse\","
-            + "\"type\":\"teacherToStudent\",\"message\":\"teacher gave you feedback\","
-            + "\"data\":{\"annotationId\":543543},"
-            + "\"timeGenerated\":1,\"serverSaveTime\":2,\"timeDismissed\":3}", Notification.class);
+        .readValue("""
+            {"id":22,"toWorkgroupId":64,"fromWorkgroupId":68,\
+            "runId":1,"periodId":100,\
+            "groupId":"public-1","nodeId":"node33",\
+            "componentId":"xyzabc","componentType":"OpenResponse",\
+            "type":"teacherToStudent","message":"teacher gave you feedback",\
+            "data":{"annotationId":543543},\
+            "timeGenerated":1,"serverSaveTime":2,"timeDismissed":3}\
+            """, Notification.class);
     assertEquals(22, notification.getId().intValue());
     assertEquals(1, notification.getRun().getId().longValue());
     assertEquals(100, notification.getPeriod().getId().longValue());

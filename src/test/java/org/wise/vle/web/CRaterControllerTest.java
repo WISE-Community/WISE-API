@@ -1,9 +1,7 @@
 package org.wise.vle.web;
 
-import static junit.framework.TestCase.assertEquals;
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;

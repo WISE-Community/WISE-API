@@ -21,7 +21,7 @@ public class TeacherRunPermissionsAPIController {
   @Autowired
   private RunService runService;
 
-  @RequestMapping(value = "/{runId}/{teacherUsername}", method = RequestMethod.PUT)
+  @PutMapping("/{runId}/{teacherUsername}")
   protected SharedOwner addSharedOwner(@PathVariable Long runId,
       @PathVariable String teacherUsername) {
     try {
@@ -43,7 +43,7 @@ public class TeacherRunPermissionsAPIController {
     }
   }
 
-  @RequestMapping(value = "/{runId}/{username}", method = RequestMethod.DELETE)
+  @DeleteMapping("/{runId}/{username}")
   protected SimpleResponse removeSharedOwner(@PathVariable Long runId,
       @PathVariable String username) {
     try {
@@ -54,7 +54,7 @@ public class TeacherRunPermissionsAPIController {
     }
   }
 
-  @RequestMapping(value = "/{runId}/{userId}/{permissionId}", method = RequestMethod.PUT)
+  @PutMapping("/{runId}/{userId}/{permissionId}")
   protected SimpleResponse addPermission(@PathVariable Long runId, @PathVariable Long userId,
       @PathVariable Integer permissionId) {
     try {
@@ -65,7 +65,7 @@ public class TeacherRunPermissionsAPIController {
     }
   }
 
-  @RequestMapping(value = "/{runId}/{userId}/{permissionId}", method = RequestMethod.DELETE)
+  @DeleteMapping("/{runId}/{userId}/{permissionId}")
   protected SimpleResponse deletePermission(@PathVariable Long runId, @PathVariable Long userId,
       @PathVariable Integer permissionId) {
     try {

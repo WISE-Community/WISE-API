@@ -50,7 +50,7 @@ public class HibernateAclEntryDaoTest extends AbstractTransactionalDaoTests<Hibe
         
         MutableAclTargetObjectIdentity objectIdentity = (MutableAclTargetObjectIdentity) this.applicationContext.getBean("mutableAclTargetObjectIdentity");
         objectIdentity.setAclTargetObject(targetObject);
-        objectIdentity.setAclTargetObjectId(new Long(3));
+        objectIdentity.setAclTargetObjectId(Long.valueOf(3));
         objectIdentity.setInheriting(false);
         Integer aceOrder = 0;
         MutableAclSid sid = (MutableAclSid) this.applicationContext.getBean("mutableAclSid");

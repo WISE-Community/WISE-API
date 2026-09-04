@@ -46,9 +46,9 @@ import org.wise.portal.service.project.ProjectService;
 @ExtendWith(EasyMockExtension.class)
 public class ProjectInfoControllerTest extends AbstractModelAndViewTests {
 
-  private static final Long DEFAULT_PROJECT_ID = new Long(10);
+  private static final Long DEFAULT_PROJECT_ID = Long.valueOf(10);
 
-  private static final Long NON_EXISTING_PROJECT_ID = new Long(999999);
+  private static final Long NON_EXISTING_PROJECT_ID = Long.valueOf(999999);
 
   private ProjectInfoController projectInfoController;
 

@@ -39,7 +39,7 @@ public class GroupParameters implements Serializable {
 
   private String name;
 
-  private Long parentId = new Long(0);
+  private Long parentId = Long.valueOf(0);
 
   private Long[] memberIds = new Long[0];
 }

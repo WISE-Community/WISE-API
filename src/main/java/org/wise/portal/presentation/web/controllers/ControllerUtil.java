@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
+import jakarta.annotation.PostConstruct;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -17,7 +17,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.vle.domain.annotation.wise5.Annotation;
 import org.wise.vle.domain.work.StudentWork;
 
@@ -32,7 +31,7 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
 
   @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/period/{periodId}")
   public List<StudentWork> getClassmateSummaryWorkInPeriod(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable("runId") Run run, @PathVariable Long periodId, @PathVariable String nodeId,
       @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
@@ -43,8 +42,8 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
 
   @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/class")
   public List<StudentWork> getClassmateSummaryWorkInClass(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
-      @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
+      @PathVariable("runId") Run run, @PathVariable String nodeId, @PathVariable String componentId)
+      throws IOException, JSONException, ObjectNotFoundException {
     if (isAllowedToGetData(auth, run, nodeId, componentId)) {
       return getLatestStudentWork(run, nodeId, componentId);
     }
@@ -53,7 +52,7 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
 
   @GetMapping("/scores/{runId}/{nodeId}/{componentId}/period/{periodId}")
   public List<Annotation> getClassmateSummaryScoresInPeriod(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable Long periodId, @PathVariable String nodeId,
+      @PathVariable("runId") Run run, @PathVariable Long periodId, @PathVariable String nodeId,
       @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId)) {
@@ -64,8 +63,8 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
 
   @GetMapping("/scores/{runId}/{nodeId}/{componentId}/class")
   public List<Annotation> getClassmateSummaryScoresInClass(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
-      @PathVariable String componentId) throws IOException, JSONException, ObjectNotFoundException {
+      @PathVariable("runId") Run run, @PathVariable String nodeId, @PathVariable String componentId)
+      throws IOException, JSONException, ObjectNotFoundException {
     if (isAllowedToGetData(auth, run, nodeId, componentId)) {
       return getLatestScoreAnnotations(getAnnotations(run, nodeId, componentId));
     }
@@ -75,13 +74,15 @@ public class ClassmateSummaryDataController extends ClassmateDataController {
   private boolean isAllowedToGetData(Authentication auth, Run run, Group period, String nodeId,
       String componentId) throws IOException, JSONException, ObjectNotFoundException {
     return (isStudent(auth) && isStudentInRunAndPeriod(auth, run, period)
-        && isValidSummaryComponent(run, nodeId, componentId)) || isTeacherOfRun(auth, run);
+        && isValidSummaryComponent(run, nodeId, componentId))
+        || (isTeacher(auth) && isTeacherOfRun(auth, run));
   }
 
   private boolean isAllowedToGetData(Authentication auth, Run run, String nodeId,
       String componentId) throws IOException, JSONException, ObjectNotFoundException {
     return (isStudent(auth) && isStudentInRun(auth, run)
-        && isValidSummaryComponent(run, nodeId, componentId)) || isTeacherOfRun(auth, run);
+        && isValidSummaryComponent(run, nodeId, componentId))
+        || (isTeacher(auth) && isTeacherOfRun(auth, run));
   }
 
   private boolean isValidSummaryComponent(Run run, String nodeId, String componentId)

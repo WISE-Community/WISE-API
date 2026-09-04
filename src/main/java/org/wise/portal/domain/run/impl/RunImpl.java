@@ -39,7 +39,7 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.user.impl.UserImpl;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 /**
@@ -306,7 +306,7 @@ public class RunImpl implements Run {
         int end = this.info.indexOf("</isPaused>");
         String isPausedStr = this.info.substring(start + 10, end);
         System.out.println(isPausedStr);
-        return new Boolean(isPausedStr).booleanValue();
+        return Boolean.valueOf(isPausedStr).booleanValue();
       }
     }
     return false;

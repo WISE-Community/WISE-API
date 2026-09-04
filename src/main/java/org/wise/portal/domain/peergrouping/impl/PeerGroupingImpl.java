@@ -23,18 +23,18 @@
  */
 package org.wise.portal.domain.peergrouping.impl;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -52,9 +52,9 @@ import lombok.Setter;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "peer_groupings",
-    indexes = { @Index(columnList = "runId", name = "peerGroupingsRunIdIndex") },
-    uniqueConstraints = { @UniqueConstraint(columnNames = { "runId", "tag" }) })
+@Table(name = "peer_groupings", indexes = {
+    @Index(columnList = "runId", name = "peerGroupingsRunIdIndex") }, uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "runId", "tag" }) })
 @Getter
 @Setter
 public class PeerGroupingImpl implements PeerGrouping {
@@ -62,7 +62,7 @@ public class PeerGroupingImpl implements PeerGrouping {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = null;
 
   @ManyToOne(targetEntity = RunImpl.class, cascade = {

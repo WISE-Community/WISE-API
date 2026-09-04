@@ -1,6 +1,6 @@
 package org.wise.portal.presentation.web.controllers.student;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +34,7 @@ public class PeerChatTypingStatusController extends AbstractPeerGroupWorkControl
     PeerGroup peerGroup = peerGroupService.getById(peerGroupId);
     if (isUserInPeerGroup(auth, peerGroup) || isUserTeacherOfPeerGroup(auth, peerGroup)) {
       JSONObject message = new JSONObject();
-      message.put("topic", String.format("/topic/peer-group/%s/is-typing", peerGroupId));
+      message.put("topic", "/topic/peer-group/%s/is-typing".formatted(peerGroupId));
       message.put("type", "isTyping");
       JSONObject body = new JSONObject();
       body.put("nodeId", nodeId);

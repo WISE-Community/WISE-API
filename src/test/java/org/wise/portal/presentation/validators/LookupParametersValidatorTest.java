@@ -22,8 +22,13 @@
  */
 package org.wise.portal.presentation.validators;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.wise.portal.domain.impl.LookupUserParameters;
@@ -32,7 +37,7 @@ import org.wise.portal.domain.impl.LookupUserParameters;
  * @author patrick lawler
  *
  */
-public class LookupParametersValidatorTest extends TestCase{
+public class LookupParametersValidatorTest{
 
 	private LookupUserParameters params;
 	
@@ -47,9 +52,9 @@ public class LookupParametersValidatorTest extends TestCase{
 	private final static String DATA = "Sarah";
 	
 	private final static String EMPTY = "";
-	
-	@Override
-	protected void setUp(){
+
+  @BeforeEach
+  public void setUp() {
 		this.params = new LookupUserParameters();
 		this.params.setLookupCriteria(CRITERIA);
 		this.params.setLookupField(FIELD);
@@ -58,21 +63,23 @@ public class LookupParametersValidatorTest extends TestCase{
 		this.validator = new LookupUserParametersValidator();
 		this.errors = new BeanPropertyBindingResult(this.params, "");
 	}
-	
-	@Override
-	protected void tearDown(){
+
+  @AfterEach
+  public void tearDown() {
 		this.errors = null;
 		this.validator = null;
 		this.params = null;
 	}
-	
-	public void testAllOK(){
+
+  @Test
+  public void testAllOK() {
 		this.validator.validate(params, errors);
 		
 		assertTrue(!errors.hasErrors());
 	}
-	
-	public void testEmptyData(){
+
+  @Test
+  public void testEmptyData() {
 		this.params.setLookupData(EMPTY);
 		
 		this.validator.validate(params, errors);
@@ -81,8 +88,9 @@ public class LookupParametersValidatorTest extends TestCase{
 		assertEquals(1, errors.getErrorCount());
 		assertTrue(errors.hasFieldErrors("lookupData"));
 	}
-	
-	public void testEmptyField(){
+
+  @Test
+  public void testEmptyField() {
 		this.params.setLookupField(EMPTY);
 		
 		this.validator.validate(params, errors);
@@ -91,8 +99,9 @@ public class LookupParametersValidatorTest extends TestCase{
 		assertEquals(1, errors.getErrorCount());
 		assertTrue(errors.hasFieldErrors("lookupField"));
 	}
-	
-	public void testEmptyCriteria(){
+
+  @Test
+  public void testEmptyCriteria() {
 		this.params.setLookupCriteria(EMPTY);
 		
 		this.validator.validate(params, errors);

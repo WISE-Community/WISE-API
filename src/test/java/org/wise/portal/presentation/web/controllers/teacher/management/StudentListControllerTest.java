@@ -29,7 +29,7 @@ import static org.easymock.EasyMock.verify;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.easymock.EasyMock;
 import org.junit.internal.runners.TestClassRunner;

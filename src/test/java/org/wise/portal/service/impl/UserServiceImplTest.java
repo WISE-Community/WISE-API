@@ -22,11 +22,11 @@
  */
 package org.wise.portal.service.impl;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -111,7 +111,7 @@ public class UserServiceImplTest {
 
   private MutableGrantedAuthority userAuthority;
 
-  private Integer DEFAULT_NUMBEROFLOGINS = new Integer(9);
+  private Integer DEFAULT_NUMBEROFLOGINS = Integer.valueOf(9);
 
   private static final String DEFAULT_ACCOUNT_QUESTION = "what is the name of your middle name?";
 

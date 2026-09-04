@@ -3,7 +3,7 @@ package org.wise.portal.domain.peergrouping;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,7 +13,6 @@ import org.easymock.Mock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.wise.portal.domain.DomainTest;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.service.peergrouping.PeerGroupingDeserializer;
@@ -33,8 +32,10 @@ public class PeerGroupingTest extends DomainTest {
 
   PeerGroupingJsonModule peerGroupingJsonModule = new PeerGroupingJsonModule();
 
-  String peerGroupingJSON = "{\"id\":1,\"runId\":1,\"logic\":\"manual\",\"tag\":\"tag1\","
-      + "\"maxMembershipCount\":2}";
+  String peerGroupingJSON = """
+      {"id":1,"runId":1,"logic":"manual","tag":"tag1",\
+      "maxMembershipCount":2}\
+      """;
 
   @BeforeEach
   public void setup() {

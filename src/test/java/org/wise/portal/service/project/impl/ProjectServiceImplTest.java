@@ -27,9 +27,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,9 +86,9 @@ public class ProjectServiceImplTest {
   @Mock
   private GrantedAuthorityDao<MutableGrantedAuthority> grantedAuthorityDao;
 
-  private static final Long EXISTING_PROJECT_ID = new Long(10);
+  private static final Long EXISTING_PROJECT_ID = Long.valueOf(10);
 
-  private static final Long NONEXISTING_PROJECT_ID = new Long(103);
+  private static final Long NONEXISTING_PROJECT_ID = Long.valueOf(103);
 
   private static final String tempProjectFolderPath = "src/test/webapp/curriculum/temp";
 

@@ -26,13 +26,12 @@ package org.wise.portal.presentation.web.controllers.admin;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.domain.attendance.StudentAttendance;
 import org.wise.portal.domain.run.Run;
@@ -51,9 +50,8 @@ public class RunStatisticsController {
   @Autowired
   private StudentAttendanceService studentAttendanceService;
 
-  @RequestMapping(value = "/admin/run/stats", method = RequestMethod.GET)
-  protected String showRunStatistics(
-      @RequestParam(value = "period", required = false) String period,
+  @GetMapping("/admin/run/stats")
+  protected String showRunStatistics(@RequestParam(required = false) String period,
       ModelMap modelMap) throws Exception {
     List<Run> runs = runService.getRunsRunWithinTimePeriod(period);
     int lookBackPeriod = 0;
@@ -64,10 +62,9 @@ public class RunStatisticsController {
     } else if (period.equals("month")) {
       lookBackPeriod = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
     }
-    for (Run run: runs) {
-      List<StudentAttendance> studentAttendanceByRunIdAndPeriod =
-          studentAttendanceService.getStudentAttendanceByRunIdAndPeriod(
-          run.getId(), lookBackPeriod);
+    for (Run run : runs) {
+      List<StudentAttendance> studentAttendanceByRunIdAndPeriod = studentAttendanceService
+          .getStudentAttendanceByRunIdAndPeriod(run.getId(), lookBackPeriod);
       run.setStudentAttendance(studentAttendanceByRunIdAndPeriod);
     }
 
@@ -83,7 +80,7 @@ public class RunStatisticsController {
     return "admin/run/stats";
   }
 
-  @RequestMapping(value = "/admin/run/stats-by-activity", method = RequestMethod.GET)
+  @GetMapping("/admin/run/stats-by-activity")
   protected String showRunStatisticsByActivity(HttpServletRequest request, ModelMap modelMap)
       throws Exception {
     List<Run> runs = runService.getRunsByActivity();

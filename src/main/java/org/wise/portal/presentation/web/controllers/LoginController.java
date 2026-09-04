@@ -23,8 +23,8 @@ package org.wise.portal.presentation.web.controllers;
 import java.io.IOException;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -60,7 +60,7 @@ public class LoginController {
     User loggedInUser = ControllerUtil.getSignedInUser();
     if (loggedInUser != null) {
       try {
-        Portal portal = portalService.getById(new Integer(1));
+        Portal portal = portalService.getById(Integer.valueOf(1));
         if (!portal.isLoginAllowed()) {
           response.getWriter().print("requestLogout");
         } else {

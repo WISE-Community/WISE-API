@@ -17,7 +17,7 @@ public class AnnouncementController {
   @ResponseBody
   @GetMapping("/api/announcement")
   protected String getAnnouncement() throws ObjectNotFoundException {
-    Portal portal = portalService.getById(new Integer(1));
+    Portal portal = portalService.getById(Integer.valueOf(1));
     return portal.getAnnouncement();
   }
 }

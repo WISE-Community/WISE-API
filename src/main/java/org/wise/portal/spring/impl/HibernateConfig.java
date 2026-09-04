@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -47,7 +48,7 @@ public class HibernateConfig {
   @Autowired
   Environment appProperties;
 
-  @Value("${spring.jpa.properties.hibernate.dialect:org.hibernate.dialect.MySQL5Dialect}")
+  @Value("${spring.jpa.properties.hibernate.dialect:org.hibernate.dialect.MySQLDialect}")
   private String hibernateDialect;
 
   @Value("${spring.jpa.properties.hibernate.storage_engine:innodb}")
@@ -59,16 +60,18 @@ public class HibernateConfig {
   @Value("${spring.jpa.hibernate.ddl-auto:none}")
   private String hibernateDDLAuto;
 
-  @Bean(name = {"sessionFactory", "entityManagerFactory"})
+  @Bean(name = { "sessionFactory", "entityManagerFactory" })
+  @DependsOnDatabaseInitialization
   public LocalSessionFactoryBean sessionFactory() {
     LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
     sessionFactory.setDataSource(dataSource);
-    sessionFactory.setPackagesToScan(new String[]{"org.wise.portal.domain", "org.wise.vle.domain"});
+    sessionFactory
+        .setPackagesToScan(new String[] { "org.wise.portal.domain", "org.wise.vle.domain" });
     sessionFactory.setHibernateProperties(hibernateProperties());
     return sessionFactory;
   }
 
-  @Bean(name = {"hibernateTransactionManager", "transactionManager"})
+  @Bean(name = { "hibernateTransactionManager", "transactionManager" })
   public PlatformTransactionManager hibernateTransactionManager() {
     HibernateTransactionManager transactionManager = new HibernateTransactionManager();
     transactionManager.setSessionFactory(sessionFactory().getObject());

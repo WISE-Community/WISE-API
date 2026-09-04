@@ -24,6 +24,7 @@
 package org.wise.vle.domain.webservice.crater;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -82,8 +83,8 @@ public class CRaterService {
     try {
       String password = appProperties.getProperty(
           request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
-      String authHeader = "Basic " + javax.xml.bind.DatatypeConverter
-          .printBase64Binary(("extsyscrtr02dev:" + password).getBytes());
+      String authHeader = "Basic "
+          + Base64.getEncoder().encodeToString(("extsyscrtr02dev:" + password).getBytes());
       post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
       post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
       post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));

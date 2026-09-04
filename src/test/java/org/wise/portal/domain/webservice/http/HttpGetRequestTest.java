@@ -16,25 +16,21 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
 package org.wise.portal.domain.webservice.http;
+import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- * @author Laurel Williams
- * 
- * @version $Id$
- * 
- */
 import java.util.HashMap;
-
-import junit.framework.TestCase;
 
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.vle.domain.webservice.HttpStatusCodeException;
 import org.wise.vle.domain.webservice.http.AbstractHttpRequest;
 import org.wise.vle.domain.webservice.http.HttpGetRequest;
 
-public class HttpGetRequestTest extends TestCase {
+public class HttpGetRequestTest {
 
 	private static final String URL = "/curnit";
 
@@ -42,22 +38,23 @@ public class HttpGetRequestTest extends TestCase {
 
 	protected HttpMethod method;
 
-	protected void setUp() throws Exception {
-		super.setUp();
+  @BeforeEach
+  public void setUp() throws Exception {
 		method = EasyMock.createMock(HttpMethod.class);
 		request = new HttpGetRequest(
 				new HashMap<String, String>(1),
 				new HashMap<String, String>(1), URL, HttpStatus.SC_OK);
 	}
 
-	protected void tearDown() throws Exception {
-		super.tearDown();
+  @AfterEach
+  public void tearDown() throws Exception {
 		method = null;
 		request = null;
 	}
 
-	public void testIsValidResponseStatus_shouldThrowHttpStatusCodeException()
-			throws Exception {
+  @Test
+  public void testIsValidResponseStatus_shouldThrowHttpStatusCodeException()
+      throws Exception {
 		EasyMock.expect(method.getStatusText()).andReturn("whatever")
 				.anyTimes();
 		EasyMock.expect(method.getResponseBodyAsString()).andReturn("whatever")
@@ -70,8 +67,9 @@ public class HttpGetRequestTest extends TestCase {
 		}
 		EasyMock.verify(method);
 	}
-	
-	public void testIsValidResponseStatus() throws Exception {
+
+  @Test
+  public void testIsValidResponseStatus() throws Exception {
 		EasyMock.replay(method);
 		assertTrue(request.isValidResponseStatus(method, request
 				.getExpectedResponseStatusCode()));

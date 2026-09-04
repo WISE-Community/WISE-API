@@ -27,9 +27,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
 import org.junit.jupiter.api.Test;
 import org.wise.portal.domain.authentication.Schoollevel;
+import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 
 /**
  * @author Sally Ahn
@@ -38,11 +38,11 @@ import org.wise.portal.domain.authentication.Schoollevel;
 public class TeacherUserDetailsTest {
 
 	private TeacherUserDetails teacherUserDetails = new TeacherUserDetails();
-	
+
 	private static final String FIRSTNAME = "test";
-	
+
 	private static final String LASTNAME = "teacher";
-	
+
 	private static final String CITY = "Berkeley";
 
 	private static final String COUNTRY = "USA";
@@ -56,15 +56,15 @@ public class TeacherUserDetailsTest {
 	private static final String SCHOOLNAME = "Berkeley";
 
 	private static final Date SIGNUPDATE = Calendar.getInstance().getTime();
-	
+
 	private static final Date LASTLOGIN = Calendar.getInstance().getTime();
-	
+
 	private static final int NUMBEROFLOGINS = 3;
-	
+
 	private static final String DISPLAYNAME ="Mr. Right";
-	
-	@Test
-	public void testGetInfo() {
+
+  @Test
+  public void testGetInfo() {
 		teacherUserDetails.setCity(CITY);
 		teacherUserDetails.setCountry(COUNTRY);
 		teacherUserDetails.setState(STATE);
@@ -77,9 +77,9 @@ public class TeacherUserDetailsTest {
 		teacherUserDetails.setLastLoginTime(LASTLOGIN);
 		teacherUserDetails.setNumberOfLogins(NUMBEROFLOGINS);
 		teacherUserDetails.setDisplayname(DISPLAYNAME);
-		
+
 		HashMap<String, Object> infoMap = teacherUserDetails.getInfo();
-		
+
 		assertEquals(infoMap.get("City"), CITY);
 		assertEquals(infoMap.get("Country"), COUNTRY);
 		assertEquals(infoMap.get("State"), STATE);

@@ -1,5 +1,6 @@
 package org.wise.portal.service.peergroup;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.workgroup.Workgroup;
 
@@ -15,6 +16,7 @@ public interface PeerGroupMembershipService {
    * @param workgroup Workgroup to move into PeerGroup
    * @return PeerGroup updated PeerGroup
    */
+  @Transactional
   PeerGroup addMember(PeerGroup peerGroup, Workgroup workgroup);
 
   /**
@@ -24,5 +26,6 @@ public interface PeerGroupMembershipService {
    * @param workgroup Workgroup to remove from PeerGroup
    * @return PeerGroup updated PeerGroup
    */
+  @Transactional
   PeerGroup removeMember(PeerGroup peerGroup, Workgroup workgroup);
 }

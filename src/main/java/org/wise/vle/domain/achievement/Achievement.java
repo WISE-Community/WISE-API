@@ -34,7 +34,7 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.vle.domain.PersistableDomain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -44,39 +44,40 @@ import java.sql.Timestamp;
  */
 @Entity
 @Table(name = "achievements", indexes = {
-  @Index(columnList = "runId", name = "achievementsRunIdIndex"),
-  @Index(columnList = "workgroupId", name = "achievementsWorkgroupIdIndex")
-})
+    @Index(columnList = "runId", name = "achievementsRunIdIndex"),
+    @Index(columnList = "workgroupId", name = "achievementsWorkgroupIdIndex") })
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 public class Achievement extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId", nullable = false)
   @JsonIgnore
   private Run run;
 
-  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "workgroupId", nullable = false)
   @JsonIgnore
   private Workgroup workgroup;
 
   @Column(name = "achievementId", length = 32, nullable = false)
-  private String achievementId;  // id of this achievement like "xyzwbc" or "achievementX", defined in project content
+  private String achievementId; // id of this achievement like "xyzwbc" or "achievementX", defined in project content
 
   @Column(name = "type", length = 64, nullable = false)
-  private String type;  // type of this achievement like "completion" or "milestone", defined in project content
+  private String type; // type of this achievement like "completion" or "milestone", defined in project content
 
   @Column(name = "achievementTime", nullable = false)
-  private Timestamp achievementTime;  // when the achievement occurred, saved as server time
+  private Timestamp achievementTime; // when the achievement occurred, saved as server time
 
   @Column(name = "data", length = 65536, columnDefinition = "text", nullable = false)
-  private String data;  // achievement data, actual achievement content stored in the project
+  private String data; // achievement data, actual achievement content stored in the project
 
   @Transient
   private long runId;

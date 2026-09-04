@@ -20,7 +20,7 @@ public class PausePeriodController {
       throws Exception {
     JSONObject message = new JSONObject();
     message.put("type", "pause");
-    message.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+    message.put("topic", "/topic/classroom/%s/%s".formatted(runId, periodId));
     redisPublisher.publish(message.toString());
   }
 
@@ -29,7 +29,7 @@ public class PausePeriodController {
       @DestinationVariable Integer periodId) throws Exception {
     JSONObject message = new JSONObject();
     message.put("type", "unpause");
-    message.put("topic", String.format("/topic/classroom/%s/%s", runId, periodId));
+    message.put("topic", "/topic/classroom/%s/%s".formatted(runId, periodId));
     redisPublisher.publish(message.toString());
   }
 }

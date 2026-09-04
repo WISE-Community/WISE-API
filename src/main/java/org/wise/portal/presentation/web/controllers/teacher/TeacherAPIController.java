@@ -7,11 +7,11 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +41,6 @@ import org.wise.portal.service.usertags.UserTagsService;
  */
 @RestController
 @RequestMapping("/api/teacher")
-@Secured({ "ROLE_TEACHER" })
 public class TeacherAPIController extends UserAPIController {
 
   @Autowired
@@ -50,13 +49,14 @@ public class TeacherAPIController extends UserAPIController {
   @Autowired
   private UserTagsService userTagsService;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id:}")
   private String googleClientId;
 
-  @Value("${google.clientSecret:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
   private String googleClientSecret;
 
   @GetMapping("/runs")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   List<HashMap<String, Object>> getRuns(Authentication auth,
       @RequestParam(required = false) Integer max) {
     User user = userService.retrieveUserByUsername(auth.getName());
@@ -81,6 +81,7 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @GetMapping("/run/{runId}")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   HashMap<String, Object> getRun(Authentication auth, @PathVariable Long runId)
       throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
@@ -102,6 +103,7 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @GetMapping("/projectlastrun/{projectId}")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   HashMap<String, Object> getProjectLastRun(Authentication auth, @PathVariable Long projectId) {
     User user = userService.retrieveUserByUsername(auth.getName());
     List<Run> runsOfProject = runService.getProjectRuns(projectId);
@@ -115,6 +117,7 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @GetMapping("/usernames")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   List<String> getAllTeacherUsernames() {
     return userDetailsService.retrieveAllTeacherUsernames();
   }
@@ -144,14 +147,12 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/create")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   HashMap<String, Object> createRun(Authentication auth, HttpServletRequest request,
-      @RequestParam("projectId") Long projectId, @RequestParam("periods") String periods,
-      @RequestParam boolean isSurvey,
-      @RequestParam("maxStudentsPerTeam") Integer maxStudentsPerTeam,
-      @RequestParam("startDate") Long startDate,
-      @RequestParam(value = "endDate", required = false) Long endDate,
-      @RequestParam(value = "isLockedAfterEndDate", defaultValue = "false") Boolean isLockedAfterEndDate)
-      throws Exception {
+      @RequestParam Long projectId, @RequestParam String periods, @RequestParam boolean isSurvey,
+      @RequestParam Integer maxStudentsPerTeam, @RequestParam Long startDate,
+      @RequestParam(required = false) Long endDate,
+      @RequestParam(defaultValue = "false") Boolean isLockedAfterEndDate) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     Locale locale = request.getLocale();
     Set<String> periodNames = createPeriodNamesSet(periods);
@@ -170,11 +171,11 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/profile/update")
-  SimpleResponse updateProfile(Authentication auth, @RequestParam("displayName") String displayName,
-      @RequestParam("email") String email, @RequestParam("city") String city,
-      @RequestParam("state") String state, @RequestParam("country") String country,
-      @RequestParam("schoolName") String schoolName,
-      @RequestParam("schoolLevel") String schoolLevel, @RequestParam("language") String language) {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  SimpleResponse updateProfile(Authentication auth, @RequestParam String displayName,
+      @RequestParam String email, @RequestParam String city, @RequestParam String state,
+      @RequestParam String country, @RequestParam String schoolName,
+      @RequestParam String schoolLevel, @RequestParam String language) {
     User user = userService.retrieveUserByUsername(auth.getName());
     TeacherUserDetails tud = (TeacherUserDetails) user.getUserDetails();
     tud.setEmailAddress(email);
@@ -190,8 +191,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/add/period")
-  HashMap<String, Object> addPeriodToRun(Authentication auth, @RequestParam("runId") Long runId,
-      @RequestParam("periodName") String periodName) throws ObjectNotFoundException {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  HashMap<String, Object> addPeriodToRun(Authentication auth, @RequestParam Long runId,
+      @RequestParam String periodName) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();
@@ -214,9 +216,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/delete/period")
-  HashMap<String, Object> deletePeriodFromRun(Authentication auth,
-      @RequestParam("runId") Long runId, @RequestParam("periodName") String periodName)
-      throws ObjectNotFoundException, PeriodNotFoundException {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  HashMap<String, Object> deletePeriodFromRun(Authentication auth, @RequestParam Long runId,
+      @RequestParam String periodName) throws ObjectNotFoundException, PeriodNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();
@@ -238,9 +240,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/update/studentsperteam")
-  HashMap<String, Object> editRunStudentsPerTeam(Authentication auth,
-      @RequestParam("runId") Long runId, @RequestParam("maxStudentsPerTeam") Integer newMax)
-      throws ObjectNotFoundException {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  HashMap<String, Object> editRunStudentsPerTeam(Authentication auth, @RequestParam Long runId,
+      @RequestParam("maxStudentsPerTeam") Integer newMax) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();
@@ -261,9 +263,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/update/starttime")
-  HashMap<String, Object> editRunStartTime(Authentication authentication,
-      @RequestParam("runId") Long runId, @RequestParam("startTime") Long startTime)
-      throws ObjectNotFoundException {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  HashMap<String, Object> editRunStartTime(Authentication authentication, @RequestParam Long runId,
+      @RequestParam Long startTime) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(authentication.getName());
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();
@@ -285,10 +287,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/update/endtime")
-  HashMap<String, Object> editRunEndTime(Authentication authentication,
-      @RequestParam("runId") Long runId,
-      @RequestParam(value = "endTime", required = false) Long endTime)
-      throws ObjectNotFoundException {
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
+  HashMap<String, Object> editRunEndTime(Authentication authentication, @RequestParam Long runId,
+      @RequestParam(required = false) Long endTime) throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(authentication.getName());
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();
@@ -309,9 +310,9 @@ public class TeacherAPIController extends UserAPIController {
   }
 
   @PostMapping("/run/update/islockedafterenddate")
+  @PreAuthorize("hasRole('ROLE_TEACHER')")
   HashMap<String, Object> editRunIsLockedAfterEndDate(Authentication authentication,
-      @RequestParam("runId") Long runId,
-      @RequestParam("isLockedAfterEndDate") Boolean isLockedAfterEndDate)
+      @RequestParam Long runId, @RequestParam Boolean isLockedAfterEndDate)
       throws ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(authentication.getName());
     Run run = runService.retrieveById(runId);

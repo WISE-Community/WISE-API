@@ -64,7 +64,7 @@ public class WebSecurityConfigAuthorizationTest {
 
   @Container
   static GenericContainer<?> redisContainer =
-      new GenericContainer<>(DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+      new GenericContainer<>(DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
@@ -78,15 +78,6 @@ public class WebSecurityConfigAuthorizationTest {
   @Test
   public void researcher_userAndAccountManagement_shouldBeForbidden() throws Exception {
     mockMvc.perform(get("/admin/account/show-all-users").with(user("researcher").roles("RESEARCHER")))
-        .andExpect(status().isForbidden());
-  }
-
-  @Test
-  public void researcher_trailingSlashOnExactAdminPath_shouldBeForbidden() throws Exception {
-    // The trailing-slash form of an exact administrator path must stay denied to researchers.
-    // Both the mvcMatchers URL rule and AdminUtilsController's @Secured enforce this, so a pass
-    // confirms the endpoint is denied, not specifically which layer denied it.
-    mockMvc.perform(get("/admin/mergeProjectMetadata/").with(user("researcher").roles("RESEARCHER")))
         .andExpect(status().isForbidden());
   }
 

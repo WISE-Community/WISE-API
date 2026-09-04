@@ -30,8 +30,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.wise.portal.spring.SpringConfiguration;
 
-import javax.servlet.annotation.WebServlet;
-
 /**
  * @author Cynick Young
  */
@@ -65,16 +63,15 @@ public class CustomDispatcherServlet extends DispatcherServlet {
   protected WebApplicationContext createWebApplicationContext(WebApplicationContext parent)
       throws BeansException {
     try {
-      SpringConfiguration springConfig =
-          (SpringConfiguration) BeanUtils.instantiateClass(Class.forName(contextConfigClass));
+      SpringConfiguration springConfig = (SpringConfiguration) BeanUtils
+          .instantiateClass(Class.forName(contextConfigClass));
 
       setContextConfigLocation(StringUtils.arrayToDelimitedString(
           springConfig.getDispatcherServletContextConfigLocations(),
           ConfigurableWebApplicationContext.CONFIG_LOCATION_DELIMITERS));
     } catch (ClassNotFoundException e) {
       if (logger.isErrorEnabled()) {
-        logger.error(
-            CONFIG_CLASS_PARAM + " <"  + contextConfigClass + "> not found.", e);
+        logger.error(CONFIG_CLASS_PARAM + " <" + contextConfigClass + "> not found.", e);
       }
       throw new InvalidParameterException("ClassNotFoundException: " + contextConfigClass);
     }

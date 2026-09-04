@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -51,8 +49,8 @@ public class NotebookController {
   @Secured("ROLE_TEACHER")
   @ResponseBody
   @GetMapping("/{runId}")
-  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") RunImpl run,
-      Authentication auth, @RequestParam(required = false) String exportType)
+  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") Run run, Authentication auth,
+      @RequestParam(required = false) String exportType)
       throws ObjectNotFoundException, AccessDeniedException {
     if (runService.hasReadPermission(auth, run)) {
       if ("allNotebookItems".equals(exportType)) {
@@ -69,8 +67,8 @@ public class NotebookController {
   @Secured("ROLE_STUDENT")
   @ResponseBody
   @GetMapping("/{runId}/workgroup/{workgroupId}")
-  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") RunImpl run,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup, Authentication auth)
+  protected List<NotebookItem> getNotebookItems(@PathVariable("runId") Run run,
+      @PathVariable("workgroupId") Workgroup workgroup, Authentication auth)
       throws ObjectNotFoundException, AccessDeniedException {
     if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to view notebook items");
@@ -80,22 +78,20 @@ public class NotebookController {
 
   @ResponseBody
   @PostMapping("/{runId}")
-  protected NotebookItem saveNotebookItem(@PathVariable("runId") RunImpl run,
-      @RequestParam(value = "periodId", required = false) Integer periodId,
-      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
-      @RequestParam(value = "notebookItemId", required = false) Integer notebookItemId,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
-      @RequestParam(value = "componentId", required = false) String componentId,
-      @RequestParam(value = "studentWorkId", required = false) Integer studentWorkId,
-      @RequestParam(value = "studentAssetId", required = false) Integer studentAssetId,
-      @RequestParam(value = "localNotebookItemId", required = false) String localNotebookItemId,
-      @RequestParam(value = "type", required = false) String type,
-      @RequestParam(value = "title", required = false) String title,
-      @RequestParam(value = "content", required = false) String content,
-      @RequestParam(value = "groups", required = false) String groups,
-      @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
-      @RequestParam(value = "clientDeleteTime", required = false) String clientDeleteTime,
-      Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
+  protected NotebookItem saveNotebookItem(@PathVariable("runId") Run run,
+      @RequestParam(required = false) Integer periodId,
+      @RequestParam(value = "workgroupId") Workgroup workgroup,
+      @RequestParam(required = false) Integer notebookItemId,
+      @RequestParam(required = false) String nodeId,
+      @RequestParam(required = false) String componentId,
+      @RequestParam(required = false) Integer studentWorkId,
+      @RequestParam(required = false) Integer studentAssetId,
+      @RequestParam(required = false) String localNotebookItemId,
+      @RequestParam(required = false) String type, @RequestParam(required = false) String title,
+      @RequestParam(required = false) String content, @RequestParam(required = false) String groups,
+      @RequestParam(required = true) String clientSaveTime,
+      @RequestParam(required = false) String clientDeleteTime, Authentication auth)
+      throws ObjectNotFoundException, AccessDeniedException {
     if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to save notebook items");
     }
@@ -107,11 +103,10 @@ public class NotebookController {
 
   @ResponseBody
   @PostMapping("/{runId}/group/{group}")
-  protected NotebookItem addNotebookItemToGroup(@PathVariable("runId") RunImpl run,
-      @PathVariable String group, @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
-      @RequestParam(value = "notebookItemId", required = true) Integer notebookItemId,
-      @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
-      Authentication auth)
+  protected NotebookItem addNotebookItemToGroup(@PathVariable("runId") Run run,
+      @PathVariable String group, @RequestParam(value = "workgroupId") Workgroup workgroup,
+      @RequestParam(required = true) Integer notebookItemId,
+      @RequestParam(required = true) String clientSaveTime, Authentication auth)
       throws ObjectNotFoundException, NotebookItemAlreadyInGroupException, AccessDeniedException {
     if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to add notebook item to group");
@@ -121,11 +116,11 @@ public class NotebookController {
 
   @ResponseBody
   @DeleteMapping("/{runId}/group/{group}")
-  protected NotebookItem removeNotebookItemFromGroup(@PathVariable("runId") RunImpl run,
-      @PathVariable String group, @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
-      @RequestParam(value = "notebookItemId", required = true) Integer notebookItemId,
-      @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
-      Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
+  protected NotebookItem removeNotebookItemFromGroup(@PathVariable("runId") Run run,
+      @PathVariable String group, @RequestParam(value = "workgroupId") Workgroup workgroup,
+      @RequestParam(required = true) Integer notebookItemId,
+      @RequestParam(required = true) String clientSaveTime, Authentication auth)
+      throws ObjectNotFoundException, AccessDeniedException {
     if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to remove notebook item from group");
     }
@@ -134,10 +129,9 @@ public class NotebookController {
 
   @ResponseBody
   @GetMapping("/{runId}/group/{group}")
-  protected List<NotebookItem> getNotebookItemsInGroup(@PathVariable("runId") RunImpl run,
-      @PathVariable String group,
-      @RequestParam(value = "periodId", required = false) Integer periodId, Authentication auth)
-      throws AccessDeniedException, ObjectNotFoundException {
+  protected List<NotebookItem> getNotebookItemsInGroup(@PathVariable("runId") Run run,
+      @PathVariable String group, @RequestParam(required = false) Integer periodId,
+      Authentication auth) throws AccessDeniedException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (!userService.isUserAssociatedWithRun(user, run)) {
       throw new AccessDeniedException("Not allowed to get notebook items in group");
@@ -147,11 +141,11 @@ public class NotebookController {
 
   @ResponseBody
   @PostMapping("/{runId}/parent/{parentNotebookItemId}")
-  protected NotebookItem copyNotebookItem(@PathVariable("runId") RunImpl run,
+  protected NotebookItem copyNotebookItem(@PathVariable("runId") Run run,
       @PathVariable Integer parentNotebookItemId,
-      @RequestParam(value = "workgroupId") WorkgroupImpl workgroup,
-      @RequestParam(value = "clientSaveTime", required = true) String clientSaveTime,
-      Authentication auth) throws ObjectNotFoundException, AccessDeniedException {
+      @RequestParam(value = "workgroupId") Workgroup workgroup,
+      @RequestParam(required = true) String clientSaveTime, Authentication auth)
+      throws ObjectNotFoundException, AccessDeniedException {
     if (!isUserInRunAndWorkgroup(auth, run, workgroup)) {
       throw new AccessDeniedException("Not allowed to copy notebook items");
     }

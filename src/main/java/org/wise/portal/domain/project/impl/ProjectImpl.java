@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -361,7 +361,7 @@ public class ProjectImpl implements Project {
     if (this.wiseVersion != null) {
       return this.wiseVersion;
     } else {
-      return new Integer(4);
+      return Integer.valueOf(4);
     }
   }
 

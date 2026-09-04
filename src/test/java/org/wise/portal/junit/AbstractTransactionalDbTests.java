@@ -23,10 +23,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.SessionFactory;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testcontainers.containers.GenericContainer;
@@ -68,7 +69,7 @@ import org.wise.portal.service.user.UserService;
  * @author Hiroki Terashima
  */
 @WebAppConfiguration
-@ContextConfiguration
+@SpringJUnitConfig
 @Testcontainers
 public abstract class AbstractTransactionalDbTests
     extends AbstractTransactionalJUnit4SpringContextTests {

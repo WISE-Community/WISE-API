@@ -25,14 +25,19 @@ public class DefaultPasswordEncoderFactories {
     encoders.put(encodingId, new BCryptPasswordEncoder());
     encoders.put("ldap", new org.springframework.security.crypto.password.LdapShaPasswordEncoder());
     encoders.put("MD4", new org.springframework.security.crypto.password.Md4PasswordEncoder());
-    encoders.put("MD5", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("MD5"));
-    encoders.put("noop", org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
-    encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-    encoders.put("scrypt", new SCryptPasswordEncoder());
-    encoders.put("SHA-1", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-1"));
-    encoders.put("SHA-256", new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-256"));
+    encoders.put("MD5",
+        new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("MD5"));
+    encoders.put("noop",
+        org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
+    encoders.put("pbkdf2", Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8());
+    encoders.put("scrypt", SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8());
+    encoders.put("SHA-1",
+        new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-1"));
+    encoders.put("SHA-256",
+        new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-256"));
 
-    DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(encodingId, encoders);
+    DelegatingPasswordEncoder delegatingPasswordEncoder = new DelegatingPasswordEncoder(encodingId,
+        encoders);
     delegatingPasswordEncoder.setDefaultPasswordEncoderForMatches(new CustomPasswordEncoder(salt));
     return delegatingPasswordEncoder;
   }

@@ -26,19 +26,20 @@ package org.wise.portal.domain.workgroup.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,14 +69,14 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Long id = null;
 
   @Version
   @Column(name = "OPTLOCK")
   private Integer version = null;
 
-  @OneToOne(targetEntity = RunImpl.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "run_fk", nullable = false)
   private Run run;
 
@@ -83,7 +84,7 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   @JoinColumn(name = "group_fk", nullable = false)
   private Group group = new PersistentGroup();
 
-  @OneToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "period")
   private Group period;
 
@@ -91,10 +92,12 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   private boolean teacherWorkgroup;
 
   @ManyToMany(targetEntity = TagImpl.class, fetch = FetchType.LAZY)
-  @JoinTable(name = "workgroups_related_to_tags", joinColumns = { @JoinColumn(name = "workgroups_fk", nullable = false) }, inverseJoinColumns = @JoinColumn(name = "tags_fk", nullable = false))
+  @JoinTable(name = "workgroups_related_to_tags", joinColumns = {
+      @JoinColumn(name = "workgroups_fk", nullable = false) }, inverseJoinColumns = @JoinColumn(name = "tags_fk", nullable = false))
   private Set<Tag> tags = new HashSet<Tag>();
 
-  public WorkgroupImpl() {}
+  public WorkgroupImpl() {
+  }
 
   /**
    * Alternate WorkgroupImpl constructor with default users
@@ -116,8 +119,9 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
     this.setPeriod(period);
     if ((run.getOwner() != null && members.size() == 1
         && run.getOwner().equals(members.iterator().next()))
-        || (members.size() > 0 && run.getSharedowners() != null && run.getSharedowners().containsAll(members))) {
-          this.setTeacherWorkgroup(true);
+        || (members.size() > 0 && run.getSharedowners() != null
+            && run.getSharedowners().containsAll(members))) {
+      this.setTeacherWorkgroup(true);
     }
   }
 
@@ -169,8 +173,7 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((group == null) ? 0 : group.hashCode());
-    result = prime * result
-      + ((run == null) ? 0 : run.hashCode());
+    result = prime * result + ((run == null) ? 0 : run.hashCode());
     return result;
   }
 
@@ -180,8 +183,8 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
       return true;
     if (obj == null)
       return false;
-    if (obj instanceof HibernateProxy) {
-      if (getClass() != (( HibernateProxy) obj).getHibernateLazyInitializer().getImplementation().getClass()) {
+    if (obj instanceof HibernateProxy proxy) {
+      if (getClass() != proxy.getHibernateLazyInitializer().getImplementation().getClass()) {
         return false;
       }
     } else if (getClass() != obj.getClass())

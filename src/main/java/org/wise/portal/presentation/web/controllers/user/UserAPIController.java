@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,25 +80,25 @@ public class UserAPIController {
   @Autowired
   protected MessageSource messageSource;
 
-  @Value("${microsoft.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.microsoft.client-id:}")
   protected String microsoftClientId = "";
 
   @Autowired
   protected StudentService studentService;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id:}")
   protected String googleClientId = "";
 
-  @Value("${google.clientSecret:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
   private String googleClientSecret = "";
 
   protected static final String PROJECT_THUMB_PATH = "/assets/project_thumb.png";
 
   @GetMapping("/info")
   HashMap<String, Object> getUserInfo(Authentication auth,
-      @RequestParam(value = "username", required = false) String username) {
+      @RequestParam(required = false) String username) {
     HashMap<String, Object> info = new HashMap<String, Object>();
-    if (auth != null) {
+    if (auth != null && !(auth instanceof OAuth2AuthenticationToken)) {
       User user = userService.retrieveUserByUsername(auth.getName());
       info.put("id", user.getId());
       MutableUserDetails ud = user.getUserDetails();
@@ -105,9 +106,9 @@ public class UserAPIController {
       info.put("lastName", ud.getLastname());
       info.put("username", ud.getUsername());
       info.put("isGoogleUser", ud.isGoogleUser());
+      info.put("isMicrosoftUser", ud.isMicrosoftUser());
       info.put("isPreviousAdmin", isPreviousAdmin(auth));
       info.put("language", ud.getLanguage());
-      info.put("isGoogleUser", ud.isGoogleUser());
       info.put("roles", user.getRoles());
       if (user.isTeacher()) {
         TeacherUserDetails tud = (TeacherUserDetails) ud;
@@ -180,8 +181,8 @@ public class UserAPIController {
   }
 
   @PostMapping("/check-authentication")
-  HashMap<String, Object> checkAuthentication(@RequestParam("username") String username,
-      @RequestParam("password") String password) {
+  HashMap<String, Object> checkAuthentication(@RequestParam String username,
+      @RequestParam String password) {
     User user = userService.retrieveUserByUsername(username);
     HashMap<String, Object> response = new HashMap<String, Object>();
     if (user == null) {
@@ -200,8 +201,7 @@ public class UserAPIController {
 
   @PostMapping("/password")
   ResponseEntity<Map<String, Object>> changePassword(Authentication auth,
-      @RequestParam("oldPassword") String oldPassword,
-      @RequestParam("newPassword") String newPassword) {
+      @RequestParam String oldPassword, @RequestParam String newPassword) {
     if (!passwordService.isValid(newPassword)) {
       Map<String, Object> map = passwordService.getErrors(newPassword);
       return ResponseEntityGenerator.createError(map);
@@ -315,8 +315,8 @@ public class UserAPIController {
     map.put("firstName", userDetails.getFirstname());
     map.put("lastName", userDetails.getLastname());
     map.put("isGoogleUser", userDetails.isGoogleUser());
-    if (userDetails instanceof TeacherUserDetails) {
-      map.put("displayName", ((TeacherUserDetails) userDetails).getDisplayname());
+    if (userDetails instanceof TeacherUserDetails details) {
+      map.put("displayName", details.getDisplayname());
     }
     return map;
   }

@@ -41,9 +41,9 @@ import org.wise.portal.service.authentication.AuthorityNotFoundException;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.portal.PortalService;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Locale;
@@ -103,7 +103,7 @@ public class WISEAuthenticationSuccessHandler
 
     // if user is not admin and login is disallowed, log out user and redirect them to the "we are undergoing maintenance" page
     try {
-      Portal portal = portalService.getById(new Integer(1));
+      Portal portal = portalService.getById(Integer.valueOf(1));
       if (!userIsAdmin && !portal.isLoginAllowed()) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -132,7 +132,7 @@ public class WISEAuthenticationSuccessHandler
     if (ControllerUtil.isUserPreviousAdministrator()) {
       response.sendRedirect(getUserHomeUrl(userDetails, locale));
     }
-    //super.handle(request, response, authentication);
+    super.onAuthenticationSuccess(request, response, authentication);
   }
 
   private void handleRedirectRequest(String redirectUrl, HttpServletRequest request,

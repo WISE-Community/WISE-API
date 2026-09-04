@@ -26,18 +26,18 @@ package org.wise.vle.domain.work;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -59,27 +59,30 @@ import lombok.Setter;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "notebookItems",  indexes = {
+@Table(name = "notebookItems", indexes = {
     @Index(columnList = "runId", name = "notebookItemsRunIdIndex"),
-    @Index(columnList = "workgroupId", name = "notebookItemsWorkgroupIdIndex")})
+    @Index(columnList = "workgroupId", name = "notebookItemsWorkgroupIdIndex") })
 @Getter
 @Setter
 public class NotebookItem extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId", nullable = false)
   private Run run;
 
-  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "periodId")
   @JsonIgnore
   private Group period;
 
-  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "workgroupId", nullable = false)
   @JsonIgnore
   private Workgroup workgroup;
@@ -90,18 +93,20 @@ public class NotebookItem extends PersistableDomain {
   @Column(name = "componentId", length = 30, nullable = true)
   private String componentId;
 
-  @OneToOne(targetEntity = StudentWork.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @OneToOne(targetEntity = StudentWork.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "studentWorkId", nullable = true)
   @JsonIgnore
   private StudentWork studentWork;
 
-  @OneToOne(targetEntity = StudentAsset.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @OneToOne(targetEntity = StudentAsset.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "studentAssetId", nullable = true)
   @JsonIgnore
   private StudentAsset studentAsset;
 
   @Column(name = "localNotebookItemId", length = 30, nullable = true)
-  private String localNotebookItemId;  // ex: [ "1", "letterToACongressperson", "z5hc4jeu12" ]
+  private String localNotebookItemId; // ex: [ "1", "letterToACongressperson", "z5hc4jeu12" ]
 
   @Column(name = "parentNotebookItemId")
   private Integer parentNotebookItemId;
@@ -110,10 +115,10 @@ public class NotebookItem extends PersistableDomain {
   private String groups;
 
   @Column(name = "type", length = 30, nullable = true)
-  private String type;  // ex: [ "note", "bookmark", "question" ]
+  private String type; // ex: [ "note", "bookmark", "question" ]
 
   @Column(name = "title", nullable = true)
-  private String title;  // ex: "my note on step 1.2"
+  private String title; // ex: "my note on step 1.2"
 
   @Column(name = "content", columnDefinition = "text", nullable = true)
   private String content; // ex: { note: "my notes with attachments", attachments: [ {studentAssetId: 1, url: "car.png" } ] }

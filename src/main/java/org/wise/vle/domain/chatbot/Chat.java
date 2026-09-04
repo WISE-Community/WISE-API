@@ -32,14 +32,14 @@ import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.vle.domain.PersistableDomain;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Domain object representing a chatbot conversation
- * 
+ *
  * @author Hiroki Terashima
  */
 @Entity

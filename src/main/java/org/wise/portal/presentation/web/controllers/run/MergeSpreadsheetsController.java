@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -64,8 +64,8 @@ public class MergeSpreadsheetsController {
 
   @PostMapping
   protected ModelAndView mergeSpreadsheets(
-      @RequestParam("uploadFile") MultipartFile uploadFile,
-      @RequestParam("mergeColumnTitle") String mergeColumnTitle,
+      @RequestParam MultipartFile uploadFile,
+      @RequestParam String mergeColumnTitle,
       HttpServletResponse response
   ) throws Exception {
     BufferedInputStream fis = new BufferedInputStream(uploadFile.getInputStream());

@@ -25,11 +25,13 @@ package org.wise.portal.presentation.web.controllers.teacher.management;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.easymock.EasyMock;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -94,7 +96,7 @@ public class BatchStudentChangePasswordControllerTest extends AbstractModelAndVi
 	
 	private MutableUserDetails userDetails3;
 	
-	private static final Long GROUPID = new Long(5);
+	private static final Long GROUPID = Long.valueOf(5);
 	
 	private static final String OLD_PASSWORD1 = "student1";
 	
@@ -107,7 +109,7 @@ public class BatchStudentChangePasswordControllerTest extends AbstractModelAndVi
 	private static final String FORM = "FORM VIEW";
 	
 	/**
-	 * @see junit.framework.TestCase#setUp()
+	 * @see 
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -138,7 +140,7 @@ public class BatchStudentChangePasswordControllerTest extends AbstractModelAndVi
 	}
 
 	/**
-	 * @see junit.framework.TestCase#tearDown()
+	 * @see 
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();

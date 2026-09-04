@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.detect.Detector;
@@ -61,8 +61,12 @@ public class ProjectAssetAPIController {
   @Autowired
   protected Environment appProperties;
 
-  private String EXCEEDED_MAX_PROJECT_SIZE_MESSAGE = "Exceeded project max asset size.\n"
-      + "Please delete unused assets.\n\nContact WISE if your project needs more disk space.";
+  private String EXCEEDED_MAX_PROJECT_SIZE_MESSAGE = """
+      Exceeded project max asset size.
+      Please delete unused assets.
+      
+      Contact WISE if your project needs more disk space.\
+      """;
   private String UPLOADING_THIS_FILE_NOT_ALLOWED_MESSAGE = "Uploading this file is not allowed.";
 
   @GetMapping("/{projectId}")

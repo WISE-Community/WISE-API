@@ -21,7 +21,7 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
 
@@ -80,7 +80,7 @@ public class AclServiceImplTest {
     securityContext.setAuthentication(authority);
     SecurityContextHolder.setContext(securityContext);
 
-    expect(group.getId()).andReturn(new Long(1)).anyTimes();
+    expect(group.getId()).andReturn(Long.valueOf(1)).anyTimes();
     replay(group);
     mockMutableAcl = createNiceMock(MutableAcl.class);
     objectIdentity = new ObjectIdentityImpl(group.getClass(), group.getId());

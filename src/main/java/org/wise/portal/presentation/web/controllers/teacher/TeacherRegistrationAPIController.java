@@ -3,12 +3,11 @@ package org.wise.portal.presentation.web.controllers.teacher;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,14 +26,13 @@ import org.wise.portal.service.authentication.DuplicateUsernameException;
 @RequestMapping("/api/teacher/register")
 public class TeacherRegistrationAPIController extends TeacherAPIController {
 
-  private final String emailCodePrefix = 
+  private final String emailCodePrefix =
     "presentation.web.controllers.teacher.registerTeacherController.welcomeTeacherEmail";
   private final String welcomeBodyCode = this.emailCodePrefix + "Body";
   private final String welcomeSocialAccountBodyCode = this.emailCodePrefix + "BodyNoUsername";
   private final String welcomeSubjectCode = this.emailCodePrefix + "Subject";
- 
-  @PostMapping()
-  @Secured({ "ROLE_ANONYMOUS" })
+
+  @PostMapping
   ResponseEntity<Map<String, Object>> createTeacherAccount(
       @RequestBody Map<String, String> teacherFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
@@ -51,7 +49,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     User createdUser = this.userService.createUser(tud);
     String username = createdUser.getUserDetails().getUsername();
     if (isSendEmailEnabled()) {
-      sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username, 
+      sendWelcomeTeacherEmail(tud.getEmailAddress(), tud.getDisplayname(), username,
                               isSocialAccount(tud), locale, request);
     }
     return createRegisterSuccessResponse(username);
@@ -67,7 +65,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
   }
 
   private void sendWelcomeTeacherEmail(String email, String displayName, String username,
-                                       boolean socialAccount, Locale locale, 
+                                       boolean socialAccount, Locale locale,
                                        HttpServletRequest request) {
     String subject = getEmailMessage(this.welcomeSubjectCode, this.welcomeSubjectCode, null, locale);
     String body = getWelcomeTeacherBody(displayName, username, socialAccount, locale, request);
@@ -83,8 +81,8 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
                                        Locale locale, HttpServletRequest request) {
     String gettingStartedUrl = getGettingStartedUrl(request);
     String code = socialAccount ? this.welcomeSocialAccountBodyCode : this.welcomeBodyCode;
-    Object[] args = socialAccount 
-      ? new Object[] { displayName, gettingStartedUrl } 
+    Object[] args = socialAccount
+      ? new Object[] { displayName, gettingStartedUrl }
       : new Object[] { displayName, username, gettingStartedUrl };
     return getEmailMessage(this.welcomeBodyCode, code, args, locale);
   }
@@ -103,7 +101,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     }
   }
 
-  private void validateTeacherFields(Map<String, String> teacherFields) 
+  private void validateTeacherFields(Map<String, String> teacherFields)
     throws RecaptchaVerificationException, InvalidNameException, InvalidPasswordException {
     validateReCaptcha(teacherFields.get("token"));
     validateFirstAndLastName(teacherFields.get("firstName"), teacherFields.get("lastName"));
@@ -118,7 +116,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     }
   }
 
-  private void validateFirstAndLastName(String firstName, String lastName) 
+  private void validateFirstAndLastName(String firstName, String lastName)
     throws InvalidNameException {
     if (!isFirstNameAndLastNameValid(firstName, lastName)) {
       String messageCode = this.getInvalidNameMessageCode(firstName, lastName);
@@ -132,7 +130,7 @@ public class TeacherRegistrationAPIController extends TeacherAPIController {
     }
   }
 
-  private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields, 
+  private TeacherUserDetails createTeacherUserDetails(Map<String, String> teacherFields,
                                                       Locale locale) {
     TeacherUserDetails tud = new TeacherUserDetails();
     tud.setFirstname(teacherFields.get("firstName"));

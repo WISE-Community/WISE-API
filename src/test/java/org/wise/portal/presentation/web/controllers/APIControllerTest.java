@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.easymock.Mock;
 import org.junit.jupiter.api.AfterEach;
