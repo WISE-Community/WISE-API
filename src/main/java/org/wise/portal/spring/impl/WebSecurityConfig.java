@@ -100,6 +100,8 @@ public class WebSecurityConfig {
                     "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
                     "/admin/run/replacebase64withpng.html", "/api/admin/**")
                 .hasRole("ADMINISTRATOR")
+                .requestMatchers("/api/project/library", "/api/project/community", "/curriculum/**",
+                    "/api/config/preview/**", "/api/user/info").permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
                 .requestMatchers(new AntPathRequestMatcher("/admin/**"))
