@@ -63,8 +63,9 @@ import org.testcontainers.utility.DockerImageName;
 public class WebSecurityConfigAuthorizationTest {
 
   @Container
-  static GenericContainer<?> redisContainer =
-      new GenericContainer<>(DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
+  @SuppressWarnings("resource")
+  static GenericContainer<?> redisContainer = new GenericContainer<>(
+      DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
@@ -77,7 +78,8 @@ public class WebSecurityConfigAuthorizationTest {
 
   @Test
   public void researcher_userAndAccountManagement_shouldBeForbidden() throws Exception {
-    mockMvc.perform(get("/admin/account/show-all-users").with(user("researcher").roles("RESEARCHER")))
+    mockMvc
+        .perform(get("/admin/account/show-all-users").with(user("researcher").roles("RESEARCHER")))
         .andExpect(status().isForbidden());
   }
 
@@ -85,7 +87,8 @@ public class WebSecurityConfigAuthorizationTest {
   public void administrator_userAndAccountManagement_shouldBeAuthorized() throws Exception {
     // Positive counterpart to researcher_userAndAccountManagement_shouldBeForbidden on the same
     // path: the rule restricts by role rather than blocking the path outright.
-    assertAuthorized(get("/admin/account/show-all-users").with(user("admin").roles("ADMINISTRATOR")));
+    assertAuthorized(
+        get("/admin/account/show-all-users").with(user("admin").roles("ADMINISTRATOR")));
   }
 
   @Test
@@ -93,6 +96,16 @@ public class WebSecurityConfigAuthorizationTest {
     // Researchers keep access to the rest of /admin/**. RunStatisticsController has no method
     // security, so this exercises the URL rule directly rather than a method-security backstop.
     assertAuthorized(get("/admin/run/stats").with(user("researcher").roles("RESEARCHER")));
+  }
+
+  @Test
+  public void unauthenticated_projectLibraryAndPreviewEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/project/library"));
+    assertAuthorized(get("/api/project/community"));
+    assertAuthorized(get("/api/user/info"));
+    assertAuthorized(get("/api/user/config"));
+    assertAuthorized(get("/api/config/preview/123"));
+    assertAuthorized(get("/curriculum/123/project.json"));
   }
 
   /**
