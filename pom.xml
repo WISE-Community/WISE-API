@@ -463,11 +463,6 @@
       <version>3.20.0</version>
     </dependency>
     <dependency>
-      <groupId>com.google.code.maven-play-plugin.net.tanesha.recaptcha4j</groupId>
-      <artifactId>recaptcha4j</artifactId>
-      <version>0.0.8</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
       <version>3.7</version>
