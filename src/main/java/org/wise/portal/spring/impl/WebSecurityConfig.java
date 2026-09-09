@@ -70,7 +70,7 @@ import org.wise.portal.presentation.web.listeners.WISESessionListener;
 import org.wise.portal.service.authentication.UserDetailsService;
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
 public class WebSecurityConfig {
 
@@ -96,38 +96,70 @@ public class WebSecurityConfig {
             SecurityContextHolderAwareRequestFilter.class)
         .authorizeHttpRequests(
             auth -> auth
+                // Static assets served by WebConfig resource handlers: without this the
+                // login page cannot load its own scripts, styles or translations.
+                .requestMatchers("/pages/resources/**", "/portal/javascript/**",
+                    "/portal/themes/**", "/portal/translate/**", "/vle/**",
+                    "/projectIcons/**")
+                .permitAll()
                 .requestMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
                     "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
                     "/admin/run/replacebase64withpng.html", "/api/admin/**")
                 .hasRole("ADMINISTRATOR")
-                .requestMatchers("/api/project/library", "/api/project/community", "/curriculum/**",
-                    "/api/config/preview/**", "/api/user/info").permitAll()
+                .requestMatchers("/api/project/library", "/api/project/community",
+                    "/curriculum/**", "/api/config/preview/**", "/api/user/info")
+                .permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
                 .requestMatchers(new AntPathRequestMatcher("/admin/**"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
-                .requestMatchers(new AntPathRequestMatcher("/author/**")).hasAnyRole("TEACHER")
+                .requestMatchers(new AntPathRequestMatcher("/author/**"))
+                .hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/project/notifyAuthor*/**"))
                 .hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/student/account/info"))
-                .hasAnyRole("TEACHER").requestMatchers(new AntPathRequestMatcher("/student/**"))
-                .hasAnyRole("STUDENT").requestMatchers(new AntPathRequestMatcher("/studentStatus"))
+                .hasAnyRole("TEACHER")
+                .requestMatchers(new AntPathRequestMatcher("/student/**"))
+                .hasAnyRole("STUDENT")
+                .requestMatchers(new AntPathRequestMatcher("/studentStatus"))
                 .hasAnyRole("TEACHER", "STUDENT")
                 .requestMatchers(new AntPathRequestMatcher("/oauth2/**")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/login/oauth2/**")).permitAll()
+                // Password recovery must precede the /api/teacher/** role rule:
+                // without this a teacher who forgot their password needs the TEACHER
+                // role to start recovery.
+                .requestMatchers(new AntPathRequestMatcher("/api/student/forgot/**"))
+                .permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/teacher/forgot/**"))
+                .permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/teacher/register")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/student/register")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/student/register/questions")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/student/register/questions"))
+                .permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/*/register/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/teacher/**")).hasAnyRole("TEACHER")
+                .requestMatchers(new AntPathRequestMatcher("/api/teacher/**"))
+                .hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/sso/discourse"))
                 .hasAnyRole("TEACHER", "STUDENT")
-                .requestMatchers(new AntPathRequestMatcher("/api/user/tags")).hasAnyRole("TEACHER")
+                .requestMatchers(new AntPathRequestMatcher("/api/user/tags"))
+                .hasAnyRole("TEACHER")
                 .requestMatchers(new AntPathRequestMatcher("/api/user/tag/**"))
-                .hasAnyRole("TEACHER").requestMatchers(new AntPathRequestMatcher("/api/debug/**"))
-                .permitAll().requestMatchers(new AntPathRequestMatcher("/api/user/info"))
-                .permitAll().requestMatchers(new AntPathRequestMatcher("/api/user/config"))
-                .permitAll().requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
+                .hasAnyRole("TEACHER")
+                .requestMatchers(new AntPathRequestMatcher("/api/user/config")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/contact")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/news/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/announcement")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/project/info/*")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/google-user/check-user-exists"))
+                .permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/google-user/check-user-matches"))
+                .permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/previewproject.html")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/run-survey/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/errors/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
                 .anyRequest().authenticated())
         .formLogin(form -> form.loginPage("/login").permitAll())
