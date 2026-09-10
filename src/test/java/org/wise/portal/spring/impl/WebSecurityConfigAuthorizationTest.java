@@ -24,8 +24,10 @@
 package org.wise.portal.spring.impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -108,6 +110,71 @@ public class WebSecurityConfigAuthorizationTest {
     assertAuthorized(get("/curriculum/123/project.json"));
   }
 
+  @Test
+  public void unauthenticated_staticAssetPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/pages/resources/test.js"));
+    assertAuthorized(get("/portal/javascript/test.js"));
+    assertAuthorized(get("/portal/themes/default/style.css"));
+    assertAuthorized(get("/portal/translate/en.json"));
+    assertAuthorized(get("/vle/vle.html"));
+    assertAuthorized(get("/projectIcons/1/icon.png"));
+  }
+
+  @Test
+  public void unauthenticated_passwordRecoveryEndpoints_shouldBeAllowed() throws Exception {
+    // Must be reachable without authentication: the rule order matters because
+    // /api/teacher/** requires the TEACHER role, so /api/teacher/forgot/** must
+    // match before it.
+    assertAuthorized(get("/api/student/forgot/username/search"));
+    assertAuthorized(get("/api/teacher/forgot/username/search"));
+  }
+
+  @Test
+  public void unauthenticated_contactNewsAndAnnouncement_shouldBeAllowed() throws Exception {
+    assertAuthorized(post("/api/contact"));
+    assertAuthorized(get("/api/news"));
+    assertAuthorized(get("/api/news/1"));
+    assertAuthorized(get("/api/announcement"));
+  }
+
+  @Test
+  public void unauthenticated_projectInfoAndGoogleUserChecks_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/project/info/123"));
+    assertAuthorized(get("/api/google-user/check-user-exists"));
+    assertAuthorized(get("/api/google-user/check-user-matches"));
+  }
+
+  @Test
+  public void unauthenticated_previewAndSurveyPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/previewproject.html"));
+    assertAuthorized(get("/run-survey/test"));
+  }
+
+  @Test
+  public void unauthenticated_errorAndFrameworkPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/error"));
+    assertAuthorized(get("/errors/404"));
+    assertAuthorized(get("/favicon.ico"));
+  }
+
+  @Test
+  public void unauthenticated_registrationAndOAuthEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/teacher/register"));
+    assertAuthorized(get("/api/student/register"));
+    assertAuthorized(get("/api/student/register/questions"));
+    assertAuthorized(get("/oauth2/authorization/google"));
+    assertAuthorized(get("/login/oauth2/code/google"));
+    assertAuthorized(get("/login"));
+    assertAuthorized(get("/"));
+  }
+
+  @Test
+  public void unauthenticated_protectedEndpoints_shouldBeDenied() throws Exception {
+    assertDeniedForAnonymous(get("/api/teacher/profile"));
+    assertDeniedForAnonymous(get("/author/authorproject.html"));
+    assertDeniedForAnonymous(get("/api/admin/config"));
+  }
+
   /**
    * Asserts the request passes authorization. An authorization denial short-circuits with a 403
    * response before the handler runs, so reaching the handler means the request was authorized.
@@ -128,6 +195,25 @@ public class WebSecurityConfigAuthorizationTest {
     }
     assertNotEquals(HttpStatus.FORBIDDEN.value(), result.getResponse().getStatus(),
         "Expected the request to be authorized, but it was forbidden (403).");
+  }
+
+  /**
+   * Asserts the request is denied for an anonymous (unauthenticated) user. With form login
+   * configured, the security layer redirects to {@code /login} (302) rather than returning 403.
+   * The redirect URL is checked explicitly so that a controller-generated 302 (which would mean
+   * the request passed the security layer) does not make the test pass vacuously.
+   */
+  private void assertDeniedForAnonymous(RequestBuilder request) throws Exception {
+    MvcResult result = mockMvc.perform(request).andReturn();
+    int status = result.getResponse().getStatus();
+    if (status == HttpStatus.FORBIDDEN.value()) {
+      return;
+    }
+    String redirectUrl = result.getResponse().getRedirectedUrl();
+    assertTrue(status == HttpStatus.FOUND.value() && redirectUrl != null
+            && redirectUrl.contains("/login"),
+        "Expected a security denial (403 or 302 redirect to /login), but got " + status
+            + (redirectUrl != null ? " redirecting to " + redirectUrl : "") + ".");
   }
 
   private static boolean isAccessDenied(Throwable throwable) {
