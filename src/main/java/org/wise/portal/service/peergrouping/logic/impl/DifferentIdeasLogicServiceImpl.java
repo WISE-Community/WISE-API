@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.collections4.SetUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,10 +61,25 @@ public class DifferentIdeasLogicServiceImpl extends PeerGroupAnnotationLogicServ
     for (Workgroup possibleMember : possibleMembers) {
       if (workgroupToAnnotation.containsKey(possibleMember)) {
         Set<String> possibleMemberIdeas = getDetectedIdeas(possibleMember, workgroupToAnnotation);
-        Set<String> differentIdeas = SetUtils.disjunction(workgroupIdeas, possibleMemberIdeas);
+        Set<String> differentIdeas = getDisjunction(workgroupIdeas, possibleMemberIdeas);
         workgroups.add(new WorkgroupWithDifference(possibleMember, differentIdeas.size(), logic));
       }
     }
     return workgroups;
+  }
+
+  private Set<String> getDisjunction(Set<String> a, Set<String> b) {
+    Set<String> disjunction = new HashSet<String>();
+    for (String s : a) {
+      if (!b.contains(s)) {
+        disjunction.add(s);
+      }
+    }
+    for (String s : b) {
+      if (!a.contains(s)) {
+        disjunction.add(s);
+      }
+    }
+    return disjunction;
   }
 }
