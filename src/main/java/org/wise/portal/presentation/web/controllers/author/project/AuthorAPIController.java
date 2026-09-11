@@ -249,6 +249,9 @@ public class AuthorAPIController {
       throws JSONException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
+      if (!isValidProjectJSONString(projectJSONString)) {
+        return new ErrorResponse("errorSavingProject");
+      }
       try {
         projectService.evictProjectContentCache((Long) project.getId());
         projectService.saveProjectContentToDisk(projectJSONString, project);
@@ -260,6 +263,18 @@ public class AuthorAPIController {
       }
     } else {
       return new ErrorResponse("notAllowedToEditThisProject");
+    }
+  }
+
+  private boolean isValidProjectJSONString(String projectJSONString) {
+    if (projectJSONString == null) {
+      return false;
+    }
+    try {
+      new JSONObject(projectJSONString);
+      return true;
+    } catch (JSONException e) {
+      return false;
     }
   }
 

@@ -305,4 +305,60 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     assertTrue(fileNames.contains("carbon dioxide.png"));
     assertTrue(fileNames.contains("carbon monoxide.png"));
   }
+
+  @Test
+  public void saveProject_whenProjectJSONIsMalformed_shouldNotSaveAndReturnErrorSavingProject()
+      throws Exception {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    replay(projectService);
+    String malformedProjectJSONString = "{\"metadata\":{\"title\":\"New Title\"}";
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
+        malformedProjectJSONString);
+    assertEquals("error", response.getStatus());
+    assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
+  }
+
+  @Test
+  public void saveProject_whenProjectJSONIsNotAnObject_shouldNotSaveAndReturnErrorSavingProject()
+      throws Exception {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    replay(projectService);
+    String projectJSONArrayString = "[{\"metadata\":{\"title\":\"New Title\"}}]";
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1,
+        projectJSONArrayString);
+    assertEquals("error", response.getStatus());
+    assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
+  }
+
+  @Test
+  public void saveProject_whenProjectJSONIsEmpty_shouldNotSaveAndReturnErrorSavingProject()
+      throws Exception {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    replay(projectService);
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1, "");
+    assertEquals("error", response.getStatus());
+    assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
+  }
+
+  @Test
+  public void saveProject_whenProjectJSONIsNull_shouldNotSaveAndReturnErrorSavingProject()
+      throws Exception {
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    replay(userService);
+    expect(projectService.canAuthorProject(project1, teacher1)).andReturn(true);
+    replay(projectService);
+    SimpleResponse response = authorAPIController.saveProject(teacherAuth, project1, null);
+    assertEquals("error", response.getStatus());
+    assertEquals("errorSavingProject", response.getMessageCode());
+    verify(userService, projectService);
+  }
 }
