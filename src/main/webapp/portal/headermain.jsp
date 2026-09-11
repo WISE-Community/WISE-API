@@ -100,10 +100,9 @@
 							</li>
 							<li class="level1 menu2"><a><spring:message code="accountmenu.management" /></a>
 								<ul>
-									<li><a href="${contextPath}/legacy/teacher/management/library.html"><spring:message code="accountmenu.library" /></a></li>
-									<li><a href="${contextPath}/legacy/teacher/management/classroomruns.html"><spring:message code="accountmenu.runs" /></a></li>
+									<li><a href="${contextPath}/curriculum"><spring:message code="accountmenu.library" /></a></li>
+									<li><a href="${contextPath}/teacher/home"><spring:message code="accountmenu.runs" /></a></li>
 									<li><a href="${contextPath}/teacher/edit/home"><spring:message code="accountmenu.authoring" /></a></li>
-									<li><a href="${contextPath}/api/author/authorproject.html"><spring:message code="accountmenu.launchLegacyAuthoringTool" /></a></li>
 								</ul>
 							</li>
 							<li class="level1 menu3"><a href="${contextPath}/teacher"><spring:message code="accountmenu.teacherHome" /></a></li>
