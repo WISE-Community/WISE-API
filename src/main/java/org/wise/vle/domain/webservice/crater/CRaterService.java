@@ -41,8 +41,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CRaterService {
 
+  private final Environment appProperties;
+  private final RestClient restClient;
+
   @Autowired
-  private Environment appProperties;
+  public CRaterService(Environment appProperties, RestClient.Builder restClientBuilder) {
+    this.appProperties = appProperties;
+    this.restClient = restClientBuilder.build();
+  }
 
   /**
    * Sends either student work (scoring request) or an item id (verification request) to
@@ -73,7 +79,6 @@ public class CRaterService {
     try {
       String password = appProperties.getProperty(
           request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
-      RestClient restClient = RestClient.create();
       return restClient.post()
           .uri(request.getCRaterUrl())
           .headers(headers -> headers.setBasicAuth("extsyscrtr02dev", password))
