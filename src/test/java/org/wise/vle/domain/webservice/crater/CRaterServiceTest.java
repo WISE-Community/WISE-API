@@ -1,23 +1,31 @@
 package org.wise.vle.domain.webservice.crater;
 
 import static org.easymock.EasyMock.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
 import org.json.JSONException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
 
 @ExtendWith(EasyMockExtension.class)
 public class CRaterServiceTest {
 
-  @TestSubject
-  private CRaterService cRaterService = new CRaterService();
+  private CRaterService cRaterService;
 
   @Mock
   private Environment appProperties;
+
+  private MockRestServiceServer mockServer;
 
   private String clientId = "wise-test";
   private String itemId = "test-item-id";
@@ -26,6 +34,13 @@ public class CRaterServiceTest {
   private String verifyUrl = "https://test.org/verify";
   private String berkeleyScoringUrl = "https://test.org/score/berkeley";
   private String berkeleyVerifyUrl = "https://test.org/verify/berkeley";
+
+  @BeforeEach
+  public void setUp() {
+    RestClient.Builder builder = RestClient.builder();
+    mockServer = MockRestServiceServer.bindTo(builder).build();
+    cRaterService = new CRaterService(appProperties, builder);
+  }
 
   public void beforeETS() {
     expect(appProperties.getProperty("cRater_client_id")).andReturn(clientId);
@@ -46,8 +61,11 @@ public class CRaterServiceTest {
     request.setResponseText("hello");
     expect(appProperties.getProperty("cRater_scoring_url")).andReturn(scoringUrl);
     replay(appProperties);
+    mockServer.expect(requestTo(scoringUrl)).andExpect(method(HttpMethod.POST))
+        .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
     cRaterService.getCRaterResponse(request);
     verify(appProperties);
+    mockServer.verify();
   }
 
   @Test
@@ -57,8 +75,11 @@ public class CRaterServiceTest {
     request.setItemId(itemId);
     expect(appProperties.getProperty("cRater_verification_url")).andReturn(verifyUrl);
     replay(appProperties);
+    mockServer.expect(requestTo(verifyUrl)).andExpect(method(HttpMethod.POST))
+        .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
     cRaterService.getCRaterResponse(request);
     verify(appProperties);
+    mockServer.verify();
   }
 
   @Test
@@ -70,8 +91,11 @@ public class CRaterServiceTest {
     request.setResponseText("hello");
     expect(appProperties.getProperty("berkeley_cRater_scoring_url")).andReturn(berkeleyScoringUrl);
     replay(appProperties);
+    mockServer.expect(requestTo(berkeleyScoringUrl)).andExpect(method(HttpMethod.POST))
+        .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
     cRaterService.getCRaterResponse(request);
     verify(appProperties);
+    mockServer.verify();
   }
 
   @Test
@@ -82,7 +106,10 @@ public class CRaterServiceTest {
     expect(appProperties.getProperty("berkeley_cRater_verification_url"))
         .andReturn(berkeleyVerifyUrl);
     replay(appProperties);
+    mockServer.expect(requestTo(berkeleyVerifyUrl)).andExpect(method(HttpMethod.POST))
+        .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
     cRaterService.getCRaterResponse(request);
     verify(appProperties);
+    mockServer.verify();
   }
 }

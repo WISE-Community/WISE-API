@@ -23,18 +23,10 @@
  */
 package org.wise.vle.domain.webservice.crater;
 
-import java.io.IOException;
-import java.util.Base64;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -49,8 +41,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class CRaterService {
 
+  private final Environment appProperties;
+  private final RestClient restClient;
+
   @Autowired
-  private Environment appProperties;
+  public CRaterService(Environment appProperties, RestClient.Builder restClientBuilder) {
+    this.appProperties = appProperties;
+    this.restClient = restClientBuilder.build();
+  }
 
   /**
    * Sends either student work (scoring request) or an item id (verification request) to
@@ -78,26 +76,18 @@ public class CRaterService {
    * @return the response string from the CRater server
    */
   private String post(CRaterRequest request) throws JSONException {
-    HttpClient client = HttpClientBuilder.create().build();
-    HttpPost post = new HttpPost(request.getCRaterUrl());
     try {
       String password = appProperties.getProperty(
           request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
-      String authHeader = "Basic "
-          + Base64.getEncoder().encodeToString(("extsyscrtr02dev:" + password).getBytes());
-      post.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
-      post.setHeader(HttpHeaders.CONTENT_TYPE, "application/json;charset=utf-8");
-      post.setEntity(new StringEntity(request.generateBodyData(), ContentType.APPLICATION_JSON));
-      HttpResponse response = client.execute(post);
-      if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-        System.err.println("Method failed: " + response.getStatusLine());
-      }
-      return IOUtils.toString(response.getEntity().getContent(), "UTF-8");
-    } catch (IOException e) {
+      return restClient.post().uri(request.getCRaterUrl())
+          .headers(headers -> headers.setBasicAuth("extsyscrtr02dev", password))
+          .contentType(MediaType.APPLICATION_JSON_UTF8).body(request.generateBodyData()).retrieve()
+          .onStatus(HttpStatusCode::isError, (req, resp) -> {
+            System.err.println("Method failed: " + resp.getStatusCode());
+          }).body(String.class);
+    } catch (RestClientException e) {
       System.err.println("Fatal transport error: " + e.getMessage());
       e.printStackTrace();
-    } finally {
-      post.releaseConnection();
     }
     return null;
   }
