@@ -79,16 +79,12 @@ public class CRaterService {
     try {
       String password = appProperties.getProperty(
           request.forBerkeleyEndpoint() ? "berkeley_cRater_password" : "cRater_password");
-      return restClient.post()
-          .uri(request.getCRaterUrl())
+      return restClient.post().uri(request.getCRaterUrl())
           .headers(headers -> headers.setBasicAuth("extsyscrtr02dev", password))
-          .contentType(MediaType.APPLICATION_JSON)
-          .body(request.generateBodyData())
-          .retrieve()
+          .contentType(MediaType.APPLICATION_JSON_UTF8).body(request.generateBodyData()).retrieve()
           .onStatus(HttpStatusCode::isError, (req, resp) -> {
             System.err.println("Method failed: " + resp.getStatusCode());
-          })
-          .body(String.class);
+          }).body(String.class);
     } catch (RestClientException e) {
       System.err.println("Fatal transport error: " + e.getMessage());
       e.printStackTrace();
