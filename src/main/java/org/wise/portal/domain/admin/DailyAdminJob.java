@@ -23,7 +23,7 @@
  */
 package org.wise.portal.domain.admin;
 
-import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -35,14 +35,12 @@ import java.util.*;
 
 import jakarta.mail.MessagingException;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -526,24 +524,24 @@ public class DailyAdminJob {
   public void postStatistics(String wiseStatisticsString) {
 
     if (WISE_HUB_URL != null) {
-      HttpClient client = HttpClientBuilder.create().build();
-      HttpPost post = new HttpPost(WISE_HUB_URL);
-      List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-      urlParameters.add(new BasicNameValuePair("name", appProperties.getProperty("wise.name")));
-      urlParameters.add(new BasicNameValuePair("stats", wiseStatisticsString));
+      MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+      formData.add("name", appProperties.getProperty("wise.name"));
+      formData.add("stats", wiseStatisticsString);
 
       try {
-        post.setEntity(new UrlEncodedFormEntity(urlParameters));
-        HttpResponse response = client.execute(post);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-          System.err.println("Method failed: " + response.getStatusLine());
-        }
-        // Use caution: ensure correct character encoding and is not binary data
-      } catch (IOException e) {
+        RestClient restClient = RestClient.create();
+        restClient.post()
+            .uri(WISE_HUB_URL)
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(formData)
+            .retrieve()
+            .onStatus(HttpStatusCode::isError, (request, response) -> {
+              System.err.println("Method failed: " + response.getStatusCode());
+            })
+            .toBodilessEntity();
+      } catch (RestClientException e) {
         System.err.println("Fatal transport error: " + e.getMessage());
         e.printStackTrace();
-      } finally {
-        post.releaseConnection();
       }
     }
   }
