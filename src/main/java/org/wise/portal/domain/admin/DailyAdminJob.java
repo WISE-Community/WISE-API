@@ -23,7 +23,6 @@
  */
 package org.wise.portal.domain.admin;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -50,7 +49,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.run.RunDao;
 import org.wise.portal.dao.portal.PortalStatisticsDao;
 import org.wise.portal.dao.project.ProjectDao;
@@ -58,7 +56,6 @@ import org.wise.portal.dao.user.UserDao;
 import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
-import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.portal.PortalStatistics;
 import org.wise.portal.domain.portal.impl.PortalStatisticsImpl;
 import org.wise.portal.domain.project.Project;
@@ -530,15 +527,10 @@ public class DailyAdminJob {
 
       try {
         RestClient restClient = RestClient.create();
-        restClient.post()
-            .uri(WISE_HUB_URL)
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .body(formData)
-            .retrieve()
-            .onStatus(HttpStatusCode::isError, (request, response) -> {
+        restClient.post().uri(WISE_HUB_URL).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(formData).retrieve().onStatus(HttpStatusCode::isError, (request, response) -> {
               System.err.println("Method failed: " + response.getStatusCode());
-            })
-            .toBodilessEntity();
+            }).toBodilessEntity();
       } catch (RestClientException e) {
         System.err.println("Fatal transport error: " + e.getMessage());
         e.printStackTrace();
