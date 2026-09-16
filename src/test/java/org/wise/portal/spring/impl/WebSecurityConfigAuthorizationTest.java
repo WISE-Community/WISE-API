@@ -111,6 +111,13 @@ public class WebSecurityConfigAuthorizationTest {
   }
 
   @Test
+  public void unauthenticated_cRaterEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/c-rater/verify"));
+    assertAuthorized(post("/api/c-rater/ping"));
+    assertAuthorized(post("/api/c-rater/score"));
+  }
+
+  @Test
   public void unauthenticated_staticAssetPaths_shouldBeAllowed() throws Exception {
     assertAuthorized(get("/pages/resources/test.js"));
     assertAuthorized(get("/portal/javascript/test.js"));
@@ -210,8 +217,8 @@ public class WebSecurityConfigAuthorizationTest {
       return;
     }
     String redirectUrl = result.getResponse().getRedirectedUrl();
-    assertTrue(status == HttpStatus.FOUND.value() && redirectUrl != null
-            && redirectUrl.contains("/login"),
+    assertTrue(
+        status == HttpStatus.FOUND.value() && redirectUrl != null && redirectUrl.contains("/login"),
         "Expected a security denial (403 or 302 redirect to /login), but got " + status
             + (redirectUrl != null ? " redirecting to " + redirectUrl : "") + ".");
   }

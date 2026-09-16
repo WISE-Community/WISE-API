@@ -107,7 +107,7 @@ public class WebSecurityConfig {
                     "/admin/run/replacebase64withpng.html", "/api/admin/**")
                 .hasRole("ADMINISTRATOR")
                 .requestMatchers("/api/project/library", "/api/project/community",
-                    "/curriculum/**", "/api/config/preview/**", "/api/user/info")
+                    "/curriculum/**", "/api/config/preview/**", "/api/user/info", "/api/c-rater/**")
                 .permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/api/login/impersonate"))
                 .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
