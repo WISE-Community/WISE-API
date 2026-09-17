@@ -36,6 +36,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
 
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.run.Run;
@@ -53,6 +54,7 @@ import lombok.Setter;
 @Setter
 public class TagImpl implements Tag {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

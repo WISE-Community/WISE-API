@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.user;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class BatchCreateUserAccountsUpload implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private MultipartFile file;

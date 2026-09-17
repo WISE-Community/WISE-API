@@ -54,9 +54,6 @@ public class HibernateConfig {
   @Value("${spring.jpa.properties.hibernate.storage_engine:innodb}")
   private String hibernateStorageEngine;
 
-  @Value("${spring.jpa.hibernate.use-new-id-generator-mappings:false}")
-  private String hibernateGeneratorMappings;
-
   @Value("${spring.jpa.hibernate.ddl-auto:none}")
   private String hibernateDDLAuto;
 
@@ -82,7 +79,6 @@ public class HibernateConfig {
     Properties properties = new Properties();
     properties.setProperty("hibernate.dialect", hibernateDialect);
     properties.setProperty("hibernate.storage_engine", hibernateStorageEngine);
-    properties.setProperty("hibernate.id.new_generator_mappings", hibernateGeneratorMappings);
     properties.setProperty("hibernate.hbm2ddl.auto", hibernateDDLAuto);
     return properties;
   }

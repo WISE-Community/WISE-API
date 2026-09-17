@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.user.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class UserImpl implements User {
   @Transient
   public static final String COLUMN_NAME_USER_DETAILS_FK = "user_details_fk";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

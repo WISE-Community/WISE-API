@@ -20,6 +20,7 @@
  */
 package org.wise.portal.dao;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -27,6 +28,7 @@ import java.io.Serializable;
  */
 public class ObjectNotFoundException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String message;

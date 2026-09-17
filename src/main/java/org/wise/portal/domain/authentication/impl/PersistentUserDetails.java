@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -108,6 +109,7 @@ public class PersistentUserDetails implements MutableUserDetails {
   @Transient
   public static final String COLUMN_NAME_RECENT_NUMBER_FAILED_VERIFICATION_ATTEMPTS = "recent_number_of_failed_verification_code_attempts";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

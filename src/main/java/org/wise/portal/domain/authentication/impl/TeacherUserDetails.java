@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -93,6 +94,7 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
   @Transient
   private static final String COLUMN_NAME_HOW_HEAR = "howDidYouHearAboutUs";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

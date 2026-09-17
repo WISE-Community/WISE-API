@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.portal.impl;
 
+import java.io.Serial;
 import java.util.Properties;
 
 import jakarta.persistence.Column;
@@ -51,6 +52,7 @@ import org.json.JSONObject;
 @Setter
 public class PortalImpl implements Portal {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

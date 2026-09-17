@@ -183,6 +183,12 @@
         </executions>
         <configuration>
           <release>${java.version}</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
@@ -284,7 +290,7 @@
         <version>6.46.1</version>
         <configuration>
           <activeRecipes>
-            <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>
+            <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4</recipe>
           </activeRecipes>
         </configuration>
         <dependencies>
@@ -348,7 +354,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.13</version>
+    <version>3.4.13</version>
     <relativePath/>
   </parent>
   <dependencies>

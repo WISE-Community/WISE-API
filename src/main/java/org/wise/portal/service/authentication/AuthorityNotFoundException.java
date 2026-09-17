@@ -20,6 +20,8 @@
  */
 package org.wise.portal.service.authentication;
 
+import java.io.Serial;
+
 /**
  * A checked exception thrown when an authority is requested from the data
  * store, but an authority of that name does not exist.
@@ -28,6 +30,7 @@ package org.wise.portal.service.authentication;
  */
 public class AuthorityNotFoundException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String message;

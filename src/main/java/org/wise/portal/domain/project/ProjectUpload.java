@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public class ProjectUpload implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private MultipartFile file;
