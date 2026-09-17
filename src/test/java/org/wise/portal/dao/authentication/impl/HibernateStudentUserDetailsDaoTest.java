@@ -49,7 +49,7 @@ import org.wise.portal.junit.AbstractTransactionalDbTests;
  */
 public class HibernateStudentUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
-  private static final Integer DEFAULT_NUMBEROFLOGINS = new Integer(3);
+  private static final Integer DEFAULT_NUMBEROFLOGINS = Integer.valueOf(3);
 
   private static final String DEFAULT_ROLE_1 = "default_role_1";
 

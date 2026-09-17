@@ -23,6 +23,8 @@
  */
 package org.wise.portal.domain;
 
+import java.io.Serial;
+
 /**
  * A checked exception that gets thrown when the period does not exist in
  * the data store.
@@ -31,6 +33,7 @@ package org.wise.portal.domain;
  */
 public class PeriodNotFoundException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public PeriodNotFoundException(String message) {

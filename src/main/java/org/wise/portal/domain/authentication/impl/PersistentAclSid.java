@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -50,6 +51,7 @@ import org.wise.portal.domain.authentication.MutableAclSid;
         PersistentAclSid.COLUMN_NAME_IS_PRINCIPAL }) })
 public class PersistentAclSid implements MutableAclSid {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

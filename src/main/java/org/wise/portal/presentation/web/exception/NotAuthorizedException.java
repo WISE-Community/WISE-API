@@ -23,11 +23,14 @@
  */
 package org.wise.portal.presentation.web.exception;
 
+import java.io.Serial;
+
 /**
  * @author Patrick Lawler
  */
 public class NotAuthorizedException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String message;

@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain;
 
+import java.io.Serial;
 import org.wise.portal.domain.run.Run;
 
 /**
@@ -33,6 +34,7 @@ import org.wise.portal.domain.run.Run;
  */
 public class RunHasEndedException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public RunHasEndedException(String message) {

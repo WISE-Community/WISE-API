@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,6 +58,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProjectImpl implements Project {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

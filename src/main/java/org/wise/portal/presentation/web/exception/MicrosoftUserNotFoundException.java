@@ -1,10 +1,13 @@
 package org.wise.portal.presentation.web.exception;
 
+import java.io.Serial;
 import java.util.Map;
 
 import org.springframework.security.core.AuthenticationException;
 
 public class MicrosoftUserNotFoundException extends AuthenticationException {
+
+  @Serial
   private static final long serialVersionUID = 1L;
   private Map<String, String> authInfo;
 

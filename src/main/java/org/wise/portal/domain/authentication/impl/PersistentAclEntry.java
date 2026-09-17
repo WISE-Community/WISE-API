@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import jakarta.persistence.CascadeType;
@@ -57,6 +58,7 @@ import org.wise.portal.domain.authentication.MutableAclTargetObjectIdentity;
         PersistentAclEntry.COLUMN_NAME_ACE_ORDER }) })
 public class PersistentAclEntry implements ImmutableAclEntry, Serializable {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

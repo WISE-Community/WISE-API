@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.impl;
 
+import java.io.Serial;
 import java.util.HashMap;
 
 /**
@@ -36,6 +37,7 @@ public class PasswordReminderParameters extends HashMap<String, String> {
 
   public static final String ACCOUNT_QUESTION = "accountQuestion";
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public static final String USERNAME = "username";

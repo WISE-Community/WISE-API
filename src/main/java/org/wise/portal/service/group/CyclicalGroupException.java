@@ -23,12 +23,15 @@
  */
 package org.wise.portal.service.group;
 
+import java.io.Serial;
+
 /**
  * A checked exception thrown when there exists a cycle of groups in the data store
  * @author Hiroki Terashima
  */
 public class CyclicalGroupException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public CyclicalGroupException(String message) {

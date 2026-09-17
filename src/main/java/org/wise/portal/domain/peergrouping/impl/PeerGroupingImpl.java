@@ -37,6 +37,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,6 +60,7 @@ import lombok.Setter;
 @Setter
 public class PeerGroupingImpl implements PeerGrouping {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   @Id

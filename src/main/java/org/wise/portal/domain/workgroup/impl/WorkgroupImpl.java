@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.workgroup.impl;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -65,6 +66,7 @@ public class WorkgroupImpl implements Workgroup, Comparable<WorkgroupImpl> {
   @Transient
   public static final String DATA_STORE_NAME = "workgroups";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.run.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Set;
@@ -39,6 +40,7 @@ import java.util.*;
 @Setter
 public class RunParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String name;
