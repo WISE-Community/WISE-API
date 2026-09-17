@@ -818,7 +818,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
-  private static String wrapText(String str, int wrapLength) {
+  static String wrapText(String str, int wrapLength) {
     if (str == null || str.length() <= wrapLength) {
       return str;
     }

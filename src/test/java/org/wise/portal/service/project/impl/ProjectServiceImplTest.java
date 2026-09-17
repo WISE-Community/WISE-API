@@ -284,4 +284,36 @@ public class ProjectServiceImplTest {
     }
     verify(appProperties);
   }
+
+  @Test
+  public void wrapText_nullOrEmptyString_returnsInput() {
+    assertNull(ProjectServiceImpl.wrapText(null, 20));
+    assertEquals("", ProjectServiceImpl.wrapText("", 20));
+  }
+
+  @Test
+  public void wrapText_shorterThanWrapLength_returnsUnchanged() {
+    String input = "Hello World";
+    assertEquals("Hello World", ProjectServiceImpl.wrapText(input, 20));
+  }
+
+  @Test
+  public void wrapText_longerThanWrapLength_wrapsAtWordBoundary() {
+    String input = "The quick brown fox jumps over the lazy dog";
+    String expected = "The quick brown\nfox jumps over\nthe lazy dog";
+    assertEquals(expected, ProjectServiceImpl.wrapText(input, 15));
+  }
+
+  @Test
+  public void wrapText_preservesExistingNewlines() {
+    String input = "Line one\nLine two is quite long and should wrap";
+    String expected = "Line one\nLine two is\nquite long and\nshould wrap";
+    assertEquals(expected, ProjectServiceImpl.wrapText(input, 15));
+  }
+
+  @Test
+  public void wrapText_singleWordLongerThanWrapLength_doesNotSplitWord() {
+    String input = "Supercalifragilisticexpialidocious";
+    assertEquals("Supercalifragilisticexpialidocious", ProjectServiceImpl.wrapText(input, 10));
+  }
 }

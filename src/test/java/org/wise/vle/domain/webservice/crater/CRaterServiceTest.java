@@ -6,7 +6,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
-import org.easymock.TestSubject;
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -108,6 +107,23 @@ public class CRaterServiceTest {
     replay(appProperties);
     mockServer.expect(requestTo(berkeleyVerifyUrl)).andExpect(method(HttpMethod.POST))
         .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+    cRaterService.getCRaterResponse(request);
+    verify(appProperties);
+    mockServer.verify();
+  }
+
+  @Test
+  public void getScoringResponse_WhenServerReturns500_ShouldHandleGracefully()
+      throws JSONException {
+    beforeETS();
+    CRaterScoringRequest request = new CRaterScoringRequest();
+    request.setItemId(itemId);
+    request.setResponseId("1234567890");
+    request.setResponseText("hello");
+    expect(appProperties.getProperty("cRater_scoring_url")).andReturn(scoringUrl);
+    replay(appProperties);
+    mockServer.expect(requestTo(scoringUrl)).andExpect(method(HttpMethod.POST))
+        .andRespond(withServerError());
     cRaterService.getCRaterResponse(request);
     verify(appProperties);
     mockServer.verify();
