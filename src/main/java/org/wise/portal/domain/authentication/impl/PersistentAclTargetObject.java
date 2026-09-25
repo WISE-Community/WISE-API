@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,6 +44,7 @@ import org.wise.portal.domain.authentication.MutableAclTargetObject;
 @Table(name = PersistentAclTargetObject.DATA_STORE_NAME)
 public class PersistentAclTargetObject implements MutableAclTargetObject {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

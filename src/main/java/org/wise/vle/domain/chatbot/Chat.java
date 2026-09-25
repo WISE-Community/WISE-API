@@ -51,7 +51,7 @@ import java.util.List;
 public class Chat extends PersistableDomain {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id = null;
 
 	@ManyToOne(targetEntity = RunImpl.class, cascade = {

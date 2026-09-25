@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.attendance.impl;
 
+import java.io.Serial;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -46,6 +47,7 @@ import org.json.JSONObject;
 @Setter
 public class StudentAttendanceImpl implements StudentAttendance {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

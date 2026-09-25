@@ -20,6 +20,7 @@
  */
 package org.wise.portal.spring.impl;
 
+import java.io.Serial;
 import java.security.InvalidParameterException;
 
 import org.springframework.beans.BeanUtils;
@@ -35,6 +36,7 @@ import org.wise.portal.spring.SpringConfiguration;
  */
 public class CustomDispatcherServlet extends DispatcherServlet {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   /**

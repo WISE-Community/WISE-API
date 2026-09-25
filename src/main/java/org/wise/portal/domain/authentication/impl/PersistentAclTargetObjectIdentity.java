@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,6 +63,7 @@ import org.wise.portal.domain.usertag.impl.UserTagImpl;
         PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT_ID }) })
 public class PersistentAclTargetObjectIdentity implements MutableAclTargetObjectIdentity {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain;
 
+import java.io.Serial;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 
@@ -34,6 +35,7 @@ import org.wise.portal.domain.user.User;
  */
 public class StudentUserAlreadyAssociatedWithRunException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public StudentUserAlreadyAssociatedWithRunException(String message) {
@@ -49,7 +51,6 @@ public class StudentUserAlreadyAssociatedWithRunException extends Exception {
   }
 
   public StudentUserAlreadyAssociatedWithRunException(User studentUser, Run run) {
-    super("studentuser: " + studentUser +
-      " is already associated with run: " + run);
+    super("studentuser: " + studentUser + " is already associated with run: " + run);
   }
 }

@@ -23,6 +23,8 @@
  */
 package org.wise.portal.service.peergrouping;
 
+import java.io.Serial;
+
 /**
  * A checked exception that is thrown when the PeerGrouping does not exist in
  * the data store and the curriculum content
@@ -31,6 +33,7 @@ package org.wise.portal.service.peergrouping;
  */
 public class PeerGroupingNotFoundException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
 }

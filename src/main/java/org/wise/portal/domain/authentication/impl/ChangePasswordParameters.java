@@ -23,8 +23,8 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.wise.portal.domain.user.User;
@@ -38,6 +38,7 @@ import org.wise.portal.domain.user.User;
 @Setter
 public class ChangePasswordParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String passwd0, passwd1, passwd2;

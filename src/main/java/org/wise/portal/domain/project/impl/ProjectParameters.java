@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import lombok.Getter;
@@ -39,6 +40,7 @@ import org.wise.portal.domain.user.User;
 @Setter
 public class ProjectParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
   
   private Long projectId;

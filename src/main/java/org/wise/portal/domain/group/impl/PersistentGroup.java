@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.group.impl;
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,6 +73,7 @@ public class PersistentGroup implements Group {
   @Transient
   public static final String GROUPS_JOIN_COLUMN_NAME = "group_fk";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

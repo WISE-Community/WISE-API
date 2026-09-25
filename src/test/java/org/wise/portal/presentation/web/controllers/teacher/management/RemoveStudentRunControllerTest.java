@@ -3,7 +3,7 @@ package org.wise.portal.presentation.web.controllers.teacher.management;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;

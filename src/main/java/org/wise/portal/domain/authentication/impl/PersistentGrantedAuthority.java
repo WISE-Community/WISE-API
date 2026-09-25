@@ -20,6 +20,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,6 +50,7 @@ public class PersistentGrantedAuthority implements MutableGrantedAuthority {
   @Transient
   public static final String COLUMN_NAME_ROLE = "authority";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

@@ -23,6 +23,8 @@
  */
 package org.wise.portal.service.run;
 
+import java.io.Serial;
+
 /**
  * A checked exception thrown when trying to create a run with
  * with a runcode that already exists in the data store
@@ -31,6 +33,7 @@ package org.wise.portal.service.run;
  */
 public class DuplicateRunCodeException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public DuplicateRunCodeException(String message) {

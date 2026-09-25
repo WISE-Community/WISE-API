@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.newsitem.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -73,6 +74,7 @@ public class NewsItemImpl implements NewsItem, Comparable<NewsItem>, Serializabl
   @Transient
   public static final String COLUMN_NAME_TYPE = "type";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

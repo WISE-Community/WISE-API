@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.portal.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -42,6 +43,7 @@ import org.json.JSONObject;
 @Table(name = "portal_statistics")
 public class PortalStatisticsImpl implements PortalStatistics {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

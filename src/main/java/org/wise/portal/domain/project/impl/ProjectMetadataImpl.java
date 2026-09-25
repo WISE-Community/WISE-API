@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -48,6 +49,7 @@ import org.wise.portal.domain.project.ProjectMetadata;
 @Table(name = "project_metadata")
 public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

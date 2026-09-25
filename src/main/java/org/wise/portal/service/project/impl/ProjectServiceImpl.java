@@ -46,7 +46,6 @@ import javax.management.timer.Timer;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -760,7 +759,7 @@ public class ProjectServiceImpl implements ProjectService {
     } else {
       license += ".";
     }
-    license = WordUtils.wrap(license, 72) + "\n\n";
+    license = wrapText(license, 72) + "\n\n";
     JSONArray parentProjects = getParentProjects(metadata);
     for (int i = parentProjects.length() - 1; i >= 0; i--) {
       JSONObject parentProjectJSON = parentProjects.getJSONObject(i);
@@ -771,16 +770,16 @@ public class ProjectServiceImpl implements ProjectService {
       if (i == parentProjects.length() - 1) {
         parentLicense = "----\n\n";
       }
-      parentLicense += WordUtils.wrap(titleAndUri, 72);
+      parentLicense += wrapText(titleAndUri, 72);
       if (authors.isEmpty()) {
         parentLicense += "\nis a copy of ";
       } else {
         parentLicense += "\nis a derivative of ";
       }
       titleAndUri = "\"" + parentTitle + "\" (" + parentURI + ")";
-      parentLicense += "\n" + WordUtils.wrap(titleAndUri, 72);
+      parentLicense += "\n" + wrapText(titleAndUri, 72);
       if (!parentAuthors.isEmpty()) {
-        parentLicense += WordUtils.wrap("\nby " + parentAuthors, 72);
+        parentLicense += wrapText("\nby " + parentAuthors, 72);
       }
       parentLicense += "\n[used under CC BY-SA, copied " + parentProjectJSON.getString("dateCopied")
           + "].\n";
@@ -790,7 +789,7 @@ public class ProjectServiceImpl implements ProjectService {
       }
       authors = parentAuthors;
     }
-    license += WordUtils.wrap(
+    license += wrapText(
         """
         License pertains to original content created \
         by the author(s). Authors are responsible for the usage and \
@@ -817,6 +816,40 @@ public class ProjectServiceImpl implements ProjectService {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  static String wrapText(String str, int wrapLength) {
+    if (str == null || str.length() <= wrapLength) {
+      return str;
+    }
+    StringBuilder result = new StringBuilder();
+    String[] lines = str.split("\n", -1);
+    for (int i = 0; i < lines.length; i++) {
+      String line = lines[i];
+      if (line.length() <= wrapLength) {
+        result.append(line);
+      } else {
+        int lineLen = 0;
+        String[] words = line.split(" ");
+        for (String word : words) {
+          if (lineLen + word.length() + (lineLen > 0 ? 1 : 0) > wrapLength) {
+            if (lineLen > 0) {
+              result.append("\n");
+              lineLen = 0;
+            }
+          } else if (lineLen > 0) {
+            result.append(" ");
+            lineLen++;
+          }
+          result.append(word);
+          lineLen += word.length();
+        }
+      }
+      if (i < lines.length - 1) {
+        result.append("\n");
+      }
+    }
+    return result.toString();
   }
 
   public void replaceMetadataInProjectJSONFile(String projectFilePath, ProjectMetadata metadata)
