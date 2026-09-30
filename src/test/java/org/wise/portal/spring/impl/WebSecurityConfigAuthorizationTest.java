@@ -101,6 +101,20 @@ public class WebSecurityConfigAuthorizationTest {
   }
 
   @Test
+  public void administratorAndResearcher_impersonate_shouldBeAuthorized() throws Exception {
+    assertAuthorized(get("/api/login/impersonate").with(user("admin").roles("ADMINISTRATOR")));
+    assertAuthorized(get("/api/login/impersonate").with(user("researcher").roles("RESEARCHER")));
+  }
+
+  @Test
+  public void teacherAndStudent_impersonate_shouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/api/login/impersonate").with(user("teacher").roles("TEACHER")))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(get("/api/login/impersonate").with(user("student").roles("STUDENT")))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
   public void unauthenticated_projectLibraryAndPreviewEndpoints_shouldBeAllowed() throws Exception {
     assertAuthorized(get("/api/project/library"));
     assertAuthorized(get("/api/project/community"));
@@ -180,6 +194,7 @@ public class WebSecurityConfigAuthorizationTest {
     assertDeniedForAnonymous(get("/api/teacher/profile"));
     assertDeniedForAnonymous(get("/author/authorproject.html"));
     assertDeniedForAnonymous(get("/api/admin/config"));
+    assertDeniedForAnonymous(get("/api/login/impersonate"));
   }
 
   /**
