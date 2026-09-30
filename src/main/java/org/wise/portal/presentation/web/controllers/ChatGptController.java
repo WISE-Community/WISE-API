@@ -1,59 +1,46 @@
 package org.wise.portal.presentation.web.controllers;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClient;
 
 @RestController
 @RequestMapping("/api/chat-gpt")
 public class ChatGptController {
 
-  @Value("${openai.api.key:}")
-  private String openAiApiKey;
+  private final String openAiApiKey;
+  private final String openAiChatApiUrl;
+  private final RestClient restClient;
 
-  @Value("${openai.chat.api.url:https://api.openai.com/v1/chat/completions}")
-  private String openAiChatApiUrl;
+  public ChatGptController(
+      @Value("${openai.api.key:}") String openAiApiKey,
+      @Value("${openai.chat.api.url:https://api.openai.com/v1/chat/completions}") String openAiChatApiUrl,
+      RestClient.Builder restClientBuilder) {
+    this.openAiApiKey = openAiApiKey;
+    this.openAiChatApiUrl = openAiChatApiUrl;
+    this.restClient = restClientBuilder.build();
+  }
 
   @ResponseBody
   @Secured("ROLE_USER")
   @PostMapping(produces = "application/json;charset=UTF-8")
-  protected String sendChatMessage(@RequestBody String body) {
+  public String sendChatMessage(@RequestBody String body) {
     if (openAiApiKey == null || openAiApiKey.isEmpty()) {
       throw new RuntimeException("openai.api.key is not set");
     }
-    try {
-      URL url = new URL(openAiChatApiUrl);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestMethod("POST");
-      connection.setRequestProperty("Authorization", "Bearer " + openAiApiKey);
-      connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-      connection.setRequestProperty("Accept-Charset", "UTF-8");
-      connection.setDoOutput(true);
-      OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-      writer.write(body);
-      writer.flush();
-      writer.close();
-      BufferedReader br = new BufferedReader(
-          new InputStreamReader(connection.getInputStream(), "UTF-8"));
-      String line;
-      StringBuffer response = new StringBuffer();
-      while ((line = br.readLine()) != null) {
-        response.append(line);
-      }
-      br.close();
-      return response.toString();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    return restClient.post()
+        .uri(openAiChatApiUrl)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + openAiApiKey)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(body)
+        .retrieve()
+        .body(String.class);
   }
 }
