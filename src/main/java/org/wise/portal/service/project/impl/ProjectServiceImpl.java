@@ -32,6 +32,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -857,20 +860,43 @@ public class ProjectServiceImpl implements ProjectService {
     String projectStr = FileUtils.readFileToString(new File(projectFilePath));
     JSONObject projectJSONObj = new JSONObject(projectStr);
     projectJSONObj.put("metadata", metadata.toJSONObject());
-    File newProjectJSONFile = new File(projectFilePath);
-    Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(newProjectJSONFile), "UTF-8"));
-    writer.write(projectJSONObj.toString());
-    writer.close();
+    Path targetPath = new File(projectFilePath).toPath();
+    Path tempFile = Files.createTempFile(targetPath.getParent(), "project-", ".tmp");
+    try {
+      try (Writer writer = new BufferedWriter(
+          new OutputStreamWriter(new FileOutputStream(tempFile.toFile()), "UTF-8"))) {
+        writer.write(projectJSONObj.toString());
+      }
+      tempFile.toFile().setReadable(true, false);
+      atomicMoveWithFallback(tempFile, targetPath);
+    } finally {
+      Files.deleteIfExists(tempFile);
+    }
   }
 
   public void saveProjectContentToDisk(String projectJSONString, Project project)
       throws FileNotFoundException, IOException {
-    String projectJSONPath = curriculumBaseDir + project.getModulePath();
-    Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(new File(projectJSONPath)), "UTF-8"));
-    writer.write(projectJSONString);
-    writer.close();
+    Path targetPath = new File(curriculumBaseDir + project.getModulePath()).toPath();
+    Path tempFile = Files.createTempFile(targetPath.getParent(), "project-", ".tmp");
+    try {
+      try (Writer writer = new BufferedWriter(
+          new OutputStreamWriter(new FileOutputStream(tempFile.toFile()), "UTF-8"))) {
+        writer.write(projectJSONString);
+      }
+      tempFile.toFile().setReadable(true, false);
+      atomicMoveWithFallback(tempFile, targetPath);
+    } finally {
+      Files.deleteIfExists(tempFile);
+    }
+  }
+
+  private static void atomicMoveWithFallback(Path source, Path target) throws IOException {
+    try {
+      Files.move(source, target, StandardCopyOption.REPLACE_EXISTING,
+          StandardCopyOption.ATOMIC_MOVE);
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+    }
   }
 
   public Map<String, Object> getDirectoryInfo(File directory) {
