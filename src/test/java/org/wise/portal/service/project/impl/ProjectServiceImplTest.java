@@ -31,7 +31,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockExtension;
@@ -196,6 +202,137 @@ public class ProjectServiceImplTest {
     } catch (Exception e) {
       fail();
     }
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
+  public void saveProjectContentToDisk_concurrentSaves_shouldNeverCorruptFile() throws Exception {
+    Project project = new ProjectImpl();
+    project.setModulePath("/temp/project.json");
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    projectFile.delete();
+
+    int numThreads = 10;
+    int savesPerThread = 15;
+    ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+    CountDownLatch startLatch = new CountDownLatch(1);
+    CountDownLatch doneLatch = new CountDownLatch(numThreads);
+    AtomicBoolean errorOccurred = new AtomicBoolean(false);
+
+    for (int i = 0; i < numThreads; i++) {
+      final int threadIndex = i;
+      executor.submit(() -> {
+        try {
+          startLatch.await();
+          for (int j = 0; j < savesPerThread; j++) {
+            // Write JSON payloads of varying sizes with large padding to stress buffer flushes
+            int paddingSize = 1024 * (threadIndex + 1) + j * 512;
+            StringBuilder sb = new StringBuilder();
+            sb.append("{\"thread\":").append(threadIndex)
+                .append(",\"iteration\":").append(j)
+                .append(",\"payload\":\"");
+            for (int k = 0; k < paddingSize; k++) {
+              sb.append('a');
+            }
+            sb.append("\"}");
+            projectServiceImpl.saveProjectContentToDisk(sb.toString(), project);
+          }
+        } catch (Exception e) {
+          errorOccurred.set(true);
+        } finally {
+          doneLatch.countDown();
+        }
+      });
+    }
+
+    AtomicBoolean readerFailed = new AtomicBoolean(false);
+    AtomicBoolean writersDone = new AtomicBoolean(false);
+    Thread readerThread = new Thread(() -> {
+      while (!writersDone.get()) {
+        try {
+          if (projectFile.exists()) {
+            String content = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+            if (!content.isEmpty()) {
+              new JSONObject(content);
+            }
+          }
+        } catch (Exception e) {
+          readerFailed.set(true);
+          break;
+        }
+      }
+    });
+    readerThread.start();
+
+    startLatch.countDown();
+    assertTrue(doneLatch.await(15, TimeUnit.SECONDS), "Concurrent saves timed out");
+    writersDone.set(true);
+    readerThread.join(5000);
+    executor.shutdown();
+
+    assertFalse(readerFailed.get(), "Concurrent reader encountered corrupted or partially written JSON!");
+
+    assertFalse(errorOccurred.get(), "Exception occurred during concurrent saves");
+    assertTrue(projectFile.exists(), "project.json should exist");
+
+    // Verify the saved file is valid JSON and not corrupted with trailing data
+    String savedContent = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+    JSONObject json = assertDoesNotThrow(() -> new JSONObject(savedContent),
+        "Saved file must be valid JSON; trailing data or truncation indicates corruption");
+    assertTrue(json.has("thread"));
+    assertTrue(json.has("iteration"));
+    assertTrue(json.has("payload"));
+
+    // Verify all temporary files were cleaned up
+    File parentDir = projectFile.getParentFile();
+    File[] tempFiles = parentDir.listFiles((dir, name) -> name.startsWith("project-") && name.endsWith(".tmp"));
+    assertNotNull(tempFiles);
+    assertEquals(0, tempFiles.length, "All temporary project-*.tmp files must be deleted");
+
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
+  public void saveProjectContentToDisk_shouldSetFileReadable() throws Exception {
+    Project project = new ProjectImpl();
+    project.setModulePath("/temp/project.json");
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    projectFile.delete();
+
+    String projectJSONString = "{\"metadata\":{\"title\":\"Readable Check\"}}";
+    projectServiceImpl.saveProjectContentToDisk(projectJSONString, project);
+
+    assertTrue(projectFile.exists());
+    assertTrue(projectFile.canRead(), "Project file must be readable");
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
+  public void replaceMetadataInProjectJSONFile_shouldUpdateMetadataAtomically() throws Exception {
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    FileUtils.writeStringToFile(projectFile, "{\"metadata\":{\"title\":\"Initial Title\"}}", StandardCharsets.UTF_8);
+
+    ProjectMetadata metadata = new ProjectMetadataImpl();
+    metadata.setTitle("Updated Title Atomically");
+
+    projectServiceImpl.replaceMetadataInProjectJSONFile(projectFilePath, metadata);
+
+    String updatedContent = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+    JSONObject updatedJSON = new JSONObject(updatedContent);
+    assertEquals("Updated Title Atomically", updatedJSON.getJSONObject("metadata").getString("title"));
+
+    // Verify no temporary files left behind
+    File parentDir = projectFile.getParentFile();
+    File[] tempFiles = parentDir.listFiles((dir, name) -> name.startsWith("project-") && name.endsWith(".tmp"));
+    assertNotNull(tempFiles);
+    assertEquals(0, tempFiles.length);
+
     projectFile.deleteOnExit();
     verify(appProperties);
   }
