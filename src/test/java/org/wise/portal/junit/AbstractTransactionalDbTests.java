@@ -31,8 +31,6 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.wise.portal.dao.group.impl.HibernateGroupDao;
 import org.wise.portal.dao.peergroup.impl.HibernatePeerGroupDao;
@@ -70,7 +68,6 @@ import org.wise.portal.service.user.UserService;
  */
 @WebAppConfiguration
 @SpringJUnitConfig
-@Testcontainers
 public abstract class AbstractTransactionalDbTests
     extends AbstractTransactionalJUnit4SpringContextTests {
 
@@ -103,8 +100,7 @@ public abstract class AbstractTransactionalDbTests
 
   private Long nextAvailableProjectId = 1L;
 
-  @Container
-  static final GenericContainer redisContainer = new GenericContainer(
+  static final GenericContainer<?> redisContainer = new GenericContainer<>(
       DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
 
   static {

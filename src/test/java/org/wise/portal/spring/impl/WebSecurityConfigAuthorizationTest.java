@@ -42,8 +42,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 /**
@@ -61,13 +59,15 @@ import org.testcontainers.utility.DockerImageName;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
 public class WebSecurityConfigAuthorizationTest {
 
-  @Container
   @SuppressWarnings("resource")
-  static GenericContainer<?> redisContainer = new GenericContainer<>(
+  static final GenericContainer<?> redisContainer = new GenericContainer<>(
       DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
+
+  static {
+    redisContainer.start();
+  }
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
