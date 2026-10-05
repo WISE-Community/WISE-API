@@ -25,10 +25,13 @@ package org.wise.portal.spring.impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserGrantedAuthority;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -112,6 +120,19 @@ public class WebSecurityConfigAuthorizationTest {
         .andExpect(status().isForbidden());
     mockMvc.perform(get("/api/login/impersonate").with(user("student").roles("STUDENT")))
         .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void impersonatedUser_exitUser_shouldReturnOk() throws Exception {
+    Authentication originalAuth = new TestingAuthenticationToken("admin", "password",
+        "ROLE_ADMINISTRATOR");
+    SwitchUserGrantedAuthority switchAuthority = new SwitchUserGrantedAuthority(
+        SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR, originalAuth);
+    TestingAuthenticationToken impersonatedAuth = new TestingAuthenticationToken("teacher",
+        "password", List.of(new SimpleGrantedAuthority("ROLE_TEACHER"), switchAuthority));
+
+    mockMvc.perform(post("/api/logout/impersonate").with(authentication(impersonatedAuth)))
+        .andExpect(status().isOk());
   }
 
   @Test

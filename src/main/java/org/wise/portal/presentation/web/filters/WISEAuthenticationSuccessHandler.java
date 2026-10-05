@@ -36,7 +36,6 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.portal.Portal;
-import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.authentication.AuthorityNotFoundException;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.portal.PortalService;
@@ -128,9 +127,6 @@ public class WISEAuthenticationSuccessHandler
       handleRedirectRequest(redirectUrl, request, response, userDetails, locale);
     } else if (request.getServletPath().contains("google-login")) {
       handleGoogleLogin(request, response, userDetails, locale);
-    }
-    if (ControllerUtil.isUserPreviousAdministrator()) {
-      response.sendRedirect(getUserHomeUrl(userDetails, locale));
     }
     super.onAuthenticationSuccess(request, response, authentication);
   }

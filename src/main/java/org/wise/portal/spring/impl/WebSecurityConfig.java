@@ -284,7 +284,9 @@ public class WebSecurityConfig {
     filter.setUserDetailsService(userDetailsService);
     filter.setSwitchUserUrl("/api/login/impersonate");
     filter.setExitUserUrl("/api/logout/impersonate");
-    filter.setSuccessHandler(authSuccessHandler());
+    filter.setSuccessHandler((request, response, authentication) -> {
+      response.setStatus(HttpServletResponse.SC_OK);
+    });
     return filter;
   }
 
