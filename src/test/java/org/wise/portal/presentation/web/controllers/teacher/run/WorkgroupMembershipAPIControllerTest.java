@@ -26,7 +26,11 @@ public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
 
   @BeforeEach
   public void init() throws Exception {
-    String paramString = "{\"workgroupIdTo\":\"2\",\"periodId\":\"1\"}";
+    String paramString = """
+        {
+          "workgroupIdTo": "2",
+          "periodId": "1"
+        }""";
     ObjectMapper objectMapper = new ObjectMapper();
     postedParams = objectMapper.readTree(paramString);
   }

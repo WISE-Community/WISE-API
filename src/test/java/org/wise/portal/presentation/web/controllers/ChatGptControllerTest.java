@@ -33,8 +33,19 @@ public class ChatGptControllerTest {
 
   @Test
   public void sendChatMessage_successfulResponse() {
-    String requestBody = "{\"model\":\"gpt-4\",\"messages\":[{\"role\":\"user\",\"content\":\"hello\"}]}";
-    String expectedResponse = "{\"choices\":[{\"message\":{\"role\":\"assistant\",\"content\":\"hi!\"}}]}";
+    String requestBody = """
+        {
+          "model": "gpt-4",
+          "messages": [
+            {"role": "user", "content": "hello"}
+          ]
+        }""";
+    String expectedResponse = """
+        {
+          "choices": [
+            {"message": {"role": "assistant", "content": "hi!"}}
+          ]
+        }""";
 
     mockServer.expect(requestTo(CHAT_URL))
         .andExpect(method(HttpMethod.POST))

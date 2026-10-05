@@ -49,7 +49,8 @@ public class DifferentKIScoresLogicServiceImplTest extends PeerGroupAnnotationLo
     annotation.setToWorkgroup(workgroup);
     annotation.setPeriod(period1);
     annotation.setType("autoScore");
-    annotation.setData("{\"scores\": [{\"id\":\"ki\",\"score\":" + score + "}]}");
+    annotation.setData("""
+        {"scores": [{"id": "ki", "score": %d}]}""".formatted(score));
     return annotation;
   }
 
