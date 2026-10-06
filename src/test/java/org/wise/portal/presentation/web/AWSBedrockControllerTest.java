@@ -40,8 +40,14 @@ public class AWSBedrockControllerTest {
 
   @Test
   public void sendChatMessage_successfulResponse() {
-    String requestBody = "{\"prompt\":\"test prompt\"}";
-    String expectedResponse = "{\"response\":\"test response\"}";
+    String requestBody = """
+        {
+          "prompt": "test prompt"
+        }""";
+    String expectedResponse = """
+        {
+          "response": "test response"
+        }""";
 
     mockServer.expect(requestTo(EXPECTED_URL))
         .andExpect(method(HttpMethod.POST))

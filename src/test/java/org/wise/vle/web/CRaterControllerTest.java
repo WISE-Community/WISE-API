@@ -50,14 +50,13 @@ public class CRaterControllerTest {
 
   private String createVerificationResponseString(String itemId, Boolean available, Long trackingId,
       String clientId) {
-    StringBuffer responseBuffer = new StringBuffer();
-    responseBuffer.append("{");
-    responseBuffer.append("  \"item_id\": \"" + itemId + "\",");
-    responseBuffer.append("  \"available\": \"" + available + "\",");
-    responseBuffer.append("  \"tracking_id\": " + trackingId + ",");
-    responseBuffer.append("  \"client_id\": \"" + clientId + "\"");
-    responseBuffer.append("}");
-    return responseBuffer.toString();
+    return """
+        {
+          "item_id": "%s",
+          "available": "%s",
+          "tracking_id": %d,
+          "client_id": "%s"
+        }""".formatted(itemId, available, trackingId, clientId);
   }
 
   @Test
@@ -77,14 +76,13 @@ public class CRaterControllerTest {
   }
 
   private String createScoringResponseString(String itemId, Long trackingId, String clientId) {
-    StringBuffer responseBuffer = new StringBuffer();
-    responseBuffer.append("{");
-    responseBuffer.append("  \"item_id\": \"" + itemId + "\",");
-    responseBuffer.append("  \"responses\": {},");
-    responseBuffer.append("  \"tracking_id\": " + trackingId + ",");
-    responseBuffer.append("  \"client_id\": \"" + clientId + "\"");
-    responseBuffer.append("}");
-    return responseBuffer.toString();
+    return """
+        {
+          "item_id": "%s",
+          "responses": {},
+          "tracking_id": %d,
+          "client_id": "%s"
+        }""".formatted(itemId, trackingId, clientId);
   }
 
   @Test
@@ -124,13 +122,12 @@ public class CRaterControllerTest {
   }
 
   private String createPingResponseString(String itemId, Long trackingId, String clientId) {
-    StringBuffer responseBuffer = new StringBuffer();
-    responseBuffer.append("{");
-    responseBuffer.append("  \"item_id\": \"" + itemId + "\",");
-    responseBuffer.append("  \"success\": true,");
-    responseBuffer.append("  \"tracking_id\": " + trackingId + ",");
-    responseBuffer.append("  \"client_id\": \"" + clientId + "\"");
-    responseBuffer.append("}");
-    return responseBuffer.toString();
+    return """
+        {
+          "item_id": "%s",
+          "success": true,
+          "tracking_id": %d,
+          "client_id": "%s"
+        }""".formatted(itemId, trackingId, clientId);
   }
 }

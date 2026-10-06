@@ -213,7 +213,12 @@ public class ProjectMetadataImpl implements ProjectMetadata, Serializable {
   @Setter
   private String resources;
 
-  private String standardsDefault = "{\"commonCore\": [], \"ngss\": [], \"learningForJustice\": []}";
+  private String standardsDefault = """
+      {
+        "commonCore": [],
+        "ngss": [],
+        "learningForJustice": []
+      }""";
 
   @Getter
   @Setter

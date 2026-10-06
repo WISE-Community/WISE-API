@@ -61,8 +61,16 @@ public class PeerGroupStudentWorkAnnotationControllerTest
   }
 
   private void expectInvalidDynamicPromptContent() throws IOException {
-    String project_sans_reference_component = "{\"nodes\": [{\"id\": \"" + run1Node2Id
-        + "\",\"type\": \"node\"," + "\"components\": [{\"id\": \"" + run1Component2Id + "\"}]}]}";
+    String project_sans_reference_component = """
+        {
+          "nodes": [
+            {
+              "id": "%s",
+              "type": "node",
+              "components": [{"id": "%s"}]
+            }
+          ]
+        }""".formatted(run1Node2Id, run1Component2Id);
     expect(projectService.getProjectContent(project1)).andReturn(project_sans_reference_component);
   }
 
@@ -83,11 +91,29 @@ public class PeerGroupStudentWorkAnnotationControllerTest
   }
 
   private void expectValidDynamicPromptContent() throws IOException {
-    String project_with_reference_component = "{\"nodes\": [{\"id\": \"" + run1Node2Id
-        + "\",\"type\": \"node\"," + "\"components\": [{\"id\": \"" + run1Component2Id
-        + "\",\"type\":\"HTML\", \"dynamicPrompt\":{\"peerGroupingTag\":\"" + peerGrouping1Tag
-        + "\", \"referenceComponent\": {\"nodeId\":\"" + run1Node1Id + "\",\"componentId\":\""
-        + run1Component1Id + "\", \"type\":\"HTML\"}}}]}]}";
+    String project_with_reference_component = """
+        {
+          "nodes": [
+            {
+              "id": "%s",
+              "type": "node",
+              "components": [
+                {
+                  "id": "%s",
+                  "type": "HTML",
+                  "dynamicPrompt": {
+                    "peerGroupingTag": "%s",
+                    "referenceComponent": {
+                      "nodeId": "%s",
+                      "componentId": "%s",
+                      "type": "HTML"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }""".formatted(run1Node2Id, run1Component2Id, peerGrouping1Tag, run1Node1Id, run1Component1Id);
     expect(projectService.getProjectContent(project1)).andReturn(project_with_reference_component)
         .anyTimes();
   }

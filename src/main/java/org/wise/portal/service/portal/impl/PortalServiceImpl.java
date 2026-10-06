@@ -42,11 +42,142 @@ public class PortalServiceImpl implements PortalService {
   @Autowired
   private PortalDao<Portal> portalDao;
 
-  private String defaultProjectMetadataSettings = "{\"fields\":[{\"name\":\"Title\",\"key\":\"title\",\"type\":\"input\"},{\"name\":\"Summary\",\"key\":\"summary\",\"type\":\"textarea\"},{\"name\":\"Language\",\"key\":\"language\",\"type\":\"radio\",\"choices\":[\"English\",\"Chinese (Simplified)\",\"Chinese (Traditional)\",\"Dutch\",\"German\",\"Greek\",\"Hebrew\",\"Japanese\",\"Korean\",\"Portuguese\",\"Spanish\",\"Thai\",\"Turkish\"]},{\"name\":\"Subject\",\"key\":\"subject\",\"type\":\"radio\",\"choices\":[\"Life Science\",\"Physical Science\",\"Earth Science\",\"General Science\",\"Biology\",\"Chemistry\",\"Physics\",\"Other\"]},{\"name\":\"Time Required to Complete Project\",\"key\":\"time\",\"type\":\"input\"},{\"name\":\"Supported Devices\",\"key\":\"supportedDevices\",\"type\":\"checkbox\",\"choices\":[\"PC\",\"Tablet\"]}],\"i18n\":{\"lifeScience\":{\"en\":\"Life Science\",\"ja\":\"ライフサイエンス\"},\"earthScience\":{\"en\":\"Earth Science\",\"ja\":\"地球科学\"},\"physicalScience\":{\"en\":\"Physical Science\",\"ja\":\"物理科学\",\"es\":\"ciencia física\"}}}";
+  private String defaultProjectMetadataSettings = """
+      {
+        "fields": [
+          {
+            "name": "Title",
+            "key": "title",
+            "type": "input"
+          },
+          {
+            "name": "Summary",
+            "key": "summary",
+            "type": "textarea"
+          },
+          {
+            "name": "Language",
+            "key": "language",
+            "type": "radio",
+            "choices": [
+              "English",
+              "Chinese (Simplified)",
+              "Chinese (Traditional)",
+              "Dutch",
+              "German",
+              "Greek",
+              "Hebrew",
+              "Japanese",
+              "Korean",
+              "Portuguese",
+              "Spanish",
+              "Thai",
+              "Turkish"
+            ]
+          },
+          {
+            "name": "Subject",
+            "key": "subject",
+            "type": "radio",
+            "choices": [
+              "Life Science",
+              "Physical Science",
+              "Earth Science",
+              "General Science",
+              "Biology",
+              "Chemistry",
+              "Physics",
+              "Other"
+            ]
+          },
+          {
+            "name": "Time Required to Complete Project",
+            "key": "time",
+            "type": "input"
+          },
+          {
+            "name": "Supported Devices",
+            "key": "supportedDevices",
+            "type": "checkbox",
+            "choices": [
+              "PC",
+              "Tablet"
+            ]
+          }
+        ],
+        "i18n": {
+          "lifeScience": {
+            "en": "Life Science",
+            "ja": "ライフサイエンス"
+          },
+          "earthScience": {
+            "en": "Earth Science",
+            "ja": "地球科学"
+          },
+          "physicalScience": {
+            "en": "Physical Science",
+            "ja": "物理科学",
+            "es": "ciencia física"
+          }
+        }
+      }""";
 
-  private String defaultProjectLibraryGroups = "[{\"name\":\"Integrated\",\"id\":\"integrated\",\"type\":\"group\",\"children\":[{\"name\":\"Grade6\",\"id\":\"grade6\",\"type\":\"group\",\"children\":[]},{\"name\":\"Grade7\",\"id\":\"grade7\",\"type\":\"group\",\"children\":[]},{\"name\":\"Grade8\",\"id\":\"grade8\",\"type\":\"group\",\"children\":[]}]},{\"name\":\"DisciplineSpecific\",\"id\":\"disciplineSpecific\",\"type\":\"group\",\"children\":[]},{\"name\":\"Grade7\",\"id\":\"grade7\",\"type\":\"group\",\"children\":[]},{\"name\":\"Grade8\",\"id\":\"grade8\",\"type\":\"group\",\"children\":[]}]";
+  private String defaultProjectLibraryGroups = """
+      [
+        {
+          "name": "Integrated",
+          "id": "integrated",
+          "type": "group",
+          "children": [
+            {
+              "name": "Grade6",
+              "id": "grade6",
+              "type": "group",
+              "children": []
+            },
+            {
+              "name": "Grade7",
+              "id": "grade7",
+              "type": "group",
+              "children": []
+            },
+            {
+              "name": "Grade8",
+              "id": "grade8",
+              "type": "group",
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "DisciplineSpecific",
+          "id": "disciplineSpecific",
+          "type": "group",
+          "children": []
+        },
+        {
+          "name": "Grade7",
+          "id": "grade7",
+          "type": "group",
+          "children": []
+        },
+        {
+          "name": "Grade8",
+          "id": "grade8",
+          "type": "group",
+          "children": []
+        }
+      ]""";
 
-  private String defaultAnnouncement = "{\"visible\":false,\"bannerText\":\"\",\"bannerButton\":\"\",\"title\":\"\",\"content\":\"\",\"buttons\":[]}";
+  private String defaultAnnouncement = """
+      {
+        "visible": false,
+        "bannerText": "",
+        "bannerButton": "",
+        "title": "",
+        "content": "",
+        "buttons": []
+      }""";
 
   @Transactional()
   public Portal getById(Serializable id) throws ObjectNotFoundException {

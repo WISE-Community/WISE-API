@@ -52,9 +52,13 @@ public class DifferentIdeasLogicServiceImplTest extends PeerGroupAnnotationLogic
 
   private String createIdeaString(boolean idea1Detected, boolean idea2Detected,
       boolean idea3Detected, boolean idea4Detected) {
-    return "[{\"name\":\"1\",\"detected\":" + idea1Detected + "}," + "{\"name\":\"2\",\"detected\":"
-        + idea2Detected + "}," + "{\"name\":\"3\",\"detected\":" + idea3Detected + "},"
-        + "{\"name\":\"4\",\"detected\":" + idea4Detected + "}]";
+    return """
+        [
+          {"name": "1", "detected": %b},
+          {"name": "2", "detected": %b},
+          {"name": "3", "detected": %b},
+          {"name": "4", "detected": %b}
+        ]""".formatted(idea1Detected, idea2Detected, idea3Detected, idea4Detected);
   }
 
   private Annotation createIdeasAnnotation(Workgroup workgroup, String ideas) {
