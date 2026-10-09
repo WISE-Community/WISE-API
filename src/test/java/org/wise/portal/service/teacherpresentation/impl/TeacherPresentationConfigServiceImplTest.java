@@ -71,9 +71,9 @@ public class TeacherPresentationConfigServiceImplTest {
   }
 
   @Test
-  public void saveConfig_MoreThan100Items_ThrowIllegalArgument() {
+  public void saveConfig_MoreThan500Items_ThrowIllegalArgument() {
     List<Integer> ids = new ArrayList<>();
-    for (int i = 0; i < 101; i++) {
+    for (int i = 0; i < 501; i++) {
       ids.add(i);
     }
     replay(teacherPresentationConfigDao, studentWorkDao);
@@ -144,8 +144,7 @@ public class TeacherPresentationConfigServiceImplTest {
     TeacherPresentationReflectionAnswer existing = new TeacherPresentationReflectionAnswer();
     existing.setId(9L);
     existing.setQuestionId("q1");
-    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1"))
-        .andReturn(config);
+    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(config);
     expect(teacherPresentationConfigDao.getAnswer(config, "q1")).andReturn(existing);
     teacherPresentationConfigDao.saveAnswer(existing);
     expectLastCall();
