@@ -18,7 +18,6 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.teacherpresentation.TeacherPresentationConfigService;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
-import org.wise.vle.domain.teacherpresentation.TeacherPresentationReflectionAnswer;
 import org.wise.vle.domain.work.StudentWork;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,8 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TeacherPresentationConfigServiceImpl implements TeacherPresentationConfigService {
 
   private static final int MAX_ID_LENGTH = 30;
-  private static final int MAX_QUESTION_TEXT_LENGTH = 5000;
-  private static final int MAX_ANSWER_TEXT_LENGTH = 20000;
   private static final Set<String> NAMES_DISPLAY_OPTIONS = Set.of(
       TeacherPresentationConfig.NAMES_SHOW, TeacherPresentationConfig.NAMES_HIDE,
       TeacherPresentationConfig.NAMES_ANONYMIZE);
@@ -48,12 +45,6 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   public TeacherPresentationConfig getConfig(Run run, Group period, String nodeId,
       String componentId) {
     return teacherPresentationConfigDao.getConfig(run, period, nodeId, componentId);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
-  public List<TeacherPresentationReflectionAnswer> getAnswers(TeacherPresentationConfig config) {
-    return teacherPresentationConfigDao.getAnswers(config);
   }
 
   @Override
@@ -94,43 +85,6 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
     config.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
     teacherPresentationConfigDao.save(config);
     return config;
-  }
-
-  @Override
-  @Transactional
-  public TeacherPresentationReflectionAnswer saveAnswer(Run run, Group period, String nodeId,
-      String componentId, String componentType, String questionId, String questionText,
-      String answerText, Workgroup teacherWorkgroup) {
-    validateComponent(nodeId, componentId, componentType);
-    if (questionId == null || questionId.isBlank() || questionId.length() > MAX_ID_LENGTH) {
-      throw new IllegalArgumentException("Invalid questionId");
-    }
-    if (questionText == null || questionText.length() > MAX_QUESTION_TEXT_LENGTH) {
-      throw new IllegalArgumentException("Invalid questionText");
-    }
-    if (answerText != null && answerText.length() > MAX_ANSWER_TEXT_LENGTH) {
-      throw new IllegalArgumentException("answerText is too long");
-    }
-    TeacherPresentationConfig config = getOrCreateConfig(run, period, nodeId, componentId,
-        componentType);
-    if (config.getId() == null) {
-      teacherPresentationConfigDao.save(config);
-    }
-    Timestamp now = new Timestamp(System.currentTimeMillis());
-    TeacherPresentationReflectionAnswer answer = teacherPresentationConfigDao.getAnswer(config,
-        questionId);
-    if (answer == null) {
-      answer = new TeacherPresentationReflectionAnswer();
-      answer.setTeacherPresentationConfig(config);
-      answer.setQuestionId(questionId);
-      answer.setCreatedAt(now);
-    }
-    answer.setQuestionText(questionText);
-    answer.setAnswerText(answerText);
-    answer.setAnsweredByWorkgroup(teacherWorkgroup);
-    answer.setUpdatedAt(now);
-    teacherPresentationConfigDao.saveAnswer(answer);
-    return answer;
   }
 
   private TeacherPresentationConfig getOrCreateConfig(Run run, Group period, String nodeId,

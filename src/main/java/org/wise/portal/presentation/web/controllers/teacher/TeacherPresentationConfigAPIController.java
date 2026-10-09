@@ -25,7 +25,6 @@ import org.wise.portal.service.teacherpresentation.TeacherPresentationConfigServ
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
-import org.wise.vle.domain.teacherpresentation.TeacherPresentationReflectionAnswer;
 
 /**
  * REST API for TeacherPresentation: the teacher's selected student work, student name display
@@ -55,17 +54,9 @@ public class TeacherPresentationConfigAPIController {
       String componentType, List<Item> items, String studentNamesDisplay, String prompt) {
   }
 
-  public record AnswerRequest(Long runId, Long periodId, String nodeId, String componentId,
-      String componentType, String questionId, String questionText, String answerText) {
-  }
-
-  public record AnswerResponse(String questionId, String questionText, String answerText,
-      Long answeredByWorkgroupId, Long updatedAt) {
-  }
-
   public record ConfigResponse(Long id, Long runId, Long periodId, String nodeId,
       String componentId, String componentType, List<Item> items, String studentNamesDisplay,
-      String prompt, Long updatedByWorkgroupId, Long updatedAt, List<AnswerResponse> answers) {
+      String prompt, Long updatedByWorkgroupId, Long updatedAt) {
   }
 
   @GetMapping
@@ -82,7 +73,7 @@ public class TeacherPresentationConfigAPIController {
         nodeId, componentId);
     if (config == null) {
       return new ConfigResponse(null, runId, periodId, nodeId, componentId, null, new ArrayList<>(),
-          TeacherPresentationConfig.NAMES_HIDE, null, null, null, new ArrayList<>());
+          TeacherPresentationConfig.NAMES_HIDE, null, null, null);
     }
     return toResponse(config);
   }
@@ -112,26 +103,6 @@ public class TeacherPresentationConfigAPIController {
     }
   }
 
-  @PutMapping("/answers")
-  AnswerResponse saveAnswer(Authentication auth, @RequestBody AnswerRequest request)
-      throws ObjectNotFoundException {
-    Run run = runService.retrieveById(request.runId());
-    User user = userService.retrieveUserByUsername(auth.getName());
-    if (!runService.isAllowedToGradeStudentWork(run, user)) {
-      throw new AccessDeniedException("Not permitted");
-    }
-    Group period = getPeriod(run, request.periodId());
-    try {
-      TeacherPresentationReflectionAnswer answer = teacherPresentationConfigService.saveAnswer(run,
-          period, request.nodeId(), request.componentId(), request.componentType(),
-          request.questionId(), request.questionText(), request.answerText(),
-          getTeacherWorkgroup(run, user));
-      return toAnswerResponse(answer);
-    } catch (IllegalArgumentException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-  }
-
   private Group getPeriod(Run run, Long periodId) {
     for (Group period : run.getPeriods()) {
       if (period.getId().equals(periodId)) {
@@ -151,22 +122,10 @@ public class TeacherPresentationConfigAPIController {
     for (Integer id : teacherPresentationConfigService.getStudentWorkIds(config)) {
       items.add(new Item(id));
     }
-    List<AnswerResponse> answers = new ArrayList<>();
-    for (TeacherPresentationReflectionAnswer answer : teacherPresentationConfigService
-        .getAnswers(config)) {
-      answers.add(toAnswerResponse(answer));
-    }
     Workgroup updatedBy = config.getUpdatedByWorkgroup();
     return new ConfigResponse(config.getId(), config.getRun().getId(), config.getPeriod().getId(),
         config.getNodeId(), config.getComponentId(), config.getComponentType(), items,
         config.getStudentNamesDisplay(), config.getPrompt(),
-        updatedBy == null ? null : updatedBy.getId(), config.getUpdatedAt().getTime(), answers);
-  }
-
-  private AnswerResponse toAnswerResponse(TeacherPresentationReflectionAnswer answer) {
-    Workgroup answeredBy = answer.getAnsweredByWorkgroup();
-    return new AnswerResponse(answer.getQuestionId(), answer.getQuestionText(),
-        answer.getAnswerText(), answeredBy == null ? null : answeredBy.getId(),
-        answer.getUpdatedAt().getTime());
+        updatedBy == null ? null : updatedBy.getId(), config.getUpdatedAt().getTime());
   }
 }

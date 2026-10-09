@@ -24,7 +24,6 @@ import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
-import org.wise.vle.domain.teacherpresentation.TeacherPresentationReflectionAnswer;
 import org.wise.vle.domain.work.StudentWork;
 
 @ExtendWith(EasyMockExtension.class)
@@ -135,31 +134,5 @@ public class TeacherPresentationConfigServiceImplTest {
     assertEquals("anonymize", config.getStudentNamesDisplay());
     assertEquals("My prompt", config.getPrompt());
     assertEquals(0, service.getStudentWorkIds(config).size());
-  }
-
-  @Test
-  public void saveAnswer_ExistingAnswer_UpdateInsteadOfCreatingHistory() {
-    TeacherPresentationConfig config = new TeacherPresentationConfig();
-    config.setId(3L);
-    TeacherPresentationReflectionAnswer existing = new TeacherPresentationReflectionAnswer();
-    existing.setId(9L);
-    existing.setQuestionId("q1");
-    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(config);
-    expect(teacherPresentationConfigDao.getAnswer(config, "q1")).andReturn(existing);
-    teacherPresentationConfigDao.saveAnswer(existing);
-    expectLastCall();
-    replay(teacherPresentationConfigDao, studentWorkDao);
-    TeacherPresentationReflectionAnswer answer = service.saveAnswer(run, period, "node1", "comp1",
-        "Discussion", "q1", "Why?", "New answer", null);
-    assertEquals(9L, answer.getId());
-    assertEquals("New answer", answer.getAnswerText());
-    assertEquals("Why?", answer.getQuestionText());
-  }
-
-  @Test
-  public void saveAnswer_InvalidQuestionId_ThrowIllegalArgument() {
-    replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> service.saveAnswer(run, period, "node1",
-        "comp1", "Discussion", " ", "Why?", "a", null));
   }
 }

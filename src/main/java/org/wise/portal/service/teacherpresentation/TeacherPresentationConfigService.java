@@ -6,7 +6,6 @@ import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
-import org.wise.vle.domain.teacherpresentation.TeacherPresentationReflectionAnswer;
 
 public interface TeacherPresentationConfigService {
 
@@ -17,8 +16,6 @@ public interface TeacherPresentationConfigService {
    * @return the config, or null if the teacher has not saved one yet
    */
   TeacherPresentationConfig getConfig(Run run, Group period, String nodeId, String componentId);
-
-  List<TeacherPresentationReflectionAnswer> getAnswers(TeacherPresentationConfig config);
 
   List<Integer> getStudentWorkIds(TeacherPresentationConfig config);
 
@@ -33,14 +30,4 @@ public interface TeacherPresentationConfigService {
   TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
       String componentType, List<Integer> studentWorkIds, String studentNamesDisplay,
       String prompt, Workgroup teacherWorkgroup);
-
-  /**
-   * Creates or updates the answer to a reflection question. Creates the config if it does not
-   * exist yet.
-   *
-   * @throws IllegalArgumentException if the input is invalid
-   */
-  TeacherPresentationReflectionAnswer saveAnswer(Run run, Group period, String nodeId,
-      String componentId, String componentType, String questionId, String questionText,
-      String answerText, Workgroup teacherWorkgroup);
 }
