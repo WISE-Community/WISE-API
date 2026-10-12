@@ -57,17 +57,17 @@ public class TeacherReflectionAPIController {
   }
 
   @GetMapping
-  public List<TeacherReflectionResponse> getQuestions(Authentication auth,
-      @RequestParam Long runId, @RequestParam Long periodId, @RequestParam String nodeId,
-      @RequestParam String componentId) throws ObjectNotFoundException {
+  public List<TeacherReflectionResponse> getQuestions(Authentication auth, @RequestParam Long runId,
+      @RequestParam Long periodId, @RequestParam String nodeId, @RequestParam String componentId)
+      throws ObjectNotFoundException {
     Run run = runService.retrieveById(runId);
     User user = userService.retrieveUserByUsername(auth.getName());
     if (!runService.isAllowedToViewStudentWork(run, user)) {
       throw new AccessDeniedException("Not permitted");
     }
     Group period = getPeriod(run, periodId);
-    List<TeacherReflection> reflections = teacherReflectionService.getQuestions(run,
-        period, nodeId, componentId);
+    List<TeacherReflection> reflections = teacherReflectionService.getQuestions(run, period, nodeId,
+        componentId);
     List<TeacherReflectionResponse> response = new ArrayList<>();
     for (TeacherReflection reflection : reflections) {
       response.add(toResponse(reflection));
@@ -75,7 +75,7 @@ public class TeacherReflectionAPIController {
     return response;
   }
 
-  @PutMapping(path = { "", "/answer" })
+  @PutMapping("/answer")
   public TeacherReflectionResponse saveAnswer(Authentication auth,
       @RequestBody AnswerRequest request) throws ObjectNotFoundException {
     Run run = runService.retrieveById(request.runId());
