@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.wise.portal.dao.teacherreflection.TeacherReflectionDao;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.vle.domain.teacherreflection.TeacherReflection;
 
 @ExtendWith(EasyMockExtension.class)
@@ -33,11 +34,13 @@ public class TeacherReflectionServiceImplTest {
 
   private RunImpl run = new RunImpl();
   private PersistentGroup period = new PersistentGroup();
+  private WorkgroupImpl teacherWorkgroup = new WorkgroupImpl();
 
   @BeforeEach
   public void setUp() {
     run.setId(1L);
     period.setId(10L);
+    teacherWorkgroup.setId(20L);
   }
 
   @Test
@@ -56,14 +59,21 @@ public class TeacherReflectionServiceImplTest {
   public void saveAnswer_InvalidQuestionId_ThrowsIllegalArgument() {
     replay(teacherReflectionDao);
     assertThrows(IllegalArgumentException.class, () -> service.saveAnswer(run, period, "node1",
-        "comp1", "Discussion", " ", "Why?", "Answer", null));
+        "comp1", "Discussion", " ", "Why?", "Answer", teacherWorkgroup));
   }
 
   @Test
   public void saveAnswer_QuestionTextTooLong_ThrowsIllegalArgument() {
     replay(teacherReflectionDao);
     assertThrows(IllegalArgumentException.class, () -> service.saveAnswer(run, period, "node1",
-        "comp1", "Discussion", "q1", "x".repeat(5001), "Answer", null));
+        "comp1", "Discussion", "q1", "x".repeat(5001), "Answer", teacherWorkgroup));
+  }
+
+  @Test
+  public void saveAnswer_NullTeacherWorkgroup_ThrowsIllegalArgument() {
+    replay(teacherReflectionDao);
+    assertThrows(IllegalArgumentException.class, () -> service.saveAnswer(run, period, "node1",
+        "comp1", "Discussion", "q1", "Question text", "Answer text", null));
   }
 
   @Test
@@ -75,12 +85,13 @@ public class TeacherReflectionServiceImplTest {
     replay(teacherReflectionDao);
 
     TeacherReflection r = service.saveAnswer(run, period, "node1", "comp1", "Discussion",
-        "q1", "Question text", "Answer text", null);
+        "q1", "Question text", "Answer text", teacherWorkgroup);
     assertNotNull(r);
     assertEquals("q1", r.getQuestionId());
     assertEquals("Question text", r.getQuestionText());
     assertEquals("Answer text", r.getAnswerText());
     assertEquals("Discussion", r.getComponentType());
+    assertEquals(teacherWorkgroup, r.getAnsweredByWorkgroup());
   }
 
   @Test
@@ -98,9 +109,10 @@ public class TeacherReflectionServiceImplTest {
     replay(teacherReflectionDao);
 
     TeacherReflection r = service.saveAnswer(run, period, "node1", "comp1", "Discussion",
-        "q1", "New question", "New answer", null);
+        "q1", "New question", "New answer", teacherWorkgroup);
     assertEquals(5L, r.getId());
     assertEquals("New question", r.getQuestionText());
     assertEquals("New answer", r.getAnswerText());
+    assertEquals(teacherWorkgroup, r.getAnsweredByWorkgroup());
   }
 }

@@ -48,7 +48,8 @@ public class TeacherReflectionAPIController {
   private WorkgroupService workgroupService;
 
   public record AnswerRequest(Long runId, Long periodId, String nodeId, String componentId,
-      String componentType, String questionId, String questionText, String answerText) {
+      String componentType, String questionId, String questionText, String answerText,
+      Long answeredByWorkgroupId) {
   }
 
   public record TeacherReflectionResponse(Long id, Long runId, Long periodId, String nodeId,
@@ -84,10 +85,23 @@ public class TeacherReflectionAPIController {
       throw new AccessDeniedException("Not permitted");
     }
     Group period = getPeriod(run, request.periodId());
+    if (request.answeredByWorkgroupId() == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "answeredByWorkgroupId cannot be null");
+    }
+    Workgroup teacherWorkgroup = workgroupService.retrieveById(request.answeredByWorkgroupId());
+    if (teacherWorkgroup != null && !teacherWorkgroup.isTeacherWorkgroup()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Workgroup is not a teacher workgroup");
+    }
+    if (teacherWorkgroup != null && !run.equals(teacherWorkgroup.getRun())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Workgroup does not belong to the run");
+    }
     try {
       TeacherReflection reflection = teacherReflectionService.saveAnswer(run, period,
           request.nodeId(), request.componentId(), request.componentType(), request.questionId(),
-          request.questionText(), request.answerText(), getTeacherWorkgroup(run, user));
+          request.questionText(), request.answerText(), teacherWorkgroup);
       return toResponse(reflection);
     } catch (IllegalArgumentException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -103,17 +117,11 @@ public class TeacherReflectionAPIController {
     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Period does not belong to the run");
   }
 
-  private Workgroup getTeacherWorkgroup(Run run, User user) {
-    List<Workgroup> workgroups = workgroupService.getWorkgroupListByRunAndUser(run, user);
-    return workgroups.isEmpty() ? null : workgroups.get(0);
-  }
-
   private TeacherReflectionResponse toResponse(TeacherReflection reflection) {
-    Workgroup answeredBy = reflection.getAnsweredByWorkgroup();
     return new TeacherReflectionResponse(reflection.getId(), reflection.getRun().getId(),
         reflection.getPeriod().getId(), reflection.getNodeId(), reflection.getComponentId(),
         reflection.getComponentType(), reflection.getQuestionId(), reflection.getQuestionText(),
-        reflection.getAnswerText(), answeredBy == null ? null : answeredBy.getId(),
+        reflection.getAnswerText(), reflection.getAnsweredByWorkgroup().getId(),
         reflection.getCreatedAt().getTime(), reflection.getUpdatedAt().getTime());
   }
 }

@@ -32,9 +32,9 @@ public class TeacherReflectionServiceImpl implements TeacherReflectionService {
 
   @Override
   @Transactional
-  public TeacherReflection saveAnswer(Run run, Group period, String nodeId,
-      String componentId, String componentType, String questionId, String questionText,
-      String answerText, Workgroup teacherWorkgroup) {
+  public TeacherReflection saveAnswer(Run run, Group period, String nodeId, String componentId,
+      String componentType, String questionId, String questionText, String answerText,
+      Workgroup teacherWorkgroup) {
     validateComponent(nodeId, componentId, componentType);
     if (questionId == null || questionId.isBlank() || questionId.length() > MAX_ID_LENGTH) {
       throw new IllegalArgumentException("Invalid questionId");
@@ -42,13 +42,16 @@ public class TeacherReflectionServiceImpl implements TeacherReflectionService {
     if (questionText == null || questionText.length() > MAX_QUESTION_TEXT_LENGTH) {
       throw new IllegalArgumentException("Invalid questionText");
     }
-    if (answerText != null && answerText.length() > MAX_ANSWER_TEXT_LENGTH) {
-      throw new IllegalArgumentException("answerText is too long");
+    if (answerText == null || answerText.length() > MAX_ANSWER_TEXT_LENGTH) {
+      throw new IllegalArgumentException("Invalid answerText");
+    }
+    if (teacherWorkgroup == null) {
+      throw new IllegalArgumentException("teacherWorkgroup cannot be null");
     }
 
     Timestamp now = new Timestamp(System.currentTimeMillis());
-    TeacherReflection reflection = teacherReflectionDao.getQuestion(run, period,
-        nodeId, componentId, questionId);
+    TeacherReflection reflection = teacherReflectionDao.getQuestion(run, period, nodeId,
+        componentId, questionId);
     if (reflection == null) {
       reflection = new TeacherReflection();
       reflection.setRun(run);

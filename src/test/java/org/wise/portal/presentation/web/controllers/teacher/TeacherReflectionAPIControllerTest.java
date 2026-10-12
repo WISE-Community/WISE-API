@@ -2,7 +2,6 @@ package org.wise.portal.presentation.web.controllers.teacher;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -81,8 +80,8 @@ public class TeacherReflectionAPIControllerTest extends APIControllerTest {
     r.setCreatedAt(now);
     r.setUpdatedAt(now);
 
-    expect(teacherReflectionService.getQuestions(run1, run1Period1, run1Node1Id,
-        run1Component1Id)).andReturn(Arrays.asList(r));
+    expect(teacherReflectionService.getQuestions(run1, run1Period1, run1Node1Id, run1Component1Id))
+        .andReturn(Arrays.asList(r));
     replay(teacherReflectionService, runService, userService, workgroupService);
 
     List<TeacherReflectionResponse> res = controller.getQuestions(teacherAuth, runId1,
@@ -99,8 +98,29 @@ public class TeacherReflectionAPIControllerTest extends APIControllerTest {
     replay(teacherReflectionService, runService, userService, workgroupService);
 
     AnswerRequest req = new AnswerRequest(runId1, run1Period1Id, run1Node1Id, run1Component1Id,
-        "Discussion", "q1", "Question text", "Answer text");
+        "Discussion", "q1", "Question text", "Answer text", teacher1Run1Workgroup.getId());
     assertThrows(AccessDeniedException.class, () -> controller.saveAnswer(teacherAuth, req));
+  }
+
+  @Test
+  public void saveAnswer_NullAnsweredByWorkgroupId_ThrowsBadRequest() throws Exception {
+    expectTeacherWithPermissions(true, true);
+    replay(teacherReflectionService, runService, userService, workgroupService);
+
+    AnswerRequest req = new AnswerRequest(runId1, run1Period1Id, run1Node1Id, run1Component1Id,
+        "Discussion", "q1", "Question text", "Answer text", null);
+    assertThrows(ResponseStatusException.class, () -> controller.saveAnswer(teacherAuth, req));
+  }
+
+  @Test
+  public void saveAnswer_WorkgroupNotInRun_ThrowsBadRequest() throws Exception {
+    expectTeacherWithPermissions(true, true);
+    expect(workgroupService.retrieveById(workgroup3Id)).andReturn(workgroup3);
+    replay(teacherReflectionService, runService, userService, workgroupService);
+
+    AnswerRequest req = new AnswerRequest(runId1, run1Period1Id, run1Node1Id, run1Component1Id,
+        "Discussion", "q1", "Question text", "Answer text", workgroup3Id);
+    assertThrows(ResponseStatusException.class, () -> controller.saveAnswer(teacherAuth, req));
   }
 
   @Test
@@ -121,13 +141,14 @@ public class TeacherReflectionAPIControllerTest extends APIControllerTest {
     r.setCreatedAt(now);
     r.setUpdatedAt(now);
 
-    expect(teacherReflectionService.saveAnswer(run1, run1Period1, run1Node1Id,
-        run1Component1Id, "Discussion", "q1", "Question text", "Answer text",
-        teacher1Run1Workgroup)).andReturn(r);
+    expect(workgroupService.retrieveById(teacher1Run1Workgroup.getId()))
+        .andReturn(teacher1Run1Workgroup);
+    expect(teacherReflectionService.saveAnswer(run1, run1Period1, run1Node1Id, run1Component1Id,
+        "Discussion", "q1", "Question text", "Answer text", teacher1Run1Workgroup)).andReturn(r);
     replay(teacherReflectionService, runService, userService, workgroupService);
 
     AnswerRequest req = new AnswerRequest(runId1, run1Period1Id, run1Node1Id, run1Component1Id,
-        "Discussion", "q1", "Question text", "Answer text");
+        "Discussion", "q1", "Question text", "Answer text", teacher1Run1Workgroup.getId());
     TeacherReflectionResponse res = controller.saveAnswer(teacherAuth, req);
     assertNotNull(res);
     assertEquals("q1", res.questionId());

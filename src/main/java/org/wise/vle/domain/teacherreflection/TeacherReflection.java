@@ -29,10 +29,9 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
  * Stored in teacher_reflections.
  */
 @Entity(name = "teacherReflection")
-@Table(name = "teacher_reflections",
-    uniqueConstraints = @UniqueConstraint(name = "teacherReflectionsUniqueKey",
-        columnNames = { "runId", "periodId", "nodeId", "componentId", "questionId" }),
-    indexes = @Index(columnList = "runId", name = "teacherReflectionsRunIdIndex"))
+@Table(name = "teacher_reflections", uniqueConstraints = @UniqueConstraint(name = "teacherReflectionsUniqueKey", columnNames = {
+    "runId", "periodId", "nodeId", "componentId",
+    "questionId" }), indexes = @Index(columnList = "runId", name = "teacherReflectionsRunIdIndex"))
 @Getter
 @Setter
 public class TeacherReflection {
@@ -66,11 +65,11 @@ public class TeacherReflection {
   @Column(name = "questionText", length = 65536, columnDefinition = "text", nullable = false)
   private String questionText;
 
-  @Column(name = "answerText", length = 65536, columnDefinition = "text")
+  @Column(name = "answerText", length = 65536, columnDefinition = "text", nullable = false)
   private String answerText;
 
   @ManyToOne(targetEntity = WorkgroupImpl.class, fetch = FetchType.LAZY)
-  @JoinColumn(name = "answeredByWorkgroupId")
+  @JoinColumn(name = "answeredByWorkgroupId", nullable = false)
   @JsonIgnore
   private Workgroup answeredByWorkgroup;
 
