@@ -232,8 +232,10 @@ public abstract class APIControllerTest {
 
   protected WorkgroupImpl createTeacherWorkgroup(Run run, User teacher) {
     WorkgroupImpl workgroup = new WorkgroupImpl();
+    workgroup.setId(4L);
     workgroup.setRun(run);
     workgroup.addMember(teacher);
+    workgroup.setTeacherWorkgroup(true);
     return workgroup;
   }
 
