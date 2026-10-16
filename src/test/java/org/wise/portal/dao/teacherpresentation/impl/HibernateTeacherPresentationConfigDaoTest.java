@@ -103,6 +103,7 @@ public class HibernateTeacherPresentationConfigDaoTest extends AbstractTransacti
     assertEquals("Discussion", retrieved.getComponentType());
     assertEquals("[{\"studentWorkId\":101}]", retrieved.getItems());
     assertEquals(TeacherPresentationConfig.NAMES_HIDE, retrieved.getStudentNamesDisplay());
+    assertEquals(true, retrieved.isShowComponentPrompt());
     assertEquals("Sample discussion prompt", retrieved.getPrompt());
     assertEquals(teacherWorkgroup.getId(), retrieved.getUpdatedByWorkgroup().getId());
   }

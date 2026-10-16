@@ -21,6 +21,9 @@ import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.run.RunService;
+import org.wise.portal.service.teacherpresentation.DiscussionItem;
+import org.wise.portal.service.teacherpresentation.IdeasItem;
+import org.wise.portal.service.teacherpresentation.IdeasResponse;
 import org.wise.portal.service.teacherpresentation.TeacherPresentationConfigService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
@@ -47,16 +50,24 @@ public class TeacherPresentationConfigAPIController {
   @Autowired
   private WorkgroupService workgroupService;
 
-  public record Item(Integer studentWorkId) {
+  public record Item(Integer studentWorkId, String ideaId, List<IdeasResponse> responses) {
+    public Item(Integer studentWorkId) {
+      this(studentWorkId, null, null);
+    }
+
+    public Item(String ideaId, List<IdeasResponse> responses) {
+      this(null, ideaId, responses);
+    }
   }
 
   public record ConfigRequest(Long runId, Long periodId, String nodeId, String componentId,
-      String componentType, List<Item> items, String studentNamesDisplay, String prompt) {
+      String componentType, String itemType, List<Item> items, String studentNamesDisplay,
+      Boolean showComponentPrompt, String prompt) {
   }
 
   public record ConfigResponse(Long id, Long runId, Long periodId, String nodeId,
-      String componentId, String componentType, List<Item> items, String studentNamesDisplay,
-      String prompt, Long updatedByWorkgroupId, Long updatedAt) {
+      String componentId, String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      Boolean showComponentPrompt, String prompt, Long updatedByWorkgroupId, Long updatedAt) {
   }
 
   @GetMapping
@@ -72,8 +83,9 @@ public class TeacherPresentationConfigAPIController {
     TeacherPresentationConfig config = teacherPresentationConfigService.getConfig(run, period,
         nodeId, componentId);
     if (config == null) {
-      return new ConfigResponse(null, runId, periodId, nodeId, componentId, null, new ArrayList<>(),
-          TeacherPresentationConfig.NAMES_HIDE, null, null, null);
+      return new ConfigResponse(null, runId, periodId, nodeId, componentId, null,
+          null, new ArrayList<>(),
+          TeacherPresentationConfig.NAMES_HIDE, true, null, null, null);
     }
     return toResponse(config);
   }
@@ -87,16 +99,35 @@ public class TeacherPresentationConfigAPIController {
       throw new AccessDeniedException("Not permitted");
     }
     Group period = getPeriod(run, request.periodId());
-    List<Integer> studentWorkIds = new ArrayList<>();
-    if (request.items() != null) {
-      for (Item item : request.items()) {
-        studentWorkIds.add(item == null ? null : item.studentWorkId());
+    String itemType = request.itemType() != null ? request.itemType()
+        : TeacherPresentationConfig.ITEM_TYPE_DISCUSSION;
+    List<?> itemsToSave;
+    if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(itemType)) {
+      List<IdeasItem> ideasItems = new ArrayList<>();
+      if (request.items() != null) {
+        for (Item item : request.items()) {
+          if (item != null) {
+            ideasItems.add(new IdeasItem(item.ideaId(), item.responses()));
+          }
+        }
       }
+      itemsToSave = ideasItems;
+    } else {
+      List<DiscussionItem> discussionItems = new ArrayList<>();
+      if (request.items() != null) {
+        for (Item item : request.items()) {
+          if (item != null) {
+            discussionItems.add(new DiscussionItem(item.studentWorkId()));
+          }
+        }
+      }
+      itemsToSave = discussionItems;
     }
     try {
       TeacherPresentationConfig config = teacherPresentationConfigService.saveConfig(run, period,
-          request.nodeId(), request.componentId(), request.componentType(), studentWorkIds,
-          request.studentNamesDisplay(), request.prompt(), getTeacherWorkgroup(run, user));
+          request.nodeId(), request.componentId(), request.componentType(), itemType, itemsToSave,
+          request.studentNamesDisplay(), request.showComponentPrompt(), request.prompt(),
+          getTeacherWorkgroup(run, user));
       return toResponse(config);
     } catch (IllegalArgumentException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -118,14 +149,12 @@ public class TeacherPresentationConfigAPIController {
   }
 
   private ConfigResponse toResponse(TeacherPresentationConfig config) {
-    List<Item> items = new ArrayList<>();
-    for (Integer id : teacherPresentationConfigService.getStudentWorkIds(config)) {
-      items.add(new Item(id));
-    }
+    List<?> items = teacherPresentationConfigService.getItems(config);
     Workgroup updatedBy = config.getUpdatedByWorkgroup();
     return new ConfigResponse(config.getId(), config.getRun().getId(), config.getPeriod().getId(),
-        config.getNodeId(), config.getComponentId(), config.getComponentType(), items,
-        config.getStudentNamesDisplay(), config.getPrompt(),
+        config.getNodeId(), config.getComponentId(), config.getComponentType(),
+        config.getItemType(), items,
+        config.getStudentNamesDisplay(), config.isShowComponentPrompt(), config.getPrompt(),
         updatedBy == null ? null : updatedBy.getId(), config.getUpdatedAt().getTime());
   }
 }

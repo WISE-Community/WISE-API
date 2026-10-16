@@ -5,12 +5,19 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import org.wise.portal.service.teacherpresentation.DiscussionItem;
+import org.wise.portal.service.teacherpresentation.IdeasItem;
+import org.wise.portal.service.teacherpresentation.IdeasResponse;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
@@ -116,6 +123,7 @@ public class TeacherPresentationConfigServiceImplTest {
     replay(teacherPresentationConfigDao, studentWorkDao);
     TeacherPresentationConfig config = save(Arrays.asList(5, 5), null, "   ");
     assertEquals("hide", config.getStudentNamesDisplay());
+    assertTrue(config.isShowComponentPrompt());
     assertNull(config.getPrompt());
     assertEquals(Arrays.asList(5), service.getStudentWorkIds(config));
     assertEquals("Discussion", config.getComponentType());
@@ -134,5 +142,93 @@ public class TeacherPresentationConfigServiceImplTest {
     assertEquals("anonymize", config.getStudentNamesDisplay());
     assertEquals("My prompt", config.getPrompt());
     assertEquals(0, service.getStudentWorkIds(config).size());
+  }
+
+  @Test
+  public void saveConfig_InvalidItemType_ThrowIllegalArgument() {
+    replay(teacherPresentationConfigDao, studentWorkDao);
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
+        "OpenResponse", "InvalidType", new ArrayList<>(), "hide", null, null));
+  }
+
+  @Test
+  public void saveConfig_Ideas_CategoryOnly_SaveAndReturnConfig() throws Exception {
+    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(null);
+    teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
+    expectLastCall();
+    replay(teacherPresentationConfigDao, studentWorkDao);
+
+    List<IdeasItem> items = Arrays.asList(new IdeasItem("idea_sunlight", Collections.emptyList()));
+    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
+        TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null);
+
+    assertEquals(TeacherPresentationConfig.ITEM_TYPE_IDEAS, config.getItemType());
+    List<?> retrieved = service.getItems(config);
+    assertEquals(1, retrieved.size());
+    IdeasItem item = (IdeasItem) retrieved.get(0);
+    assertEquals("idea_sunlight", item.ideaId());
+    assertTrue(item.responses().isEmpty());
+    assertEquals(0, service.getStudentWorkIds(config).size());
+  }
+
+  @Test
+  public void saveConfig_Ideas_CategoryAndResponsesAndNullIdeaId_SaveAndReturnConfig() throws Exception {
+    expect(studentWorkDao.getById(5)).andReturn(work(run, period)).anyTimes();
+    expect(studentWorkDao.getById(7)).andReturn(work(run, period));
+    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(null);
+    teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
+    expectLastCall();
+    replay(teacherPresentationConfigDao, studentWorkDao);
+
+    // two messages from the same chat (same student work id, different message timestamps)
+    List<IdeasItem> items = Arrays.asList(
+        new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, 1L, 1000L, "First message"),
+            new IdeasResponse(5, 1L, 2000L, "Second message"))),
+        new IdeasItem(null, Arrays.asList(new IdeasResponse(7, 2L, null, "Standalone")))
+    );
+    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
+        TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "show", "Custom prompt", null);
+
+    assertEquals(TeacherPresentationConfig.ITEM_TYPE_IDEAS, config.getItemType());
+    List<?> retrieved = service.getItems(config);
+    assertEquals(2, retrieved.size());
+    IdeasItem first = (IdeasItem) retrieved.get(0);
+    assertEquals("idea_1", first.ideaId());
+    assertEquals(2, first.responses().size());
+    assertEquals(Long.valueOf(1000L), first.responses().get(0).responseTimestamp());
+    assertEquals("Second message", first.responses().get(1).text());
+    IdeasItem second = (IdeasItem) retrieved.get(1);
+    assertNull(second.ideaId());
+    assertNull(second.responses().get(0).responseTimestamp());
+    assertEquals(Arrays.asList(5, 5, 7), service.getStudentWorkIds(config));
+  }
+
+  @Test
+  public void saveConfig_Ideas_NullIdeaIdAndEmptyResponses_ThrowIllegalArgument() {
+    replay(teacherPresentationConfigDao, studentWorkDao);
+    List<IdeasItem> items = Arrays.asList(new IdeasItem(null, Collections.emptyList()));
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
+        "OpenResponse", TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null));
+  }
+
+  @Test
+  public void saveConfig_Ideas_ResponseWithoutWorkgroupId_ThrowIllegalArgument() {
+    replay(teacherPresentationConfigDao, studentWorkDao);
+    List<IdeasItem> items = Arrays.asList(
+        new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, null, 1000L, "text"))));
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
+        "OpenResponse", TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null));
+  }
+
+  @Test
+  public void saveConfig_ShowComponentPrompt_SaveAndPersist() throws Exception {
+    expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(null);
+    teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
+    expectLastCall();
+    replay(teacherPresentationConfigDao, studentWorkDao);
+    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1",
+        "Discussion", TeacherPresentationConfig.ITEM_TYPE_DISCUSSION, new ArrayList<>(), "hide",
+        false, null, null);
+    assertFalse(config.isShowComponentPrompt());
   }
 }

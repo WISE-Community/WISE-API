@@ -19,15 +19,43 @@ public interface TeacherPresentationConfigService {
 
   List<Integer> getStudentWorkIds(TeacherPresentationConfig config);
 
+  List<?> getItems(TeacherPresentationConfig config);
+
   /**
-   * Creates or updates the config for the run, period, node and component.
+   * Creates or updates the config for the run, period, node and component with itemType.
    *
+   * @param itemType one of Discussion or Ideas.
+   * @param items list of DiscussionItem or IdeasItem.
    * @param prompt the teacher's prompt. null or blank resets to the component default.
    * @param studentNamesDisplay one of show, hide or anonymize. null keeps the current value (or
    * hide for a new config).
    * @throws IllegalArgumentException if the input is invalid
    */
   TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
+      String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      Boolean showComponentPrompt, String prompt, Workgroup teacherWorkgroup);
+
+  default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
+      String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      String prompt, Workgroup teacherWorkgroup) {
+    return saveConfig(run, period, nodeId, componentId, componentType, itemType, items,
+        studentNamesDisplay, null, prompt, teacherWorkgroup);
+  }
+
+  /**
+   * Backward-compatible saveConfig for Discussion with a list of studentWorkIds.
+   */
+  default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
       String componentType, List<Integer> studentWorkIds, String studentNamesDisplay,
-      String prompt, Workgroup teacherWorkgroup);
+      String prompt, Workgroup teacherWorkgroup) {
+    List<DiscussionItem> items = new java.util.ArrayList<>();
+    if (studentWorkIds != null) {
+      for (Integer id : studentWorkIds) {
+        items.add(new DiscussionItem(id));
+      }
+    }
+    return saveConfig(run, period, nodeId, componentId, componentType,
+        TeacherPresentationConfig.ITEM_TYPE_DISCUSSION, items, studentNamesDisplay, null, prompt,
+        teacherWorkgroup);
+  }
 }

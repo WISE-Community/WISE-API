@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.easymock.EasyMockExtension;
@@ -29,6 +30,9 @@ import org.wise.portal.presentation.web.controllers.APIControllerTest;
 import org.wise.portal.presentation.web.controllers.teacher.TeacherPresentationConfigAPIController.ConfigRequest;
 import org.wise.portal.presentation.web.controllers.teacher.TeacherPresentationConfigAPIController.ConfigResponse;
 import org.wise.portal.presentation.web.controllers.teacher.TeacherPresentationConfigAPIController.Item;
+import org.wise.portal.service.teacherpresentation.DiscussionItem;
+import org.wise.portal.service.teacherpresentation.IdeasItem;
+import org.wise.portal.service.teacherpresentation.IdeasResponse;
 import org.wise.portal.service.teacherpresentation.TeacherPresentationConfigService;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
 
@@ -54,8 +58,14 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
 
   private ConfigRequest request(Long periodId, List<Item> items, String namesDisplay,
       String prompt) {
-    return new ConfigRequest(runId1, periodId, run1Node1Id, run1Component1Id, "Discussion", items,
-        namesDisplay, prompt);
+    return new ConfigRequest(runId1, periodId, run1Node1Id, run1Component1Id, "Discussion",
+        TeacherPresentationConfig.ITEM_TYPE_DISCUSSION, items, namesDisplay, true, prompt);
+  }
+
+  private ConfigRequest ideasRequest(Long periodId, List<Item> items, String namesDisplay,
+      String prompt) {
+    return new ConfigRequest(runId1, periodId, run1Node1Id, run1Component1Id, "OpenResponse",
+        TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, namesDisplay, true, prompt);
   }
 
   @Test
@@ -67,7 +77,9 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
     ConfigResponse response = controller.getConfig(teacherAuth, runId1, run1Period1Id,
         run1Node1Id, run1Component1Id);
     assertTrue(response.items().isEmpty());
+    assertNull(response.itemType());
     assertEquals("hide", response.studentNamesDisplay());
+    assertTrue(response.showComponentPrompt());
     assertNull(response.prompt());
     verify(teacherPresentationConfigService);
   }
@@ -101,8 +113,9 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
   public void saveConfig_ServiceRejectsInput_ThrowBadRequest() throws Exception {
     expectTeacherWithPermissions(true, true);
     expect(teacherPresentationConfigService.saveConfig(eq(run1), eq(run1Period1),
-        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), anyObject(), eq("bogus"),
-        isNull(), eq(teacher1Run1Workgroup))).andThrow(new IllegalArgumentException("Invalid"));
+        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(TeacherPresentationConfig.ITEM_TYPE_DISCUSSION),
+        anyObject(), eq("bogus"), eq(true), isNull(), eq(teacher1Run1Workgroup)))
+        .andThrow(new IllegalArgumentException("Invalid"));
     replay(runService, userService, workgroupService, teacherPresentationConfigService);
     ResponseStatusException e = assertThrows(ResponseStatusException.class, () -> controller
         .saveConfig(teacherAuth, request(run1Period1Id, Arrays.asList(new Item(1)), "bogus", null)));
@@ -119,22 +132,74 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
     saved.setNodeId(run1Node1Id);
     saved.setComponentId(run1Component1Id);
     saved.setComponentType("Discussion");
+    saved.setItemType("Discussion");
     saved.setUpdatedAt(new Timestamp(1000));
     saved.setPrompt("My prompt");
     saved.setStudentNamesDisplay("anonymize");
+    saved.setShowComponentPrompt(true);
     saved.setUpdatedByWorkgroup(teacher1Run1Workgroup);
     expect(teacherPresentationConfigService.saveConfig(eq(run1), eq(run1Period1),
-        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(Arrays.asList(7, 8)),
-        eq("anonymize"), eq("My prompt"), eq(teacher1Run1Workgroup))).andReturn(saved);
-    expect(teacherPresentationConfigService.getStudentWorkIds(saved))
-        .andReturn(Arrays.asList(7, 8));
+        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(TeacherPresentationConfig.ITEM_TYPE_DISCUSSION),
+        eq(Arrays.asList(new DiscussionItem(7), new DiscussionItem(8))),
+        eq("anonymize"), eq(true), eq("My prompt"), eq(teacher1Run1Workgroup))).andReturn(saved);
+    expect(teacherPresentationConfigService.getItems(saved))
+        .andReturn((List) Arrays.asList(new DiscussionItem(7), new DiscussionItem(8)));
     replay(runService, userService, workgroupService, teacherPresentationConfigService);
     ConfigResponse response = controller.saveConfig(teacherAuth,
         request(run1Period1Id, Arrays.asList(new Item(7), new Item(8)), "anonymize", "My prompt"));
     assertEquals(5L, response.id());
     assertEquals(2, response.items().size());
     assertEquals("My prompt", response.prompt());
+    assertTrue(response.showComponentPrompt());
     assertEquals(teacher1Run1Workgroup.getId(), response.updatedByWorkgroupId());
+    verify(teacherPresentationConfigService);
+  }
+
+  @Test
+  public void saveConfig_ValidIdeasRequest_SaveAndReturnConfig() throws Exception {
+    expectTeacherWithPermissions(true, true);
+    TeacherPresentationConfig saved = new TeacherPresentationConfig();
+    saved.setId(8L);
+    saved.setRun(run1);
+    saved.setPeriod(run1Period1);
+    saved.setNodeId(run1Node1Id);
+    saved.setComponentId(run1Component1Id);
+    saved.setComponentType("OpenResponse");
+    saved.setItemType("Ideas");
+    saved.setUpdatedAt(new Timestamp(1000));
+    saved.setPrompt("Ideas prompt");
+    saved.setStudentNamesDisplay("hide");
+    saved.setShowComponentPrompt(true);
+    saved.setUpdatedByWorkgroup(teacher1Run1Workgroup);
+
+    List<IdeasResponse> responses1 = Arrays.asList(new IdeasResponse(101, 1L, 1000L, "First"),
+        new IdeasResponse(101, 1L, 2000L, "Second"));
+    List<IdeasResponse> responses3 = Arrays.asList(new IdeasResponse(103, 2L, null, "Standalone"));
+    List<IdeasItem> expectedSavedItems = Arrays.asList(
+        new IdeasItem("idea_1", responses1),
+        new IdeasItem("idea_2", Collections.emptyList()),
+        new IdeasItem(null, responses3)
+    );
+    expect(teacherPresentationConfigService.saveConfig(eq(run1), eq(run1Period1),
+        eq(run1Node1Id), eq(run1Component1Id), eq("OpenResponse"), eq(TeacherPresentationConfig.ITEM_TYPE_IDEAS),
+        eq(expectedSavedItems), eq("hide"), eq(true), eq("Ideas prompt"), eq(teacher1Run1Workgroup))).andReturn(saved);
+    expect(teacherPresentationConfigService.getItems(saved))
+        .andReturn((List) expectedSavedItems);
+
+    replay(runService, userService, workgroupService, teacherPresentationConfigService);
+
+    List<Item> requestItems = Arrays.asList(
+        new Item("idea_1", responses1),
+        new Item("idea_2", Collections.emptyList()),
+        new Item(null, responses3)
+    );
+    ConfigResponse response = controller.saveConfig(teacherAuth,
+        ideasRequest(run1Period1Id, requestItems, "hide", "Ideas prompt"));
+
+    assertEquals(8L, response.id());
+    assertTrue(response.showComponentPrompt());
+    assertEquals("Ideas", response.itemType());
+    assertEquals(3, response.items().size());
     verify(teacherPresentationConfigService);
   }
 
@@ -149,6 +214,7 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
     config.setNodeId(run1Node1Id);
     config.setComponentId(run1Component1Id);
     config.setComponentType("Discussion");
+    config.setItemType("Discussion");
     config.setPrompt("Prompt override");
     config.setStudentNamesDisplay("show");
     config.setUpdatedAt(new Timestamp(1000));
@@ -156,8 +222,8 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
 
     expect(teacherPresentationConfigService.getConfig(run1, run1Period1, run1Node1Id,
         run1Component1Id)).andReturn(config);
-    expect(teacherPresentationConfigService.getStudentWorkIds(config))
-        .andReturn(Arrays.asList(101, 102));
+    expect(teacherPresentationConfigService.getItems(config))
+        .andReturn((List) Arrays.asList(new DiscussionItem(101), new DiscussionItem(102)));
 
     replay(runService, userService, workgroupService, teacherPresentationConfigService);
 
@@ -166,7 +232,7 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
 
     assertEquals(10L, response.id());
     assertEquals(2, response.items().size());
-    assertEquals(101, response.items().get(0).studentWorkId());
+    assertEquals(101, ((DiscussionItem) response.items().get(0)).studentWorkId());
     assertEquals("Prompt override", response.prompt());
     assertEquals("show", response.studentNamesDisplay());
     verify(teacherPresentationConfigService);
@@ -182,12 +248,13 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
     saved.setNodeId(run1Node1Id);
     saved.setComponentId(run1Component1Id);
     saved.setComponentType("Discussion");
+    saved.setItemType("Discussion");
     saved.setUpdatedAt(new Timestamp(1000));
     saved.setStudentNamesDisplay("hide");
     expect(teacherPresentationConfigService.saveConfig(eq(run1), eq(run1Period1),
-        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(new ArrayList<>()),
-        eq("hide"), isNull(), eq(teacher1Run1Workgroup))).andReturn(saved);
-    expect(teacherPresentationConfigService.getStudentWorkIds(saved))
+        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(TeacherPresentationConfig.ITEM_TYPE_DISCUSSION),
+        eq(new ArrayList<>()), eq("hide"), eq(true), isNull(), eq(teacher1Run1Workgroup))).andReturn(saved);
+    expect(teacherPresentationConfigService.getItems(saved))
         .andReturn(new ArrayList<>());
     replay(runService, userService, workgroupService, teacherPresentationConfigService);
     ConfigResponse response = controller.saveConfig(teacherAuth,
@@ -214,14 +281,15 @@ public class TeacherPresentationConfigAPIControllerTest extends APIControllerTes
     saved.setNodeId(run1Node1Id);
     saved.setComponentId(run1Component1Id);
     saved.setComponentType("Discussion");
+    saved.setItemType("Discussion");
     saved.setUpdatedAt(new Timestamp(1000));
     saved.setStudentNamesDisplay("hide");
     saved.setUpdatedByWorkgroup(null);
 
     expect(teacherPresentationConfigService.saveConfig(eq(run1), eq(run1Period1),
-        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), anyObject(),
-        eq("hide"), isNull(), isNull())).andReturn(saved);
-    expect(teacherPresentationConfigService.getStudentWorkIds(saved))
+        eq(run1Node1Id), eq(run1Component1Id), eq("Discussion"), eq(TeacherPresentationConfig.ITEM_TYPE_DISCUSSION),
+        anyObject(), eq("hide"), eq(true), isNull(), isNull())).andReturn(saved);
+    expect(teacherPresentationConfigService.getItems(saved))
         .andReturn(new ArrayList<>());
 
     replay(runService, userService, workgroupService, teacherPresentationConfigService);

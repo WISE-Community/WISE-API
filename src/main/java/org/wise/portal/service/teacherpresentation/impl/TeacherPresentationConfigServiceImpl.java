@@ -2,6 +2,7 @@ package org.wise.portal.service.teacherpresentation.impl;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,9 @@ import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.workgroup.Workgroup;
+import org.wise.portal.service.teacherpresentation.DiscussionItem;
+import org.wise.portal.service.teacherpresentation.IdeasItem;
+import org.wise.portal.service.teacherpresentation.IdeasResponse;
 import org.wise.portal.service.teacherpresentation.TeacherPresentationConfigService;
 import org.wise.vle.domain.teacherpresentation.TeacherPresentationConfig;
 import org.wise.vle.domain.work.StudentWork;
@@ -28,9 +32,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TeacherPresentationConfigServiceImpl implements TeacherPresentationConfigService {
 
   private static final int MAX_ID_LENGTH = 30;
+  private static final int MAX_RESPONSE_TEXT_LENGTH = 2000;
+  // items column is a MySQL text column (65535 bytes)
+  private static final int MAX_SERIALIZED_ITEMS_LENGTH = 60000;
   private static final Set<String> NAMES_DISPLAY_OPTIONS = Set.of(
       TeacherPresentationConfig.NAMES_SHOW, TeacherPresentationConfig.NAMES_HIDE,
       TeacherPresentationConfig.NAMES_ANONYMIZE);
+  private static final Set<String> ITEM_TYPE_OPTIONS = Set.of(
+      TeacherPresentationConfig.ITEM_TYPE_DISCUSSION,
+      TeacherPresentationConfig.ITEM_TYPE_IDEAS);
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,37 +58,85 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   }
 
   @Override
-  public List<Integer> getStudentWorkIds(TeacherPresentationConfig config) {
-    try {
-      List<Map<String, Integer>> items = objectMapper.readValue(config.getItems(),
-          new TypeReference<List<Map<String, Integer>>>() {
-          });
-      List<Integer> ids = new ArrayList<>();
-      for (Map<String, Integer> item : items) {
-        ids.add(item.get("studentWorkId"));
-      }
-      return ids;
-    } catch (JsonProcessingException e) {
-      return new ArrayList<>();
+  public List<?> getItems(TeacherPresentationConfig config) {
+    if (config == null || config.getItems() == null) {
+      return Collections.emptyList();
     }
+    String itemType = config.getItemType();
+    try {
+      if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(itemType)) {
+        return objectMapper.readValue(config.getItems(),
+            new TypeReference<List<IdeasItem>>() {
+            });
+      } else {
+        return objectMapper.readValue(config.getItems(),
+            new TypeReference<List<DiscussionItem>>() {
+            });
+      }
+    } catch (JsonProcessingException e) {
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
+  public List<Integer> getStudentWorkIds(TeacherPresentationConfig config) {
+    List<?> items = getItems(config);
+    List<Integer> ids = new ArrayList<>();
+    for (Object item : items) {
+      if (item instanceof DiscussionItem di) {
+        if (di.studentWorkId() != null) {
+          ids.add(di.studentWorkId());
+        }
+      } else if (item instanceof IdeasItem ii) {
+        for (IdeasResponse response : ii.responses()) {
+          if (response.studentWorkId() != null) {
+            ids.add(response.studentWorkId());
+          }
+        }
+      }
+    }
+    return ids;
   }
 
   @Override
   @Transactional
   public TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId,
-      String componentId, String componentType, List<Integer> studentWorkIds,
-      String studentNamesDisplay, String prompt, Workgroup teacherWorkgroup) {
+      String componentId, String componentType, String itemType, List<?> items,
+      String studentNamesDisplay, Boolean showComponentPrompt, String prompt,
+      Workgroup teacherWorkgroup) {
     validateComponent(nodeId, componentId, componentType);
+    String resolvedItemType = itemType != null ? itemType : TeacherPresentationConfig.ITEM_TYPE_DISCUSSION;
+    if (!ITEM_TYPE_OPTIONS.contains(resolvedItemType)) {
+      throw new IllegalArgumentException("Invalid itemType: " + itemType);
+    }
     if (studentNamesDisplay != null && !NAMES_DISPLAY_OPTIONS.contains(studentNamesDisplay)) {
       throw new IllegalArgumentException("Invalid studentNamesDisplay: " + studentNamesDisplay);
     }
     String normalizedPrompt = normalizePrompt(prompt);
-    Set<Integer> uniqueIds = validateStudentWorkIds(run, period, studentWorkIds);
+
+    String serializedItems;
+    if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(resolvedItemType)) {
+      List<IdeasItem> ideasItems = validateAndNormalizeIdeasItems(run, period, items);
+      serializedItems = serializeIdeasItems(ideasItems);
+      if (serializedItems.getBytes(java.nio.charset.StandardCharsets.UTF_8).length
+          > MAX_SERIALIZED_ITEMS_LENGTH) {
+        throw new IllegalArgumentException("Too many selected responses");
+      }
+    } else {
+      List<DiscussionItem> discussionItems = validateAndNormalizeDiscussionItems(run, period, items);
+      serializedItems = serializeDiscussionItems(discussionItems);
+    }
+
     TeacherPresentationConfig config = getOrCreateConfig(run, period, nodeId, componentId,
-        componentType);
-    config.setItems(serializeItems(uniqueIds));
+        componentType, resolvedItemType);
+    config.setComponentType(componentType);
+    config.setItemType(resolvedItemType);
+    config.setItems(serializedItems);
     if (studentNamesDisplay != null) {
       config.setStudentNamesDisplay(studentNamesDisplay);
+    }
+    if (showComponentPrompt != null) {
+      config.setShowComponentPrompt(showComponentPrompt);
     }
     config.setPrompt(normalizedPrompt);
     config.setUpdatedByWorkgroup(teacherWorkgroup);
@@ -88,7 +146,7 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   }
 
   private TeacherPresentationConfig getOrCreateConfig(Run run, Group period, String nodeId,
-      String componentId, String componentType) {
+      String componentId, String componentType, String itemType) {
     TeacherPresentationConfig config = teacherPresentationConfigDao.getConfig(run, period, nodeId,
         componentId);
     if (config == null) {
@@ -99,6 +157,7 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
       config.setNodeId(nodeId);
       config.setComponentId(componentId);
       config.setComponentType(componentType);
+      config.setItemType(itemType);
       config.setCreatedAt(now);
       config.setUpdatedAt(now);
     }
@@ -126,6 +185,82 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
       throw new IllegalArgumentException("prompt is too long");
     }
     return prompt;
+  }
+
+  private List<DiscussionItem> validateAndNormalizeDiscussionItems(Run run, Group period, List<?> items) {
+    List<Integer> ids = new ArrayList<>();
+    if (items != null) {
+      for (Object obj : items) {
+        if (obj instanceof DiscussionItem di) {
+          ids.add(di.studentWorkId());
+        } else if (obj instanceof Integer id) {
+          ids.add(id);
+        } else if (obj != null) {
+          throw new IllegalArgumentException("Invalid discussion item type: " + obj.getClass());
+        }
+      }
+    }
+    Set<Integer> uniqueIds = validateStudentWorkIds(run, period, ids);
+    List<DiscussionItem> normalized = new ArrayList<>();
+    for (Integer id : uniqueIds) {
+      normalized.add(new DiscussionItem(id));
+    }
+    return normalized;
+  }
+
+  private List<IdeasItem> validateAndNormalizeIdeasItems(Run run, Group period, List<?> items) {
+    if (items == null) {
+      return Collections.emptyList();
+    }
+    if (items.size() > MAX_ITEMS) {
+      throw new IllegalArgumentException("Too many items. The maximum is " + MAX_ITEMS);
+    }
+    List<IdeasItem> normalized = new ArrayList<>();
+    List<Integer> allStudentWorkIds = new ArrayList<>();
+    int responseCount = 0;
+    for (Object obj : items) {
+      if (obj instanceof IdeasItem ii) {
+        String ideaId = ii.ideaId();
+        if (ideaId != null) {
+          ideaId = ideaId.trim();
+          if (ideaId.isEmpty() || ideaId.length() > 100) {
+            throw new IllegalArgumentException("Invalid ideaId: " + ideaId);
+          }
+        }
+        if (ideaId == null && ii.responses().isEmpty()) {
+          throw new IllegalArgumentException("Item must specify ideaId or responses");
+        }
+        List<IdeasResponse> responses = new ArrayList<>();
+        for (IdeasResponse response : ii.responses()) {
+          responses.add(normalizeIdeasResponse(response));
+          allStudentWorkIds.add(response.studentWorkId());
+        }
+        responseCount += responses.size();
+        normalized.add(new IdeasItem(ideaId, responses));
+      } else if (obj != null) {
+        throw new IllegalArgumentException("Invalid ideas item type: " + obj.getClass());
+      }
+    }
+    if (responseCount > MAX_ITEMS) {
+      throw new IllegalArgumentException("Too many responses. The maximum is " + MAX_ITEMS);
+    }
+    validateStudentWorkIds(run, period, allStudentWorkIds);
+    return normalized;
+  }
+
+  private IdeasResponse normalizeIdeasResponse(IdeasResponse response) {
+    if (response == null || response.studentWorkId() == null) {
+      throw new IllegalArgumentException("Invalid studentWorkId");
+    }
+    if (response.workgroupId() == null) {
+      throw new IllegalArgumentException("Invalid workgroupId");
+    }
+    String text = response.text() != null ? response.text() : "";
+    if (text.length() > MAX_RESPONSE_TEXT_LENGTH) {
+      text = text.substring(0, MAX_RESPONSE_TEXT_LENGTH);
+    }
+    return new IdeasResponse(response.studentWorkId(), response.workgroupId(),
+        response.responseTimestamp(), text);
   }
 
   /**
@@ -158,11 +293,15 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
     return uniqueIds;
   }
 
-  private String serializeItems(Set<Integer> studentWorkIds) {
-    List<Map<String, Integer>> items = new ArrayList<>();
-    for (Integer id : studentWorkIds) {
-      items.add(Map.of("studentWorkId", id));
+  private String serializeDiscussionItems(List<DiscussionItem> items) {
+    try {
+      return objectMapper.writeValueAsString(items);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
     }
+  }
+
+  private String serializeIdeasItems(List<IdeasItem> items) {
     try {
       return objectMapper.writeValueAsString(items);
     } catch (JsonProcessingException e) {
