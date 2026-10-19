@@ -145,7 +145,7 @@ public class TeacherPresentationConfigServiceImplTest {
   }
 
   @Test
-  public void saveConfig_InvalidItemType_ThrowIllegalArgument() {
+  public void saveConfig_InvalidType_ThrowIllegalArgument() {
     replay(teacherPresentationConfigDao, studentWorkDao);
     assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
         "OpenResponse", "InvalidType", new ArrayList<>(), "hide", null, null));
@@ -160,9 +160,9 @@ public class TeacherPresentationConfigServiceImplTest {
 
     List<IdeasItem> items = Arrays.asList(new IdeasItem("idea_sunlight", Collections.emptyList()));
     TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
-        TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null);
+        TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null);
 
-    assertEquals(TeacherPresentationConfig.ITEM_TYPE_IDEAS, config.getItemType());
+    assertEquals(TeacherPresentationConfig.TYPE_IDEAS, config.getType());
     List<?> retrieved = service.getItems(config);
     assertEquals(1, retrieved.size());
     IdeasItem item = (IdeasItem) retrieved.get(0);
@@ -187,9 +187,9 @@ public class TeacherPresentationConfigServiceImplTest {
         new IdeasItem(null, Arrays.asList(new IdeasResponse(7, 2L, null, "Standalone")))
     );
     TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
-        TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "show", "Custom prompt", null);
+        TeacherPresentationConfig.TYPE_IDEAS, items, "show", "Custom prompt", null);
 
-    assertEquals(TeacherPresentationConfig.ITEM_TYPE_IDEAS, config.getItemType());
+    assertEquals(TeacherPresentationConfig.TYPE_IDEAS, config.getType());
     List<?> retrieved = service.getItems(config);
     assertEquals(2, retrieved.size());
     IdeasItem first = (IdeasItem) retrieved.get(0);
@@ -208,7 +208,7 @@ public class TeacherPresentationConfigServiceImplTest {
     replay(teacherPresentationConfigDao, studentWorkDao);
     List<IdeasItem> items = Arrays.asList(new IdeasItem(null, Collections.emptyList()));
     assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
-        "OpenResponse", TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null));
+        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
   }
 
   @Test
@@ -217,7 +217,7 @@ public class TeacherPresentationConfigServiceImplTest {
     List<IdeasItem> items = Arrays.asList(
         new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, null, 1000L, "text"))));
     assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
-        "OpenResponse", TeacherPresentationConfig.ITEM_TYPE_IDEAS, items, "hide", null, null));
+        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
   }
 
   @Test
@@ -227,7 +227,7 @@ public class TeacherPresentationConfigServiceImplTest {
     expectLastCall();
     replay(teacherPresentationConfigDao, studentWorkDao);
     TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1",
-        "Discussion", TeacherPresentationConfig.ITEM_TYPE_DISCUSSION, new ArrayList<>(), "hide",
+        "Discussion", TeacherPresentationConfig.TYPE_DISCUSSION, new ArrayList<>(), "hide",
         false, null, null);
     assertFalse(config.isShowComponentPrompt());
   }

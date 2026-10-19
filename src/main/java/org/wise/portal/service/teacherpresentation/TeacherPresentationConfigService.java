@@ -22,9 +22,9 @@ public interface TeacherPresentationConfigService {
   List<?> getItems(TeacherPresentationConfig config);
 
   /**
-   * Creates or updates the config for the run, period, node and component with itemType.
+   * Creates or updates the config for the run, period, node and component with type.
    *
-   * @param itemType one of Discussion or Ideas.
+   * @param type one of Discussion or Ideas.
    * @param items list of DiscussionItem or IdeasItem.
    * @param prompt the teacher's prompt. null or blank resets to the component default.
    * @param studentNamesDisplay one of show, hide or anonymize. null keeps the current value (or
@@ -32,13 +32,13 @@ public interface TeacherPresentationConfigService {
    * @throws IllegalArgumentException if the input is invalid
    */
   TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
-      String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      String componentType, String type, List<?> items, String studentNamesDisplay,
       Boolean showComponentPrompt, String prompt, Workgroup teacherWorkgroup);
 
   default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
-      String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      String componentType, String type, List<?> items, String studentNamesDisplay,
       String prompt, Workgroup teacherWorkgroup) {
-    return saveConfig(run, period, nodeId, componentId, componentType, itemType, items,
+    return saveConfig(run, period, nodeId, componentId, componentType, type, items,
         studentNamesDisplay, null, prompt, teacherWorkgroup);
   }
 
@@ -55,7 +55,7 @@ public interface TeacherPresentationConfigService {
       }
     }
     return saveConfig(run, period, nodeId, componentId, componentType,
-        TeacherPresentationConfig.ITEM_TYPE_DISCUSSION, items, studentNamesDisplay, null, prompt,
+        TeacherPresentationConfig.TYPE_DISCUSSION, items, studentNamesDisplay, null, prompt,
         teacherWorkgroup);
   }
 }

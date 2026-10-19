@@ -61,12 +61,12 @@ public class TeacherPresentationConfigAPIController {
   }
 
   public record ConfigRequest(Long runId, Long periodId, String nodeId, String componentId,
-      String componentType, String itemType, List<Item> items, String studentNamesDisplay,
+      String componentType, String type, List<Item> items, String studentNamesDisplay,
       Boolean showComponentPrompt, String prompt) {
   }
 
   public record ConfigResponse(Long id, Long runId, Long periodId, String nodeId,
-      String componentId, String componentType, String itemType, List<?> items, String studentNamesDisplay,
+      String componentId, String componentType, String type, List<?> items, String studentNamesDisplay,
       Boolean showComponentPrompt, String prompt, Long updatedByWorkgroupId, Long updatedAt) {
   }
 
@@ -99,10 +99,10 @@ public class TeacherPresentationConfigAPIController {
       throw new AccessDeniedException("Not permitted");
     }
     Group period = getPeriod(run, request.periodId());
-    String itemType = request.itemType() != null ? request.itemType()
-        : TeacherPresentationConfig.ITEM_TYPE_DISCUSSION;
+    String type = request.type() != null ? request.type()
+        : TeacherPresentationConfig.TYPE_DISCUSSION;
     List<?> itemsToSave;
-    if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(itemType)) {
+    if (TeacherPresentationConfig.TYPE_IDEAS.equals(type)) {
       List<IdeasItem> ideasItems = new ArrayList<>();
       if (request.items() != null) {
         for (Item item : request.items()) {
@@ -125,7 +125,7 @@ public class TeacherPresentationConfigAPIController {
     }
     try {
       TeacherPresentationConfig config = teacherPresentationConfigService.saveConfig(run, period,
-          request.nodeId(), request.componentId(), request.componentType(), itemType, itemsToSave,
+          request.nodeId(), request.componentId(), request.componentType(), type, itemsToSave,
           request.studentNamesDisplay(), request.showComponentPrompt(), request.prompt(),
           getTeacherWorkgroup(run, user));
       return toResponse(config);
@@ -153,7 +153,7 @@ public class TeacherPresentationConfigAPIController {
     Workgroup updatedBy = config.getUpdatedByWorkgroup();
     return new ConfigResponse(config.getId(), config.getRun().getId(), config.getPeriod().getId(),
         config.getNodeId(), config.getComponentId(), config.getComponentType(),
-        config.getItemType(), items,
+        config.getType(), items,
         config.getStudentNamesDisplay(), config.isShowComponentPrompt(), config.getPrompt(),
         updatedBy == null ? null : updatedBy.getId(), config.getUpdatedAt().getTime());
   }

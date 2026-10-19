@@ -38,9 +38,9 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   private static final Set<String> NAMES_DISPLAY_OPTIONS = Set.of(
       TeacherPresentationConfig.NAMES_SHOW, TeacherPresentationConfig.NAMES_HIDE,
       TeacherPresentationConfig.NAMES_ANONYMIZE);
-  private static final Set<String> ITEM_TYPE_OPTIONS = Set.of(
-      TeacherPresentationConfig.ITEM_TYPE_DISCUSSION,
-      TeacherPresentationConfig.ITEM_TYPE_IDEAS);
+  private static final Set<String> TYPE_OPTIONS = Set.of(
+      TeacherPresentationConfig.TYPE_DISCUSSION,
+      TeacherPresentationConfig.TYPE_IDEAS);
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,9 +62,9 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
     if (config == null || config.getItems() == null) {
       return Collections.emptyList();
     }
-    String itemType = config.getItemType();
+    String type = config.getType();
     try {
-      if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(itemType)) {
+      if (TeacherPresentationConfig.TYPE_IDEAS.equals(type)) {
         return objectMapper.readValue(config.getItems(),
             new TypeReference<List<IdeasItem>>() {
             });
@@ -101,13 +101,13 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   @Override
   @Transactional
   public TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId,
-      String componentId, String componentType, String itemType, List<?> items,
+      String componentId, String componentType, String type, List<?> items,
       String studentNamesDisplay, Boolean showComponentPrompt, String prompt,
       Workgroup teacherWorkgroup) {
     validateComponent(nodeId, componentId, componentType);
-    String resolvedItemType = itemType != null ? itemType : TeacherPresentationConfig.ITEM_TYPE_DISCUSSION;
-    if (!ITEM_TYPE_OPTIONS.contains(resolvedItemType)) {
-      throw new IllegalArgumentException("Invalid itemType: " + itemType);
+    String resolvedType = type != null ? type : TeacherPresentationConfig.TYPE_DISCUSSION;
+    if (!TYPE_OPTIONS.contains(resolvedType)) {
+      throw new IllegalArgumentException("Invalid type: " + type);
     }
     if (studentNamesDisplay != null && !NAMES_DISPLAY_OPTIONS.contains(studentNamesDisplay)) {
       throw new IllegalArgumentException("Invalid studentNamesDisplay: " + studentNamesDisplay);
@@ -115,7 +115,7 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
     String normalizedPrompt = normalizePrompt(prompt);
 
     String serializedItems;
-    if (TeacherPresentationConfig.ITEM_TYPE_IDEAS.equals(resolvedItemType)) {
+    if (TeacherPresentationConfig.TYPE_IDEAS.equals(resolvedType)) {
       List<IdeasItem> ideasItems = validateAndNormalizeIdeasItems(run, period, items);
       serializedItems = serializeIdeasItems(ideasItems);
       if (serializedItems.getBytes(java.nio.charset.StandardCharsets.UTF_8).length
@@ -128,9 +128,9 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
     }
 
     TeacherPresentationConfig config = getOrCreateConfig(run, period, nodeId, componentId,
-        componentType, resolvedItemType);
+        componentType, resolvedType);
     config.setComponentType(componentType);
-    config.setItemType(resolvedItemType);
+    config.setType(resolvedType);
     config.setItems(serializedItems);
     if (studentNamesDisplay != null) {
       config.setStudentNamesDisplay(studentNamesDisplay);
@@ -146,7 +146,7 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
   }
 
   private TeacherPresentationConfig getOrCreateConfig(Run run, Group period, String nodeId,
-      String componentId, String componentType, String itemType) {
+      String componentId, String componentType, String type) {
     TeacherPresentationConfig config = teacherPresentationConfigDao.getConfig(run, period, nodeId,
         componentId);
     if (config == null) {
@@ -157,7 +157,7 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
       config.setNodeId(nodeId);
       config.setComponentId(componentId);
       config.setComponentType(componentType);
-      config.setItemType(itemType);
+      config.setType(type);
       config.setCreatedAt(now);
       config.setUpdatedAt(now);
     }

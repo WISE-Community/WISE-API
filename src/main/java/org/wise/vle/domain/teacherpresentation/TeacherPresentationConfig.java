@@ -42,8 +42,8 @@ public class TeacherPresentationConfig {
   public static final String NAMES_HIDE = "hide";
   public static final String NAMES_ANONYMIZE = "anonymize";
 
-  public static final String ITEM_TYPE_DISCUSSION = "Discussion";
-  public static final String ITEM_TYPE_IDEAS = "Ideas";
+  public static final String TYPE_DISCUSSION = "Discussion";
+  public static final String TYPE_IDEAS = "Ideas";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -68,8 +68,8 @@ public class TeacherPresentationConfig {
   @Column(name = "componentType", length = 30, nullable = false)
   private String componentType;
 
-  @Column(name = "itemType", length = 30, nullable = false)
-  private String itemType = ITEM_TYPE_DISCUSSION;
+  @Column(name = "`type`", length = 30, nullable = false)
+  private String type = TYPE_DISCUSSION;
 
   /** JSON array of the form [{"studentWorkId": 123}, ...] */
   @Column(name = "items", length = 65536, columnDefinition = "text", nullable = false)
