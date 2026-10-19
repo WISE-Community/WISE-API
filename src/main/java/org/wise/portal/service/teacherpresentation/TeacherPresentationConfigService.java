@@ -35,27 +35,10 @@ public interface TeacherPresentationConfigService {
       String componentType, String type, List<?> items, String studentNamesDisplay,
       Boolean showComponentPrompt, String prompt, Workgroup teacherWorkgroup);
 
-  default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
-      String componentType, String type, List<?> items, String studentNamesDisplay,
-      String prompt, Workgroup teacherWorkgroup) {
+  default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId,
+      String componentId, String componentType, String type, List<?> items,
+      String studentNamesDisplay, String prompt, Workgroup teacherWorkgroup) {
     return saveConfig(run, period, nodeId, componentId, componentType, type, items,
         studentNamesDisplay, null, prompt, teacherWorkgroup);
-  }
-
-  /**
-   * Backward-compatible saveConfig for Discussion with a list of studentWorkIds.
-   */
-  default TeacherPresentationConfig saveConfig(Run run, Group period, String nodeId, String componentId,
-      String componentType, List<Integer> studentWorkIds, String studentNamesDisplay,
-      String prompt, Workgroup teacherWorkgroup) {
-    List<DiscussionItem> items = new java.util.ArrayList<>();
-    if (studentWorkIds != null) {
-      for (Integer id : studentWorkIds) {
-        items.add(new DiscussionItem(id));
-      }
-    }
-    return saveConfig(run, period, nodeId, componentId, componentType,
-        TeacherPresentationConfig.TYPE_DISCUSSION, items, studentNamesDisplay, null, prompt,
-        teacherWorkgroup);
   }
 }

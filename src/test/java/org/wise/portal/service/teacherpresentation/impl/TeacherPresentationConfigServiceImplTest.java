@@ -66,9 +66,9 @@ public class TeacherPresentationConfigServiceImplTest {
     return work;
   }
 
-  private TeacherPresentationConfig save(List<Integer> ids, String namesDisplay, String prompt) {
-    return service.saveConfig(run, period, "node1", "comp1", "Discussion", ids, namesDisplay,
-        prompt, null);
+  private TeacherPresentationConfig save(List<DiscussionItem> items, String namesDisplay, String prompt) {
+    return service.saveConfig(run, period, "node1", "comp1", "Discussion",
+        TeacherPresentationConfig.TYPE_DISCUSSION, items, namesDisplay, prompt, null);
   }
 
   @Test
@@ -79,12 +79,12 @@ public class TeacherPresentationConfigServiceImplTest {
 
   @Test
   public void saveConfig_MoreThan500Items_ThrowIllegalArgument() {
-    List<Integer> ids = new ArrayList<>();
+    List<DiscussionItem> items = new ArrayList<>();
     for (int i = 0; i < 501; i++) {
-      ids.add(i);
+      items.add(new DiscussionItem(i));
     }
     replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> save(ids, "hide", null));
+    assertThrows(IllegalArgumentException.class, () -> save(items, "hide", null));
   }
 
   @Test
@@ -99,7 +99,8 @@ public class TeacherPresentationConfigServiceImplTest {
     expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
         .andReturn(Arrays.asList(work(run, otherPeriod, 5)));
     replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
+    assertThrows(IllegalArgumentException.class,
+        () -> save(Arrays.asList(new DiscussionItem(5)), "hide", null));
   }
 
   @Test
@@ -107,7 +108,8 @@ public class TeacherPresentationConfigServiceImplTest {
     expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
         .andReturn(Arrays.asList(work(otherRun, period, 5)));
     replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
+    assertThrows(IllegalArgumentException.class,
+        () -> save(Arrays.asList(new DiscussionItem(5)), "hide", null));
   }
 
   @Test
@@ -115,7 +117,8 @@ public class TeacherPresentationConfigServiceImplTest {
     expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
         .andReturn(Collections.emptyList());
     replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
+    assertThrows(IllegalArgumentException.class,
+        () -> save(Arrays.asList(new DiscussionItem(5)), "hide", null));
   }
 
   @Test
@@ -126,7 +129,8 @@ public class TeacherPresentationConfigServiceImplTest {
     teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
     expectLastCall();
     replay(teacherPresentationConfigDao, studentWorkDao);
-    TeacherPresentationConfig config = save(Arrays.asList(5, 5), null, "   ");
+    TeacherPresentationConfig config =
+        save(Arrays.asList(new DiscussionItem(5), new DiscussionItem(5)), null, "   ");
     assertEquals("hide", config.getStudentNamesDisplay());
     assertTrue(config.isShowComponentPrompt());
     assertNull(config.getPrompt());
