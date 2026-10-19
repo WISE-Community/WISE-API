@@ -58,8 +58,9 @@ public class TeacherPresentationConfigServiceImplTest {
     otherPeriod.setId(11L);
   }
 
-  private StudentWork work(RunImpl workRun, PersistentGroup workPeriod) {
+  private StudentWork work(RunImpl workRun, PersistentGroup workPeriod, Integer id) {
     StudentWork work = new StudentWork();
+    work.setId(id);
     work.setRun(workRun);
     work.setPeriod(workPeriod);
     return work;
@@ -95,28 +96,32 @@ public class TeacherPresentationConfigServiceImplTest {
 
   @Test
   public void saveConfig_StudentWorkFromOtherPeriod_ThrowIllegalArgument() throws Exception {
-    expect(studentWorkDao.getById(5)).andReturn(work(run, otherPeriod));
+    expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
+        .andReturn(Arrays.asList(work(run, otherPeriod, 5)));
     replay(teacherPresentationConfigDao, studentWorkDao);
     assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
   }
 
   @Test
   public void saveConfig_StudentWorkFromOtherRun_ThrowIllegalArgument() throws Exception {
-    expect(studentWorkDao.getById(5)).andReturn(work(otherRun, period));
+    expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
+        .andReturn(Arrays.asList(work(otherRun, period, 5)));
     replay(teacherPresentationConfigDao, studentWorkDao);
     assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
   }
 
   @Test
   public void saveConfig_UnknownStudentWork_ThrowIllegalArgument() throws Exception {
-    expect(studentWorkDao.getById(5)).andThrow(new ObjectNotFoundException(5L, StudentWork.class));
+    expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
+        .andReturn(Collections.emptyList());
     replay(teacherPresentationConfigDao, studentWorkDao);
     assertThrows(IllegalArgumentException.class, () -> save(Arrays.asList(5), "hide", null));
   }
 
   @Test
   public void saveConfig_NewConfig_CreateWithDefaultsAndDeduplicateItems() throws Exception {
-    expect(studentWorkDao.getById(5)).andReturn(work(run, period));
+    expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5)))
+        .andReturn(Arrays.asList(work(run, period, 5)));
     expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(null);
     teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
     expectLastCall();
@@ -147,8 +152,8 @@ public class TeacherPresentationConfigServiceImplTest {
   @Test
   public void saveConfig_InvalidType_ThrowIllegalArgument() {
     replay(teacherPresentationConfigDao, studentWorkDao);
-    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
-        "OpenResponse", "InvalidType", new ArrayList<>(), "hide", null, null));
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1",
+        "comp1", "OpenResponse", "InvalidType", new ArrayList<>(), "hide", null, null));
   }
 
   @Test
@@ -159,8 +164,8 @@ public class TeacherPresentationConfigServiceImplTest {
     replay(teacherPresentationConfigDao, studentWorkDao);
 
     List<IdeasItem> items = Arrays.asList(new IdeasItem("idea_sunlight", Collections.emptyList()));
-    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
-        TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null);
+    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1",
+        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null);
 
     assertEquals(TeacherPresentationConfig.TYPE_IDEAS, config.getType());
     List<?> retrieved = service.getItems(config);
@@ -172,9 +177,10 @@ public class TeacherPresentationConfigServiceImplTest {
   }
 
   @Test
-  public void saveConfig_Ideas_CategoryAndResponsesAndNullIdeaId_SaveAndReturnConfig() throws Exception {
-    expect(studentWorkDao.getById(5)).andReturn(work(run, period)).anyTimes();
-    expect(studentWorkDao.getById(7)).andReturn(work(run, period));
+  public void saveConfig_Ideas_CategoryAndResponsesAndNullIdeaId_SaveAndReturnConfig()
+      throws Exception {
+    expect(studentWorkDao.getStudentWorkListByIds(Arrays.asList(5, 7)))
+        .andReturn(Arrays.asList(work(run, period, 5), work(run, period, 7)));
     expect(teacherPresentationConfigDao.getConfig(run, period, "node1", "comp1")).andReturn(null);
     teacherPresentationConfigDao.save(anyObject(TeacherPresentationConfig.class));
     expectLastCall();
@@ -182,12 +188,12 @@ public class TeacherPresentationConfigServiceImplTest {
 
     // two messages from the same chat (same student work id, different message timestamps)
     List<IdeasItem> items = Arrays.asList(
-        new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, 1L, 1000L, "First message"),
-            new IdeasResponse(5, 1L, 2000L, "Second message"))),
-        new IdeasItem(null, Arrays.asList(new IdeasResponse(7, 2L, null, "Standalone")))
-    );
-    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1", "OpenResponse",
-        TeacherPresentationConfig.TYPE_IDEAS, items, "show", "Custom prompt", null);
+        new IdeasItem("idea_1",
+            Arrays.asList(new IdeasResponse(5, 1L, 1000L, "First message"),
+                new IdeasResponse(5, 1L, 2000L, "Second message"))),
+        new IdeasItem(null, Arrays.asList(new IdeasResponse(7, 2L, null, "Standalone"))));
+    TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1",
+        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "show", "Custom prompt", null);
 
     assertEquals(TeacherPresentationConfig.TYPE_IDEAS, config.getType());
     List<?> retrieved = service.getItems(config);
@@ -207,17 +213,17 @@ public class TeacherPresentationConfigServiceImplTest {
   public void saveConfig_Ideas_NullIdeaIdAndEmptyResponses_ThrowIllegalArgument() {
     replay(teacherPresentationConfigDao, studentWorkDao);
     List<IdeasItem> items = Arrays.asList(new IdeasItem(null, Collections.emptyList()));
-    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
-        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1",
+        "comp1", "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
   }
 
   @Test
   public void saveConfig_Ideas_ResponseWithoutWorkgroupId_ThrowIllegalArgument() {
     replay(teacherPresentationConfigDao, studentWorkDao);
-    List<IdeasItem> items = Arrays.asList(
-        new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, null, 1000L, "text"))));
-    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1", "comp1",
-        "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
+    List<IdeasItem> items = Arrays
+        .asList(new IdeasItem("idea_1", Arrays.asList(new IdeasResponse(5, null, 1000L, "text"))));
+    assertThrows(IllegalArgumentException.class, () -> service.saveConfig(run, period, "node1",
+        "comp1", "OpenResponse", TeacherPresentationConfig.TYPE_IDEAS, items, "hide", null, null));
   }
 
   @Test
@@ -227,8 +233,8 @@ public class TeacherPresentationConfigServiceImplTest {
     expectLastCall();
     replay(teacherPresentationConfigDao, studentWorkDao);
     TeacherPresentationConfig config = service.saveConfig(run, period, "node1", "comp1",
-        "Discussion", TeacherPresentationConfig.TYPE_DISCUSSION, new ArrayList<>(), "hide",
-        false, null, null);
+        "Discussion", TeacherPresentationConfig.TYPE_DISCUSSION, new ArrayList<>(), "hide", false,
+        null, null);
     assertFalse(config.isShowComponentPrompt());
   }
 }

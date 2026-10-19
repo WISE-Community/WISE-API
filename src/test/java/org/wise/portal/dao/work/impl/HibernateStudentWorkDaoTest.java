@@ -26,7 +26,9 @@ package org.wise.portal.dao.work.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -171,6 +173,23 @@ public class HibernateStudentWorkDaoTest extends WISEHibernateTest {
     assertEquals(2, studentWorkList.size());
     assertEquals(DUMMY_STUDENT_WORK1, getStudentData(studentWorkList, 0));
     assertEquals(DUMMY_STUDENT_WORK3, getStudentData(studentWorkList, 1));
+  }
+
+  @Test
+  public void getStudentWorkListByIds_ValidIds_ShouldReturnStudentWork() {
+    StudentWork sw1 = createStudentWork(workgroup1, peerGroup1, "nodeX", "compX", "Work X");
+    StudentWork sw2 = createStudentWork(workgroup1, peerGroup1, "nodeY", "compY", "Work Y");
+
+    List<StudentWork> results =
+        studentWorkDao.getStudentWorkListByIds(Arrays.asList(sw1.getId(), sw2.getId()));
+    assertEquals(2, results.size());
+
+    List<StudentWork> emptyResults =
+        studentWorkDao.getStudentWorkListByIds(Collections.emptyList());
+    assertEquals(0, emptyResults.size());
+
+    List<StudentWork> nullResults = studentWorkDao.getStudentWorkListByIds(null);
+    assertEquals(0, nullResults.size());
   }
 
   private StudentWork createStudentWork(Workgroup workgroup, PeerGroup peerGroup, String nodeId,

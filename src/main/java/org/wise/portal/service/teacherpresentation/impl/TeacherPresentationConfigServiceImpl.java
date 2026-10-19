@@ -3,6 +3,7 @@ package org.wise.portal.service.teacherpresentation.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.dao.teacherpresentation.TeacherPresentationConfigDao;
 import org.wise.portal.dao.work.StudentWorkDao;
 import org.wise.portal.domain.group.Group;
@@ -279,12 +279,19 @@ public class TeacherPresentationConfigServiceImpl implements TeacherPresentation
       if (id == null) {
         throw new IllegalArgumentException("Invalid studentWorkId");
       }
-      StudentWork work;
-      try {
-        work = studentWorkDao.getById(id);
-      } catch (ObjectNotFoundException e) {
-        throw new IllegalArgumentException("Unknown studentWorkId: " + id);
+    }
+    if (uniqueIds.isEmpty()) {
+      return uniqueIds;
+    }
+    List<StudentWork> works = studentWorkDao.getStudentWorkListByIds(new ArrayList<>(uniqueIds));
+    Map<Integer, StudentWork> workMap = new HashMap<>();
+    for (StudentWork work : works) {
+      if (work != null && work.getId() != null) {
+        workMap.put(work.getId(), work);
       }
+    }
+    for (Integer id : uniqueIds) {
+      StudentWork work = workMap.get(id);
       if (work == null || !work.getRun().getId().equals(run.getId())
           || !work.getPeriod().getId().equals(period.getId())) {
         throw new IllegalArgumentException("Unknown studentWorkId: " + id);
