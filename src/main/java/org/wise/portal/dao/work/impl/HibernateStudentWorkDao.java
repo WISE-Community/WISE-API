@@ -212,4 +212,17 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
   }
+
+  @Override
+  public List<StudentWork> getStudentWorkListByIds(List<Integer> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return new ArrayList<>();
+    }
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    cq.select(studentWorkRoot).where(studentWorkRoot.get("id").in(ids));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return query.getResultList();
+  }
 }
