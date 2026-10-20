@@ -56,6 +56,9 @@ public class TeacherPresentationConfigServiceImplTest {
     otherRun.setId(2L);
     period.setId(10L);
     otherPeriod.setId(11L);
+    service.setStrategies(Arrays.asList(
+        new DiscussionPresentationItemStrategy(studentWorkDao),
+        new IdeasPresentationItemStrategy(studentWorkDao)));
   }
 
   private StudentWork work(RunImpl workRun, PersistentGroup workPeriod, Integer id) {
