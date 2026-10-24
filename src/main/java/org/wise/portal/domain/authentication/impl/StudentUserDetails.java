@@ -104,7 +104,7 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   @Setter
   private Gender gender;
 
-  @Column(name = StudentUserDetails.COLUMN_NAME_BIRTHDAY, nullable = false)
+  @Column(name = StudentUserDetails.COLUMN_NAME_BIRTHDAY, nullable = true)
   @Getter
   @Setter
   private Date birthday;

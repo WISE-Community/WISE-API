@@ -19,6 +19,7 @@ package org.wise.portal.dao.authentication.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.PersistentUserDetails;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 
 /**
@@ -68,6 +70,43 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
     PersistentUserDetails userDetails = userDetailsDao.retrieveByName("SpongebobS0101");
     assertNotNull(userDetails);
     assertEquals("SpongebobS0101", userDetails.getUsername());
+    assertNotNull(((StudentUserDetails) userDetails).getBirthday());
+  }
+
+  @Test
+  public void retrieveByName_WithStudentWithoutBirthday_ShouldReturnUser() {
+    StudentUserDetails studentUserDetails = new StudentUserDetails();
+    studentUserDetails.setUsername("NoBirthdayStudent");
+    studentUserDetails.setPassword("password");
+    studentUserDetails.setFirstname("No");
+    studentUserDetails.setLastname("Birthday");
+    studentUserDetails.setGender(Gender.MALE);
+    studentUserDetails.setSignupdate(new Date());
+    studentUserDetails.setNumberOfLogins(0);
+
+    userDetailsDao.save(studentUserDetails);
+    flush();
+    sessionFactory.getCurrentSession().clear();
+
+    StudentUserDetails reloadedStudentUserDetails =
+        (StudentUserDetails) userDetailsDao.retrieveByName("NoBirthdayStudent");
+
+    assertNotNull(reloadedStudentUserDetails);
+    assertNull(reloadedStudentUserDetails.getBirthday());
+  }
+
+  @Test
+  public void retrieveByName_WithStudentBirthday_ShouldReturnBirthdayUnchanged() {
+    StudentUserDetails studentUserDetails =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+    Date birthdayBeforeReload = studentUserDetails.getBirthday();
+    flush();
+    sessionFactory.getCurrentSession().clear();
+
+    StudentUserDetails reloadedStudentUserDetails =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+
+    assertEquals(birthdayBeforeReload, reloadedStudentUserDetails.getBirthday());
   }
 
   @Test
