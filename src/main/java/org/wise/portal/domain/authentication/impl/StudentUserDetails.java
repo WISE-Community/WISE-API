@@ -131,22 +131,7 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   public String getCoreUsername() {
     String firstname = getFirstname().replaceAll("[\\s-]+", "");
     String lastnameInitial = getLastname().substring(0, 1);
-
-    Calendar birthday = Calendar.getInstance();
-    birthday.setTime(this.birthday);
-
-    int birthmonth = birthday.get(Calendar.MONTH) + 1; // month is 0-based
-    int birthdate = birthday.get(Calendar.DATE);
-    String birthmonthString = String.valueOf(birthmonth);
-    if (birthmonth <= 9) {
-      birthmonthString = "0" + birthmonthString;
-    }
-    String birthdateString = String.valueOf(birthdate);
-    if (birthdate <= 9) {
-      birthdateString = "0" + birthdateString;
-    }
-
-    return firstname + lastnameInitial + birthmonthString + birthdateString;
+    return firstname + lastnameInitial;
   }
 
   public String[] getUsernameSuffixes() {

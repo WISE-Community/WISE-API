@@ -63,11 +63,11 @@ public abstract class WISEHibernateTest extends AbstractTransactionalDbTests {
   @BeforeEach
   public void setUp() throws Exception {
     super.setUp();
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
         Gender.MALE);
-    student2 = createStudentUser("Patrick", "Starr", "PatrickS0101", "rock", 1, 1, Gender.MALE);
-    student3 = createStudentUser("Sandy", "Cheeks", "SandyC0101", "karate", 1, 1, Gender.FEMALE);
-    student4 = createStudentUser("Squidward", "Tentacles", "SquidwardT0101", "clarinet", 1, 1,
+    student2 = createStudentUser("Patrick", "Starr", "PatrickS", "rock", 1, 1, Gender.MALE);
+    student3 = createStudentUser("Sandy", "Cheeks", "SandyC", "karate", 1, 1, Gender.FEMALE);
+    student4 = createStudentUser("Squidward", "Tentacles", "SquidwardT", "clarinet", 1, 1,
         Gender.MALE);
     runStartTime = Calendar.getInstance().getTime();
     teacher1 = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",

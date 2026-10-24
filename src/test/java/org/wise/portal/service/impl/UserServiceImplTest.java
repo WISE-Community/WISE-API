@@ -147,32 +147,50 @@ public class UserServiceImplTest {
 
   @Test
   public void createUser_ValidStudentUser_ShouldCreateStudentUser() throws Exception {
+    studentUserDetails.setFirstname("  Bil-ly ");
+    studentUserDetails.setLastname(" Bob ");
     expectStudentAuthorityLookup();
-    expect(userDetailsDao.hasUsername("BillyB1219")).andReturn(false);
+    expect(userDetailsDao.hasUsername("BillyB")).andReturn(false);
     replay(userDetailsDao);
     expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
     userService.createUser(studentUserDetails);
     verify(grantedAuthorityDao);
     verify(userDetailsDao);
-    assertEquals("BillyB1219", studentUserDetails.getUsername());
+    assertEquals("BillyB", studentUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, studentUserDetails.getPassword());
     assertUserHasStudentAuthorities();
+  }
+
+  @Test
+  public void createUser_StudentWithoutBirthday_ShouldCreateNameOnlyUsername() throws Exception {
+    studentUserDetails.setBirthday(null);
+    expectStudentAuthorityLookup();
+    expect(userDetailsDao.hasUsername("BillyB")).andReturn(false);
+    replay(userDetailsDao);
+    expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
+    replay(passwordEncoder);
+
+    userService.createUser(studentUserDetails);
+
+    verify(grantedAuthorityDao);
+    verify(userDetailsDao);
+    assertEquals("BillyB", studentUserDetails.getUsername());
   }
 
   @Test
   public void createUser_DuplicateStudentUsername_ShouldAppendSuffixToStudentUsername()
       throws Exception {
     expectStudentAuthorityLookup();
-    expect(userDetailsDao.hasUsername("BillyB1219")).andReturn(true);
-    expect(userDetailsDao.hasUsername("BillyB1219a")).andReturn(false);
+    expect(userDetailsDao.hasUsername("BillyB")).andReturn(true);
+    expect(userDetailsDao.hasUsername("BillyBa")).andReturn(false);
     replay(userDetailsDao);
     expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
     userService.createUser(studentUserDetails);
     verify(grantedAuthorityDao);
     verify(userDetailsDao);
-    assertEquals("BillyB1219a", studentUserDetails.getUsername());
+    assertEquals("BillyBa", studentUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, studentUserDetails.getPassword());
     assertUserHasStudentAuthorities();
   }

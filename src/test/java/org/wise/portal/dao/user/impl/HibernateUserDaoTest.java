@@ -52,9 +52,9 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     teacher2 = createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
         Gender.MALE);
-    student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
   }
 
   @Test
@@ -72,8 +72,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     assertTrue(usernames.contains("preview"));
     assertTrue(usernames.contains("MrsPuff"));
     assertTrue(usernames.contains("MrKrabs"));
-    assertTrue(usernames.contains("SpongebobS0101"));
-    assertTrue(usernames.contains("PatrickS0101"));
+    assertTrue(usernames.contains("SpongebobS"));
+    assertTrue(usernames.contains("PatrickS"));
   }
 
   @Test
@@ -85,9 +85,9 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveByUsername_WithExistingStudentUsername_ShouldReturnStudent() {
-    User user = userDao.retrieveByUsername("SpongebobS0101");
+    User user = userDao.retrieveByUsername("SpongebobS");
     UserDetails userDetails = user.getUserDetails();
-    assertEquals("SpongebobS0101", userDetails.getUsername());
+    assertEquals("SpongebobS", userDetails.getUsername());
   }
 
   @Test
@@ -299,13 +299,13 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveStudentByUsername_WithNonExistingUsername_ShouldNotReturnAnyUser() {
-    User user = userDao.retrieveStudentByUsername("BillD0101");
+    User user = userDao.retrieveStudentByUsername("BillD");
     assertNull(user);
   }
 
   @Test
   public void retrieveStudentsByUsername_WithExistingUsername_ShouldReturnUser() {
-    User user = userDao.retrieveStudentByUsername("SpongebobS0101");
+    User user = userDao.retrieveStudentByUsername("SpongebobS");
     assertEquals(student1.getId(), user.getId());
   }
 

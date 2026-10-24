@@ -49,8 +49,8 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
     createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1, Gender.MALE);
-    createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1, Gender.MALE);
+    createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
   }
 
   @Test
@@ -67,10 +67,28 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveByName_WithExistingStudentName_ShouldReturnUser() {
-    PersistentUserDetails userDetails = userDetailsDao.retrieveByName("SpongebobS0101");
+    StudentUserDetails userDetails =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
     assertNotNull(userDetails);
-    assertEquals("SpongebobS0101", userDetails.getUsername());
-    assertNotNull(((StudentUserDetails) userDetails).getBirthday());
+    assertEquals("SpongebobS", userDetails.getUsername());
+    assertEquals("SpongebobS", userDetails.getCoreUsername());
+    assertNotNull(userDetails.getBirthday());
+  }
+
+  @Test
+  public void retrieveByName_WithExistingStudentUsername_ShouldNotRecomputeUsername() {
+    StudentUserDetails existingStudent =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
+    existingStudent.setUsername("SpongebobS0101");
+    flush();
+    sessionFactory.getCurrentSession().clear();
+
+    StudentUserDetails reloadedStudent =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+
+    assertNotNull(reloadedStudent);
+    assertEquals("SpongebobS0101", reloadedStudent.getUsername());
+    assertEquals("SpongebobS", reloadedStudent.getCoreUsername());
   }
 
   @Test
@@ -98,13 +116,13 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveByName_WithStudentBirthday_ShouldReturnBirthdayUnchanged() {
     StudentUserDetails studentUserDetails =
-        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
     Date birthdayBeforeReload = studentUserDetails.getBirthday();
     flush();
     sessionFactory.getCurrentSession().clear();
 
     StudentUserDetails reloadedStudentUserDetails =
-        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
 
     assertEquals(birthdayBeforeReload, reloadedStudentUserDetails.getBirthday());
   }
@@ -145,6 +163,6 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void hasUsername_WithExistingStudentUsername_ShouldReturnTrue() {
-    assertTrue(userDetailsDao.hasUsername("PatrickS0101"));
+    assertTrue(userDetailsDao.hasUsername("PatrickS"));
   }
 }

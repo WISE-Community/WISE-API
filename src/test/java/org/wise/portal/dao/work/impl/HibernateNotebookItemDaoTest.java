@@ -74,12 +74,12 @@ public class HibernateNotebookItemDaoTest extends AbstractTransactionalDbTests {
     Set<Group> periods = new TreeSet<Group>();
     periods.add(period1);
     run.setPeriods(periods);
-    User student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
+    User student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
         Gender.MALE);
     Set<User> members1 = new HashSet<User>();
     members1.add(student1);
     workgroup1 = createWorkgroup(members1, run, period1);
-    User student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    User student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
     Set<User> members2 = new HashSet<User>();
     members2.add(student2);
     workgroup2 = createWorkgroup(members2, run, period1);

@@ -74,12 +74,12 @@ public class HibernateWorkgroupDaoTest extends AbstractTransactionalDbTests {
     periods.add(period1);
     periods.add(period2);
     run.setPeriods(periods);
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
         Gender.MALE);
     Set<User> members1 = new HashSet<User>();
     members1.add(student1);
     createWorkgroup(members1, run, period1);
-    student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
   }
 
   @Test
