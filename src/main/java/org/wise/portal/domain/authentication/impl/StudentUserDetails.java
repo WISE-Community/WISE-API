@@ -134,41 +134,20 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
     return firstname + lastnameInitial;
   }
 
-  public String[] getUsernameSuffixes() {
-    return new String[] { "", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
-        "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
-  }
-
   /**
-   * Get the next username suffix. For students the suffix is just an alphabet letter. If we reach
-   * "z" we will then move on to "aa", if we reach "az" we will then move on to "aaa", etc. e.g. "x"
-   * "y" "z" "aa" "ab"
+   * Get the next numeric username suffix for students.
    * 
-   * @param currentUsernameSuffix
-   *                                the current suffix
-   * @see MutableUserDetails#getNextUsernameSuffix(String)
-   * @return the next username suffix which will be the next letter in the alphabet
+   * @param currentUsernameSuffix the current suffix
+   * @return the next suffix, starting with "2" after the unsuffixed username
    */
   public String getNextUsernameSuffix(String currentUsernameSuffix) {
-    String nextUsernameSuffix = "";
     if (currentUsernameSuffix == null) {
-      nextUsernameSuffix = "";
-    } else if ("".equals(currentUsernameSuffix)) {
-      nextUsernameSuffix = "a";
+      return "";
+    } else if (currentUsernameSuffix.isEmpty()) {
+      return "2";
     } else {
-      if (currentUsernameSuffix.length() > 0) {
-        char lastChar = currentUsernameSuffix.charAt(currentUsernameSuffix.length() - 1);
-        if (lastChar == 'z') {
-          String beginningCurrentUsernameSuffix = currentUsernameSuffix.substring(0,
-              currentUsernameSuffix.length() - 1);
-          nextUsernameSuffix = beginningCurrentUsernameSuffix + "aa";
-        } else {
-          nextUsernameSuffix = currentUsernameSuffix.substring(0,
-              currentUsernameSuffix.length() - 1) + (char) (lastChar + 1);
-        }
-      }
+      return String.valueOf(Integer.parseInt(currentUsernameSuffix) + 1);
     }
-    return nextUsernameSuffix;
   }
 
   public Date getLastLoginTime() {

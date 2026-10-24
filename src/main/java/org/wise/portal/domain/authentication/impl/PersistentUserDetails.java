@@ -377,12 +377,6 @@ public class PersistentUserDetails implements MutableUserDetails {
   }
 
   @Override
-  public String[] getUsernameSuffixes() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
   public String getNextUsernameSuffix(String currentUsernameSuffix) {
     // TODO Auto-generated method stub
     return null;

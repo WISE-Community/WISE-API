@@ -187,12 +187,6 @@ public interface MutableUserDetails extends UserDetails, Persistable {
   String getCoreUsername();
 
   /**
-   * In case username is not unique, append an item from the list of suffices.
-   * @return array of suffices to add to end of username to make it unique
-   */
-  String[] getUsernameSuffixes();
-
-  /**
    * Get the next username suffix
    * @param currentUsernameSuffix
    * @return a String containing the next username suffix

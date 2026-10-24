@@ -183,16 +183,33 @@ public class UserServiceImplTest {
       throws Exception {
     expectStudentAuthorityLookup();
     expect(userDetailsDao.hasUsername("BillyB")).andReturn(true);
-    expect(userDetailsDao.hasUsername("BillyBa")).andReturn(false);
+    expect(userDetailsDao.hasUsername("BillyB2")).andReturn(false);
     replay(userDetailsDao);
     expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
     replay(passwordEncoder);
     userService.createUser(studentUserDetails);
     verify(grantedAuthorityDao);
     verify(userDetailsDao);
-    assertEquals("BillyBa", studentUserDetails.getUsername());
+    assertEquals("BillyB2", studentUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, studentUserDetails.getPassword());
     assertUserHasStudentAuthorities();
+  }
+
+  @Test
+  public void createUser_RepeatedStudentUsername_ShouldIncrementNumericSuffix() throws Exception {
+    expectStudentAuthorityLookup();
+    expect(userDetailsDao.hasUsername("BillyB")).andReturn(true);
+    expect(userDetailsDao.hasUsername("BillyB2")).andReturn(true);
+    expect(userDetailsDao.hasUsername("BillyB3")).andReturn(false);
+    replay(userDetailsDao);
+    expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
+    replay(passwordEncoder);
+
+    userService.createUser(studentUserDetails);
+
+    verify(grantedAuthorityDao);
+    verify(userDetailsDao);
+    assertEquals("BillyB3", studentUserDetails.getUsername());
   }
 
   @Test
