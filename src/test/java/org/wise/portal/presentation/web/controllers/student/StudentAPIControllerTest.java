@@ -226,59 +226,30 @@ public class StudentAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void createStudentAccount_WithoutBirthdayWithGoogleUserId_CreateUser()
-      throws DuplicateUsernameException, InvalidNameException {
-    HashMap<String, String> studentFields = createDefaultStudentFields();
-    studentFields.put("googleUserId", "123456789");
-    expect(request.getLocale()).andReturn(Locale.US);
-    replay(request);
-    Capture<StudentUserDetails> createdDetails = newCapture();
-    expect(userService.createUser(capture(createdDetails))).andReturn(student1);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = studentAPIController
-        .createStudentAccount(studentFields, request);
-    assertEquals(STUDENT_USERNAME, response.getBody().get("username"));
-    assertEquals("123456789", createdDetails.getValue().getGoogleUserId());
-    assertNull(createdDetails.getValue().getBirthday());
-    verify(request);
-    verify(userService);
-  }
- 
-  @Test
-  public void createStudentAccount_WithoutBirthdayWithPassword_CreateUser()
+  public void createStudentAccount_WithValidPassword_CreateUser()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> studentFields = createDefaultStudentFields();
     studentFields.put("password", PasswordServiceImpl.VALID_PASSWORD);
-    expect(request.getLocale()).andReturn(Locale.US);
-    replay(request);
-    Capture<StudentUserDetails> createdDetails = newCapture();
-    expect(userService.createUser(capture(createdDetails))).andReturn(student1);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = studentAPIController
-        .createStudentAccount(studentFields, request);
-    assertEquals(STUDENT_USERNAME, response.getBody().get("username"));
-    assertNull(createdDetails.getValue().getBirthday());
-    verify(request);
-    verify(userService);
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals(PasswordServiceImpl.VALID_PASSWORD, createdDetails.getPassword());
   }
 
   @Test
-  public void createStudentAccount_WithoutBirthdayWithMicrosoftUserId_CreateUser()
+  public void createStudentAccount_WithGoogleUserId_CreateUser()
+      throws DuplicateUsernameException, InvalidNameException {
+    HashMap<String, String> studentFields = createDefaultStudentFields();
+    studentFields.put("googleUserId", "123456789");
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals("123456789", createdDetails.getGoogleUserId());
+  }
+
+  @Test
+  public void createStudentAccount_WithMicrosoftUserId_CreateUser()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> studentFields = createDefaultStudentFields();
     studentFields.put("microsoftUserId", "microsoft-123456789");
-    expect(request.getLocale()).andReturn(Locale.US);
-    replay(request);
-    Capture<StudentUserDetails> createdDetails = newCapture();
-    expect(userService.createUser(capture(createdDetails))).andReturn(student1);
-    replay(userService);
-    ResponseEntity<Map<String, Object>> response = studentAPIController
-        .createStudentAccount(studentFields, request);
-    assertEquals(STUDENT_USERNAME, response.getBody().get("username"));
-    assertEquals("microsoft-123456789", createdDetails.getValue().getMicrosoftUserId());
-    assertNull(createdDetails.getValue().getBirthday());
-    verify(request);
-    verify(userService);
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals("microsoft-123456789", createdDetails.getMicrosoftUserId());
   }
 
   @Test
@@ -288,6 +259,12 @@ public class StudentAPIControllerTest extends APIControllerTest {
     studentFields.put("birthMonth", "not-a-month");
     studentFields.put("birthDay", "not-a-day");
     studentFields.put("password", PasswordServiceImpl.VALID_PASSWORD);
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals(PasswordServiceImpl.VALID_PASSWORD, createdDetails.getPassword());
+  }
+
+  private StudentUserDetails registerStudentAccount(Map<String, String> studentFields)
+      throws DuplicateUsernameException, InvalidNameException {
     expect(request.getLocale()).andReturn(Locale.US);
     replay(request);
     Capture<StudentUserDetails> createdDetails = newCapture();
@@ -299,6 +276,7 @@ public class StudentAPIControllerTest extends APIControllerTest {
     assertNull(createdDetails.getValue().getBirthday());
     verify(request);
     verify(userService);
+    return createdDetails.getValue();
   }
 
   @Test
