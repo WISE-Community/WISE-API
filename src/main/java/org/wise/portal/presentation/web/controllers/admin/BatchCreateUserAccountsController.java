@@ -26,8 +26,11 @@ package org.wise.portal.presentation.web.controllers.admin;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -62,6 +65,9 @@ import org.wise.portal.service.user.UserService;
 @RequestMapping("/admin/account/batchcreateuseraccounts.html")
 public class BatchCreateUserAccountsController {
 
+  private static final String CSV_FORMAT_ERROR =
+      "This CSV file does not match the updated format. Please download and use the updated template.";
+
   @Autowired
   private UserService userService;
 
@@ -72,72 +78,99 @@ public class BatchCreateUserAccountsController {
   protected ModelAndView onSubmit(
       @ModelAttribute("csvFile") BatchCreateUserAccountsUpload csvUpload,
       BindingResult result) throws Exception {
-    ArrayList<String> newUsernames = new ArrayList<String>();
-    MultipartFile csvFile = csvUpload.getFile();
-    InputStreamReader inputStreamReader = new InputStreamReader(csvFile.getInputStream());
+    List<String[]> studentRows = new ArrayList<String[]>();
     Gender[] genderArray = {Gender.MALE,Gender.FEMALE,Gender.UNSPECIFIED};
     AccountQuestion[] accountQuestionArray =
         { AccountQuestion.QUESTION_FOUR, AccountQuestion.QUESTION_TWO,
         AccountQuestion.QUESTION_THREE };
-    BufferedReader br = null;
-    String line = "";
-    String cvsSplitBy = ",";
-
-    try {
-      br = new BufferedReader(inputStreamReader);
-      while ((line = br.readLine()) != null) {
-        String[] userInfo = line.split(cvsSplitBy);
-        if ("Firstname".equals(userInfo[0]) && "Lastname".equals(userInfo[1])) {
-          continue;
-        }
-        String firstname = userInfo[0];
-        String lastname = userInfo[1];
-        Gender gender = genderArray[Integer.valueOf(userInfo[2])];
-        String password = userInfo[5];
-        AccountQuestion accountQuestion = accountQuestionArray[Integer.valueOf(userInfo[6])];
-        String accountAnswer = userInfo[7];
-        StudentUserDetails studentUserDetails = new StudentUserDetails();
-        studentUserDetails.setFirstname(firstname);
-        studentUserDetails.setLastname(lastname);
-        studentUserDetails.setGender(gender);
-        studentUserDetails.setPassword(password);
-        studentUserDetails.setAccountQuestion(accountQuestion.toString());
-        studentUserDetails.setAccountAnswer(accountAnswer);
-        studentUserDetails.setSignupdate(Calendar.getInstance().getTime());
-        int birthmonth = Integer.parseInt(userInfo[3]);
-        int birthdate = Integer.parseInt(userInfo[4]);
-        Calendar birthday = Calendar.getInstance();
-        birthday.set(Calendar.MONTH, birthmonth - 1);  // month is 0-based
-        birthday.set(Calendar.DATE, birthdate);
-        studentUserDetails.setBirthday(birthday.getTime());
-        User user = userService.createUser(studentUserDetails);
-        String accessCode = userInfo[8];
-        String period = userInfo[9];
-        Projectcode projectcode = new Projectcode(accessCode,period);
-        studentService.addStudentToRun(user, projectcode);
-        newUsernames.add(studentUserDetails.getUsername());
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (inputStreamReader != null) {
-        try {
-          inputStreamReader.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-      if (br != null) {
-        try {
-          br.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
+    if (!readStudentRows(csvUpload.getFile(), studentRows, genderArray, accountQuestionArray)) {
+      return csvFormatError();
     }
+    ArrayList<String> newUsernames =
+        createStudentAccounts(studentRows, genderArray, accountQuestionArray);
     ModelAndView modelAndView = new ModelAndView("admin/account/batchcreateuseraccounts");
     modelAndView.addObject("msg", "Batch create user accounts complete!");
     modelAndView.addObject("newUsernames", newUsernames);
+    return modelAndView;
+  }
+
+  private boolean readStudentRows(MultipartFile csvFile, List<String[]> studentRows,
+      Gender[] genderArray, AccountQuestion[] accountQuestionArray) throws IOException {
+    try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(csvFile.getInputStream(), StandardCharsets.UTF_8))) {
+      String line;
+      while ((line = br.readLine()) != null) {
+        if (!line.isBlank()) {
+          String[] userInfo = line.split(",", -1);
+          boolean headerRow = isHeaderRow(userInfo);
+          boolean invalidRow = headerRow
+              ? line.toLowerCase(Locale.ROOT).contains("birthday")
+              : isInvalidRow(genderArray, accountQuestionArray, userInfo);
+          if (invalidRow) {
+            return false;
+          } else if (!headerRow) {
+            studentRows.add(userInfo);
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  private boolean isInvalidRow(Gender[] genderArray, AccountQuestion[] accountQuestionArray,
+      String[] userInfo) {
+    return userInfo.length != 8 || !hasValidAccountIndexes(userInfo, genderArray,
+        accountQuestionArray);
+  }
+
+  private boolean isHeaderRow(String[] userInfo) {
+    return userInfo.length >= 2 && "Firstname".equals(userInfo[0])
+        && "Lastname".equals(userInfo[1]);
+  }
+
+  private ArrayList<String> createStudentAccounts(List<String[]> studentRows,
+      Gender[] genderArray, AccountQuestion[] accountQuestionArray) throws Exception {
+    ArrayList<String> newUsernames = new ArrayList<String>();
+    for (String[] userInfo : studentRows) {
+      String firstname = userInfo[0];
+      String lastname = userInfo[1];
+      Gender gender = genderArray[Integer.valueOf(userInfo[2])];
+      String password = userInfo[3];
+      AccountQuestion accountQuestion = accountQuestionArray[Integer.valueOf(userInfo[4])];
+      String accountAnswer = userInfo[5];
+      StudentUserDetails studentUserDetails = new StudentUserDetails();
+      studentUserDetails.setFirstname(firstname);
+      studentUserDetails.setLastname(lastname);
+      studentUserDetails.setGender(gender);
+      studentUserDetails.setPassword(password);
+      studentUserDetails.setAccountQuestion(accountQuestion.toString());
+      studentUserDetails.setAccountAnswer(accountAnswer);
+      studentUserDetails.setSignupdate(Calendar.getInstance().getTime());
+      User user = userService.createUser(studentUserDetails);
+      String accessCode = userInfo[6];
+      String period = userInfo[7];
+      Projectcode projectcode = new Projectcode(accessCode, period);
+      studentService.addStudentToRun(user, projectcode);
+      newUsernames.add(studentUserDetails.getUsername());
+    }
+    return newUsernames;
+  }
+
+  private boolean hasValidAccountIndexes(String[] userInfo, Gender[] genderArray,
+      AccountQuestion[] accountQuestionArray) {
+    try {
+      int genderIndex = Integer.parseInt(userInfo[2]);
+      int accountQuestionIndex = Integer.parseInt(userInfo[4]);
+      return genderIndex >= 0 && genderIndex < genderArray.length
+          && accountQuestionIndex >= 0 && accountQuestionIndex < accountQuestionArray.length;
+    } catch (NumberFormatException e) {
+      return false;
+    }
+  }
+
+  private ModelAndView csvFormatError() {
+    ModelAndView modelAndView = new ModelAndView("admin/account/batchcreateuseraccounts");
+    modelAndView.addObject("error", CSV_FORMAT_ERROR);
     return modelAndView;
   }
 
