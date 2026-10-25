@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 
@@ -322,15 +323,41 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   }
 
   @Test
-  public void retrieveStudentsByNameAndBirthday_WithNonExistingBirthday_ShouldNotReturnAnyUser() {
-    List<User> users = userDao.retrieveStudentsByNameAndBirthday("Spongebob", "Squarepants", 1, 2);
+  public void retrieveStudentsByName_WithNonExistingName_ShouldNotReturnAnyUser() {
+    List<User> users = userDao.retrieveStudentsByName("No", "Match");
     assertEquals(0, users.size());
   }
 
   @Test
-  public void retrieveStudentsByNameAndBirthday_WithExistingBirthday_ShouldReturnUser() {
-    List<User> users = userDao.retrieveStudentsByNameAndBirthday("Spongebob", "Squarepants", 1, 1);
+  public void retrieveStudentsByName_WithExistingName_ShouldReturnUser() {
+    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
     assertEquals(1, users.size());
+    assertEquals("SpongebobS", users.get(0).getUserDetails().getUsername());
+  }
+
+  @Test
+  public void retrieveStudentsByName_WithSeveralMatchingStudents_ShouldReturnAllUsernames()
+      throws Exception {
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS2", "burger", 2, 1, Gender.MALE);
+
+    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
+
+    assertEquals(2, users.size());
+    assertTrue(users.stream().anyMatch(user ->
+        "SpongebobS".equals(user.getUserDetails().getUsername())));
+    assertTrue(users.stream().anyMatch(user ->
+        "SpongebobS2".equals(user.getUserDetails().getUsername())));
+  }
+
+  @Test
+  public void retrieveStudentsByName_WithNoBirthday_ShouldReturnStudent() {
+    ((StudentUserDetails) student1.getUserDetails()).setBirthday(null);
+    flush();
+
+    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
+
+    assertEquals(1, users.size());
+    assertEquals("SpongebobS", users.get(0).getUserDetails().getUsername());
   }
 
   @Test
