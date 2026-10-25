@@ -1,10 +1,13 @@
 package org.wise.portal.presentation.web.controllers.survey;
 
+import static org.easymock.EasyMock.capture;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.newCapture;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.easymock.Capture;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -195,7 +199,8 @@ public class SurveyAPIControllerTest {
     expect(runService.retrieveRunByRuncode("dog1234")).andReturn(run);
     replay(runService);
     studentUser.setUserDetails(studentUserDetails);
-    expect(userService.createUser(studentUserDetails)).andReturn(studentUser);
+    Capture<StudentUserDetails> createdStudentDetails = newCapture();
+    expect(userService.createUser(capture(createdStudentDetails))).andReturn(studentUser);
     replay(userService);
     SecurityContextHolder.setContext(getSecurityContext("anonymousUser", "ROLE_ANONYMOUS"));
     expect(workgroupService.getWorkgroupsForRun(run)).andReturn(new ArrayList<Workgroup>());
@@ -209,6 +214,7 @@ public class SurveyAPIControllerTest {
     expectLastCall();
     replay(studentService);
     surveyAPIController.launchSurveyRun("dog1234-1", httpServletResponse, httpServletRequest);
-    verify(httpServletResponse, runService, workgroupService, studentService);
+    verify(httpServletResponse, runService, userService, workgroupService, studentService);
+    assertNull(createdStudentDetails.getValue().getBirthday());
   }
 }
