@@ -1,0 +1,20 @@
+create table teacher_reflections (
+    id bigint not null auto_increment,
+    runId bigint not null,
+    periodId bigint not null,
+    nodeId varchar(30) not null,
+    componentId varchar(30) not null,
+    componentType varchar(30) not null,
+    questionId varchar(30) not null,
+    questionText text not null,
+    answerText text not null,
+    answeredByWorkgroupId bigint not null,
+    createdAt datetime(3) not null,
+    updatedAt datetime(3) not null,
+    primary key (id),
+    unique key teacherReflectionsUniqueKey (runId, periodId, nodeId, componentId, questionId),
+    index teacherReflectionsRunIdIndex (runId),
+    constraint teacherReflectionsRunIdFK foreign key (runId) references runs (id),
+    constraint teacherReflectionsPeriodIdFK foreign key (periodId) references `groups` (id),
+    constraint teacherReflectionsWorkgroupIdFK foreign key (answeredByWorkgroupId) references workgroups (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
