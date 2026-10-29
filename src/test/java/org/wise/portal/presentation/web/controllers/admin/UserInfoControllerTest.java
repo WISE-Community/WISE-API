@@ -26,8 +26,10 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -56,6 +58,40 @@ public class UserInfoControllerTest extends APIControllerTest {
   private StudentService studentService;
 
   private ModelMap modelMap = new ModelMap();
+
+  @Test
+  public void getUserAccountInfo_StudentWithoutBirthday_ReturnsAccountInfoPageWithoutBirthday()
+      throws Exception {
+    assertStudentAccountInfoDoesNotExposeBirthday(null);
+  }
+
+  @Test
+  public void getUserAccountInfo_StudentWithStoredBirthday_ReturnsAccountInfoPageWithoutBirthday()
+      throws Exception {
+    assertStudentAccountInfoDoesNotExposeBirthday(new Date());
+  }
+
+  @SuppressWarnings("unchecked")
+  private void assertStudentAccountInfoDoesNotExposeBirthday(Date birthday) throws Exception {
+    student1UserDetails.setBirthday(birthday);
+    expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
+    expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
+    replay(userService);
+    expect(studentService.isStudentAssociatedWithTeacher(student1, teacher1)).andReturn(true);
+    replay(studentService);
+    expect(runService.getRunList(student1)).andReturn(new ArrayList<>());
+    replay(runService);
+
+    String view = controller.getUserAccountInfo(teacherAuth, STUDENT_USERNAME, modelMap);
+    HashMap<String, Object> resultUserInfoMap =
+        (HashMap<String, Object>) modelMap.get("userInfoMap");
+
+    assertEquals("student/account/info", view);
+    assertFalse(resultUserInfoMap.containsKey("Birthday"));
+    verify(userService);
+    verify(studentService);
+    verify(runService);
+  }
 
   @SuppressWarnings("unchecked")
   @Test

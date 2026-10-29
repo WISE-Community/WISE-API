@@ -170,7 +170,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
     infoMap.put("Username", this.getUsername());
     infoMap.put("Sign Up Date", this.getSignupdate());
     infoMap.put("Gender", this.getGender().toString());
-    infoMap.put("Birthday", this.getBirthday());
     infoMap.put("Number of Logins", this.getNumberOfLogins().toString());
     infoMap.put("Last Login", this.getLastLoginTime());
     infoMap.put("Language", this.getLanguage());
