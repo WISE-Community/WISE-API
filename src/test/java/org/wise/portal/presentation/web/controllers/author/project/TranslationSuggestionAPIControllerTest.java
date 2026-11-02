@@ -1,31 +1,172 @@
 package org.wise.portal.presentation.web.controllers.author.project;
 
-import org.easymock.EasyMockExtension;
-import org.easymock.TestSubject;
+import static org.easymock.EasyMock.capture;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.newCapture;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.easymock.Capture;
+import org.easymock.EasyMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 import org.wise.portal.presentation.web.controllers.APIControllerTest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.translate.TranslateClient;
+import software.amazon.awssdk.services.translate.model.Document;
+import software.amazon.awssdk.services.translate.model.TranslateDocumentRequest;
+import software.amazon.awssdk.services.translate.model.TranslateDocumentResponse;
+import software.amazon.awssdk.services.translate.model.TranslateTextRequest;
+import software.amazon.awssdk.services.translate.model.TranslateTextResponse;
+import software.amazon.awssdk.services.translate.model.TranslatedDocument;
+
 @ExtendWith(EasyMockExtension.class)
 public class TranslationSuggestionAPIControllerTest extends APIControllerTest {
 
-  @TestSubject
-  private final TranslationSuggestionAPIController controller = new TranslationSuggestionAPIController();
+  private static final String TRANSLATABLE_TEXT_JSON =
+      "{\"srcLang\":\"Spanish\",\"targetLang\":\"Italian\",\"srcText\":\"texto para traducir\"}";
 
   @Test
-  public void getSuggestedTranslation_ThrowIfPropertiesEmpty() throws Exception {
+  public void getSuggestedTranslation_UsesTextTranslationWhenContentTypeIsOmitted() throws Exception {
+    TranslateClient translateClient = createMock(TranslateClient.class);
+    Capture<TranslateTextRequest> requestCapture = newCapture();
+    expect(translateClient.translateText(capture(requestCapture)))
+        .andReturn(TranslateTextResponse.builder().translatedText("testo tradotto").build());
+    replay(translateClient);
+
+    TranslationSuggestionAPIController controller = createController(translateClient);
+    TranslatableText request = readRequest(TRANSLATABLE_TEXT_JSON);
+
+    assertEquals("text", request.getContentType());
+    assertEquals("testo tradotto", controller.getSuggestedTranslation(teacherAuth, request));
+    assertEquals("texto para traducir", requestCapture.getValue().text());
+    assertEquals("es-MX", requestCapture.getValue().sourceLanguageCode());
+    assertEquals("it", requestCapture.getValue().targetLanguageCode());
+    verify(translateClient);
+  }
+
+  @Test
+  public void getSuggestedTranslation_UsesHtmlDocumentTranslation() throws Exception {
+    assertHtmlTranslation(
+        "{\"srcLang\":\"English\",\"targetLang\":\"Spanish\",\"srcText\":\"<p>Hello</p>\","
+            + "\"contentType\":\"html\"}",
+        "<p>Hello</p>",
+        "<p class=\"greeting\">Hola</p>",
+        "en",
+        "es-MX");
+  }
+
+  @Test
+  public void getSuggestedTranslation_TranslatesHtmlIntoEnglish() throws Exception {
+    assertHtmlTranslation(
+        "{\"srcLang\":\"Italian\",\"targetLang\":\"English\",\"srcText\":\"<p>Ciao</p>\","
+            + "\"contentType\":\"html\"}",
+        "<p>Ciao</p>",
+        "<p>Hello</p>",
+        "it",
+        "en");
+  }
+
+  @Test
+  public void getSuggestedTranslation_RejectsHtmlWithoutEnglishLanguage() throws Exception {
+    assertRequestRejected(
+        "{\"srcLang\":\"Spanish\",\"targetLang\":\"Italian\",\"srcText\":\"texto\","
+            + "\"contentType\":\"html\"}",
+        "HTML translation requires English as either the source or target language");
+  }
+
+  @Test
+  public void getSuggestedTranslation_RejectsUnsupportedContentType() throws Exception {
+    assertRequestRejected(
+        "{\"srcLang\":\"English\",\"targetLang\":\"Spanish\",\"srcText\":\"Hello\","
+            + "\"contentType\":\"xml\"}",
+        "Unsupported content type: xml");
+  }
+
+  @Test
+  public void getSuggestedTranslation_ThrowsIfPropertiesEmpty() throws Exception {
+    TranslateClient translateClient = createMock(TranslateClient.class);
+    TranslationSuggestionAPIController controller = new TestTranslationSuggestionAPIController(translateClient);
     ReflectionTestUtils.setField(controller, "accessKey", "");
     ReflectionTestUtils.setField(controller, "secretKey", "");
     ReflectionTestUtils.setField(controller, "region", "");
 
-    TranslatableText tt = new TranslatableText("English", "Spanish", "text to translate");
+    TranslatableText request = readRequest(TRANSLATABLE_TEXT_JSON);
 
-    assertThrows(ResponseStatusException.class, () -> {
-      controller.getSuggestedTranslation(teacherAuth, tt);
-    });
+    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        () -> controller.getSuggestedTranslation(teacherAuth, request));
+
+    assertEquals(500, exception.getStatusCode().value());
+  }
+
+  private void assertHtmlTranslation(String requestJson, String sourceHtml, String translatedHtml,
+      String sourceLanguageCode, String targetLanguageCode) throws Exception {
+    TranslateClient translateClient = createMock(TranslateClient.class);
+    Capture<TranslateDocumentRequest> requestCapture = newCapture();
+    expect(translateClient.translateDocument(capture(requestCapture)))
+        .andReturn(TranslateDocumentResponse.builder()
+            .translatedDocument(TranslatedDocument.builder()
+                .content(SdkBytes.fromUtf8String(translatedHtml))
+                .build())
+            .build());
+    replay(translateClient);
+
+    TranslationSuggestionAPIController controller = createController(translateClient);
+    TranslatableText request = readRequest(requestJson);
+
+    assertEquals(translatedHtml, controller.getSuggestedTranslation(teacherAuth, request));
+    Document document = requestCapture.getValue().document();
+    assertEquals("text/html", document.contentType());
+    assertEquals(sourceHtml, document.content().asUtf8String());
+    assertEquals(sourceLanguageCode, requestCapture.getValue().sourceLanguageCode());
+    assertEquals(targetLanguageCode, requestCapture.getValue().targetLanguageCode());
+    verify(translateClient);
+  }
+
+  private void assertRequestRejected(String requestJson, String expectedReason) throws Exception {
+    TranslateClient translateClient = createMock(TranslateClient.class);
+    replay(translateClient);
+    TranslationSuggestionAPIController controller = createController(translateClient);
+    TranslatableText request = readRequest(requestJson);
+
+    ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+        () -> controller.getSuggestedTranslation(teacherAuth, request));
+
+    assertEquals(400, exception.getStatusCode().value());
+    assertEquals(expectedReason, exception.getReason());
+    verify(translateClient);
+  }
+
+  private TranslationSuggestionAPIController createController(TranslateClient translateClient) {
+    TranslationSuggestionAPIController controller = new TestTranslationSuggestionAPIController(translateClient);
+    ReflectionTestUtils.setField(controller, "accessKey", "access-key");
+    ReflectionTestUtils.setField(controller, "secretKey", "secret-key");
+    ReflectionTestUtils.setField(controller, "region", "us-east-1");
+    return controller;
+  }
+
+  private TranslatableText readRequest(String json) throws Exception {
+    return new ObjectMapper().readValue(json, TranslatableText.class);
+  }
+
+  private static class TestTranslationSuggestionAPIController extends TranslationSuggestionAPIController {
+
+    private final TranslateClient translateClient;
+
+    private TestTranslationSuggestionAPIController(TranslateClient translateClient) {
+      this.translateClient = translateClient;
+    }
+
+    @Override
+    protected TranslateClient buildTranslateClient() {
+      return translateClient;
+    }
   }
 }
-
