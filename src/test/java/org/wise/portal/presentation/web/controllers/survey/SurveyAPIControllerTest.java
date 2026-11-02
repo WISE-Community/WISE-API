@@ -215,6 +215,5 @@ public class SurveyAPIControllerTest {
     replay(studentService);
     surveyAPIController.launchSurveyRun("dog1234-1", httpServletResponse, httpServletRequest);
     verify(httpServletResponse, runService, userService, workgroupService, studentService);
-    assertNull(createdStudentDetails.getValue().getBirthday());
   }
 }

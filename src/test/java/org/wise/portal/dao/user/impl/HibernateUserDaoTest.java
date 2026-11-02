@@ -53,9 +53,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     teacher2 = createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
-        Gender.MALE);
-    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", Gender.MALE);
+    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", Gender.MALE);
   }
 
   @Test
@@ -338,7 +337,7 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   @Test
   public void retrieveStudentsByName_WithSeveralMatchingStudents_ShouldReturnAllUsernames()
       throws Exception {
-    createStudentUser("Spongebob", "Squarepants", "SpongebobS2", "burger", 2, 1, Gender.MALE);
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS2", "burger", Gender.MALE);
 
     List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
 
@@ -347,17 +346,6 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
         "SpongebobS".equals(user.getUserDetails().getUsername())));
     assertTrue(users.stream().anyMatch(user ->
         "SpongebobS2".equals(user.getUserDetails().getUsername())));
-  }
-
-  @Test
-  public void retrieveStudentsByName_WithNoBirthday_ShouldReturnStudent() {
-    ((StudentUserDetails) student1.getUserDetails()).setBirthday(null);
-    flush();
-
-    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
-
-    assertEquals(1, users.size());
-    assertEquals("SpongebobS", users.get(0).getUserDetails().getUsername());
   }
 
   @Test

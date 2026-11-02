@@ -66,9 +66,8 @@ public class HibernateEventDaoTest extends AbstractTransactionalDbTests {
     teacher1 = createTeacherUser("Mrs", "Puff", "MrsPuff", "Mrs. Puff", "boat", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrspuff@bikinibottom.com", "Boating School",
         Schoollevel.COLLEGE, "1234567890");
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
-        Gender.MALE);
-    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", Gender.MALE);
+    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", Gender.MALE);
     Long id = getNextAvailableProjectId();
     String projectName = "How to be a Fry Cook";
     Date startTime = Calendar.getInstance().getTime();

@@ -81,20 +81,6 @@ public class UserServiceImplTest {
 
   private static final String LASTNAME = "Bob";
 
-  private static Date BIRTHDAY;
-
-  private static int BIRTHYEAR = 1990;
-
-  private static int BIRTHMONTH = 12;
-
-  private static int BIRTHDATE = 19;
-
-  static {
-    Calendar cal = Calendar.getInstance();
-    cal.set(BIRTHYEAR, BIRTHMONTH - 1, BIRTHDATE);
-    BIRTHDAY = cal.getTime();
-  }
-
   private static final Date SIGNUPDATE = Calendar.getInstance().getTime();
 
   private static final Gender GENDER = Gender.FEMALE;
@@ -125,7 +111,6 @@ public class UserServiceImplTest {
     studentUserDetails.setLastname(LASTNAME);
     studentUserDetails.setSignupdate(SIGNUPDATE);
     studentUserDetails.setGender(GENDER);
-    studentUserDetails.setBirthday(BIRTHDAY);
     studentUserDetails.setNumberOfLogins(DEFAULT_NUMBEROFLOGINS);
     studentUserDetails.setAccountQuestion(DEFAULT_ACCOUNT_QUESTION);
     studentUserDetails.setAccountAnswer(DEFAULT_ACCOUNT_ANSWER);
@@ -160,22 +145,6 @@ public class UserServiceImplTest {
     assertEquals("BillyB", studentUserDetails.getUsername());
     assertEquals(ENCODED_PASSWORD, studentUserDetails.getPassword());
     assertUserHasStudentAuthorities();
-  }
-
-  @Test
-  public void createUser_StudentWithoutBirthday_ShouldCreateNameOnlyUsername() throws Exception {
-    studentUserDetails.setBirthday(null);
-    expectStudentAuthorityLookup();
-    expect(userDetailsDao.hasUsername("BillyB")).andReturn(false);
-    replay(userDetailsDao);
-    expect(passwordEncoder.encode(studentUserDetails.getPassword())).andReturn(ENCODED_PASSWORD);
-    replay(passwordEncoder);
-
-    userService.createUser(studentUserDetails);
-
-    verify(grantedAuthorityDao);
-    verify(userDetailsDao);
-    assertEquals("BillyB", studentUserDetails.getUsername());
   }
 
   @Test

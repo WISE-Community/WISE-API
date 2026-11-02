@@ -56,7 +56,6 @@ public class BatchCreateUserAccountsControllerTest {
     ModelAndView response = controller.onSubmit(upload, null);
 
     assertEquals("admin/account/batchcreateuseraccounts", response.getViewName());
-    assertNull(studentDetails.getValue().getBirthday());
     assertEquals("John", studentDetails.getValue().getFirstname());
     assertEquals("Lennon", studentDetails.getValue().getLastname());
     assertEquals("JohnL", studentDetails.getValue().getCoreUsername());

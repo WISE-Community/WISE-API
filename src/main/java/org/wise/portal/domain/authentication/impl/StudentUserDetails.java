@@ -66,9 +66,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   public static final String COLUMN_NAME_GENDER = "gender";
 
   @Transient
-  public static final String COLUMN_NAME_BIRTHDAY = "birthday";
-
-  @Transient
   public static final String COLUMN_NAME_NUMBEROFLOGINS = "numberoflogins";
 
   @Transient
@@ -103,11 +100,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   @Getter
   @Setter
   private Gender gender;
-
-  @Column(name = StudentUserDetails.COLUMN_NAME_BIRTHDAY, nullable = true)
-  @Getter
-  @Setter
-  private Date birthday;
 
   @Column(name = StudentUserDetails.COLUMN_NAME_NUMBEROFLOGINS, nullable = false)
   @Getter

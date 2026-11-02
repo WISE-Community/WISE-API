@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -60,20 +59,8 @@ public class UserInfoControllerTest extends APIControllerTest {
   private ModelMap modelMap = new ModelMap();
 
   @Test
-  public void getUserAccountInfo_StudentWithoutBirthday_ReturnsAccountInfoPageWithoutBirthday()
+  public void getUserAccountInfo_Student_ReturnsAccountInfoPageWithoutBirthday()
       throws Exception {
-    assertStudentAccountInfoDoesNotExposeBirthday(null);
-  }
-
-  @Test
-  public void getUserAccountInfo_StudentWithStoredBirthday_ReturnsAccountInfoPageWithoutBirthday()
-      throws Exception {
-    assertStudentAccountInfoDoesNotExposeBirthday(new Date());
-  }
-
-  @SuppressWarnings("unchecked")
-  private void assertStudentAccountInfoDoesNotExposeBirthday(Date birthday) throws Exception {
-    student1UserDetails.setBirthday(birthday);
     expect(userService.retrieveUserByUsername(TEACHER_USERNAME)).andReturn(teacher1);
     expect(userService.retrieveUserByUsername(STUDENT_USERNAME)).andReturn(student1);
     replay(userService);

@@ -253,7 +253,7 @@ public class StudentAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void createStudentAccount_WithLegacyBirthdayValues_DoesNotStoreBirthday()
+  public void createStudentAccount_WithLegacyBirthdayValues_CreatesStudent()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> studentFields = createDefaultStudentFields();
     studentFields.put("birthMonth", "not-a-month");
@@ -273,7 +273,6 @@ public class StudentAPIControllerTest extends APIControllerTest {
     ResponseEntity<Map<String, Object>> response = studentAPIController
         .createStudentAccount(studentFields, request);
     assertEquals(STUDENT_USERNAME, response.getBody().get("username"));
-    assertNull(createdDetails.getValue().getBirthday());
     verify(request);
     verify(userService);
     return createdDetails.getValue();

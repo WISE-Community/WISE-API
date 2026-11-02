@@ -53,12 +53,12 @@ public class HibernateNotificationDaoTest extends AbstractTransactionalDbTests {
     periods.add(period1);
     periods.add(period2);
     run.setPeriods(periods);
-    User student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", 1, 1,
-        Gender.MALE);
+    User student1 =
+        createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", Gender.MALE);
     Set<User> members1 = new HashSet<User>();
     members1.add(student1);
     workgroup1 = createWorkgroup(members1, run, period1);
-    User student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", 1, 1, Gender.MALE);
+    User student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", Gender.MALE);
     Set<User> members2 = new HashSet<User>();
     members2.add(student2);
     workgroup2 = createWorkgroup(members2, run, period1);
