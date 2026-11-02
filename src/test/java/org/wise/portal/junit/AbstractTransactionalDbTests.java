@@ -154,16 +154,12 @@ public abstract class AbstractTransactionalDbTests
   }
 
   public User createStudentUser(String firstName, String lastName, String username, String password,
-      int birthMonth, int birthDay, Gender gender) throws DuplicateUsernameException {
+      Gender gender) throws DuplicateUsernameException {
     StudentUserDetails userDetails = new StudentUserDetails();
     userDetails.setFirstname(firstName);
     userDetails.setLastname(lastName);
     userDetails.setUsername(username);
     userDetails.setPassword(password);
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(Calendar.MONTH, birthMonth - 1);
-    calendar.set(Calendar.DAY_OF_MONTH, birthDay);
-    userDetails.setBirthday(new Date(calendar.getTimeInMillis()));
     userDetails.setGender(gender);
     User user = userService.createUser(userDetails);
     userDao.save(user);

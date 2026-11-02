@@ -278,9 +278,8 @@ public class UserServiceImpl implements UserService {
     return userDao.retrieveByResetPasswordKey(resetPasswordKey);
   }
 
-  public List<User> retrieveStudentsByNameAndBirthday(String firstName, String lastName,
-      Integer birthMonth, Integer birthDay) {
-    return userDao.retrieveStudentsByNameAndBirthday(firstName, lastName, birthMonth, birthDay);
+  public List<User> retrieveStudentsByName(String firstName, String lastName) {
+    return userDao.retrieveStudentsByName(firstName, lastName);
   }
 
   public List<User> retrieveTeachersByName(String firstName, String lastName) {

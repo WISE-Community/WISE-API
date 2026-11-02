@@ -78,8 +78,6 @@ public class TeacherRegistrationAPIControllerTest extends APIControllerTest {
     fields.put("firstName", TEACHER_FIRSTNAME);
     fields.put("lastName", TEACHER_LASTNAME);
     fields.put("schoolLevel", "COLLEGE");
-    fields.put("birthMonth", "1");
-    fields.put("birthDay", "1");
     fields.put("gender", "MALE");
     return fields;
   }

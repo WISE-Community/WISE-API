@@ -66,9 +66,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   public static final String COLUMN_NAME_GENDER = "gender";
 
   @Transient
-  public static final String COLUMN_NAME_BIRTHDAY = "birthday";
-
-  @Transient
   public static final String COLUMN_NAME_NUMBEROFLOGINS = "numberoflogins";
 
   @Transient
@@ -104,11 +101,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   @Setter
   private Gender gender;
 
-  @Column(name = StudentUserDetails.COLUMN_NAME_BIRTHDAY, nullable = false)
-  @Getter
-  @Setter
-  private Date birthday;
-
   @Column(name = StudentUserDetails.COLUMN_NAME_NUMBEROFLOGINS, nullable = false)
   @Getter
   @Setter
@@ -131,59 +123,23 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   public String getCoreUsername() {
     String firstname = getFirstname().replaceAll("[\\s-]+", "");
     String lastnameInitial = getLastname().substring(0, 1);
-
-    Calendar birthday = Calendar.getInstance();
-    birthday.setTime(this.birthday);
-
-    int birthmonth = birthday.get(Calendar.MONTH) + 1; // month is 0-based
-    int birthdate = birthday.get(Calendar.DATE);
-    String birthmonthString = String.valueOf(birthmonth);
-    if (birthmonth <= 9) {
-      birthmonthString = "0" + birthmonthString;
-    }
-    String birthdateString = String.valueOf(birthdate);
-    if (birthdate <= 9) {
-      birthdateString = "0" + birthdateString;
-    }
-
-    return firstname + lastnameInitial + birthmonthString + birthdateString;
-  }
-
-  public String[] getUsernameSuffixes() {
-    return new String[] { "", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n",
-        "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+    return firstname + lastnameInitial;
   }
 
   /**
-   * Get the next username suffix. For students the suffix is just an alphabet letter. If we reach
-   * "z" we will then move on to "aa", if we reach "az" we will then move on to "aaa", etc. e.g. "x"
-   * "y" "z" "aa" "ab"
+   * Get the next numeric username suffix for students.
    * 
-   * @param currentUsernameSuffix
-   *                                the current suffix
-   * @see MutableUserDetails#getNextUsernameSuffix(String)
-   * @return the next username suffix which will be the next letter in the alphabet
+   * @param currentUsernameSuffix the current suffix
+   * @return the next suffix, starting with "2" after the unsuffixed username
    */
   public String getNextUsernameSuffix(String currentUsernameSuffix) {
-    String nextUsernameSuffix = "";
     if (currentUsernameSuffix == null) {
-      nextUsernameSuffix = "";
-    } else if ("".equals(currentUsernameSuffix)) {
-      nextUsernameSuffix = "a";
+      return "";
+    } else if (currentUsernameSuffix.isEmpty()) {
+      return "2";
     } else {
-      if (currentUsernameSuffix.length() > 0) {
-        char lastChar = currentUsernameSuffix.charAt(currentUsernameSuffix.length() - 1);
-        if (lastChar == 'z') {
-          String beginningCurrentUsernameSuffix = currentUsernameSuffix.substring(0,
-              currentUsernameSuffix.length() - 1);
-          nextUsernameSuffix = beginningCurrentUsernameSuffix + "aa";
-        } else {
-          nextUsernameSuffix = currentUsernameSuffix.substring(0,
-              currentUsernameSuffix.length() - 1) + (char) (lastChar + 1);
-        }
-      }
+      return String.valueOf(Integer.parseInt(currentUsernameSuffix) + 1);
     }
-    return nextUsernameSuffix;
   }
 
   public Date getLastLoginTime() {
@@ -206,7 +162,6 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
     infoMap.put("Username", this.getUsername());
     infoMap.put("Sign Up Date", this.getSignupdate());
     infoMap.put("Gender", this.getGender().toString());
-    infoMap.put("Birthday", this.getBirthday());
     infoMap.put("Number of Logins", this.getNumberOfLogins().toString());
     infoMap.put("Last Login", this.getLastLoginTime());
     infoMap.put("Language", this.getLanguage());
