@@ -82,7 +82,7 @@ public class StudentBirthdayColumnMigrationTest extends AbstractTransactionalDbT
         .dataSource(dataSource)
         .locations("classpath:db/migration")
         .baselineOnMigrate(true)
-        .baselineVersion("4")
+        .baselineVersion("3")
         .load()
         .migrate();
 
