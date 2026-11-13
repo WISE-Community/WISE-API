@@ -52,10 +52,6 @@ public class PasswordReminderParameters extends HashMap<String, String> {
 
   public static final String LAST_NAME = "lastName";
 
-  public static final String BIRTH_MONTH = "birthMonth";
-
-  public static final String BIRTH_DAY = "birthDay";
-
   public void setUsername(String username) {
     this.put(USERNAME, username);
   }
@@ -125,21 +121,5 @@ public class PasswordReminderParameters extends HashMap<String, String> {
 
   public String getLastName() {
     return this.get(LAST_NAME);
-  }
-
-  public void setBirthMonth(String birthMonth) {
-    this.put(BIRTH_MONTH, birthMonth);
-  }
-
-  public String getBirthMonth() {
-    return this.get(BIRTH_MONTH);
-  }
-
-  public void setBirthDay(String birthDay) {
-    this.put(BIRTH_DAY, birthDay);
-  }
-
-  public String getBirthDay() {
-    return this.get(BIRTH_DAY);
   }
 }

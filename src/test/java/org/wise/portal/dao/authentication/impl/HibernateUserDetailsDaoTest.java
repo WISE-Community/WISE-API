@@ -28,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
 import org.wise.portal.domain.authentication.impl.PersistentUserDetails;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 
 /**
@@ -47,8 +48,8 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
     createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant", "Bikini Bottom",
         "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1, Gender.MALE);
-    createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", Gender.MALE);
+    createStudentUser("Patrick", "Star", "PatrickS", "rock", Gender.MALE);
   }
 
   @Test
@@ -65,9 +66,27 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveByName_WithExistingStudentName_ShouldReturnUser() {
-    PersistentUserDetails userDetails = userDetailsDao.retrieveByName("SpongebobS0101");
+    StudentUserDetails userDetails =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
     assertNotNull(userDetails);
-    assertEquals("SpongebobS0101", userDetails.getUsername());
+    assertEquals("SpongebobS", userDetails.getUsername());
+    assertEquals("SpongebobS", userDetails.getCoreUsername());
+  }
+
+  @Test
+  public void retrieveByName_WithExistingStudentUsername_ShouldNotRecomputeUsername() {
+    StudentUserDetails existingStudent =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS");
+    existingStudent.setUsername("SpongebobS0101");
+    flush();
+    sessionFactory.getCurrentSession().clear();
+
+    StudentUserDetails reloadedStudent =
+        (StudentUserDetails) userDetailsDao.retrieveByName("SpongebobS0101");
+
+    assertNotNull(reloadedStudent);
+    assertEquals("SpongebobS0101", reloadedStudent.getUsername());
+    assertEquals("SpongebobS", reloadedStudent.getCoreUsername());
   }
 
   @Test
@@ -106,6 +125,6 @@ public class HibernateUserDetailsDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void hasUsername_WithExistingStudentUsername_ShouldReturnTrue() {
-    assertTrue(userDetailsDao.hasUsername("PatrickS0101"));
+    assertTrue(userDetailsDao.hasUsername("PatrickS"));
   }
 }
