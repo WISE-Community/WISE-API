@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,8 +46,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -527,9 +530,7 @@ public class AuthorAPIController {
           toProjectAssetsUrl);
 
       if (newFileName != null && !fileName.equals(newFileName)) {
-        // the file name was changed so we need to update the step content by replacing
-        // all instances of the file name with the new file name
-        steps = steps.replaceAll(fileName, newFileName);
+        steps = replaceAssetFileName(steps, fileName, newFileName);
       }
     }
 
@@ -537,24 +538,67 @@ public class AuthorAPIController {
     return steps;
   }
 
-  protected List<String> getAssetFileNames(String stepsText) {
-    // Replace %20 with a space so that file names with a space will be properly found. Sometimes
-    // html content that contains a file name with a space will replace the space with %20.
-    String stepsTextModified = stepsText.replaceAll("%20", " ");
+  protected String replaceAssetFileName(String steps, String fileName, String newFileName) {
+    // getAssetFileNames found the name after decoding %20, so the encoded form is replaced too
+    return steps.replace(fileName, newFileName)
+        .replace(fileName.replace(" ", "%20"), newFileName.replace(" ", "%20"));
+  }
 
-    // Regex string to match asset file references in the step/component content. e.g. carbon.png
-    String patternString = """
-        ('|"|\\\\'|\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]\
-        (png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS\
-        |txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?('|"|\\\\'|\\\\")\
-        """;
-    Pattern pattern = Pattern.compile(patternString);
-    Matcher matcher = pattern.matcher(stepsTextModified);
+  // Same name class as ProjectService.replaceAssetPaths in WISE-Client. Widening it lets a match
+  // start at an HTML attribute's closing quote and swallow the next src.
+  private static final Pattern EMBEDDED_ASSET = Pattern.compile(
+      "('|\"|\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9\\u4e00-\\u9fa5@%&;\\._\\/\\s\\-']*[.]"
+          + "(png|jpe?g|pdf|gif|mov|mp4|mp3|wav|swf|css|txt|json|xlsx?|doc|html.*?|js)).*?"
+          + "('|\"|\\\\'|\\\\\")",
+      Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern RELATIVE_ASSET_FILE_NAME = Pattern.compile(
+      "^(?!/)[a-zA-Z0-9@%&;()._/ \\-"
+          + "\\u3008-\\u3011\\u3014-\\u301b\\u3040-\\u30ff\\u3400-\\u4dbf\\u4e00-\\u9fff\\uac00-\\ud7af"
+          + "\\uff08\\uff09\\uff10-\\uff19\\uff21-\\uff3a\\uff3b\\uff3d\\uff41-\\uff5a]+"
+          + "\\.(png|jpe?g|pdf|gif|mov|mp4|mp3|wav|swf|css|txt|json|xlsx?|doc|html?|js)$",
+      Pattern.CASE_INSENSITIVE);
+
+  protected List<String> getAssetFileNames(String stepsText) {
     HashSet<String> fileNames = new HashSet<String>();
+    JsonNode steps = null;
+    try {
+      steps = new ObjectMapper().readTree(stepsText);
+    } catch (JsonProcessingException e) {
+      // not JSON, e.g. an HTML fragment: search it as one text
+    }
+    if (steps != null && steps.isContainerNode()) {
+      collectAssetFileNames(steps, fileNames);
+    } else {
+      addEmbeddedAssetFileNames(stepsText, fileNames);
+    }
+    return new ArrayList<String>(fileNames);
+  }
+
+  // Searching the serialized JSON as a whole lets a match run from the closing quote of one string
+  // into the next, so each string value is searched on its own.
+  private void collectAssetFileNames(JsonNode node, Set<String> fileNames) {
+    if (node.isTextual()) {
+      String value = node.asText();
+      String decoded = value.replace("%20", " ");
+      if (RELATIVE_ASSET_FILE_NAME.matcher(decoded).matches()) {
+        fileNames.add(decoded);
+      } else {
+        addEmbeddedAssetFileNames(TextNode.valueOf(value).toString(), fileNames);
+      }
+    } else {
+      for (JsonNode child : node) {
+        collectAssetFileNames(child, fileNames);
+      }
+    }
+  }
+
+  private void addEmbeddedAssetFileNames(String text, Set<String> fileNames) {
+    // html content sometimes encodes the space in a file name as %20
+    Matcher matcher = EMBEDDED_ASSET.matcher(text.replace("%20", " "));
     while (matcher.find()) {
       fileNames.add(matcher.group(2));
     }
-    return new ArrayList<String>(fileNames);
   }
 
   private void createNewProjectDirectory(String projectId) throws IOException {

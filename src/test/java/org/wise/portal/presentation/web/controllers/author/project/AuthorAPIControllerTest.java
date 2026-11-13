@@ -6,6 +6,7 @@ import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.easymock.EasyMock.anyObject;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -304,5 +305,55 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     assertEquals(fileNames.size(), 2);
     assertTrue(fileNames.contains("carbon dioxide.png"));
     assertTrue(fileNames.contains("carbon monoxide.png"));
+  }
+
+  @Test
+  public void getAssetFileNames_withParenthesesAndCJK_shouldReturnEachFileName() throws Exception {
+    String stepsText = "{\"Stamps\":[\"示意圖 (chatgpt生成) 1.png\",\"細胞（核）【卵】.png\",\"b.png\"]}";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertEquals(3, fileNames.size());
+    assertTrue(fileNames.contains("示意圖 (chatgpt生成) 1.png"));
+    assertTrue(fileNames.contains("細胞（核）【卵】.png"));
+    assertTrue(fileNames.contains("b.png"));
+  }
+
+  @Test
+  public void getAssetFileNames_afterAnUnmatchedName_shouldNotRunIntoTheNextString()
+      throws Exception {
+    String stepsText = "[\"image#1.png\",\"b.png\"]";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertTrue(fileNames.contains("b.png"), fileNames.toString());
+    for (String fileName : fileNames) {
+      assertFalse(fileName.contains("\""), fileName);
+    }
+  }
+
+  @Test
+  public void getAssetFileNames_withParenthesesInHtmlText_shouldStillFindTheNextImage()
+      throws Exception {
+    String stepsText = "[{\"html\":\"<p title=\\\"x\\\">(see) a.png</p><img src=\\\"b.png\\\">\"}]";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertTrue(fileNames.contains("b.png"), fileNames.toString());
+  }
+
+  @Test
+  public void getAssetFileNames_withMixedCaseExtension_shouldReturnFileName() throws Exception {
+    String stepsText = "[{\"src\":\"Photo.Png\",\"html\":\"<img src=\\\"x.Jpg\\\">\"}]";
+    List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
+    assertTrue(fileNames.contains("Photo.Png"), fileNames.toString());
+    assertTrue(fileNames.contains("x.Jpg"), fileNames.toString());
+  }
+
+  @Test
+  public void replaceAssetFileName_withParentheses_shouldReplaceLiterally() {
+    String steps = "[\"a (1).png\",\"<img src=\\\"a%20(1).png\\\">\"]";
+    String result = authorAPIController.replaceAssetFileName(steps, "a (1).png", "a (1)-2.png");
+    assertEquals("[\"a (1)-2.png\",\"<img src=\\\"a%20(1)-2.png\\\">\"]", result);
+  }
+
+  @Test
+  public void replaceAssetFileName_withUnbalancedParenthesis_shouldNotThrow() {
+    String result = authorAPIController.replaceAssetFileName("[\"a(.png\"]", "a(.png", "a(-1.png");
+    assertEquals("[\"a(-1.png\"]", result);
   }
 }
