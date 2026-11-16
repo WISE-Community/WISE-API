@@ -361,6 +361,9 @@ public class AuthorAPIControllerTest extends APIControllerTest {
     assertEquals("error", response.getStatus());
     assertEquals("errorSavingProject", response.getMessageCode());
     verify(userService, projectService);
+  }
+
+  @Test
   public void getAssetFileNames_withParenthesesAndCJK_shouldReturnEachFileName() throws Exception {
     String stepsText = "{\"Stamps\":[\"示意圖 (chatgpt生成) 1.png\",\"細胞（核）【卵】.png\",\"b.png\"]}";
     List<String> fileNames = authorAPIController.getAssetFileNames(stepsText);
