@@ -36,17 +36,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -71,7 +74,6 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
-import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.project.impl.ProjectMetadataImpl;
 import org.wise.portal.domain.project.impl.ProjectParameters;
 import org.wise.portal.domain.project.impl.ProjectType;
@@ -130,7 +132,6 @@ public class AuthorAPIController {
 
   private String featuredProjectIconsFolderRelativePath;
 
-  @Autowired
   public AuthorAPIController(Environment appProperties) {
     featuredProjectIconsFolderRelativePath = appProperties.getProperty("project_icons_base_dir");
   }
@@ -139,7 +140,7 @@ public class AuthorAPIController {
   protected ModelAndView handleRequestInternal(HttpServletRequest request,
       HttpServletResponse response) throws Exception {
     try {
-      Portal portal = portalService.getById(new Integer(1));
+      Portal portal = portalService.getById(Integer.valueOf(1));
       if (!portal.isLoginAllowed()) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -183,7 +184,7 @@ public class AuthorAPIController {
     pParams.setOwner(user);
     pParams.setProjectname(projectName);
     pParams.setProjectType(ProjectType.LD);
-    pParams.setWiseVersion(new Integer(5));
+    pParams.setWiseVersion(Integer.valueOf(5));
 
     ProjectMetadata metadata = new ProjectMetadataImpl();
     metadata.setTitle(projectName);
@@ -247,7 +248,7 @@ public class AuthorAPIController {
   @PostMapping("/project/save/{projectId}")
   @ResponseBody
   protected SimpleResponse saveProject(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project, @RequestBody String projectJSONString)
+      @PathVariable("projectId") Project project, @RequestBody String projectJSONString)
       throws JSONException, ObjectNotFoundException {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
@@ -255,7 +256,7 @@ public class AuthorAPIController {
         return new ErrorResponse("errorSavingProject");
       }
       try {
-        projectService.evictProjectContentCache(project.getId());
+        projectService.evictProjectContentCache((Long) project.getId());
         projectService.saveProjectContentToDisk(projectJSONString, project);
         projectService.updateMetadataAndLicenseIfNecessary(project, projectJSONString);
         projectService.saveProjectToDatabase(project, user, projectJSONString);
@@ -302,7 +303,7 @@ public class AuthorAPIController {
     config.put("teacherDataURL", contextPath + "/api/teacher/data");
     config.put("sessionTimeout", request.getSession().getMaxInactiveInterval());
 
-    Portal portal = portalService.getById(new Integer(1));
+    Portal portal = portalService.getById(Integer.valueOf(1));
     String projectMetadataSettings = portal.getProjectMetadataSettings();
     if (projectMetadataSettings == null) {
       projectMetadataSettings = portalService.getDefaultProjectMetadataSettings();
@@ -339,7 +340,7 @@ public class AuthorAPIController {
         projectMap.put("id", project.getId());
         projectMap.put("name", project.getName());
         String projectIdString = project.getId().toString();
-        Long projectId = new Long(projectIdString);
+        Long projectId = Long.valueOf(projectIdString);
         Run run = getRun(projectId, runsOwnedByUser);
         if (run != null) {
           projectMap.put("runId", run.getId());
@@ -361,7 +362,7 @@ public class AuthorAPIController {
         projectMap.put("id", project.getId());
         projectMap.put("name", project.getName());
         String projectIdString = project.getId().toString();
-        Long projectId = new Long(projectIdString);
+        Long projectId = Long.valueOf(projectIdString);
         Run run = getRun(projectId, sharedRuns);
         if (run != null) {
           projectMap.put("runId", run.getId());
@@ -394,7 +395,7 @@ public class AuthorAPIController {
   @GetMapping("/config/{projectId}")
   @ResponseBody
   protected HashMap<String, Object> getAuthorProjectConfig(Authentication auth,
-      HttpServletRequest request, @PathVariable("projectId") ProjectImpl project)
+      HttpServletRequest request, @PathVariable("projectId") Project project)
       throws IOException, ObjectNotFoundException {
     HashMap<String, Object> config = getDefaultAuthorProjectConfig(auth, request);
     String contextPath = request.getContextPath();
@@ -404,14 +405,15 @@ public class AuthorAPIController {
     String projectBaseURL = projectURL.substring(0, projectURL.indexOf("project.json"));
     Long projectAssetTotalSizeMax = project.getMaxTotalAssetsSize();
     if (projectAssetTotalSizeMax == null) {
-      projectAssetTotalSizeMax = new Long(
-          appProperties.getProperty("project_max_total_assets_size", "15728640"));
+      projectAssetTotalSizeMax = Long
+          .valueOf(appProperties.getProperty("project_max_total_assets_size", "15728640"));
     }
 
-    config.put("projectId", project.getId());
+    config.put("projectId", (Long) project.getId());
     config.put("projectURL", projectURL);
     config.put("projectAssetTotalSizeMax", projectAssetTotalSizeMax);
-    config.put("projectAssetURL", contextPath + "/api/author/project/asset/" + project.getId());
+    config.put("projectAssetURL",
+        contextPath + "/api/author/project/asset/" + (Long) project.getId());
     config.put("projectBaseURL", projectBaseURL);
     config.put("previewProjectURL", contextPath + "/preview/unit/" + project.getId());
     config.put("chatGptEnabled", !StringUtils.isEmpty(appProperties.getProperty("openai.api.key")));
@@ -430,7 +432,7 @@ public class AuthorAPIController {
       config.put("saveProjectURL", contextPath + "/api/author/project/save/" + project.getId());
       config.put("commitProjectURL", contextPath + "/project/commit/" + project.getId());
     }
-    List<Run> projectRuns = runService.getProjectRuns(project.getId());
+    List<Run> projectRuns = runService.getProjectRuns((Long) project.getId());
     if (projectRuns.size() > 0) {
       Run projectRun = projectRuns.get(0);
       config.put("canGradeStudentWork", runService.isAllowedToGradeStudentWork(projectRun, user));
@@ -465,23 +467,22 @@ public class AuthorAPIController {
   @PostMapping("/project/notify/{projectId}/{isBegin}")
   @ResponseBody
   protected void notifyAuthorBeginEnd(Authentication auth,
-      @PathVariable("projectId") ProjectImpl project, @PathVariable boolean isBegin)
-      throws Exception {
+      @PathVariable("projectId") Project project, @PathVariable boolean isBegin) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (projectService.canAuthorProject(project, user)) {
       if (isBegin) {
-        sessionService.addCurrentAuthor(project.getId(), auth.getName());
+        sessionService.addCurrentAuthor((Long) project.getId(), auth.getName());
       } else {
-        sessionService.removeCurrentAuthor(project.getId(), auth.getName());
+        sessionService.removeCurrentAuthor((Long) project.getId(), auth.getName());
       }
-      notifyCurrentAuthors(project.getId());
+      notifyCurrentAuthors((Long) project.getId());
     }
   }
 
   private void notifyCurrentAuthors(Long projectId) throws JSONException {
     JSONObject message = new JSONObject();
     message.put("type", "currentAuthors");
-    message.put("topic", String.format("/topic/current-authors/%s", projectId));
+    message.put("topic", "/topic/current-authors/%s".formatted(projectId));
     message.put("currentAuthors", sessionService.getCurrentAuthors(projectId));
     redisPublisher.publish(message.toString());
   }
@@ -544,9 +545,7 @@ public class AuthorAPIController {
           toProjectAssetsUrl);
 
       if (newFileName != null && !fileName.equals(newFileName)) {
-        // the file name was changed so we need to update the step content by replacing
-        // all instances of the file name with the new file name
-        steps = steps.replaceAll(fileName, newFileName);
+        steps = replaceAssetFileName(steps, fileName, newFileName);
       }
     }
 
@@ -554,22 +553,67 @@ public class AuthorAPIController {
     return steps;
   }
 
-  protected List<String> getAssetFileNames(String stepsText) {
-    // Replace %20 with a space so that file names with a space will be properly found. Sometimes
-    // html content that contains a file name with a space will replace the space with %20.
-    String stepsTextModified = stepsText.replaceAll("%20", " ");
+  protected String replaceAssetFileName(String steps, String fileName, String newFileName) {
+    // getAssetFileNames found the name after decoding %20, so the encoded form is replaced too
+    return steps.replace(fileName, newFileName)
+        .replace(fileName.replace(" ", "%20"), newFileName.replace(" ", "%20"));
+  }
 
-    // Regex string to match asset file references in the step/component content. e.g. carbon.png
-    String patternString = "(\'|\"|\\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9@\\._\\/\\s\\-]*[.]"
-        + "(png|PNG|jpe?g|JPE?G|pdf|PDF|gif|GIF|mov|MOV|mp4|MP4|mp3|MP3|wav|WAV|swf|SWF|css|CSS"
-        + "|txt|TXT|json|JSON|xlsx?|XLSX?|doc|DOC|html.*?|HTML.*?|js|JS)).*?(\'|\"|\\\\\'|\\\\\")";
-    Pattern pattern = Pattern.compile(patternString);
-    Matcher matcher = pattern.matcher(stepsTextModified);
+  // Same name class as ProjectService.replaceAssetPaths in WISE-Client. Widening it lets a match
+  // start at an HTML attribute's closing quote and swallow the next src.
+  private static final Pattern EMBEDDED_ASSET = Pattern.compile(
+      "('|\"|\\\\'|\\\\\")([^:][^/]?[^/]?[a-zA-Z0-9\\u4e00-\\u9fa5@%&;\\._\\/\\s\\-']*[.]"
+          + "(png|jpe?g|pdf|gif|mov|mp4|mp3|wav|swf|css|txt|json|xlsx?|doc|html.*?|js)).*?"
+          + "('|\"|\\\\'|\\\\\")",
+      Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern RELATIVE_ASSET_FILE_NAME = Pattern.compile(
+      "^(?!/)[a-zA-Z0-9@%&;()._/ \\-"
+          + "\\u3008-\\u3011\\u3014-\\u301b\\u3040-\\u30ff\\u3400-\\u4dbf\\u4e00-\\u9fff\\uac00-\\ud7af"
+          + "\\uff08\\uff09\\uff10-\\uff19\\uff21-\\uff3a\\uff3b\\uff3d\\uff41-\\uff5a]+"
+          + "\\.(png|jpe?g|pdf|gif|mov|mp4|mp3|wav|swf|css|txt|json|xlsx?|doc|html?|js)$",
+      Pattern.CASE_INSENSITIVE);
+
+  protected List<String> getAssetFileNames(String stepsText) {
     HashSet<String> fileNames = new HashSet<String>();
+    JsonNode steps = null;
+    try {
+      steps = new ObjectMapper().readTree(stepsText);
+    } catch (JsonProcessingException e) {
+      // not JSON, e.g. an HTML fragment: search it as one text
+    }
+    if (steps != null && steps.isContainerNode()) {
+      collectAssetFileNames(steps, fileNames);
+    } else {
+      addEmbeddedAssetFileNames(stepsText, fileNames);
+    }
+    return new ArrayList<String>(fileNames);
+  }
+
+  // Searching the serialized JSON as a whole lets a match run from the closing quote of one string
+  // into the next, so each string value is searched on its own.
+  private void collectAssetFileNames(JsonNode node, Set<String> fileNames) {
+    if (node.isTextual()) {
+      String value = node.asText();
+      String decoded = value.replace("%20", " ");
+      if (RELATIVE_ASSET_FILE_NAME.matcher(decoded).matches()) {
+        fileNames.add(decoded);
+      } else {
+        addEmbeddedAssetFileNames(TextNode.valueOf(value).toString(), fileNames);
+      }
+    } else {
+      for (JsonNode child : node) {
+        collectAssetFileNames(child, fileNames);
+      }
+    }
+  }
+
+  private void addEmbeddedAssetFileNames(String text, Set<String> fileNames) {
+    // html content sometimes encodes the space in a file name as %20
+    Matcher matcher = EMBEDDED_ASSET.matcher(text.replace("%20", " "));
     while (matcher.find()) {
       fileNames.add(matcher.group(2));
     }
-    return new ArrayList<String>(fileNames);
   }
 
   private void createNewProjectDirectory(String projectId) throws IOException {

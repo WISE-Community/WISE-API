@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
 import org.wise.portal.domain.project.Project;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.response.ResponseEntityGenerator;
@@ -34,9 +35,9 @@ public class PeerGroupingAPIController {
   private UserService userService;
 
   @PostMapping
-  Object create(Authentication auth, @PathVariable("runId") RunImpl run,
+  Object create(Authentication auth, @PathVariable("runId") Run run,
       @RequestBody PeerGroupingImpl peerGrouping) {
-    if (isAuthorized(auth, run)) {
+    if (isAuthorized(auth, (RunImpl) run)) {
       try {
         return peerGroupingService.createPeerGrouping(run, peerGrouping);
       } catch (Exception e) {
@@ -48,9 +49,9 @@ public class PeerGroupingAPIController {
   }
 
   @PutMapping("/{tag}")
-  Object update(Authentication auth, @PathVariable("runId") RunImpl run,
-      @PathVariable("tag") String tag, @RequestBody PeerGroupingImpl peerGrouping) {
-    if (isAuthorized(auth, run)) {
+  Object update(Authentication auth, @PathVariable("runId") Run run, @PathVariable String tag,
+      @RequestBody PeerGroupingImpl peerGrouping) {
+    if (isAuthorized(auth, (RunImpl) run)) {
       return peerGroupingService.updatePeerGrouping(run, tag, peerGrouping);
     } else {
       return ResponseEntityGenerator.createError("notAuthorized");

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.vle.domain.work.Event;
@@ -36,9 +35,8 @@ public class ExportEventsController {
 
   @GetMapping
   public void export(HttpServletResponse response, Authentication auth,
-      @RequestParam(value = "runId") RunImpl run,
-      @RequestParam(value = "includeStudentEvents") boolean includeStudentEvents,
-      @RequestParam(value = "includeTeacherEvents") boolean includeTeacherEvents)
+      @RequestParam(value = "runId") Run run, @RequestParam boolean includeStudentEvents,
+      @RequestParam boolean includeTeacherEvents)
       throws JSONException, ObjectNotFoundException, IOException {
     JSONObject result = new JSONObject();
     if (runService.hasReadPermission(auth, run)) {
@@ -51,7 +49,8 @@ public class ExportEventsController {
     writer.close();
   }
 
-  private List<Event> getEvents(Run run, boolean includeStudentEvents, boolean includeTeacherEvents) {
+  private List<Event> getEvents(Run run, boolean includeStudentEvents,
+      boolean includeTeacherEvents) {
     List<Event> events = vleService.getAllEvents(run);
     if (includeStudentEvents && includeTeacherEvents) {
       events = vleService.getAllEvents(run);

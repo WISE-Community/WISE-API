@@ -39,7 +39,7 @@ public class TagProjectController {
 
   @PutMapping("/projects/tag/{tagId}")
   protected List<Map<String, Object>> addTagToProjects(Authentication auth,
-      @RequestBody List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
+      @RequestBody List<Long> projectIds, @PathVariable Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag userTag = userTagsService.get(tagId);
     List<Project> projects = getProjects(projectIds);
@@ -51,7 +51,7 @@ public class TagProjectController {
 
   @DeleteMapping("/projects/tag/{tagId}")
   protected List<Map<String, Object>> removeTagFromProjects(Authentication auth,
-      @RequestParam List<Long> projectIds, @PathVariable("tagId") Long tagId) throws Exception {
+      @RequestParam List<Long> projectIds, @PathVariable Long tagId) throws Exception {
     User user = userService.retrieveUserByUsername(auth.getName());
     UserTag userTag = userTagsService.get(tagId);
     List<Project> projects = getProjects(projectIds);

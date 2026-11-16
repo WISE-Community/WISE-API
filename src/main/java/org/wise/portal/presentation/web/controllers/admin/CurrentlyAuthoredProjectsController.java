@@ -26,8 +26,8 @@ package org.wise.portal.presentation.web.controllers.admin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.session.SessionService;
@@ -49,7 +49,7 @@ public class CurrentlyAuthoredProjectsController {
   @Autowired
   private SessionService sessionService;
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected String showCurrentlyAuthoredProjects(ModelMap modelMap) throws Exception {
     Set<String> currentlyAuthoredProjects = sessionService.getCurrentlyAuthoredProjects();
     HashMap<String, Set<String>> projectsToAuthors = new HashMap<>();

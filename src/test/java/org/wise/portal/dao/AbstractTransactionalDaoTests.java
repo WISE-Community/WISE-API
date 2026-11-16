@@ -36,7 +36,7 @@ public abstract class AbstractTransactionalDaoTests<DAO extends SimpleDao<OBJECT
 
   protected OBJECT dataObject;
 
-  private static final Long NON_EXISTENT_PK = new Long(666);
+  private static final Long NON_EXISTENT_PK = Long.valueOf(666);
 
   /**
    * Test method for
@@ -52,7 +52,7 @@ public abstract class AbstractTransactionalDaoTests<DAO extends SimpleDao<OBJECT
     // * NOTE * must flush to test delete
     // see http://forum.springframework.org/showthread.php?t=18263 for
     // explanation
-    this.flush();
+    this.toilet.flush();
 
     this.verifyDataStoreIsEmpty();
   }

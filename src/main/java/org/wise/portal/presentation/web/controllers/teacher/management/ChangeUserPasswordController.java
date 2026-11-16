@@ -23,16 +23,12 @@
  */
 package org.wise.portal.presentation.web.controllers.teacher.management;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.authentication.impl.ChangeStudentPasswordParameters;
@@ -49,8 +45,7 @@ import org.wise.portal.service.user.UserService;
  */
 @Controller
 @SessionAttributes("changeStudentPasswordParameters")
-@RequestMapping(value = {
-  "/**/changepassword.html"})
+@RequestMapping(value = { "/changepassword.html" })
 public class ChangeUserPasswordController {
 
   @Autowired
@@ -70,7 +65,7 @@ public class ChangeUserPasswordController {
    * @param request the http request
    * @return the path of the view to display
    */
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   public ModelAndView initializeForm(HttpServletRequest request) {
     User signedInUser = ControllerUtil.getSignedInUser();
     String username = request.getParameter(USER_NAME);
@@ -112,13 +107,14 @@ public class ChangeUserPasswordController {
    * @return
    */
   private boolean canChangePassword(User loggedInUser, User userToChange) {
-    return (loggedInUser.getUserDetails().hasGrantedAuthority(UserDetailsService.ADMIN_ROLE) &&
-        !userToChange.getUserDetails().getUsername().equals("admin"))
+    return (loggedInUser.getUserDetails().hasGrantedAuthority(UserDetailsService.ADMIN_ROLE)
+        && !userToChange.getUserDetails().getUsername().equals("admin"))
         || userToChange.equals(loggedInUser)
         || (userToChange.getUserDetails().hasGrantedAuthority(UserDetailsService.STUDENT_ROLE)
-        && loggedInUser.getUserDetails().hasGrantedAuthority(UserDetailsService.RESEARCHER_ROLE))
+            && loggedInUser.getUserDetails()
+                .hasGrantedAuthority(UserDetailsService.RESEARCHER_ROLE))
         || (userToChange.getUserDetails().hasGrantedAuthority(UserDetailsService.STUDENT_ROLE)
-        && studentService.isStudentAssociatedWithTeacher(userToChange, loggedInUser));
+            && studentService.isStudentAssociatedWithTeacher(userToChange, loggedInUser));
   }
 
   /**
@@ -130,12 +126,10 @@ public class ChangeUserPasswordController {
    * @return the path of the view to display
    *
    */
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected ModelAndView onSubmit(
       @ModelAttribute("changeStudentPasswordParameters") ChangeStudentPasswordParameters params,
-      HttpServletRequest request,
-      BindingResult bindingResult,
-      SessionStatus sessionStatus) {
+      HttpServletRequest request, BindingResult bindingResult, SessionStatus sessionStatus) {
     changePasswordParametersValidator.validate(params, bindingResult);
     if (bindingResult.hasErrors()) {
       return new ModelAndView();

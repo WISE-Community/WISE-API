@@ -23,7 +23,7 @@
  */
 package org.wise.portal.service.mail;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 /**
  * @author Anthony Perritano

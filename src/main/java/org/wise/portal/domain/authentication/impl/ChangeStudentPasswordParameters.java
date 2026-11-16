@@ -23,12 +23,15 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
+
 /**
  * TODO HT: do we need this anymore? Can we merge with ChangePasswordParameters?
  * @author Patrick Lawler
  */
 public class ChangeStudentPasswordParameters extends ChangePasswordParameters {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
 }

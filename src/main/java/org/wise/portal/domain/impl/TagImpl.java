@@ -23,19 +23,20 @@
  */
 package org.wise.portal.domain.impl;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
 
 import org.wise.portal.domain.Tag;
 import org.wise.portal.domain.run.Run;
@@ -53,18 +54,20 @@ import lombok.Setter;
 @Setter
 public class TagImpl implements Tag {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
   @Column
   private String name;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId")
   @JsonIgnore
   private Run run;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 }

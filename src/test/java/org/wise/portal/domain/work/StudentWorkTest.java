@@ -57,11 +57,13 @@ public class StudentWorkTest {
   @Test
   public void serialize() throws Exception {
     String json = mapper.writeValueAsString(studentWork);
-    String expectedJson = "{\"id\":1000,\"clientSaveTime\":1582338031000,"
-        + "\"componentId\":\"9gyphw34j8\",\"componentType\":\"OpenResponse\",\"isAutoSave\":true,"
-        + "\"isSubmit\":false,\"nodeId\":\"node1\",\"periodId\":10,\"runId\":1,"
-        + "\"serverSaveTime\":1582338031000,\"studentData\":{\"response\":\"Hello World\"},"
-        + "\"workgroupId\":100}";
+    String expectedJson = """
+        {"id":1000,"clientSaveTime":1582338031000,\
+        "componentId":"9gyphw34j8","componentType":"OpenResponse","isAutoSave":true,\
+        "isSubmit":false,"nodeId":"node1","periodId":10,"runId":1,\
+        "serverSaveTime":1582338031000,"studentData":{"response":"Hello World"},\
+        "workgroupId":100}\
+        """;
     assertEquals(expectedJson, json);
   }
 
@@ -70,10 +72,12 @@ public class StudentWorkTest {
     studentWork.setComponentId(null);
     studentWork.setComponentType(null);
     String json = mapper.writeValueAsString(studentWork);
-    String expectedJson = "{\"id\":1000,\"clientSaveTime\":1582338031000,\"componentId\":null,"
-        + "\"componentType\":null,\"isAutoSave\":true,\"isSubmit\":false,\"nodeId\":\"node1\","
-        + "\"periodId\":10,\"runId\":1,\"serverSaveTime\":1582338031000,"
-        + "\"studentData\":{\"response\":\"Hello World\"},\"workgroupId\":100}";
+    String expectedJson = """
+        {"id":1000,"clientSaveTime":1582338031000,"componentId":null,\
+        "componentType":null,"isAutoSave":true,"isSubmit":false,"nodeId":"node1",\
+        "periodId":10,"runId":1,"serverSaveTime":1582338031000,\
+        "studentData":{"response":"Hello World"},"workgroupId":100}\
+        """;
     assertEquals(expectedJson, json);
   }
 }

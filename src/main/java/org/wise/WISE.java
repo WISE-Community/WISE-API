@@ -86,10 +86,13 @@ public class WISE {
 
   private static int mainMenuPrompt() {
     Scanner reader = new Scanner(System.in);
-    System.out.println("\nAvailable actions:\n" +
-      "[0] Reset WISE (database & curriculum) to initial state\n" +
-      "[1] Exit\n" +
-      "Enter number:");
+    System.out.println("""
+      
+      Available actions:
+      [0] Reset WISE (database & curriculum) to initial state
+      [1] Exit
+      Enter number:\
+      """);
     try {
       return reader.nextInt();
     } catch (InputMismatchException ime) {

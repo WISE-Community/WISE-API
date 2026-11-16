@@ -1,17 +1,18 @@
 package org.wise.portal.presentation.web.controllers.contact;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.general.contactwise.IssueType;
@@ -24,14 +25,9 @@ import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 
-import javax.mail.MessagingException;
-import java.io.BufferedReader;
+import jakarta.mail.MessagingException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 @RestController
@@ -58,17 +54,17 @@ public class ContactAPIController {
 
   private static final String userAgentParseURL = "http://api.whatismybrowser.com/api/v1/user_agent_parse";
 
-  @RequestMapping(value = "", method = RequestMethod.POST)
-  protected String sendContactMessage(@RequestParam(value = "name") String name,
-      @RequestParam(value = "email", required = false) String email,
-      @RequestParam(value = "teacherUsername", required = false) String teacherUsername,
-      @RequestParam(value = "issueType") String issueType,
-      @RequestParam(value = "summary") String summary,
-      @RequestParam(value = "description") String description,
-      @RequestParam(value = "runId", required = false) Long runId,
-      @RequestParam(value = "projectId", required = false) Integer projectId,
-      @RequestParam(value = "userAgent", required = false) String userAgent,
-      @RequestParam(value = "recaptchaResponse", required = false) String recaptchaResponse)
+  @PostMapping("")
+  protected String sendContactMessage(@RequestParam String name,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) String teacherUsername,
+      @RequestParam String issueType,
+      @RequestParam String summary,
+      @RequestParam String description,
+      @RequestParam(required = false) Long runId,
+      @RequestParam(required = false) Integer projectId,
+      @RequestParam(required = false) String userAgent,
+      @RequestParam(required = false) String recaptchaResponse)
       throws JSONException {
     if (this.isAuthorized(recaptchaResponse)) {
       boolean isStudent = isStudent();
@@ -294,8 +290,7 @@ public class ContactAPIController {
   }
 
   private JSONObject getUserAgentParseResult(String userAgent) throws IOException, JSONException {
-    HttpPost post = prepareUserAgentParseRequest(userAgent);
-    JSONObject userAgentResponse = makeUserAgentParseRequest(post);
+    JSONObject userAgentResponse = makeUserAgentParseRequest(userAgent);
     if (isUserAgentResponseSuccess(userAgentResponse)) {
       JSONObject parse = userAgentResponse.getJSONObject("parse");
       return parse;
@@ -303,33 +298,28 @@ public class ContactAPIController {
     return null;
   }
 
-  private HttpPost prepareUserAgentParseRequest(String userAgent) {
+  private JSONObject makeUserAgentParseRequest(String userAgent) throws IOException, JSONException {
     String userKey = appProperties.getProperty("userAgentParseKey");
-    HttpPost post = new HttpPost(userAgentParseURL);
-    List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-    urlParameters.add(new BasicNameValuePair("user_key", userKey));
-    urlParameters.add(new BasicNameValuePair("user_agent", userAgent));
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    formData.add("user_key", userKey);
+    formData.add("user_agent", userAgent);
+
+    RestClient restClient = RestClient.create();
     try {
-      post.setEntity(new UrlEncodedFormEntity(urlParameters));
-    } catch (UnsupportedEncodingException e) {
+      String responseBody = restClient.post()
+          .uri(userAgentParseURL)
+          .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+          .body(formData)
+          .retrieve()
+          .body(String.class);
 
+      if (responseBody != null) {
+        return new JSONObject(responseBody);
+      }
+    } catch (RestClientException e) {
+      throw new IOException("Failed to parse user agent", e);
     }
-    return post;
-  }
-
-  private JSONObject makeUserAgentParseRequest(HttpPost post) throws IOException, JSONException {
-    HttpClient client = HttpClientBuilder.create().build();
-    HttpResponse response = client.execute(post);
-    BufferedReader rd = new BufferedReader(
-        new InputStreamReader(response.getEntity().getContent()));
-    StringBuffer userAgentParseResult = new StringBuffer();
-    String line = "";
-    while ((line = rd.readLine()) != null) {
-      userAgentParseResult.append(line);
-    }
-    String parseResultString = userAgentParseResult.toString();
-    JSONObject parseResultJSONObject = new JSONObject(parseResultString);
-    return parseResultJSONObject;
+    return null;
   }
 
   private boolean isUserAgentResponseSuccess(JSONObject userAgentResponse) {

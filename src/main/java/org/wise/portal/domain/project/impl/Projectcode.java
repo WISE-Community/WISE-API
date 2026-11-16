@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import lombok.Getter;
@@ -39,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Projectcode implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   @Getter

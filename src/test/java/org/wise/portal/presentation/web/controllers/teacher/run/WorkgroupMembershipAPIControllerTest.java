@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;
@@ -26,7 +26,11 @@ public class WorkgroupMembershipAPIControllerTest extends APIControllerTest {
 
   @BeforeEach
   public void init() throws Exception {
-    String paramString = "{\"workgroupIdTo\":\"2\",\"periodId\":\"1\"}";
+    String paramString = """
+        {
+          "workgroupIdTo": "2",
+          "periodId": "1"
+        }""";
     ObjectMapper objectMapper = new ObjectMapper();
     postedParams = objectMapper.readTree(paramString);
   }

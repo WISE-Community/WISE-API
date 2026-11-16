@@ -1,6 +1,6 @@
 package org.wise.portal.domain.studentAsset;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 
@@ -48,10 +48,12 @@ public class StudentAssetTest extends DomainTest {
   @Test
   public void serialize() throws Exception {
     String json = mapper.writeValueAsString(asset);
-    assertEquals("{\"id\":15,\"runId\":1,\"periodId\":100,\"workgroupId\":64,\"nodeId\":null,"
-        + "\"componentId\":null,\"componentType\":null,\"isReferenced\":false,"
-        + "\"fileName\":\"abc.png\",\"filePath\":\"/345/assets\",\"fileSize\":512,"
-        + "\"clientSaveTime\":1,\"serverSaveTime\":2,\"clientDeleteTime\":5,\"serverDeleteTime\":6}",
+    assertEquals("""
+        {"id":15,"runId":1,"periodId":100,"workgroupId":64,"nodeId":null,\
+        "componentId":null,"componentType":null,"isReferenced":false,\
+        "fileName":"abc.png","filePath":"/345/assets","fileSize":512,\
+        "clientSaveTime":1,"serverSaveTime":2,"clientDeleteTime":5,"serverDeleteTime":6}\
+        """,
         json);
   }
 

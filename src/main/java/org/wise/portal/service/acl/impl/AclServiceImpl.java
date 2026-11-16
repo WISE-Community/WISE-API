@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.hibernate.proxy.HibernateProxyHelper;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
@@ -60,8 +60,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
   public void addPermission(T object, Permission permission) {
     if (object != null) {
       MutableAcl acl = null;
-      ObjectIdentity objectIdentity = new ObjectIdentityImpl(
-          HibernateProxyHelper.getClassWithoutInitializingProxy(object), object.getId());
+      ObjectIdentity objectIdentity = new ObjectIdentityImpl(Hibernate.getClass(object),
+          object.getId());
       try {
         acl = (MutableAcl) mutableAclService.readAclById(objectIdentity);
       } catch (NotFoundException nfe) {
@@ -78,8 +78,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
   public void addPermission(T object, Permission permission, User user) {
     if (object != null) {
       MutableAcl acl = null;
-      ObjectIdentity objectIdentity = new ObjectIdentityImpl(
-          HibernateProxyHelper.getClassWithoutInitializingProxy(object), object.getId());
+      ObjectIdentity objectIdentity = new ObjectIdentityImpl(Hibernate.getClass(object),
+          object.getId());
       try {
         acl = (MutableAcl) mutableAclService.readAclById(objectIdentity);
       } catch (NotFoundException nfe) {
@@ -96,8 +96,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
   public void removePermission(T object, Permission permission, User user) {
     if (object != null) {
       MutableAcl acl = null;
-      ObjectIdentity objectIdentity = new ObjectIdentityImpl(
-          HibernateProxyHelper.getClassWithoutInitializingProxy(object), object.getId());
+      ObjectIdentity objectIdentity = new ObjectIdentityImpl(Hibernate.getClass(object),
+          object.getId());
       List<Sid> sid = new ArrayList<Sid>();
       sid.add(new PrincipalSid(user.getUserDetails().getUsername()));
 
@@ -128,8 +128,8 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
     if (object != null) {
       MutableAcl acl = null;
 
-      ObjectIdentity objectIdentity = new ObjectIdentityImpl(
-          HibernateProxyHelper.getClassWithoutInitializingProxy(object), object.getId());
+      ObjectIdentity objectIdentity = new ObjectIdentityImpl(Hibernate.getClass(object),
+          object.getId());
       List<Sid> sid = new ArrayList<Sid>();
       sid.add(new PrincipalSid(userDetails.getUsername()));
 
@@ -205,15 +205,15 @@ public class AclServiceImpl<T extends Persistable> implements AclService<T> {
   private ArrayList<Integer> convertPermissionToList(Object permissionObj) {
     ArrayList<Integer> permissionsList = new ArrayList<Integer>();
     // separate possibly comma-separated permissions string into array of permissions
-    if (permissionObj instanceof String) {
-      String[] permissions = ((String) permissionObj).split(",");
+    if (permissionObj instanceof String string) {
+      String[] permissions = string.split(",");
       for (String permissionStr : permissions) {
         permissionsList.add(getBasePermission(permissionStr).getMask());
       }
-    } else if (permissionObj instanceof Integer) {
-      permissionsList.add((Integer) permissionObj);
-    } else if (permissionObj instanceof BasePermission) {
-      permissionsList.add(((BasePermission) permissionObj).getMask());
+    } else if (permissionObj instanceof Integer integer) {
+      permissionsList.add(integer);
+    } else if (permissionObj instanceof BasePermission permission) {
+      permissionsList.add(permission.getMask());
     }
     return permissionsList;
   }

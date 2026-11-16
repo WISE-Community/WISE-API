@@ -25,11 +25,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
@@ -97,6 +97,16 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
     cq.select(userRoot)
         .where(cb.equal(userRoot.get("userDetails").get("googleUserId"), googleUserId));
+    TypedQuery<UserImpl> query = entityManager.createQuery(cq);
+    return query.getResultStream().findFirst().orElse(null);
+  }
+
+  public User retrieveByMicrosoftUserId(String microsoftUserId) {
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
+    Root<UserImpl> userRoot = cq.from(UserImpl.class);
+    cq.select(userRoot)
+        .where(cb.equal(userRoot.get("userDetails").get("microsoftUserId"), microsoftUserId));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return query.getResultStream().findFirst().orElse(null);
   }

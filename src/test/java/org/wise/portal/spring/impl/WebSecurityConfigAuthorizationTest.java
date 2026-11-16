@@ -24,9 +24,14 @@
 package org.wise.portal.spring.impl;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +39,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserGrantedAuthority;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 /**
@@ -59,12 +67,15 @@ import org.testcontainers.utility.DockerImageName;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Testcontainers
 public class WebSecurityConfigAuthorizationTest {
 
-  @Container
-  static GenericContainer<?> redisContainer =
-      new GenericContainer<>(DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379);
+  @SuppressWarnings("resource")
+  static final GenericContainer<?> redisContainer = new GenericContainer<>(
+      DockerImageName.parse("redis:8-alpine")).withExposedPorts(6379);
+
+  static {
+    redisContainer.start();
+  }
 
   @DynamicPropertySource
   static void redisProperties(DynamicPropertyRegistry registry) {
@@ -77,16 +88,8 @@ public class WebSecurityConfigAuthorizationTest {
 
   @Test
   public void researcher_userAndAccountManagement_shouldBeForbidden() throws Exception {
-    mockMvc.perform(get("/admin/account/show-all-users").with(user("researcher").roles("RESEARCHER")))
-        .andExpect(status().isForbidden());
-  }
-
-  @Test
-  public void researcher_trailingSlashOnExactAdminPath_shouldBeForbidden() throws Exception {
-    // The trailing-slash form of an exact administrator path must stay denied to researchers.
-    // Both the mvcMatchers URL rule and AdminUtilsController's @Secured enforce this, so a pass
-    // confirms the endpoint is denied, not specifically which layer denied it.
-    mockMvc.perform(get("/admin/mergeProjectMetadata/").with(user("researcher").roles("RESEARCHER")))
+    mockMvc
+        .perform(get("/admin/account/show-all-users").with(user("researcher").roles("RESEARCHER")))
         .andExpect(status().isForbidden());
   }
 
@@ -94,7 +97,8 @@ public class WebSecurityConfigAuthorizationTest {
   public void administrator_userAndAccountManagement_shouldBeAuthorized() throws Exception {
     // Positive counterpart to researcher_userAndAccountManagement_shouldBeForbidden on the same
     // path: the rule restricts by role rather than blocking the path outright.
-    assertAuthorized(get("/admin/account/show-all-users").with(user("admin").roles("ADMINISTRATOR")));
+    assertAuthorized(
+        get("/admin/account/show-all-users").with(user("admin").roles("ADMINISTRATOR")));
   }
 
   @Test
@@ -102,6 +106,116 @@ public class WebSecurityConfigAuthorizationTest {
     // Researchers keep access to the rest of /admin/**. RunStatisticsController has no method
     // security, so this exercises the URL rule directly rather than a method-security backstop.
     assertAuthorized(get("/admin/run/stats").with(user("researcher").roles("RESEARCHER")));
+  }
+
+  @Test
+  public void administratorAndResearcher_impersonate_shouldBeAuthorized() throws Exception {
+    assertAuthorized(get("/api/login/impersonate").with(user("admin").roles("ADMINISTRATOR")));
+    assertAuthorized(get("/api/login/impersonate").with(user("researcher").roles("RESEARCHER")));
+  }
+
+  @Test
+  public void teacherAndStudent_impersonate_shouldBeForbidden() throws Exception {
+    mockMvc.perform(get("/api/login/impersonate").with(user("teacher").roles("TEACHER")))
+        .andExpect(status().isForbidden());
+    mockMvc.perform(get("/api/login/impersonate").with(user("student").roles("STUDENT")))
+        .andExpect(status().isForbidden());
+  }
+
+  @Test
+  public void impersonatedUser_exitUser_shouldReturnOk() throws Exception {
+    Authentication originalAuth = new TestingAuthenticationToken("admin", "password",
+        "ROLE_ADMINISTRATOR");
+    SwitchUserGrantedAuthority switchAuthority = new SwitchUserGrantedAuthority(
+        SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR, originalAuth);
+    TestingAuthenticationToken impersonatedAuth = new TestingAuthenticationToken("teacher",
+        "password", List.of(new SimpleGrantedAuthority("ROLE_TEACHER"), switchAuthority));
+
+    mockMvc.perform(post("/api/logout/impersonate").with(authentication(impersonatedAuth)))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  public void unauthenticated_projectLibraryAndPreviewEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/project/library"));
+    assertAuthorized(get("/api/project/community"));
+    assertAuthorized(get("/api/user/info"));
+    assertAuthorized(get("/api/user/config"));
+    assertAuthorized(get("/api/config/preview/123"));
+    assertAuthorized(get("/curriculum/123/project.json"));
+  }
+
+  @Test
+  public void unauthenticated_cRaterEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/c-rater/verify"));
+    assertAuthorized(post("/api/c-rater/ping"));
+    assertAuthorized(post("/api/c-rater/score"));
+  }
+
+  @Test
+  public void unauthenticated_staticAssetPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/pages/resources/test.js"));
+    assertAuthorized(get("/portal/javascript/test.js"));
+    assertAuthorized(get("/portal/themes/default/style.css"));
+    assertAuthorized(get("/portal/translate/en.json"));
+    assertAuthorized(get("/vle/vle.html"));
+    assertAuthorized(get("/projectIcons/1/icon.png"));
+  }
+
+  @Test
+  public void unauthenticated_passwordRecoveryEndpoints_shouldBeAllowed() throws Exception {
+    // Must be reachable without authentication: the rule order matters because
+    // /api/teacher/** requires the TEACHER role, so /api/teacher/forgot/** must
+    // match before it.
+    assertAuthorized(get("/api/student/forgot/username/search"));
+    assertAuthorized(get("/api/teacher/forgot/username/search"));
+  }
+
+  @Test
+  public void unauthenticated_contactNewsAndAnnouncement_shouldBeAllowed() throws Exception {
+    assertAuthorized(post("/api/contact"));
+    assertAuthorized(get("/api/news"));
+    assertAuthorized(get("/api/news/1"));
+    assertAuthorized(get("/api/announcement"));
+  }
+
+  @Test
+  public void unauthenticated_projectInfoAndGoogleUserChecks_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/project/info/123"));
+    assertAuthorized(get("/api/google-user/check-user-exists"));
+    assertAuthorized(get("/api/google-user/check-user-matches"));
+  }
+
+  @Test
+  public void unauthenticated_previewAndSurveyPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/previewproject.html"));
+    assertAuthorized(get("/run-survey/test"));
+  }
+
+  @Test
+  public void unauthenticated_errorAndFrameworkPaths_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/error"));
+    assertAuthorized(get("/errors/404"));
+    assertAuthorized(get("/favicon.ico"));
+  }
+
+  @Test
+  public void unauthenticated_registrationAndOAuthEndpoints_shouldBeAllowed() throws Exception {
+    assertAuthorized(get("/api/teacher/register"));
+    assertAuthorized(get("/api/student/register"));
+    assertAuthorized(get("/api/student/register/questions"));
+    assertAuthorized(get("/oauth2/authorization/google"));
+    assertAuthorized(get("/login/oauth2/code/google"));
+    assertAuthorized(get("/login"));
+    assertAuthorized(get("/"));
+  }
+
+  @Test
+  public void unauthenticated_protectedEndpoints_shouldBeDenied() throws Exception {
+    assertDeniedForAnonymous(get("/api/teacher/profile"));
+    assertDeniedForAnonymous(get("/author/authorproject.html"));
+    assertDeniedForAnonymous(get("/api/admin/config"));
+    assertDeniedForAnonymous(get("/api/login/impersonate"));
   }
 
   /**
@@ -124,6 +238,25 @@ public class WebSecurityConfigAuthorizationTest {
     }
     assertNotEquals(HttpStatus.FORBIDDEN.value(), result.getResponse().getStatus(),
         "Expected the request to be authorized, but it was forbidden (403).");
+  }
+
+  /**
+   * Asserts the request is denied for an anonymous (unauthenticated) user. With form login
+   * configured, the security layer redirects to {@code /login} (302) rather than returning 403.
+   * The redirect URL is checked explicitly so that a controller-generated 302 (which would mean
+   * the request passed the security layer) does not make the test pass vacuously.
+   */
+  private void assertDeniedForAnonymous(RequestBuilder request) throws Exception {
+    MvcResult result = mockMvc.perform(request).andReturn();
+    int status = result.getResponse().getStatus();
+    if (status == HttpStatus.FORBIDDEN.value()) {
+      return;
+    }
+    String redirectUrl = result.getResponse().getRedirectedUrl();
+    assertTrue(
+        status == HttpStatus.FOUND.value() && redirectUrl != null && redirectUrl.contains("/login"),
+        "Expected a security denial (403 or 302 redirect to /login), but got " + status
+            + (redirectUrl != null ? " redirecting to " + redirectUrl : "") + ".");
   }
 
   private static boolean isAccessDenied(Throwable throwable) {

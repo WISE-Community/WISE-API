@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.impl.ChangeWorkgroupParameters;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
@@ -34,7 +33,7 @@ public class WorkgroupMembershipAPIController {
   private WorkgroupService workgroupService;
 
   @PostMapping("/api/teacher/run/{runId}/workgroup/move-user/{userId}")
-  protected Long moveUserBetweenWorkgroups(Authentication auth, @PathVariable("runId") RunImpl run,
+  protected Long moveUserBetweenWorkgroups(Authentication auth, @PathVariable("runId") Run run,
       @PathVariable Long userId, @RequestBody JsonNode postedParams) throws Exception {
     Workgroup workgroup = null;
     if (runService.hasWritePermission(auth, run)) {

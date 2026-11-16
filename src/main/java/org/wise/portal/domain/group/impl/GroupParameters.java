@@ -23,6 +23,7 @@ package org.wise.portal.domain.group.impl;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -33,13 +34,14 @@ import java.io.Serializable;
 @Setter
 public class GroupParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private Long groupId;
 
   private String name;
 
-  private Long parentId = new Long(0);
+  private Long parentId = Long.valueOf(0);
 
   private Long[] memberIds = new Long[0];
 }

@@ -1,5 +1,6 @@
 package org.wise.portal.service.work;
 
+import java.io.Serial;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,15 @@ import org.wise.vle.domain.work.StudentWorkSerializer;
 @Service
 public class StudentWorkJsonModule extends SimpleModule {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
-  public StudentWorkJsonModule() {}
+  public StudentWorkJsonModule() {
+  }
 
   @Autowired
-  public StudentWorkJsonModule(StudentWorkSerializer serializer, StudentWorkDeserializer deserializer) {
+  public StudentWorkJsonModule(StudentWorkSerializer serializer,
+      StudentWorkDeserializer deserializer) {
     this.addSerializer(StudentWork.class, serializer);
     this.addDeserializer(StudentWork.class, deserializer);
   }

@@ -264,4 +264,8 @@ public interface MutableUserDetails extends UserDetails, Persistable {
   boolean isGoogleUser();
 
   String getGoogleUserId();
+
+  boolean isMicrosoftUser();
+
+  String getMicrosoftUserId();
 }

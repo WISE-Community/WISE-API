@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.easymock.Mock;
 import org.junit.jupiter.api.AfterEach;
@@ -232,8 +232,10 @@ public abstract class APIControllerTest {
 
   protected WorkgroupImpl createTeacherWorkgroup(Run run, User teacher) {
     WorkgroupImpl workgroup = new WorkgroupImpl();
+    workgroup.setId(4L);
     workgroup.setRun(run);
     workgroup.addMember(teacher);
+    workgroup.setTeacherWorkgroup(true);
     return workgroup;
   }
 

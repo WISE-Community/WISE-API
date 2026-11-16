@@ -25,7 +25,7 @@ package org.wise.vle.domain.work;
 
 import java.sql.Timestamp;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -57,7 +57,7 @@ import org.wise.vle.domain.PersistableDomain;
 public class StudentWork extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
   @ManyToOne(targetEntity = RunImpl.class, cascade = {

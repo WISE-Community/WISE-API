@@ -35,10 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
-import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupCreationException;
 import org.wise.portal.service.peergroup.PeerGroupService;
 import org.wise.portal.service.peergrouping.PeerGroupingService;
@@ -63,13 +61,12 @@ public class PeerGroupAPIController {
   private PeerGroupingService peerGroupingService;
 
   @GetMapping("/{runId}/{workgroupId}/{peerGroupingTag}")
-  PeerGroup getPeerGroup(@PathVariable("runId") RunImpl run,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup,
-      @PathVariable String peerGroupingTag, Authentication auth)
-      throws JSONException, PeerGroupCreationException {
+  PeerGroup getPeerGroup(@PathVariable("runId") Run run,
+      @PathVariable("workgroupId") Workgroup workgroup, @PathVariable String peerGroupingTag,
+      Authentication auth) throws JSONException, PeerGroupCreationException {
     User user = userService.retrieveUserByUsername(auth.getName());
-    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup) ||
-        run.isTeacherAssociatedToThisRun(user)) {
+    if (workgroupService.isUserInWorkgroupForRun(user, run, workgroup)
+        || run.isTeacherAssociatedToThisRun(user)) {
       return getPeerGroup(run, peerGroupingTag, workgroup);
     } else {
       throw new AccessDeniedException("Not permitted");

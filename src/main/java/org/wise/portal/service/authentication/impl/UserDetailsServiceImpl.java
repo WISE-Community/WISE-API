@@ -60,10 +60,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     return userDetails;
   }
 
+  @Transactional(readOnly = true)
   public UserDetails loadUserByGoogleUserId(String googleUserId) {
     return this.userDetailsDao.retrieveByGoogleUserId(googleUserId);
   }
 
+  @Transactional(readOnly = true)
   public UserDetails loadUserByMicrosoftUserId(String userId) {
     return this.userDetailsDao.retrieveByMicrosoftUserId(userId);
   }

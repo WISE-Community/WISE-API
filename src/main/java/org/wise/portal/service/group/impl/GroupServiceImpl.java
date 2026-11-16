@@ -81,7 +81,7 @@ public class GroupServiceImpl implements GroupService {
         Group parentGroup = groupDao.getById(parentId);
         group.setParent(parentGroup);
       } catch (ObjectNotFoundException e) {
-        parentId = new Long(0);
+        parentId = Long.valueOf(0);
       }
     }
 
@@ -125,8 +125,10 @@ public class GroupServiceImpl implements GroupService {
     if (cycleExists(groupToBeMoved)) {
       // if cycle exists, reset groupToBeMoved's parent
       groupToBeMoved.setParent(previousParent);
-      throw new CyclicalGroupException("Cycle will be created"
-        + " when this group is moved.");
+      throw new CyclicalGroupException("""
+        Cycle will be created\
+         when this group is moved.\
+        """);
     }
     groupDao.save(groupToBeMoved);
   }

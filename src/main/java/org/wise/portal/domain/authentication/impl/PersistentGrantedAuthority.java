@@ -20,14 +20,15 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import java.io.Serial;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -49,11 +50,12 @@ public class PersistentGrantedAuthority implements MutableGrantedAuthority {
   @Transient
   public static final String COLUMN_NAME_ROLE = "authority";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
 
@@ -77,8 +79,7 @@ public class PersistentGrantedAuthority implements MutableGrantedAuthority {
   public int hashCode() {
     final int PRIME = 31;
     int result = 1;
-    result = PRIME * result
-      + ((this.authority == null) ? 0 : this.authority.hashCode());
+    result = PRIME * result + ((this.authority == null) ? 0 : this.authority.hashCode());
     return result;
   }
 

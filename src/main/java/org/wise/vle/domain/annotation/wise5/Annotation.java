@@ -39,7 +39,7 @@ import org.wise.vle.domain.PersistableDomain;
 import org.wise.vle.domain.work.NotebookItem;
 import org.wise.vle.domain.work.StudentWork;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -57,7 +57,7 @@ import java.sql.Timestamp;
 public class Annotation extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
   @ManyToOne(targetEntity = RunImpl.class, cascade = {

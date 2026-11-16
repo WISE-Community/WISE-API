@@ -39,8 +39,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,8 +51,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -92,7 +93,7 @@ public class AssetManager {
     super();
   }
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     String command = request.getParameter("command");
@@ -103,7 +104,7 @@ public class AssetManager {
         String runId = request.getParameter("runId");
         Run run = null;
         try {
-          run = runService.retrieveById(new Long(runId));
+          run = runService.retrieveById(Long.valueOf(runId));
         } catch (NumberFormatException e) {
           e.printStackTrace();
         } catch (ObjectNotFoundException e) {
@@ -149,7 +150,7 @@ public class AssetManager {
         String runId = request.getParameter("runId");
         Run run = null;
         try {
-          run = runService.retrieveById(new Long(runId));
+          run = runService.retrieveById(Long.valueOf(runId));
         } catch (NumberFormatException e) {
           e.printStackTrace();
         } catch (ObjectNotFoundException e) {
@@ -168,7 +169,7 @@ public class AssetManager {
     return null;
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected ModelAndView doPost(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     String command = request.getParameter("command");
@@ -179,7 +180,7 @@ public class AssetManager {
         String runId = request.getParameter("runId");
         Run run = null;
         try {
-          run = runService.retrieveById(new Long(runId));
+          run = runService.retrieveById(Long.valueOf(runId));
         } catch (NumberFormatException e) {
           e.printStackTrace();
         } catch (ObjectNotFoundException e) {
@@ -199,7 +200,7 @@ public class AssetManager {
         String runId = request.getParameter("runId");
         Run run = null;
         try {
-          run = runService.retrieveById(new Long(runId));
+          run = runService.retrieveById(Long.valueOf(runId));
         } catch (NumberFormatException e) {
           e.printStackTrace();
         } catch (ObjectNotFoundException e) {
@@ -222,7 +223,7 @@ public class AssetManager {
         String runId = request.getParameter("runId");
         Run run = null;
         try {
-          run = runService.retrieveById(new Long(runId));
+          run = runService.retrieveById(Long.valueOf(runId));
         } catch (NumberFormatException e) {
           e.printStackTrace();
         } catch (ObjectNotFoundException e) {
@@ -234,7 +235,7 @@ public class AssetManager {
         Long workgroupId = workgroup.getId();
         String dirName = run.getId() + "/" + workgroupId + "/unreferenced";
         String path = appProperties.getProperty("studentuploads_base_dir");
-        Long studentMaxTotalAssetsSize = new Long(appProperties.getProperty("student_max_total_assets_size", "5242880"));
+        Long studentMaxTotalAssetsSize = Long.valueOf(appProperties.getProperty("student_max_total_assets_size", "5242880"));
         String pathToCheckSize = path + "/" + dirName;
         StandardMultipartHttpServletRequest multiRequest = (StandardMultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multiRequest.getFileMap();

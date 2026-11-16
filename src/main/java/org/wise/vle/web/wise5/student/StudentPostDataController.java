@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -70,7 +70,7 @@ public class StudentPostDataController {
     String annotations = postedParams.get("annotations").asText();
     JSONObject result = new JSONObject();
     try {
-      Run run = runService.retrieveById(new Long(runId));
+      Run run = runService.retrieveById(Long.valueOf(runId));
       if (run.isActive() && run.isStudentAssociatedToThisRun(user)) {
         List<Workgroup> workgroups = workgroupService.getWorkgroupListByRunAndUser(run, user);
         if (workgroups.size() == 0) {

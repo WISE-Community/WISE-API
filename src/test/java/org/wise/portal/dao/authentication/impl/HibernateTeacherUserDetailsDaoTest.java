@@ -94,7 +94,7 @@ public class HibernateTeacherUserDetailsDaoTest extends AbstractTransactionalDbT
 
   private HibernateUserDetailsDao userDetailsDao;
 
-  private Integer DEFAULT_NUMBEROFLOGINS = new Integer(7);
+  private Integer DEFAULT_NUMBEROFLOGINS = Integer.valueOf(7);
 
   /**
    * @param authorityDao
@@ -200,7 +200,7 @@ public class HibernateTeacherUserDetailsDaoTest extends AbstractTransactionalDbT
 
     this.userDetailsDao.save(this.defaultUserDetails);
     // flush is required to cascade the join table for some reason
-    this.flush();
+    this.toilet.flush();
 
     // verify data store contains saved data using direct jdbc retrieval
     // (not dao)
@@ -310,10 +310,10 @@ public class HibernateTeacherUserDetailsDaoTest extends AbstractTransactionalDbT
 
     this.userDetailsDao.save(this.defaultUserDetails);
     // flush is required to cascade the join table for some reason
-    this.flush();
+    this.toilet.flush();
 
     this.userDetailsDao.delete(this.defaultUserDetails);
-    this.flush();
+    this.toilet.flush();
 
     this.verifyUserandJoinTablesAreEmpty();
 
@@ -340,7 +340,7 @@ public class HibernateTeacherUserDetailsDaoTest extends AbstractTransactionalDbT
 
     this.userDetailsDao.save(this.defaultUserDetails);
     // flush is required to cascade the join table for some reason
-    this.flush();
+    this.toilet.flush();
 
     // get user details record from persistent store and confirm it is
     // complete
@@ -382,7 +382,7 @@ public class HibernateTeacherUserDetailsDaoTest extends AbstractTransactionalDbT
     assertNotNull(userDetails);
     assertEquals(userDetails.getUsername(), DEFAULT_USERNAME);
 
-    Long userIdNotInDb = new Long(100);
+    Long userIdNotInDb = Long.valueOf(100);
     try {
       userDetails = (TeacherUserDetails) this.userDetailsDao.getById(userIdNotInDb);
       fail("Expected ObjectNotFoundException");

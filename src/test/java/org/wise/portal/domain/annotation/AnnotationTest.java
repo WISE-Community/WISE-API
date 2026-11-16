@@ -1,8 +1,6 @@
 package org.wise.portal.domain.annotation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Timestamp;
 
@@ -67,11 +65,13 @@ public class AnnotationTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new AnnotationJsonModule());
     String json = mapper.writeValueAsString(annotation);
-    String expectedJson = "{\"id\":1000000,\"clientSaveTime\":1000000000000,"
-        + "\"componentId\":\"ybr89qetnj\",\"data\":{\"value\":5},\"fromWorkgroupId\":1001,"
-        + "\"toWorkgroupId\":1002,\"localNotebookItemId\":\"localNotebookItemId1\","
-        + "\"nodeId\":\"node1\",\"notebookItemId\":100000,\"periodId\":100,\"runId\":1,"
-        + "\"serverSaveTime\":2000000000000,\"studentWorkId\":10000,\"type\":\"score\"}";
+    String expectedJson = """
+        {"id":1000000,"clientSaveTime":1000000000000,\
+        "componentId":"ybr89qetnj","data":{"value":5},"fromWorkgroupId":1001,\
+        "toWorkgroupId":1002,"localNotebookItemId":"localNotebookItemId1",\
+        "nodeId":"node1","notebookItemId":100000,"periodId":100,"runId":1,\
+        "serverSaveTime":2000000000000,"studentWorkId":10000,"type":"score"}\
+        """;
     assertEquals(expectedJson, json);
   }
 
@@ -86,10 +86,12 @@ public class AnnotationTest {
     annotation.setLocalNotebookItemId(null);
     annotation.setNotebookItem(null);
     String json = mapper.writeValueAsString(annotation);
-    String expectedJson = "{\"id\":1000000,\"clientSaveTime\":1000000000000,\"componentId\":null,"
-        + "\"data\":{\"value\":5},\"toWorkgroupId\":1002,\"localNotebookItemId\":null,"
-        + "\"nodeId\":null,\"periodId\":100,\"runId\":1,\"serverSaveTime\":2000000000000,"
-        + "\"type\":\"score\"}";
+    String expectedJson = """
+        {"id":1000000,"clientSaveTime":1000000000000,"componentId":null,\
+        "data":{"value":5},"toWorkgroupId":1002,"localNotebookItemId":null,\
+        "nodeId":null,"periodId":100,"runId":1,"serverSaveTime":2000000000000,\
+        "type":"score"}\
+        """;
     assertEquals(expectedJson, json);
   }
 

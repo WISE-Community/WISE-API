@@ -26,11 +26,11 @@ package org.wise.portal.dao.peergrouping.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import org.springframework.stereotype.Repository;
 import org.wise.portal.dao.impl.AbstractHibernateDao;
@@ -57,7 +57,7 @@ public class HibernatePeerGroupingDao extends AbstractHibernateDao<PeerGrouping>
     CriteriaQuery<PeerGroupingImpl> cq = cb.createQuery(PeerGroupingImpl.class);
     Root<PeerGroupingImpl> peerGroupingImplRoot = cq.from(PeerGroupingImpl.class);
     List<Predicate> predicates = new ArrayList<>();
-    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run.getId()));
+    predicates.add(cb.equal(peerGroupingImplRoot.get("run"), run));
     predicates.add(cb.equal(peerGroupingImplRoot.get("tag"), tag));
     cq.select(peerGroupingImplRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<PeerGroupingImpl> query = entityManager.createQuery(cq);

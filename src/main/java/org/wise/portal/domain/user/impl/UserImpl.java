@@ -20,20 +20,21 @@
  */
 package org.wise.portal.domain.user.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
 
 import org.hibernate.proxy.HibernateProxy;
 import org.wise.portal.domain.authentication.MutableUserDetails;
@@ -59,11 +60,12 @@ public class UserImpl implements User {
   @Transient
   public static final String COLUMN_NAME_USER_DETAILS_FK = "user_details_fk";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = null;
 
   @Version
@@ -135,9 +137,8 @@ public class UserImpl implements User {
       return true;
     if (obj == null)
       return false;
-    if (obj instanceof HibernateProxy) {
-      if (getClass() != ((HibernateProxy) obj).getHibernateLazyInitializer().getImplementation()
-          .getClass()) {
+    if (obj instanceof HibernateProxy proxy) {
+      if (getClass() != proxy.getHibernateLazyInitializer().getImplementation().getClass()) {
         return false;
       }
     } else if (getClass() != obj.getClass())

@@ -27,9 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.EnumSet;
 
-import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -66,13 +64,13 @@ public class DBInitExporter {
       throws ClassNotFoundException, IOException {
     ConfigurableApplicationContext applicationContext = null;
     try {
-      SpringConfiguration springConfig =
-          (SpringConfiguration) BeanUtils.instantiateClass(Class.forName(springConfigClassname));
+      SpringConfiguration springConfig = (SpringConfiguration) BeanUtils
+          .instantiateClass(Class.forName(springConfigClassname));
       applicationContext = new ClassPathXmlApplicationContext(
           springConfig.getRootApplicationContextConfigLocations());
 
-      final boolean printScriptToConsole = false, exportScriptToDb = false,
-          justDrop = false, justCreate = true;
+      final boolean printScriptToConsole = false, exportScriptToDb = false, justDrop = false,
+          justCreate = true;
 
       /*
       final SchemaExport schemaExport = new SchemaExport();
@@ -86,11 +84,12 @@ public class DBInitExporter {
       // now append initial data, which we read in from import.sql
       File initialDataFile = new File("src/main/resources/import.sql");
       FileInputStream initialDataFileInputStream = new FileInputStream(initialDataFile);
-      BufferedReader initialDataFileReader =
-          new BufferedReader(new InputStreamReader(initialDataFileInputStream));
+      BufferedReader initialDataFileReader = new BufferedReader(
+          new InputStreamReader(initialDataFileInputStream));
 
       boolean doAppend = true;
-      BufferedWriter outputFileWriter = new BufferedWriter(new FileWriter(outputFilename, doAppend));
+      BufferedWriter outputFileWriter = new BufferedWriter(
+          new FileWriter(outputFilename, doAppend));
 
       String aLine;
       while ((aLine = initialDataFileReader.readLine()) != null) {

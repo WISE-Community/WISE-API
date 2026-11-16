@@ -20,26 +20,27 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -62,6 +63,7 @@ import org.wise.portal.domain.usertag.impl.UserTagImpl;
         PersistentAclTargetObjectIdentity.COLUMN_NAME_TARGET_OBJECT_ID }) })
 public class PersistentAclTargetObjectIdentity implements MutableAclTargetObjectIdentity {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
@@ -124,7 +126,7 @@ public class PersistentAclTargetObjectIdentity implements MutableAclTargetObject
   private Set<UserTag> tags = new HashSet<UserTag>();
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   @Setter
   private Long id;

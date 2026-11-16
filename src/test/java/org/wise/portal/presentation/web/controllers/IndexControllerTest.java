@@ -23,7 +23,7 @@
 
 package org.wise.portal.presentation.web.controllers;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 import org.easymock.EasyMock;
 import org.springframework.mock.web.MockHttpServletRequest;

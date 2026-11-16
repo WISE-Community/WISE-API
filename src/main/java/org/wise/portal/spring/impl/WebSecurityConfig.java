@@ -26,10 +26,9 @@ package org.wise.portal.spring.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSessionListener;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -41,10 +40,12 @@ import org.springframework.security.access.event.LoggerListener;
 import org.springframework.security.access.vote.ConsensusBased;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -56,9 +57,10 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.session.Session;
-import org.wise.portal.presentation.web.filters.GoogleOpenIdConnectFilter;
+import org.wise.portal.presentation.web.filters.LoginRedirectUrlParameterFilter;
 import org.wise.portal.presentation.web.filters.MicrosoftAuthenticationFailureHandler;
-import org.wise.portal.presentation.web.filters.MicrosoftOpenIdConnectFilter;
+import org.wise.portal.presentation.web.filters.OAuth2AuthenticationFailureHandler;
+import org.wise.portal.presentation.web.filters.OAuth2AuthenticationSuccessHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationFailureHandler;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationProcessingFilter;
 import org.wise.portal.presentation.web.filters.WISEAuthenticationSuccessHandler;
@@ -67,52 +69,128 @@ import org.wise.portal.presentation.web.listeners.WISESessionListener;
 import org.wise.portal.service.authentication.UserDetailsService;
 
 @Configuration
-@EnableWebSecurity(debug = false)
+@EnableWebSecurity
 @Order(SecurityProperties.BASIC_AUTH_ORDER - 10)
-public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
-  @Autowired
-  private UserDetailsService userDetailsService;
+  private final UserDetailsService userDetailsService;
 
-  @Autowired
-  private AuthenticationManager authenticationManager;
-
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-        .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
-        .addFilterAfter(oAuth2ClientContextFilter(), OpenSessionInViewFilter.class)
-        .addFilterAfter(googleOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
-        .addFilterAfter(microsoftOpenIdConnectFilter(), OAuth2ClientContextFilter.class)
-        .addFilterAfter(authenticationProcessingFilter(), GoogleOpenIdConnectFilter.class)
-        .authorizeRequests()
-        // Matched the way Spring MVC matches, so a trailing slash cannot slip an exact path
-        // past these rules and into the broader "/admin/**" rule below.
-        .mvcMatchers("/admin/account/**", "/admin/portal/**", "/admin/news/**",
-            "/admin/mergeProjectMetadata", "/admin/project/updatesharedprojects",
-            "/admin/run/replacebase64withpng.html", "/api/admin/**")
-        .hasRole("ADMINISTRATOR")
-        .antMatchers("/api/login/impersonate").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
-        .antMatchers("/admin/**").hasAnyRole("ADMINISTRATOR", "RESEARCHER")
-        .antMatchers("/author/**").hasAnyRole("TEACHER")
-        .antMatchers("/project/notifyAuthor*/**").hasAnyRole("TEACHER")
-        .antMatchers("/student/account/info").hasAnyRole("TEACHER")
-        .antMatchers("/student/**").hasAnyRole("STUDENT")
-        .antMatchers("/studentStatus").hasAnyRole("TEACHER", "STUDENT")
-        .antMatchers("/teacher/**").hasAnyRole("TEACHER")
-        .antMatchers("/sso/discourse").hasAnyRole("TEACHER", "STUDENT")
-        .antMatchers("/").permitAll();
-    http.formLogin().loginPage("/login").permitAll();
-    http.logout().addLogoutHandler(wiseLogoutHandler())
-        .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"));
-    http.logout().logoutSuccessHandler((request, response, authentication) -> {
-      response.setStatus(HttpServletResponse.SC_OK);
-    });
-    http.headers().frameOptions().sameOrigin();
+  public WebSecurityConfig(UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
   }
 
   @Bean
-  public WISEAuthenticationProcessingFilter authenticationProcessingFilter() {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
+      throws Exception {
+    return authConfig.getAuthenticationManager();
+  }
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http,
+      AuthenticationManager authenticationManager) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .securityContext(securityContext -> securityContext.requireExplicitSave(false))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+        .addFilterBefore(new LoginRedirectUrlParameterFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
+        .addFilterAfter(openSessionInViewFilter(), SecurityContextHolderAwareRequestFilter.class)
+        .addFilterAfter(authenticationProcessingFilter(authenticationManager),
+            SecurityContextHolderAwareRequestFilter.class)
+        .authorizeHttpRequests(
+            auth -> auth
+                // Static assets served by WebConfig resource handlers: without this the
+                // login page cannot load its own scripts, styles or translations.
+                .requestMatchers(
+                    "/pages/resources/**",
+                    "/portal/javascript/**",
+                    "/portal/themes/**",
+                    "/portal/translate/**",
+                    "/vle/**",
+                    "/projectIcons/**")
+                .permitAll()
+                .requestMatchers(
+                    "/admin/account/**",
+                    "/admin/portal/**",
+                    "/admin/news/**",
+                    "/admin/mergeProjectMetadata",
+                    "/admin/project/updatesharedprojects",
+                    "/admin/run/replacebase64withpng.html",
+                    "/api/admin/**")
+                .hasRole("ADMINISTRATOR")
+                .requestMatchers(
+                    "/api/project/library",
+                    "/api/project/community",
+                    "/curriculum/**",
+                    "/api/config/preview/**",
+                    "/api/user/info",
+                    "/api/c-rater/**")
+                .permitAll()
+                .requestMatchers(
+                    "/api/login/impersonate",
+                    "/admin/**")
+                .hasAnyRole("ADMINISTRATOR", "RESEARCHER")
+                .requestMatchers(
+                    "/author/**",
+                    "/project/notifyAuthor*/**",
+                    "/student/account/info")
+                .hasAnyRole("TEACHER")
+                .requestMatchers("/student/**")
+                .hasAnyRole("STUDENT")
+                .requestMatchers("/studentStatus")
+                .hasAnyRole("TEACHER", "STUDENT")
+                .requestMatchers("/oauth2/**", "/login/oauth2/**")
+                .permitAll()
+                // Password recovery must precede the /api/teacher/** role rule:
+                // without this a teacher who forgot their password needs the TEACHER
+                // role to start recovery.
+                .requestMatchers(
+                    "/api/student/forgot/**",
+                    "/api/teacher/forgot/**",
+                    "/api/teacher/register",
+                    "/api/student/register",
+                    "/api/student/register/questions",
+                    "/api/*/register/**")
+                .permitAll()
+                .requestMatchers("/api/teacher/**")
+                .hasAnyRole("TEACHER")
+                .requestMatchers("/sso/discourse")
+                .hasAnyRole("TEACHER", "STUDENT")
+                .requestMatchers(
+                    "/api/user/tags",
+                    "/api/user/tag/**")
+                .hasAnyRole("TEACHER")
+                .requestMatchers(
+                    "/api/user/config",
+                    "/api/contact",
+                    "/api/news/**",
+                    "/api/announcement",
+                    "/api/project/info/*",
+                    "/api/google-user/check-user-exists",
+                    "/api/google-user/check-user-matches",
+                    "/previewproject.html",
+                    "/run-survey/**",
+                    "/error",
+                    "/errors/**",
+                    "/favicon.ico",
+                    "/login",
+                    "/")
+                .permitAll()
+                .anyRequest().authenticated())
+        .formLogin(form -> form.loginPage("/login").permitAll())
+        .oauth2Login(oauth2 -> oauth2.loginPage("/login")
+            .successHandler(oauth2AuthenticationSuccessHandler())
+            .failureHandler(oauth2AuthenticationFailureHandler()))
+        .logout(logout -> logout.addLogoutHandler(wiseLogoutHandler())
+            .logoutRequestMatcher(new AntPathRequestMatcher("/api/logout"))
+            .logoutSuccessHandler((request, response, authentication) -> response
+                .setStatus(HttpServletResponse.SC_OK)))
+        .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+    return http.build();
+  }
+
+  @Bean
+  public WISEAuthenticationProcessingFilter authenticationProcessingFilter(
+      AuthenticationManager authenticationManager) {
     WISEAuthenticationProcessingFilter filter = new WISEAuthenticationProcessingFilter();
     filter.setAuthenticationManager(authenticationManager);
     filter.setAuthenticationSuccessHandler(authSuccessHandler());
@@ -122,29 +200,18 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
   }
 
   @Bean
-  public GoogleOpenIdConnectFilter googleOpenIdConnectFilter() {
-    GoogleOpenIdConnectFilter filter = new GoogleOpenIdConnectFilter("/api/google-login");
-    filter.setAuthenticationSuccessHandler(authSuccessHandler());
-    filter.setAuthenticationFailureHandler(authFailureHandler());
-    return filter;
-  }
-
-  @Bean
-  public MicrosoftOpenIdConnectFilter microsoftOpenIdConnectFilter() {
-    MicrosoftOpenIdConnectFilter filter = new MicrosoftOpenIdConnectFilter("/api/microsoft-login");
-    filter.setAuthenticationSuccessHandler(authSuccessHandler());
-    filter.setAuthenticationFailureHandler(microsoftAuthFailureHandler());
-    return filter;
-  }
-
-  @Bean
   public OpenSessionInViewFilter openSessionInViewFilter() {
     return new OpenSessionInViewFilter();
   }
 
   @Bean
-  public OAuth2ClientContextFilter oAuth2ClientContextFilter() {
-    return new OAuth2ClientContextFilter();
+  public OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler() {
+    return new OAuth2AuthenticationSuccessHandler();
+  }
+
+  @Bean
+  public OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler() {
+    return new OAuth2AuthenticationFailureHandler();
   }
 
   @Bean
@@ -217,7 +284,9 @@ public class WebSecurityConfig<S extends Session> extends WebSecurityConfigurerA
     filter.setUserDetailsService(userDetailsService);
     filter.setSwitchUserUrl("/api/login/impersonate");
     filter.setExitUserUrl("/api/logout/impersonate");
-    filter.setSuccessHandler(authSuccessHandler());
+    filter.setSuccessHandler((request, response, authentication) -> {
+      response.setStatus(HttpServletResponse.SC_OK);
+    });
     return filter;
   }
 

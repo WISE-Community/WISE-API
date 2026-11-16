@@ -48,9 +48,9 @@ import org.wise.portal.service.run.RunService;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.workgroup.WorkgroupService;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -116,7 +116,7 @@ public class ShareProjectRunController {
    * @param request the http request object
    * @return the path of the view to display
    */
-  @RequestMapping(method = RequestMethod.GET, value = "/teacher/run/shareprojectrun.html")
+  @GetMapping("/teacher/run/shareprojectrun.html")
   public String initializeForm(ModelMap modelMap, HttpServletRequest request) throws Exception {
     User user = ControllerUtil.getSignedInUser();
     Run run = runService.retrieveById(Long.parseLong(request.getParameter(RUNID_PARAM_NAME)));
@@ -178,7 +178,7 @@ public class ShareProjectRunController {
    * @param model the object that contains values to be displayed on the page
    * @return the path of the view to display
    */
-  @RequestMapping(method = RequestMethod.POST, value = "/teacher/run/shareprojectrun.html")
+  @PostMapping("/teacher/run/shareprojectrun.html")
   protected String onSubmit(
       @ModelAttribute("addSharedTeacherParameters") AddSharedTeacherParameters params,
       HttpServletRequest request,
@@ -247,11 +247,11 @@ public class ShareProjectRunController {
    * @return
    * @throws Exception
    */
-  @RequestMapping(method = RequestMethod.POST, value = "/teacher/run/unshareprojectrun")
+  @PostMapping("/teacher/run/unshareprojectrun")
   protected ModelAndView unshareSelfFromRun(
-      @RequestParam("runId") String runId,
+      @RequestParam String runId,
       HttpServletResponse response) throws Exception {
-    Long runIdToRemove = new Long(runId);
+    Long runIdToRemove = Long.valueOf(runId);
     String usernameToRemove = ControllerUtil.getSignedInUser().getUserDetails().getUsername();
     runService.removeSharedTeacher(usernameToRemove, runIdToRemove);
     response.getWriter().write("success");

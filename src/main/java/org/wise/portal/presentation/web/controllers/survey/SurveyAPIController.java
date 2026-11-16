@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +85,8 @@ public class SurveyAPIController {
       StudentUserAlreadyAssociatedWithRunException, RunHasEndedException {
 
     Object principal = getSecurityContextHolderPrincipal();
-    if (principal instanceof StudentUserDetails
-        && isStudentAssociatedWithRun(run, (StudentUserDetails) principal)) {
+    if (principal instanceof StudentUserDetails details
+        && isStudentAssociatedWithRun(run, details)) {
       sendRedirect(response, "/student/unit/" + run.getId());
       return;
     } else {

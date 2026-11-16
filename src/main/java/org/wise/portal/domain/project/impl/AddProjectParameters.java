@@ -26,6 +26,7 @@ package org.wise.portal.domain.project.impl;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 /**
@@ -37,6 +38,7 @@ import java.io.Serializable;
 @Setter
 public class AddProjectParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String projectcode;

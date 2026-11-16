@@ -27,13 +27,17 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.mock;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.FileUtils;
 import org.easymock.EasyMockExtension;
@@ -88,9 +92,9 @@ public class ProjectServiceImplTest {
   @Mock
   private GrantedAuthorityDao<MutableGrantedAuthority> grantedAuthorityDao;
 
-  private static final Long EXISTING_PROJECT_ID = new Long(10);
+  private static final Long EXISTING_PROJECT_ID = Long.valueOf(10);
 
-  private static final Long NONEXISTING_PROJECT_ID = new Long(103);
+  private static final Long NONEXISTING_PROJECT_ID = Long.valueOf(103);
 
   private static final String tempProjectFolderPath = "src/test/webapp/curriculum/temp";
 
@@ -203,6 +207,137 @@ public class ProjectServiceImplTest {
   }
 
   @Test
+  public void saveProjectContentToDisk_concurrentSaves_shouldNeverCorruptFile() throws Exception {
+    Project project = new ProjectImpl();
+    project.setModulePath("/temp/project.json");
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    projectFile.delete();
+
+    int numThreads = 10;
+    int savesPerThread = 15;
+    ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+    CountDownLatch startLatch = new CountDownLatch(1);
+    CountDownLatch doneLatch = new CountDownLatch(numThreads);
+    AtomicBoolean errorOccurred = new AtomicBoolean(false);
+
+    for (int i = 0; i < numThreads; i++) {
+      final int threadIndex = i;
+      executor.submit(() -> {
+        try {
+          startLatch.await();
+          for (int j = 0; j < savesPerThread; j++) {
+            // Write JSON payloads of varying sizes with large padding to stress buffer flushes
+            int paddingSize = 1024 * (threadIndex + 1) + j * 512;
+            StringBuilder sb = new StringBuilder();
+            sb.append("{\"thread\":").append(threadIndex)
+                .append(",\"iteration\":").append(j)
+                .append(",\"payload\":\"");
+            for (int k = 0; k < paddingSize; k++) {
+              sb.append('a');
+            }
+            sb.append("\"}");
+            projectServiceImpl.saveProjectContentToDisk(sb.toString(), project);
+          }
+        } catch (Exception e) {
+          errorOccurred.set(true);
+        } finally {
+          doneLatch.countDown();
+        }
+      });
+    }
+
+    AtomicBoolean readerFailed = new AtomicBoolean(false);
+    AtomicBoolean writersDone = new AtomicBoolean(false);
+    Thread readerThread = new Thread(() -> {
+      while (!writersDone.get()) {
+        try {
+          if (projectFile.exists()) {
+            String content = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+            if (!content.isEmpty()) {
+              new JSONObject(content);
+            }
+          }
+        } catch (Exception e) {
+          readerFailed.set(true);
+          break;
+        }
+      }
+    });
+    readerThread.start();
+
+    startLatch.countDown();
+    assertTrue(doneLatch.await(15, TimeUnit.SECONDS), "Concurrent saves timed out");
+    writersDone.set(true);
+    readerThread.join(5000);
+    executor.shutdown();
+
+    assertFalse(readerFailed.get(), "Concurrent reader encountered corrupted or partially written JSON!");
+
+    assertFalse(errorOccurred.get(), "Exception occurred during concurrent saves");
+    assertTrue(projectFile.exists(), "project.json should exist");
+
+    // Verify the saved file is valid JSON and not corrupted with trailing data
+    String savedContent = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+    JSONObject json = assertDoesNotThrow(() -> new JSONObject(savedContent),
+        "Saved file must be valid JSON; trailing data or truncation indicates corruption");
+    assertTrue(json.has("thread"));
+    assertTrue(json.has("iteration"));
+    assertTrue(json.has("payload"));
+
+    // Verify all temporary files were cleaned up
+    File parentDir = projectFile.getParentFile();
+    File[] tempFiles = parentDir.listFiles((dir, name) -> name.startsWith("project-") && name.endsWith(".tmp"));
+    assertNotNull(tempFiles);
+    assertEquals(0, tempFiles.length, "All temporary project-*.tmp files must be deleted");
+
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
+  public void saveProjectContentToDisk_shouldSetFileReadable() throws Exception {
+    Project project = new ProjectImpl();
+    project.setModulePath("/temp/project.json");
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    projectFile.delete();
+
+    String projectJSONString = "{\"metadata\":{\"title\":\"Readable Check\"}}";
+    projectServiceImpl.saveProjectContentToDisk(projectJSONString, project);
+
+    assertTrue(projectFile.exists());
+    assertTrue(projectFile.canRead(), "Project file must be readable");
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
+  public void replaceMetadataInProjectJSONFile_shouldUpdateMetadataAtomically() throws Exception {
+    String projectFilePath = tempProjectFolderPath + "/project.json";
+    File projectFile = new File(projectFilePath);
+    FileUtils.writeStringToFile(projectFile, "{\"metadata\":{\"title\":\"Initial Title\"}}", StandardCharsets.UTF_8);
+
+    ProjectMetadata metadata = new ProjectMetadataImpl();
+    metadata.setTitle("Updated Title Atomically");
+
+    projectServiceImpl.replaceMetadataInProjectJSONFile(projectFilePath, metadata);
+
+    String updatedContent = FileUtils.readFileToString(projectFile, StandardCharsets.UTF_8);
+    JSONObject updatedJSON = new JSONObject(updatedContent);
+    assertEquals("Updated Title Atomically", updatedJSON.getJSONObject("metadata").getString("title"));
+
+    // Verify no temporary files left behind
+    File parentDir = projectFile.getParentFile();
+    File[] tempFiles = parentDir.listFiles((dir, name) -> name.startsWith("project-") && name.endsWith(".tmp"));
+    assertNotNull(tempFiles);
+    assertEquals(0, tempFiles.length);
+
+    projectFile.deleteOnExit();
+    verify(appProperties);
+  }
+
+  @Test
   public void saveProjectToDatabase_shouldMakeACallToSaveToDatabase() {
     Project project = new ProjectImpl();
     project.setId(1L);
@@ -285,5 +420,37 @@ public class ProjectServiceImplTest {
       fail();
     }
     verify(appProperties);
+  }
+
+  @Test
+  public void wrapText_nullOrEmptyString_returnsInput() {
+    assertNull(ProjectServiceImpl.wrapText(null, 20));
+    assertEquals("", ProjectServiceImpl.wrapText("", 20));
+  }
+
+  @Test
+  public void wrapText_shorterThanWrapLength_returnsUnchanged() {
+    String input = "Hello World";
+    assertEquals("Hello World", ProjectServiceImpl.wrapText(input, 20));
+  }
+
+  @Test
+  public void wrapText_longerThanWrapLength_wrapsAtWordBoundary() {
+    String input = "The quick brown fox jumps over the lazy dog";
+    String expected = "The quick brown\nfox jumps over\nthe lazy dog";
+    assertEquals(expected, ProjectServiceImpl.wrapText(input, 15));
+  }
+
+  @Test
+  public void wrapText_preservesExistingNewlines() {
+    String input = "Line one\nLine two is quite long and should wrap";
+    String expected = "Line one\nLine two is\nquite long and\nshould wrap";
+    assertEquals(expected, ProjectServiceImpl.wrapText(input, 15));
+  }
+
+  @Test
+  public void wrapText_singleWordLongerThanWrapLength_doesNotSplitWord() {
+    String input = "Supercalifragilisticexpialidocious";
+    assertEquals("Supercalifragilisticexpialidocious", ProjectServiceImpl.wrapText(input, 10));
   }
 }

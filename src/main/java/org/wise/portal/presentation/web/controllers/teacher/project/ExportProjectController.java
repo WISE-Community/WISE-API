@@ -32,8 +32,8 @@ import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.project.ProjectMetadata;
-import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.authentication.UserDetailsService;
@@ -77,7 +76,7 @@ public class ExportProjectController {
    * @throws Exception when there was an error while exporting the project
    */
   @GetMapping
-  protected void exportProject(@PathVariable("projectId") ProjectImpl project,
+  protected void exportProject(@PathVariable("projectId") Project project,
       HttpServletResponse response) throws Exception {
     User signedInUser = ControllerUtil.getSignedInUser();
     if (authorize(signedInUser, project)) {
@@ -97,13 +96,15 @@ public class ExportProjectController {
     String projectJSONDir = projectJSONFullPath.substring(0, projectJSONFullPath.lastIndexOf(sep));
 
     response.setContentType("application/zip");
-    response.addHeader("Content-Disposition", "attachment;filename=\"" + foldername+".zip" + "\"");
+    response.addHeader("Content-Disposition",
+        "attachment;filename=\"" + foldername + ".zip" + "\"");
 
     ProjectMetadata metadata = project.getMetadata();
     String metadataJSONString = metadata.toJSONString();
 
     if (project.getWiseVersion().equals(4)) {
-      String metaFileName = projectJSONDir + sep + "wise4.project-meta.json";;
+      String metaFileName = projectJSONDir + sep + "wise4.project-meta.json";
+      ;
       PrintWriter metaOut = new PrintWriter(metaFileName);
       metaOut.println(metadataJSONString);
       metaOut.close();
@@ -141,15 +142,16 @@ public class ExportProjectController {
    */
   private boolean authorize(User signedInUser, Project project) {
     if (signedInUser != null) {
-      Collection<? extends GrantedAuthority> authorities = signedInUser.getUserDetails().getAuthorities();
+      Collection<? extends GrantedAuthority> authorities = signedInUser.getUserDetails()
+          .getAuthorities();
       for (GrantedAuthority authority : authorities) {
         if (authority.getAuthority().equals(UserDetailsService.ADMIN_ROLE)) {
           // if signed in user is an admin, (s)he can export all projects.
           return true;
         } else if (authority.getAuthority().equals(UserDetailsService.TEACHER_ROLE)) {
           //the signed in user is a teacher
-          return this.projectService.canAuthorProject(project, signedInUser) ||
-            this.projectService.canReadProject(project, signedInUser);
+          return this.projectService.canAuthorProject(project, signedInUser)
+              || this.projectService.canReadProject(project, signedInUser);
         }
       }
     }
@@ -177,7 +179,8 @@ public class ExportProjectController {
       } else {
         String name = file.getAbsolutePath().substring(baseName.length());
         String updatedFilename = null;
-        if (name.endsWith("wise4.project.json") && !"wise4.project.json".equals(this.projectJSONFilename)) {
+        if (name.endsWith("wise4.project.json")
+            && !"wise4.project.json".equals(this.projectJSONFilename)) {
           // jump to the next iteration, since we don't need to add this file (wise4.project.json) to the zip.
           // we want to add the other *.project.json file (e.g. "GCC.project.json") as wise4.project.json to the zip.
           continue;

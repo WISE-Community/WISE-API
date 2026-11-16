@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,7 @@ import lombok.Setter;
  */
 public class BatchStudentChangePasswordParameters extends ChangePasswordParameters {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   @Getter

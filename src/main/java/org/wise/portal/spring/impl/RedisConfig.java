@@ -13,12 +13,14 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 import org.wise.portal.spring.data.redis.MessagePublisher;
 import org.wise.portal.spring.data.redis.RedisMessagePublisher;
 import org.wise.portal.spring.data.redis.RedisMessageSubscriber;
 import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
+@EnableRedisIndexedHttpSession
 public class RedisConfig {
 
   @Value("${spring.redis.host}")
@@ -39,7 +41,8 @@ public class RedisConfig {
     poolConfig.setMaxTotal(redisPoolMaxTotal);
     poolConfig.setTestOnBorrow(true);
     poolConfig.setTestOnReturn(true);
-    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHostName, redisPort);
+    RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHostName,
+        redisPort);
     if (redisPassword != null) {
       config.setPassword(redisPassword);
     }

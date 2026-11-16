@@ -23,9 +23,7 @@
  */
 package org.wise.portal.dao.peergroup.impl;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashSet;
 import java.util.stream.Collectors;

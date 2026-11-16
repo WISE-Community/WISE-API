@@ -10,10 +10,10 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.easymock.Mock;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.dao.annotation.wise5.AnnotationDao;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
 import org.wise.portal.domain.peergrouping.impl.PeerGroupingImpl;
@@ -36,7 +36,7 @@ public abstract class PeerGroupAnnotationLogicServiceImplTest
   Set<Workgroup> workgroupsNotInPeerGroup;
   Map<Workgroup, Annotation> workgroupToAnnotation = new HashMap<Workgroup, Annotation>();
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     super.setup();
     workgroupsNotInPeerGroup = new HashSet<Workgroup>();

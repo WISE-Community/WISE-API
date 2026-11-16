@@ -25,17 +25,17 @@ package org.wise.vle.domain.work;
 
 import java.sql.Timestamp;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
@@ -53,26 +53,29 @@ import lombok.Setter;
  * @author Hiroki Terashima
  */
 @Entity
-@Table(name = "studentAssets",  indexes = {
+@Table(name = "studentAssets", indexes = {
     @Index(columnList = "runId", name = "studentAssetsRunIdIndex"),
-    @Index(columnList = "workgroupId", name = "studentAssetsWorkgroupIdIndex")})
+    @Index(columnList = "workgroupId", name = "studentAssetsWorkgroupIdIndex") })
 @Getter
 @Setter
 public class StudentAsset extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id = null;
 
-  @ManyToOne(targetEntity = RunImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = RunImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "runId", nullable = false)
   private Run run;
 
-  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PersistentGroup.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "periodId", nullable = false)
   private Group period;
 
-  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = WorkgroupImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "workgroupId", nullable = false)
   private Workgroup workgroup;
 

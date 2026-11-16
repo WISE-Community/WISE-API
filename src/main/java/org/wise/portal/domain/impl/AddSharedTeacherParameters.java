@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.impl;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import lombok.Getter;
@@ -39,6 +40,7 @@ import org.wise.portal.domain.run.Run;
 @Setter
 public class AddSharedTeacherParameters implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private Run run;

@@ -26,12 +26,13 @@ package org.wise.portal.presentation.web.controllers.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.project.FamilyTag;
 import org.wise.portal.domain.project.Project;
@@ -53,7 +54,7 @@ public class ManageAllProjectsController {
 
   private static final String INTERNAL_PROJECT_LIST_PARAM_NAME = "internal_project_list";
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   protected ModelAndView handleGET(
     HttpServletRequest request) throws Exception {
     List<Project> internalProjectList = new ArrayList<Project>();
@@ -75,12 +76,12 @@ public class ManageAllProjectsController {
     return modelAndView;
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected ModelAndView handleRequestInternal(HttpServletRequest request) {
     ModelAndView mav = new ModelAndView();
     try {
       String projectIdStr = request.getParameter("projectId");
-      Long projectId = new Long(projectIdStr);
+      Long projectId = Long.valueOf(projectIdStr);
       Project project = projectService.getById(projectId);
       String attr = request.getParameter("attr");
       if (attr.equals("isCurrent")) {

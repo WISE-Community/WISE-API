@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -90,7 +90,7 @@ public class ManageStudentsController {
    * @throws Exception
    */
   @GetMapping("/studentlist")
-  protected ModelAndView getStudentList(@RequestParam("runId") Long runId) throws Exception {
+  protected ModelAndView getStudentList(@RequestParam Long runId) throws Exception {
     Run run = runService.retrieveById(runId);
     if (userCanViewRun(ControllerUtil.getSignedInUser(), run)) {
       Set<Group> periods = run.getPeriods();
@@ -116,7 +116,7 @@ public class ManageStudentsController {
    * @throws Exception
    */
   @GetMapping("/studentListExport")
-  protected void exportStudentList(@RequestParam("runId") Long runId,
+  protected void exportStudentList(@RequestParam Long runId,
       HttpServletResponse response) throws Exception {
     Run run = runService.retrieveById(runId);
     Project project = run.getProject();

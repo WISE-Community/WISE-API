@@ -26,7 +26,7 @@ package org.wise.vle.domain.status;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,15 +36,15 @@ import org.wise.vle.domain.PersistableDomain;
  * @author Geoffrey Kwan
  */
 @Entity
-@Table(name = "studentstatus",
-  indexes = { @Index(columnList = "runId", name = "studentstatusRunIdIndex"),
-    @Index(columnList = "workgroupId", name = "studentstatusWorkgroupIdIndex")} )
+@Table(name = "studentstatus", indexes = {
+    @Index(columnList = "runId", name = "studentstatusRunIdIndex"),
+    @Index(columnList = "workgroupId", name = "studentstatusWorkgroupIdIndex") })
 @Getter
 @Setter
 public class StudentStatus extends PersistableDomain {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = null;
 
   @Column(name = "runId")

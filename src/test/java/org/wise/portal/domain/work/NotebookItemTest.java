@@ -1,6 +1,6 @@
 package org.wise.portal.domain.work;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Timestamp;
 
@@ -51,11 +51,13 @@ public class NotebookItemTest extends DomainTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new NotebookItemJsonModule());
     String json = mapper.writeValueAsString(item);
-    assertEquals("{\"id\":99,\"runId\":1,\"workgroupId\":64,\"type\":\"note\""
-        + ",\"localNotebookItemId\":\"ooacs8tls7\""
-        + ",\"content\":\"{\\\"text\\\":\\\"my note!\\\"}\""
-        + ",\"clientSaveTime\":1582337976000,\"serverSaveTime\":1582338031000"
-        + ",\"periodId\":100,\"nodeId\":\"node78\",\"title\":\"Note from first step\"}", json);
+    assertEquals("""
+        {"id":99,"runId":1,"workgroupId":64,"type":"note"\
+        ,"localNotebookItemId":"ooacs8tls7"\
+        ,"content":"{\\"text\\":\\"my note!\\"}"\
+        ,"clientSaveTime":1582337976000,"serverSaveTime":1582338031000\
+        ,"periodId":100,"nodeId":"node78","title":"Note from first step"}\
+        """, json);
   }
 
 }

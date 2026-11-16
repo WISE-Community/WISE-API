@@ -26,18 +26,18 @@ package org.wise.portal.domain.peergroup.impl;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -65,19 +65,18 @@ import lombok.Setter;
 public class PeerGroupImpl implements PeerGroup {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = null;
 
-  @ManyToOne(targetEntity = PeerGroupingImpl.class, cascade = { CascadeType.PERSIST },
-      fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = PeerGroupingImpl.class, cascade = {
+      CascadeType.PERSIST }, fetch = FetchType.LAZY)
   @JoinColumn(name = "peerGroupingId", nullable = false)
   @JsonIgnore
   private PeerGrouping peerGrouping;
 
   @ManyToMany(targetEntity = WorkgroupImpl.class)
-  @JoinTable(name = "peer_groups_related_to_workgroups",
-      joinColumns = { @JoinColumn(name = "peer_group_fk", nullable = false)},
-      inverseJoinColumns = @JoinColumn(name = "workgroup_fk", nullable = false))
+  @JoinTable(name = "peer_groups_related_to_workgroups", joinColumns = {
+      @JoinColumn(name = "peer_group_fk", nullable = false) }, inverseJoinColumns = @JoinColumn(name = "workgroup_fk", nullable = false))
   private Set<Workgroup> members = new HashSet<Workgroup>();
 
   @OneToOne(targetEntity = PersistentGroup.class, fetch = FetchType.LAZY)
@@ -85,7 +84,8 @@ public class PeerGroupImpl implements PeerGroup {
   @JsonIgnore
   private Group period;
 
-  public PeerGroupImpl() {}
+  public PeerGroupImpl() {
+  }
 
   public PeerGroupImpl(PeerGrouping peerGrouping, Group period, Set<Workgroup> members) {
     this.peerGrouping = peerGrouping;

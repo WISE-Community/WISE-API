@@ -26,13 +26,12 @@ package org.wise.portal.presentation.web.controllers;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.project.FamilyTag;
 import org.wise.portal.domain.project.Project;
@@ -73,7 +72,7 @@ public class PreviewProjectController {
   @Autowired
   private RunService runService;
 
-  @RequestMapping(value = "/previewproject.html", method = RequestMethod.GET)
+  @GetMapping("/previewproject.html")
   protected ModelAndView getPreviewPage(HttpServletRequest request, HttpServletResponse response)
       throws Exception {
     String projectIdStr = request.getParameter(PROJECT_ID_PARAM_NAME);

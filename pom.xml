@@ -114,7 +114,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.12</version>
+        <version>0.8.15</version>
         <executions>
           <execution>
             <goals>
@@ -132,16 +132,16 @@
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.3.2</version>
+        <version>3.5.0</version>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.3.1</version>
+        <version>3.5.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.16.0</version>
         <executions>
           <execution>
             <id>default-testCompile</id>
@@ -182,13 +182,19 @@
           </execution>
         </executions>
         <configuration>
-          <release>17</release>
+          <release>${java.version}</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
+        <version>3.5.6</version>
         <configuration>
           <includes>
             <include>**/*Test.java</include>
@@ -226,7 +232,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.12.0</version>
         <configuration>
           <failOnError>false</failOnError>
         </configuration>
@@ -234,7 +240,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -277,6 +283,23 @@
           <includePluginDependencies>true</includePluginDependencies>
           <classpathScope>compile</classpathScope>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.openrewrite.maven</groupId>
+        <artifactId>rewrite-maven-plugin</artifactId>
+        <version>6.46.1</version>
+        <configuration>
+          <activeRecipes>
+            <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_4</recipe>
+          </activeRecipes>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-spring</artifactId>
+            <version>6.37.1</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
@@ -331,7 +354,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.18</version>
+    <version>3.4.13</version>
     <relativePath/>
   </parent>
   <dependencies>
@@ -383,6 +406,10 @@
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-cache</artifactId>
     </dependency>
     <dependency>
@@ -401,62 +428,40 @@
       <optional>true</optional>
     </dependency>
     <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-properties-migrator</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
-      <version>1.2</version>
+      <groupId>jakarta.servlet.jsp.jstl</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.web</groupId>
+      <artifactId>jakarta.servlet.jsp.jstl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-taglibs</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.security.oauth</groupId>
-      <artifactId>spring-security-oauth2</artifactId>
-      <version>${spring-security-oauth2.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-jwt</artifactId>
-      <version>${spring-security-jwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.auth0</groupId>
-      <artifactId>jwks-rsa</artifactId>
-      <version>${jwks-rsa.version}</version>
-    </dependency>
+
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
-      <version>9.7.0</version>
     </dependency>
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-      <version>3.3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.9</version>
+      <version>7.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.9</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.code.maven-play-plugin.net.tanesha.recaptcha4j</groupId>
-      <artifactId>recaptcha4j</artifactId>
-      <version>0.0.8</version>
+      <version>3.20.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -474,36 +479,26 @@
       <version>3.7</version>
     </dependency>
     <dependency>
-      <groupId>com.opencsv</groupId>
-      <artifactId>opencsv</artifactId>
-      <version>4.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.4.200</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>testcontainers</artifactId>
-        <version>1.21.4</version>
-        <scope>test</scope>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <version>2.0.5</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
-        <groupId>org.testcontainers</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>1.21.4</version>
-        <scope>test</scope>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-      <version>5.5.0</version>
+      <version>5.7.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -524,9 +519,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
-      <version>3.7.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.api-client</groupId>
@@ -539,14 +538,9 @@
       <version>v1-rev274-1.22.0</version>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.tika</groupId>
       <artifactId>tika-core</artifactId>
-      <version>2.5.0</version>
+      <version>3.3.2</version>
     </dependency>
     <dependency>
       <groupId>xyz.capybara</groupId>
@@ -561,7 +555,7 @@
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>translate</artifactId>
-      <version>2.40.15</version>
+      <version>2.43.2</version>
     </dependency>
     <dependency>
       <groupId>org.flywaydb</groupId>
@@ -574,14 +568,9 @@
   </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <spring-security.version>5.8.16</spring-security.version>
-    <spring-security-oauth2.version>2.2.5.RELEASE</spring-security-oauth2.version>
-    <spring-security-jwt.version>1.0.9.RELEASE</spring-security-jwt.version>
-    <jwks-rsa.version>0.3.0</jwks-rsa.version>
     <powermock.version>1.7.4</powermock.version>
     <startup.listeners>
     </startup.listeners>
     <m2e.apt.activation>disabled</m2e.apt.activation>
-    <log4j2.version>2.17.0</log4j2.version>
   </properties>
 </project>

@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import lombok.Getter;
 import lombok.Setter;
 import org.wise.portal.domain.project.FamilyTag;
@@ -36,6 +37,7 @@ import org.wise.portal.domain.project.ProjectInfo;
 @Setter
 public class ProjectInfoImpl implements ProjectInfo {
 
+  @Serial
   private static final long serialVersionUID = 1L;
   private String name;
   private String author;

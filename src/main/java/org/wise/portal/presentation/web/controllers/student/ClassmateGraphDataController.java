@@ -17,7 +17,6 @@ import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.vle.domain.work.StudentWork;
 
 @RestController
@@ -32,10 +31,9 @@ public class ClassmateGraphDataController extends ClassmateDataController {
 
   @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}/period/{periodId}")
   public List<StudentWork> getClassmateGraphWorkInPeriod(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
-      @PathVariable String componentId, @PathVariable String showWorkNodeId,
-      @PathVariable String showWorkComponentId, @PathVariable Long periodId)
-      throws IOException, JSONException, ObjectNotFoundException {
+      @PathVariable("runId") Run run, @PathVariable String nodeId, @PathVariable String componentId,
+      @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId,
+      @PathVariable Long periodId) throws IOException, JSONException, ObjectNotFoundException {
     Group period = groupService.retrieveById(periodId);
     if (isAllowedToGetData(auth, run, period, nodeId, componentId, showWorkNodeId,
         showWorkComponentId, PERIOD_SOURCE)) {
@@ -46,9 +44,8 @@ public class ClassmateGraphDataController extends ClassmateDataController {
 
   @GetMapping("/student-work/{runId}/{nodeId}/{componentId}/{showWorkNodeId}/{showWorkComponentId}/class")
   public List<StudentWork> getClassmateGraphWorkInClass(Authentication auth,
-      @PathVariable("runId") RunImpl run, @PathVariable String nodeId,
-      @PathVariable String componentId, @PathVariable String showWorkNodeId,
-      @PathVariable String showWorkComponentId)
+      @PathVariable("runId") Run run, @PathVariable String nodeId, @PathVariable String componentId,
+      @PathVariable String showWorkNodeId, @PathVariable String showWorkComponentId)
       throws IOException, JSONException, ObjectNotFoundException {
     if (isAllowedToGetData(auth, run, nodeId, componentId, showWorkNodeId, showWorkComponentId,
         CLASS_SOURCE)) {
@@ -67,8 +64,8 @@ public class ClassmateGraphDataController extends ClassmateDataController {
   private boolean isAllowedToGetData(Authentication auth, Run run, String nodeId,
       String componentId, String showWorkNodeId, String showWorkComponentId,
       String showClassmateWorkSource) throws IOException, JSONException, ObjectNotFoundException {
-    return isStudentInRun(auth, run) && isValidGraphComponent(run, nodeId, componentId, showWorkNodeId,
-        showWorkComponentId, showClassmateWorkSource);
+    return isStudentInRun(auth, run) && isValidGraphComponent(run, nodeId, componentId,
+        showWorkNodeId, showWorkComponentId, showClassmateWorkSource);
   }
 
   private boolean isValidGraphComponent(Run run, String nodeId, String componentId,

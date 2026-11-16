@@ -22,10 +22,7 @@
  */
 package org.wise.portal.dao.run.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -53,7 +50,7 @@ public class HibernateRunDaoTest extends WISEHibernateTest {
   private HibernateRunDao runDao;
 
   private void assertNumRuns(int expected) {
-    assertEquals("Number of rows in the [runs] table.", expected, countRowsInTable("runs"));
+    assertEquals(expected, countRowsInTable("runs"), "Number of rows in the [runs] table.");
   }
 
   @Test

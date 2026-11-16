@@ -26,7 +26,7 @@ package org.wise.vle.web.wise5;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -46,7 +46,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.run.Run;
-import org.wise.portal.domain.run.impl.RunImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
@@ -97,22 +96,17 @@ public class StudentAssetController {
 
   @PostMapping("/student/asset/{runId}")
   @ResponseBody
-  protected StudentAsset postStudentAsset(
-      @RequestParam("clientSaveTime") String clientSaveTime,
-      @RequestParam(value = "componentId", required = false) String componentId,
-      @RequestParam(value = "componentType", required = false) String componentType,
-      @RequestParam("files") List<MultipartFile> files,
-      @RequestParam(value = "nodeId", required = false) String nodeId,
-      @RequestParam("periodId") Integer periodId,
-      @PathVariable("runId") RunImpl run,
-      @RequestParam("workgroupId") Integer workgroupId
-      ) throws Exception {
+  protected StudentAsset postStudentAsset(@RequestParam String clientSaveTime,
+      @RequestParam(required = false) String componentId,
+      @RequestParam(required = false) String componentType, @RequestParam List<MultipartFile> files,
+      @RequestParam(required = false) String nodeId, @RequestParam Integer periodId,
+      @PathVariable("runId") Run run, @RequestParam Integer workgroupId) throws Exception {
     String dirName = run.getId() + "/" + workgroupId + "/unreferenced";
     String path = appProperties.getProperty("studentuploads_base_dir");
-    Long studentMaxAssetSize = Long.valueOf(
-        appProperties.getProperty("student_max_asset_size", "5242880"));
-    Long studentMaxTotalAssetsSize = Long.valueOf(
-        appProperties.getProperty("student_max_total_assets_size", "10485760"));
+    Long studentMaxAssetSize = Long
+        .valueOf(appProperties.getProperty("student_max_asset_size", "5242880"));
+    Long studentMaxTotalAssetsSize = Long
+        .valueOf(appProperties.getProperty("student_max_total_assets_size", "10485760"));
     String pathToCheckSize = path + "/" + dirName;
     for (MultipartFile file : files) {
       if (file.getSize() > studentMaxAssetSize) {
@@ -144,11 +138,10 @@ public class StudentAssetController {
   @DeleteMapping("/student/asset/{runId}/delete")
   @ResponseBody
   protected StudentAsset removeStudentAsset(@PathVariable Integer runId,
-      @RequestParam(value = "studentAssetId", required = true) Integer studentAssetId,
-      @RequestParam(value = "workgroupId", required = true) Integer workgroupId,
-      @RequestParam(value = "clientDeleteTime", required = true) Long clientDeleteTime)
-      throws Exception {
-    Run run = runService.retrieveById(new Long(runId));
+      @RequestParam(required = true) Integer studentAssetId,
+      @RequestParam(required = true) Integer workgroupId,
+      @RequestParam(required = true) Long clientDeleteTime) throws Exception {
+    Run run = runService.retrieveById(Long.valueOf(runId));
     StudentAsset studentAsset = vleService.getStudentAssetById(studentAssetId);
     String assetFileName = studentAsset.getFileName();
     String dirName = run.getId() + "/" + workgroupId + "/unreferenced";

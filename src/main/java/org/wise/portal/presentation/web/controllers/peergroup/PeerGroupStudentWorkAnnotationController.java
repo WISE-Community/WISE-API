@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
+import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.presentation.web.controllers.student.AbstractPeerGroupWorkController;
@@ -37,7 +37,7 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
 
   @GetMapping("/dynamic-prompt")
   List<StudentWorkAnnotation> getStudentDataForDynamicPrompt(
-      @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
+      @PathVariable("peerGroupId") PeerGroup peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
     checkPermissions(auth, peerGroup);
     return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, "dynamicPrompt");
@@ -45,20 +45,20 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
 
   @GetMapping("/question-bank")
   List<StudentWorkAnnotation> getStudentDataForQuestionBank(
-      @PathVariable("peerGroupId") PeerGroupImpl peerGroup, @PathVariable String nodeId,
+      @PathVariable("peerGroupId") PeerGroup peerGroup, @PathVariable String nodeId,
       @PathVariable String componentId, Authentication auth) throws Exception {
     checkPermissions(auth, peerGroup);
     return getStudentDataForReferenceComponent(peerGroup, nodeId, componentId, "questionBank");
   }
 
-  private void checkPermissions(Authentication auth, PeerGroupImpl peerGroup)
+  private void checkPermissions(Authentication auth, PeerGroup peerGroup)
       throws ObjectNotFoundException {
     if (!isUserInPeerGroup(auth, peerGroup)) {
       throw new AccessDeniedException("Not permitted");
     }
   }
 
-  private List<StudentWorkAnnotation> getStudentDataForReferenceComponent(PeerGroupImpl peerGroup,
+  private List<StudentWorkAnnotation> getStudentDataForReferenceComponent(PeerGroup peerGroup,
       String nodeId, String componentId, String fieldName) throws Exception {
     Run run = peerGroup.getPeerGrouping().getRun();
     ReferenceComponent component = getReferenceComponent(run, nodeId, componentId, fieldName);
@@ -73,7 +73,7 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
     }
   }
 
-  private List<StudentWorkAnnotation> getStudentDataForMultipleChoice(PeerGroupImpl peerGroup,
+  private List<StudentWorkAnnotation> getStudentDataForMultipleChoice(PeerGroup peerGroup,
       ReferenceComponent component) {
     List<StudentWork> studentWorkList = studentWorkService.getStudentWork(peerGroup.getMembers(),
         component.getNodeId(), component.getComponentId());
@@ -81,7 +81,7 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
         .collect(Collectors.toList());
   }
 
-  private List<StudentWorkAnnotation> getStudentDataForOpenResponse(PeerGroupImpl peerGroup,
+  private List<StudentWorkAnnotation> getStudentDataForOpenResponse(PeerGroup peerGroup,
       ReferenceComponent component) {
     List<Annotation> annotations = annotationService.getLatest(peerGroup.getMembers(),
         component.getNodeId(), component.getComponentId(), "autoScore");

@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.service.user.UserService;
 import org.wise.portal.service.vle.wise5.VLEService;
@@ -25,12 +25,8 @@ public class TeacherRunAPIController {
   @Autowired
   private VLEService vleService;
 
-  /**
-   * Returns all student statuses for a given run
-   */
   @GetMapping("/api/teacher/run/{runId}/student-status")
-  public List<StudentStatus> getStudentStatus(Authentication auth,
-      @PathVariable("runId") RunImpl run) {
+  public List<StudentStatus> getStudentStatus(Authentication auth, @PathVariable("runId") Run run) {
     User user = userService.retrieveUserByUsername(auth.getName());
     if (run.isTeacherAssociatedToThisRun(user) || user.isAdmin()) {
       return vleService.getStudentStatusesByRunId(run.getId());

@@ -23,7 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import lombok.Getter;
 import lombok.Setter;

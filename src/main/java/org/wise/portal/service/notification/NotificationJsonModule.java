@@ -1,5 +1,6 @@
 package org.wise.portal.service.notification;
 
+import java.io.Serial;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.wise.vle.domain.notification.NotificationSerializer;
 @Service
 public class NotificationJsonModule extends SimpleModule {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   public NotificationJsonModule() {

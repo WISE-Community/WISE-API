@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;

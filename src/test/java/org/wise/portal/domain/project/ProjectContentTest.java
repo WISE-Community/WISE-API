@@ -1,7 +1,7 @@
 package org.wise.portal.domain.project;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.easymock.EasyMockExtension;
 import org.json.JSONException;
@@ -16,9 +16,13 @@ public class ProjectContentTest {
 
   ProjectContent content;
 
-  final String PROJECT_1 = "{\"nodes\":[" + "{\"id\":\"node1\"," + "\"components\":["
-      + "{\"id\":\"c1\", \"type\":\"HTML\"},"
-      + "{\"id\":\"c2\", \"type\":\"PeerChat\", \"peerGroupingTag\":\"tag1\"}]}]}";
+  final String PROJECT_1 = """
+      {"nodes":[\
+      {"id":"node1",\
+      "components":[\
+      {"id":"c1", "type":"HTML"},\
+      {"id":"c2", "type":"PeerChat", "peerGroupingTag":"tag1"}]}]}\
+      """;
 
   @BeforeEach
   public void setup() throws JSONException {

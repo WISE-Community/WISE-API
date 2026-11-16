@@ -70,7 +70,7 @@ public class ShareProjectRunControllerTest extends AbstractModelAndViewTests {
 
 	private UserService mockUserService;
 
-	private static final Long RUNID = new Long(4);
+	private static final Long RUNID = Long.valueOf(4);
 
 	private BindingResult errors;
 
@@ -85,7 +85,7 @@ public class ShareProjectRunControllerTest extends AbstractModelAndViewTests {
 	private AddSharedTeacherParameters addSharedTeacherParameters;
 
 	/**
-	 * @see junit.framework.TestCase#setUp()
+	 * @see 
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -113,7 +113,7 @@ public class ShareProjectRunControllerTest extends AbstractModelAndViewTests {
 	}
 
 	/**
-	 * @see junit.framework.TestCase#tearDown()
+	 * @see 
 	 */
 	protected void tearDown() throws Exception {
 		super.tearDown();

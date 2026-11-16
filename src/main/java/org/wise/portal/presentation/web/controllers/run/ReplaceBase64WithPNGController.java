@@ -7,8 +7,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.dao.work.StudentWorkDao;
@@ -18,7 +18,7 @@ import org.wise.portal.service.vle.wise5.VLEService;
 import org.wise.vle.domain.work.StudentWork;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.sql.Timestamp;
@@ -50,11 +50,11 @@ public class ReplaceBase64WithPNGController {
   @Autowired
   private StudentWorkDao studentWorkDao;
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   protected ModelAndView onSubmit(
-    @RequestParam("runId") Integer runId,
-    @RequestParam("nodeId") String nodeId,
-    @RequestParam("componentId") String componentId,
+    @RequestParam Integer runId,
+    @RequestParam String nodeId,
+    @RequestParam String componentId,
     HttpServletResponse response
   ) throws Exception {
 
@@ -103,7 +103,7 @@ public class ReplaceBase64WithPNGController {
     debugOutput(writer, response, "");
 
     // get all the workgroups for the run
-    List<Workgroup> workgroups = runService.getWorkgroups(new Long(runId));
+    List<Workgroup> workgroups = runService.getWorkgroups(Long.valueOf(runId));
 
     debugOutput(writer, response, "Found " + workgroups.size() + " Workgroups");
     debugOutput(writer, response, "");

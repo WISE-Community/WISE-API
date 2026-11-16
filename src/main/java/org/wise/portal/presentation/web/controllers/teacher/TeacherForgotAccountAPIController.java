@@ -19,8 +19,8 @@ import org.wise.portal.service.mail.IMailFacade;
 import org.wise.portal.service.password.PasswordService;
 import org.wise.portal.service.user.UserService;
 
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +47,7 @@ public class TeacherForgotAccountAPIController {
 
   @PostMapping("/username")
   protected String sendForgotUsernameEmail(HttpServletRequest request,
-      @RequestParam("email") String email) throws JSONException {
+      @RequestParam String email) throws JSONException {
     List<User> users = userService.retrieveUserByEmailAddress(email);
     JSONObject response;
     if (users.isEmpty()) {
@@ -89,7 +89,7 @@ public class TeacherForgotAccountAPIController {
 
   @GetMapping("/password/verification-code")
   protected String sendVerificationCodeEmail(HttpServletRequest request,
-      @RequestParam("username") String username, @RequestParam("token") String token)
+      @RequestParam String username, @RequestParam String token)
       throws JSONException {
     if (ControllerUtil.isReCaptchaEnabled() && !ControllerUtil.isReCaptchaResponseValid(token)) {
       return getInvalidRecaptchaErrorResponse().toString();
@@ -152,8 +152,8 @@ public class TeacherForgotAccountAPIController {
   }
 
   @PostMapping("/password/verification-code")
-  protected String checkVerificationCode(@RequestParam("username") String username,
-      @RequestParam("verificationCode") String verificationCode) throws JSONException {
+  protected String checkVerificationCode(@RequestParam String username,
+      @RequestParam String verificationCode) throws JSONException {
     JSONObject response = new JSONObject();
     User user = userService.retrieveUserByUsername(username);
     if (user != null) {
@@ -195,10 +195,10 @@ public class TeacherForgotAccountAPIController {
 
   @PostMapping("/password/change")
   protected ResponseEntity<Map<String, Object>> changePassword(
-      @RequestParam("username") String username,
-      @RequestParam("verificationCode") String verificationCode,
-      @RequestParam("password") String password,
-      @RequestParam("confirmPassword") String confirmPassword) throws JSONException {
+      @RequestParam String username,
+      @RequestParam String verificationCode,
+      @RequestParam String password,
+      @RequestParam String confirmPassword) throws JSONException {
     User user = userService.retrieveUserByUsername(username);
     if (user == null) {
       return ResponseEntityGenerator.createError("usernameNotFound");

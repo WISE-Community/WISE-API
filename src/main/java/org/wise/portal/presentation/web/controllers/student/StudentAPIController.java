@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hibernate.StaleObjectStateException;
@@ -84,7 +84,6 @@ import org.wise.portal.service.student.StudentService;
  */
 @RestController
 @RequestMapping("/api/student")
-@Secured({ "ROLE_STUDENT" })
 public class StudentAPIController extends UserAPIController {
 
   @Autowired
@@ -99,7 +98,7 @@ public class StudentAPIController extends UserAPIController {
   @Autowired
   private Properties i18nProperties;
 
-  @Value("${google.clientId:}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id:}")
   private String googleClientId;
 
   @GetMapping("/runs")
@@ -112,12 +111,11 @@ public class StudentAPIController extends UserAPIController {
     return runList;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/run/launch")
-  HashMap<String, Object> launchRun(Authentication auth, @RequestParam("runId") Long runId,
-      @RequestParam(value = "workgroupId", required = false) Long workgroupId,
-      @RequestParam("presentUserIds") String presentUserIds,
-      @RequestParam("absentUserIds") String absentUserIds, HttpServletRequest request)
-      throws Exception {
+  HashMap<String, Object> launchRun(Authentication auth, @RequestParam Long runId,
+      @RequestParam(required = false) Long workgroupId, @RequestParam String presentUserIds,
+      @RequestParam String absentUserIds, HttpServletRequest request) throws Exception {
     Run run = runService.retrieveById(runId);
     presentUserIds = presentUserIds.substring(1, presentUserIds.length() - 1);
     String[] presentUserIdsArray = presentUserIds.split(",", 0);
@@ -222,9 +220,10 @@ public class StudentAPIController extends UserAPIController {
    *         information about the run. If the student is not successfully added to the run, we will
    *         return a map containing an error field with an error string.
    */
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/run/register")
-  HashMap<String, Object> addStudentToRun(Authentication auth,
-      @RequestParam("runCode") String runCode, @RequestParam("period") String period) {
+  HashMap<String, Object> addStudentToRun(Authentication auth, @RequestParam String runCode,
+      @RequestParam String period) {
     User user = userService.retrieveUserByUsername(auth.getName());
     Run run = getRun(runCode);
     if (run == null || run.getProject().getWiseVersion() == 4) {
@@ -286,7 +285,6 @@ public class StudentAPIController extends UserAPIController {
   }
 
   @PostMapping("/register")
-  @Secured({ "ROLE_ANONYMOUS" })
   ResponseEntity<Map<String, Object>> createStudentAccount(
       @RequestBody Map<String, String> studentFields, HttpServletRequest request)
       throws DuplicateUsernameException, InvalidNameException {
@@ -351,7 +349,6 @@ public class StudentAPIController extends UserAPIController {
   }
 
   @GetMapping("/register/questions")
-  @Secured({ "ROLE_ANONYMOUS" })
   List<HashMap<String, String>> getSecurityQuestions() {
     List<HashMap<String, String>> questions = new ArrayList<HashMap<String, String>>();
     for (AccountQuestion accountQuestionKey : AccountQuestion.class.getEnumConstants()) {
@@ -363,8 +360,9 @@ public class StudentAPIController extends UserAPIController {
     return questions;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @PostMapping("/profile/update")
-  SimpleResponse updateProfile(Authentication auth, @RequestParam("language") String language) {
+  SimpleResponse updateProfile(Authentication auth, @RequestParam String language) {
     User user = userService.retrieveUserByUsername(auth.getName());
     StudentUserDetails studentUserDetails = (StudentUserDetails) user.getUserDetails();
     studentUserDetails.setLanguage(language);
@@ -372,6 +370,7 @@ public class StudentAPIController extends UserAPIController {
     return new SimpleResponse("success", "profileUpdated");
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @GetMapping("/teacher-list")
   Set<HashMap<String, String>> getAssociatedTeachers(Authentication auth) {
     User user = userService.retrieveUserByUsername(auth.getName());
@@ -387,11 +386,11 @@ public class StudentAPIController extends UserAPIController {
     return teachers;
   }
 
+  @Secured({ "ROLE_STUDENT" })
   @GetMapping("/can-be-added-to-workgroup")
-  HashMap<String, Object> canBeAddedToWorkgroup(Authentication auth,
-      @RequestParam("runId") Long runId,
-      @RequestParam(value = "workgroupId", required = false) Long workgroupId,
-      @RequestParam("userId") Long userId) throws ObjectNotFoundException {
+  HashMap<String, Object> canBeAddedToWorkgroup(Authentication auth, @RequestParam Long runId,
+      @RequestParam(required = false) Long workgroupId, @RequestParam Long userId)
+      throws ObjectNotFoundException {
     User user = userService.retrieveById(userId);
     Run run = runService.retrieveById(runId);
     HashMap<String, Object> response = new HashMap<String, Object>();

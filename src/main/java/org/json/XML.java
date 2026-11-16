@@ -36,31 +36,31 @@ import java.util.Iterator;
 public class XML {
 
     /** The Character '&'. */
-    public static final Character AMP   = new Character('&');
+    public static final Character AMP   = Character.valueOf('&');
 
     /** The Character '''. */
-    public static final Character APOS  = new Character('\'');
+    public static final Character APOS  = Character.valueOf('\'');
 
     /** The Character '!'. */
-    public static final Character BANG  = new Character('!');
+    public static final Character BANG  = Character.valueOf('!');
 
     /** The Character '='. */
-    public static final Character EQ    = new Character('=');
+    public static final Character EQ    = Character.valueOf('=');
 
     /** The Character '>'. */
-    public static final Character GT    = new Character('>');
+    public static final Character GT    = Character.valueOf('>');
 
     /** The Character '<'. */
-    public static final Character LT    = new Character('<');
+    public static final Character LT    = Character.valueOf('<');
 
     /** The Character '?'. */
-    public static final Character QUEST = new Character('?');
+    public static final Character QUEST = Character.valueOf('?');
 
     /** The Character '"'. */
-    public static final Character QUOT  = new Character('"');
+    public static final Character QUOT  = Character.valueOf('"');
 
     /** The Character '/'. */
-    public static final Character SLASH = new Character('/');
+    public static final Character SLASH = Character.valueOf('/');
 
     /**
      * Replace special characters with XML escapes:
@@ -218,15 +218,15 @@ public class XML {
 
 // attribute = value
 
-                if (t instanceof String) {
-                    s = (String)t;
+                if (t instanceof String string) {
+                    s = string;
                     t = x.nextToken();
                     if (t == EQ) {
                         t = x.nextToken();
                         if (!(t instanceof String)) {
                             throw x.syntaxError("Missing value");
                         }
-                        o.accumulate(s, JSONObject.stringToValue((String)t));
+                        o.accumulate(s, JSONObject.stringToValue(string));
                         t = null;
                     } else {
                         o.accumulate(s, "");
@@ -251,8 +251,8 @@ public class XML {
                                 throw x.syntaxError("Unclosed tag " + n);
                             }
                             return false;
-                        } else if (t instanceof String) {
-                            s = (String)t;
+                        } else if (t instanceof String string) {
+                            s = string;
                             if (s.length() > 0) {
                                 o.accumulate("content", JSONObject.stringToValue(s));
                             }
@@ -334,7 +334,7 @@ public class XML {
         int          len;
         String       s;
         Object       v;
-        if (o instanceof JSONObject) {
+        if (o instanceof JSONObject object) {
 
 // Emit <tagName>
 
@@ -346,7 +346,7 @@ public class XML {
 
 // Loop thru the keys.
 
-            jo = (JSONObject)o;
+            jo = object;
             keys = jo.keys();
             while (keys.hasNext()) {
                 k = keys.next().toString();
@@ -354,8 +354,8 @@ public class XML {
                 if (v == null) {
                 	v = "";
                 }
-                if (v instanceof String) {
-                    s = (String)v;
+                if (v instanceof String string) {
+                    s = string;
                 } else {
                     s = null;
                 }
@@ -363,8 +363,8 @@ public class XML {
 // Emit content in body
 
                 if (k.equals("content")) {
-                    if (v instanceof JSONArray) {
-                        ja = (JSONArray)v;
+                    if (v instanceof JSONArray array) {
+                        ja = array;
                         len = ja.length();
                         for (i = 0; i < len; i += 1) {
                             if (i > 0) {
@@ -378,8 +378,8 @@ public class XML {
 
 // Emit an array of similar keys
 
-                } else if (v instanceof JSONArray) {
-                    ja = (JSONArray)v;
+                } else if (v instanceof JSONArray array) {
+                    ja = array;
                     len = ja.length();
                     for (i = 0; i < len; i += 1) {
                     	v = ja.get(i);
@@ -419,8 +419,8 @@ public class XML {
 // XML does not have good support for arrays. If an array appears in a place
 // where XML is lacking, synthesize an <array> element.
 
-        } else if (o instanceof JSONArray) {
-            ja = (JSONArray)o;
+        } else if (o instanceof JSONArray array) {
+            ja = array;
             len = ja.length();
             for (i = 0; i < len; ++i) {
             	v = ja.opt(i);

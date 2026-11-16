@@ -35,7 +35,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -79,7 +79,7 @@ public class ImportProjectController {
 
   @PostMapping("/admin/project/importFromHub")
   protected String importFromHub(
-      @RequestParam(value = "importableProjectId", required = true) String importableProjectId,
+      @RequestParam(required = true) String importableProjectId,
       ModelMap modelMap) throws Exception {
     String getImportableProjectURL = getWISEProjectsURL + "?id=" + importableProjectId;
     try {

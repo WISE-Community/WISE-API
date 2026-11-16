@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
-import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
+import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.project.impl.ProjectComponent;
 import org.wise.portal.domain.run.Run;
 import org.wise.vle.domain.work.StudentWork;
@@ -26,7 +26,7 @@ public class PeerGroupWorkController extends AbstractPeerGroupWorkController {
 
   @GetMapping("{peerGroupId}/{showPeerGroupWorkNodeId}/{showPeerGroupWorkComponentId}/{showWorkNodeId}/{showWorkComponentId}")
   public List<StudentWork> getPeerGroupWork(Authentication auth,
-      @PathVariable("peerGroupId") PeerGroupImpl peerGroup,
+      @PathVariable("peerGroupId") PeerGroup peerGroup,
       @PathVariable String showPeerGroupWorkNodeId,
       @PathVariable String showPeerGroupWorkComponentId, @PathVariable String showWorkNodeId,
       @PathVariable String showWorkComponentId)

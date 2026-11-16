@@ -1,6 +1,6 @@
 package org.wise.portal.domain;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.group.impl.PersistentGroup;
 import org.wise.portal.domain.run.Run;
@@ -14,7 +14,7 @@ public class DomainTest {
   protected Group period;
   protected Workgroup workgroup, workgroup2;
 
-  @Before
+  @BeforeEach
   public void setup() {
     run = new RunImpl();
     run.setId(1L);

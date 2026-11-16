@@ -446,7 +446,7 @@ public class HibernateGroupDaoTest extends AbstractTransactionalDbTests {
   public void testGetById() throws Exception {
     verifyDataStoreIsEmpty();
     try {
-      this.groupDao.getById(new Long(3));
+      this.groupDao.getById(Long.valueOf(3));
       fail("Expected ObjectNotFoundException");
     } catch (ObjectNotFoundException e) {
     }

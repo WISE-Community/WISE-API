@@ -22,6 +22,9 @@
  */
 package org.wise.portal.presentation.validators;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+
 import org.easymock.EasyMock;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
@@ -35,7 +38,6 @@ import org.wise.portal.domain.authentication.impl.ChangePasswordParameters;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import junit.framework.TestCase;
 import org.wise.portal.domain.user.impl.UserImpl;
 import org.wise.portal.service.user.impl.UserServiceImpl;
 
@@ -43,7 +45,7 @@ import org.wise.portal.service.user.impl.UserServiceImpl;
  * @author Sally Ahn
  */
 @ExtendWith(EasyMockExtension.class)
-public class ChangePasswordParametersValidatorTest extends TestCase {
+public class ChangePasswordParametersValidatorTest {
 
   private ChangePasswordParameters params;
 
@@ -88,7 +90,7 @@ public class ChangePasswordParametersValidatorTest extends TestCase {
   @BeforeEach
   public void setUp() {
     params = new ChangePasswordParameters();
-    Long teacherId = new Long(1);
+    Long teacherId = Long.valueOf(1);
     params.setTeacherUser(teacherUser);
     params.setPasswd0(LEGAL_PASSWORD1);
     params.setPasswd1(LEGAL_PASSWORD2);

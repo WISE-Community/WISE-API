@@ -17,11 +17,14 @@
  */
 package org.wise.portal.domain.webservice.http;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.wise.vle.domain.webservice.BadHeaderException;
 import org.wise.vle.domain.webservice.http.HttpPostRequest;
 
@@ -31,7 +34,7 @@ import org.wise.vle.domain.webservice.http.HttpPostRequest;
  * @version $Id$
  * 
  */
-public class HttpPostRequestTest extends TestCase {
+public class HttpPostRequestTest {
 
   private static final Map<String, String> requestHeaders = new HashMap<String, String>();
 
@@ -44,23 +47,24 @@ public class HttpPostRequestTest extends TestCase {
   private static final int expectedResponseStatusCode = 0;
 
   /**
-   * @see junit.framework.TestCase#setUp()
+   * @see 
    */
-  protected void setUp() throws Exception {
-    super.setUp();
+  @BeforeEach
+  public void setUp() throws Exception {
   }
 
   /**
-   * @see junit.framework.TestCase#tearDown()
+   * @see 
    */
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  @AfterEach
+  public void tearDown() throws Exception {
   }
 
   /**
    * Test method for
    * {@link net.sf.sail.webapp.domain.webservice.http.HttpPostRequest#HttpPostRequest(java.util.Map, java.util.Map, java.lang.String, java.lang.String, int)}.
    */
+  @Test
   public void testHttpPostRequest() {
     requestHeaders.put("legal-field-name", "legal field content");
     assertNotNull(new HttpPostRequest(requestHeaders, requestParameters,

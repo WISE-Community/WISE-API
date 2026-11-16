@@ -25,16 +25,12 @@ package org.wise.portal.presentation.web.controllers.admin;
 
 import java.util.Calendar;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.wise.portal.domain.newsitem.NewsItem;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.newsitem.NewsItemService;
@@ -50,47 +46,44 @@ public class NewsItemController {
   @Autowired
   private NewsItemService newsItemService;
 
-  @RequestMapping(method = RequestMethod.GET, value="/manage")
+  @GetMapping("/manage")
   protected String showAllNews(ModelMap modelMap) throws Exception {
     modelMap.put("allNews", newsItemService.retrieveAllNewsItem());
     return "admin/news/managenewsitems";
   }
 
-  @RequestMapping(method = RequestMethod.GET, value="/add")
+  @GetMapping("/add")
   protected String showAddNews() throws Exception {
     return "admin/news/addnewsitem";
   }
 
-  @RequestMapping(method = RequestMethod.GET, value="/edit/{newsItemId}")
-  protected String showEditNews(ModelMap modelMap,
-                                @PathVariable Integer newsItemId) throws Exception {
+  @GetMapping("/edit/{newsItemId}")
+  protected String showEditNews(ModelMap modelMap, @PathVariable Integer newsItemId)
+      throws Exception {
     modelMap.put("newsItem", newsItemService.retrieveById(newsItemId));
     return "admin/news/editnewsitem";
   }
 
-  @RequestMapping(method = RequestMethod.POST, value="/add")
-  protected String addNews(@RequestParam("title") String title,
-                           @RequestParam("news") String news,
-                           @RequestParam("type") String type) throws Exception {
-    newsItemService.createNewsItem(
-        Calendar.getInstance().getTime(), ControllerUtil.getSignedInUser(), title, news, type);
+  @PostMapping("/add")
+  protected String addNews(@RequestParam String title, @RequestParam String news,
+      @RequestParam String type) throws Exception {
+    newsItemService.createNewsItem(Calendar.getInstance().getTime(),
+        ControllerUtil.getSignedInUser(), title, news, type);
     return "admin/news/success";
   }
 
-  @RequestMapping(method = RequestMethod.POST, value="/edit/{newsItemId}")
-  protected String editNews(@PathVariable Integer newsItemId,
-                            @RequestParam("title") String title,
-                            @RequestParam("news") String news,
-                            @RequestParam("type") String type) throws Exception {
+  @PostMapping("/edit/{newsItemId}")
+  protected String editNews(@PathVariable Integer newsItemId, @RequestParam String title,
+      @RequestParam String news, @RequestParam String type) throws Exception {
     NewsItem newsItem = newsItemService.retrieveById(newsItemId);
-    newsItemService.updateNewsItem(
-        newsItem.getId(), newsItem.getDate(), newsItem.getOwner(), title, news, type);
+    newsItemService.updateNewsItem(newsItem.getId(), newsItem.getDate(), newsItem.getOwner(), title,
+        news, type);
     return "admin/news/success";
   }
 
-  @RequestMapping(method = RequestMethod.POST, value="/delete/{newsItemId}")
-  protected void deleteNews(@PathVariable Integer newsItemId,
-                              HttpServletResponse response) throws Exception {
+  @PostMapping("/delete/{newsItemId}")
+  protected void deleteNews(@PathVariable Integer newsItemId, HttpServletResponse response)
+      throws Exception {
     newsItemService.deleteNewsItem(newsItemId);
     response.getWriter().print("success");
   }

@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.run.Run;
 
 @Secured("ROLE_TEACHER")
 @Controller
@@ -29,7 +29,7 @@ public class ExportStudentAssetsController extends ExportController {
   private Environment appProperties;
 
   @GetMapping
-  public void export(@PathVariable("runId") RunImpl run, HttpServletResponse response)
+  public void export(@PathVariable("runId") Run run, HttpServletResponse response)
       throws IOException {
     if (canExport(run)) {
       Long runId = run.getId();

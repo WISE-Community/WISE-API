@@ -77,6 +77,13 @@ public interface UserService {
   User retrieveUserByGoogleUserId(String googleUserId);
 
   /**
+   * Retrieve user with the given microsoft user id.
+   * @param microsoftUserId
+   * @return <code>User</code> with the given microsoft user id.
+   */
+  User retrieveUserByMicrosoftUserId(String microsoftUserId);
+
+  /**
    * Retrieve a list of users whose accounts have been disabled
    * @return <code>Users</code> whose accounts have been disabled
    */

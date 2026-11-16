@@ -27,12 +27,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -194,7 +189,7 @@ public class RunServiceImplTest {
   @Test
   public void retrieveById_RunExists_ShouldReturnRun() throws Exception {
     Run run = new RunImpl();
-    Long runId = new Long(5);
+    Long runId = Long.valueOf(5);
     expect(runDao.getById(runId)).andReturn(run);
     replay(runDao);
     Run retrievedRun = runService.retrieveById(runId);
@@ -204,7 +199,7 @@ public class RunServiceImplTest {
 
   @Test
   public void retrieveById_RunDoesNotExist_ShouldThrowException() throws ObjectNotFoundException {
-    Long runIdNotInDB = new Long(-1);
+    Long runIdNotInDB = Long.valueOf(-1);
     expect(runDao.getById(runIdNotInDB))
         .andThrow(new ObjectNotFoundException(runIdNotInDB, Run.class));
     replay(runDao);
@@ -309,7 +304,7 @@ public class RunServiceImplTest {
   @Test
   public void setIsLockedAfterEndDate_ShouldSetToTrue() throws Exception {
     assertFalse(run.isLockedAfterEndDate());
-    Long runId = new Long(1);
+    Long runId = Long.valueOf(1);
     expect(runDao.getById(runId)).andReturn(run);
     runDao.save(run);
     expectLastCall();
@@ -322,7 +317,7 @@ public class RunServiceImplTest {
   public void setIsLockedAfterEndDate_ShouldSetToFalse() throws Exception {
     run.setLockedAfterEndDate(true);
     assertTrue(run.isLockedAfterEndDate());
-    Long runId = new Long(1);
+    Long runId = Long.valueOf(1);
     expect(runDao.getById(runId)).andReturn(run);
     runDao.save(run);
     expectLastCall();

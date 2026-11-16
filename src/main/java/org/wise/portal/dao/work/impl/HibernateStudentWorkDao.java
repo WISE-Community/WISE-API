@@ -27,11 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
@@ -210,5 +211,18 @@ public class HibernateStudentWorkDao extends AbstractHibernateDao<StudentWork>
         .orderBy(cb.asc(studentWorkRoot.get("serverSaveTime")));
     TypedQuery<StudentWork> query = entityManager.createQuery(cq);
     return (List<StudentWork>) query.getResultList();
+  }
+
+  @Override
+  public List<StudentWork> getStudentWorkListByIds(List<Integer> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return new ArrayList<>();
+    }
+    CriteriaBuilder cb = getCriteriaBuilder();
+    CriteriaQuery<StudentWork> cq = cb.createQuery(StudentWork.class);
+    Root<StudentWork> studentWorkRoot = cq.from(StudentWork.class);
+    cq.select(studentWorkRoot).where(studentWorkRoot.get("id").in(ids));
+    TypedQuery<StudentWork> query = entityManager.createQuery(cq);
+    return query.getResultList();
   }
 }

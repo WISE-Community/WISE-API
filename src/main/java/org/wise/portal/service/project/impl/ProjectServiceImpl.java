@@ -32,6 +32,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,12 +44,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.annotation.PostConstruct;
 import javax.management.timer.Timer;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -760,7 +762,7 @@ public class ProjectServiceImpl implements ProjectService {
     } else {
       license += ".";
     }
-    license = WordUtils.wrap(license, 72) + "\n\n";
+    license = wrapText(license, 72) + "\n\n";
     JSONArray parentProjects = getParentProjects(metadata);
     for (int i = parentProjects.length() - 1; i >= 0; i--) {
       JSONObject parentProjectJSON = parentProjects.getJSONObject(i);
@@ -771,16 +773,16 @@ public class ProjectServiceImpl implements ProjectService {
       if (i == parentProjects.length() - 1) {
         parentLicense = "----\n\n";
       }
-      parentLicense += WordUtils.wrap(titleAndUri, 72);
+      parentLicense += wrapText(titleAndUri, 72);
       if (authors.isEmpty()) {
         parentLicense += "\nis a copy of ";
       } else {
         parentLicense += "\nis a derivative of ";
       }
       titleAndUri = "\"" + parentTitle + "\" (" + parentURI + ")";
-      parentLicense += "\n" + WordUtils.wrap(titleAndUri, 72);
+      parentLicense += "\n" + wrapText(titleAndUri, 72);
       if (!parentAuthors.isEmpty()) {
-        parentLicense += WordUtils.wrap("\nby " + parentAuthors, 72);
+        parentLicense += wrapText("\nby " + parentAuthors, 72);
       }
       parentLicense += "\n[used under CC BY-SA, copied " + parentProjectJSON.getString("dateCopied")
           + "].\n";
@@ -790,10 +792,13 @@ public class ProjectServiceImpl implements ProjectService {
       }
       authors = parentAuthors;
     }
-    license += WordUtils.wrap(
-        "License pertains to original content created "
-            + "by the author(s). Authors are responsible for the usage and "
-            + "attribution of any third-party content linked to or included in " + "this work.",
+    license += wrapText(
+        """
+        License pertains to original content created \
+        by the author(s). Authors are responsible for the usage and \
+        attribution of any third-party content linked to or included in \
+        this work.\
+        """,
         72);
     String ccLicenseText = "";
     InputStream ccLicense = FileManager.class.getClassLoader().getResourceAsStream("cc-by-sa.txt");
@@ -816,25 +821,82 @@ public class ProjectServiceImpl implements ProjectService {
     }
   }
 
+  static String wrapText(String str, int wrapLength) {
+    if (str == null || str.length() <= wrapLength) {
+      return str;
+    }
+    StringBuilder result = new StringBuilder();
+    String[] lines = str.split("\n", -1);
+    for (int i = 0; i < lines.length; i++) {
+      String line = lines[i];
+      if (line.length() <= wrapLength) {
+        result.append(line);
+      } else {
+        int lineLen = 0;
+        String[] words = line.split(" ");
+        for (String word : words) {
+          if (lineLen + word.length() + (lineLen > 0 ? 1 : 0) > wrapLength) {
+            if (lineLen > 0) {
+              result.append("\n");
+              lineLen = 0;
+            }
+          } else if (lineLen > 0) {
+            result.append(" ");
+            lineLen++;
+          }
+          result.append(word);
+          lineLen += word.length();
+        }
+      }
+      if (i < lines.length - 1) {
+        result.append("\n");
+      }
+    }
+    return result.toString();
+  }
+
   public void replaceMetadataInProjectJSONFile(String projectFilePath, ProjectMetadata metadata)
       throws IOException, JSONException {
     String projectStr = FileUtils.readFileToString(new File(projectFilePath));
     JSONObject projectJSONObj = new JSONObject(projectStr);
     projectJSONObj.put("metadata", metadata.toJSONObject());
-    File newProjectJSONFile = new File(projectFilePath);
-    Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(newProjectJSONFile), "UTF-8"));
-    writer.write(projectJSONObj.toString());
-    writer.close();
+    Path targetPath = new File(projectFilePath).toPath();
+    Path tempFile = Files.createTempFile(targetPath.getParent(), "project-", ".tmp");
+    try {
+      try (Writer writer = new BufferedWriter(
+          new OutputStreamWriter(new FileOutputStream(tempFile.toFile()), "UTF-8"))) {
+        writer.write(projectJSONObj.toString());
+      }
+      tempFile.toFile().setReadable(true, false);
+      atomicMoveWithFallback(tempFile, targetPath);
+    } finally {
+      Files.deleteIfExists(tempFile);
+    }
   }
 
   public void saveProjectContentToDisk(String projectJSONString, Project project)
       throws FileNotFoundException, IOException {
-    String projectJSONPath = curriculumBaseDir + project.getModulePath();
-    Writer writer = new BufferedWriter(
-        new OutputStreamWriter(new FileOutputStream(new File(projectJSONPath)), "UTF-8"));
-    writer.write(projectJSONString);
-    writer.close();
+    Path targetPath = new File(curriculumBaseDir + project.getModulePath()).toPath();
+    Path tempFile = Files.createTempFile(targetPath.getParent(), "project-", ".tmp");
+    try {
+      try (Writer writer = new BufferedWriter(
+          new OutputStreamWriter(new FileOutputStream(tempFile.toFile()), "UTF-8"))) {
+        writer.write(projectJSONString);
+      }
+      tempFile.toFile().setReadable(true, false);
+      atomicMoveWithFallback(tempFile, targetPath);
+    } finally {
+      Files.deleteIfExists(tempFile);
+    }
+  }
+
+  private static void atomicMoveWithFallback(Path source, Path target) throws IOException {
+    try {
+      Files.move(source, target, StandardCopyOption.REPLACE_EXISTING,
+          StandardCopyOption.ATOMIC_MOVE);
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      Files.move(source, target, StandardCopyOption.REPLACE_EXISTING);
+    }
   }
 
   public Map<String, Object> getDirectoryInfo(File directory) {

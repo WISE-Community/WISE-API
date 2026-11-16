@@ -23,8 +23,12 @@
 package org.wise.portal.presentation.validators.teacher;
 
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.*;
 
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.wise.portal.domain.impl.ChangeWorkgroupParameters;
@@ -37,7 +41,7 @@ import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
  * @author Sally Ahn
  * @version $Id: $
  */
-public class ChangeWorkgroupParametersValidatorTest extends TestCase{
+public class ChangeWorkgroupParametersValidatorTest{
 
 	private ChangeWorkgroupParameters params;
 	
@@ -51,14 +55,14 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 	
 	private final Workgroup WORKGROUP_TO = new WorkgroupImpl();
 	
-	private static final Long WORKGROUP_TO_ID = new Long(5);
+	private static final Long WORKGROUP_TO_ID = Long.valueOf(5);
 
-	private static final Long OFFERING_ID = new Long(10);
+	private static final Long OFFERING_ID = Long.valueOf(10);
 
-	private static final Long PERIOD_ID = new Long(2);
-	
-	@Override
-	protected void setUp() {
+	private static final Long PERIOD_ID = Long.valueOf(2);
+
+  @BeforeEach
+  public void setUp() {
 		validator = new ChangeWorkgroupParametersValidator();
 		params = new ChangeWorkgroupParameters();
 		params.setStudent(STUDENT);
@@ -69,14 +73,16 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 		params.setPeriodId(PERIOD_ID);
 		errors = new BeanPropertyBindingResult(params, "");
 	}
-	
-	public void testNoProblemValidate() {
+
+  @Test
+  public void testNoProblemValidate() {
 		validator.validate(params, errors);
 		
 		assertTrue(!errors.hasErrors());
 	}
-	
-	public void testEmptyStudentValidate() {
+
+  @Test
+  public void testEmptyStudentValidate() {
 		params.setStudent(null);
 
 		validator.validate(params, errors);
@@ -86,16 +92,18 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 		assertNotNull(errors.getFieldError("student"));
 
 	}
-	
-	public void testEmptyWorkgroupFromValidate() {
+
+  @Test
+  public void testEmptyWorkgroupFromValidate() {
 		params.setWorkgroupFrom(null);
 		
 		validator.validate(params, errors);
 		
 		assertTrue(!errors.hasErrors());
 	}
-	
-	public void testEmptyWorkgroupToIdValidate() {
+
+  @Test
+  public void testEmptyWorkgroupToIdValidate() {
 		params.setWorkgroupToId(null);
 
 		validator.validate(params, errors);
@@ -104,8 +112,9 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 		assertEquals(1, errors.getErrorCount());
 		assertNotNull(errors.getFieldError("workgroupToId"));
 	}
-	
-	public void testEmptyOfferingIdValidate() {
+
+  @Test
+  public void testEmptyOfferingIdValidate() {
 		params.setOfferingId(null);
 		
 		validator.validate(params, errors);
@@ -114,8 +123,9 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 		assertEquals(1, errors.getErrorCount());
 		assertNotNull(errors.getFieldError("offeringId"));
 	}
-	
-	public void testEmptyPeriodIdValidate() {
+
+  @Test
+  public void testEmptyPeriodIdValidate() {
 		params.setPeriodId(null);
 		
 		validator.validate(params, errors);
@@ -124,9 +134,9 @@ public class ChangeWorkgroupParametersValidatorTest extends TestCase{
 		assertEquals(1, errors.getErrorCount());
 		assertNotNull(errors.getFieldError("periodId"));
 	}
-	
-	@Override
-	protected void tearDown() {
+
+  @AfterEach
+  public void tearDown() {
 		validator = null;
 		params = null;
 		errors = null;

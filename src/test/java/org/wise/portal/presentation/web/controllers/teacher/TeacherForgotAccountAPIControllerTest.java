@@ -1,7 +1,7 @@
 package org.wise.portal.presentation.web.controllers.teacher;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Date;
 import java.util.Map;

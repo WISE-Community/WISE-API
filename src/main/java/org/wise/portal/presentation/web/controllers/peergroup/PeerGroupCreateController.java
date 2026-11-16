@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.wise.portal.domain.group.impl.PersistentGroup;
+import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergrouping.PeerGrouping;
-import org.wise.portal.domain.run.impl.RunImpl;
+import org.wise.portal.domain.run.Run;
 import org.wise.portal.service.peergroup.PeerGroupCreateService;
 import org.wise.portal.service.peergrouping.PeerGroupingService;
 import org.wise.portal.service.run.RunService;
@@ -31,9 +31,8 @@ public class PeerGroupCreateController {
   private RunService runService;
 
   @PostMapping("/{runId}/{periodId}/{peerGroupingTag}")
-  PeerGroup create(@PathVariable("runId") RunImpl run,
-      @PathVariable("periodId") PersistentGroup period, @PathVariable String peerGroupingTag,
-      Authentication auth) {
+  PeerGroup create(@PathVariable("runId") Run run, @PathVariable("periodId") Group period,
+      @PathVariable String peerGroupingTag, Authentication auth) {
     if (canCreatePeerGroup(run, period, auth)) {
       PeerGrouping peerGrouping = peerGroupingService.getByTag(run, peerGroupingTag);
       return peerGroupCreateService.create(peerGrouping, period);
@@ -41,7 +40,7 @@ public class PeerGroupCreateController {
     throw new AccessDeniedException("Not permitted");
   }
 
-  private boolean canCreatePeerGroup(RunImpl run, PersistentGroup period, Authentication auth) {
+  private boolean canCreatePeerGroup(Run run, Group period, Authentication auth) {
     return runService.hasWritePermission(auth, run) && run.getPeriods().contains(period);
   }
 }

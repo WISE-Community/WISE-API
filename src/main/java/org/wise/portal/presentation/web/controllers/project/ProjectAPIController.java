@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.dao.ObjectNotFoundException;
 import org.wise.portal.domain.portal.Portal;
 import org.wise.portal.domain.project.Project;
-import org.wise.portal.domain.project.impl.ProjectImpl;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.domain.usertag.UserTag;
 import org.wise.portal.presentation.web.controllers.ControllerUtil;
@@ -48,7 +47,7 @@ public class ProjectAPIController {
   @GetMapping("/library")
   protected String getLibraryProjects(ModelMap modelMap)
       throws ObjectNotFoundException, JSONException {
-    Portal portal = portalService.getById(new Integer(1));
+    Portal portal = portalService.getById(Integer.valueOf(1));
     String projectLibraryGroups = portal.getProjectLibraryGroups();
     JSONArray projectLibraryGroupsJSON = new JSONArray(projectLibraryGroups);
     for (int g = 0; g < projectLibraryGroupsJSON.length(); g++) {
@@ -118,7 +117,7 @@ public class ProjectAPIController {
   }
 
   @GetMapping("/info/{projectId}")
-  protected String getProjectInfo(@PathVariable("projectId") ProjectImpl project)
+  protected String getProjectInfo(@PathVariable("projectId") Project project)
       throws ObjectNotFoundException, JSONException {
     JSONObject projectJSON = ControllerUtil.getProjectJSON(project);
     return projectJSON.toString();
@@ -177,11 +176,11 @@ public class ProjectAPIController {
   }
 
   @PostMapping("/copy")
-  protected String copyProject(@RequestParam("projectId") ProjectImpl project) throws Exception {
+  protected String copyProject(@RequestParam("projectId") Project project) throws Exception {
     User user = ControllerUtil.getSignedInUser();
     if (SecurityUtils.isTeacher(user)) {
       if (this.projectService.canReadProject(project, user)) {
-        Project newProject = projectService.copyProject(project.getId(), user);
+        Project newProject = projectService.copyProject((Long) project.getId(), user);
         return ControllerUtil.getProjectJSON(newProject).toString();
       }
     }

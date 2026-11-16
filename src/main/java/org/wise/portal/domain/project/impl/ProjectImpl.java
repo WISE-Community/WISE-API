@@ -23,6 +23,7 @@
  */
 package org.wise.portal.domain.project.impl;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,7 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -57,6 +58,7 @@ import org.wise.portal.domain.user.impl.UserImpl;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ProjectImpl implements Project {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
@@ -361,7 +363,7 @@ public class ProjectImpl implements Project {
     if (this.wiseVersion != null) {
       return this.wiseVersion;
     } else {
-      return new Integer(4);
+      return Integer.valueOf(4);
     }
   }
 

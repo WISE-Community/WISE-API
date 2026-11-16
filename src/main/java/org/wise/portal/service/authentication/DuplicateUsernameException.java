@@ -20,6 +20,8 @@
  */
 package org.wise.portal.service.authentication;
 
+import java.io.Serial;
+
 /**
  * A checked exception thrown when the data store already contains a user
  * details object with the same username.
@@ -28,6 +30,7 @@ package org.wise.portal.service.authentication;
  */
 public class DuplicateUsernameException extends Exception {
 
+  @Serial
   private static final long serialVersionUID = 1L;
 
   private String message;

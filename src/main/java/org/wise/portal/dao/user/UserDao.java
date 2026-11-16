@@ -36,6 +36,7 @@ public interface UserDao<T extends User> extends SimpleDao<T> {
   List<T> retrieveDisabledUsers();
   List<T> retrieveByEmailAddress(String emailAddress);
   T retrieveByGoogleUserId(String googleUserId);
+  T retrieveByMicrosoftUserId(String microsoftUserId);
   List<String> retrieveAllUsernames();
   T retrieveByResetPasswordKey(String resetPasswordKey);
   List<User> retrieveStudentsByNameAndBirthday(String firstName, String lastName,

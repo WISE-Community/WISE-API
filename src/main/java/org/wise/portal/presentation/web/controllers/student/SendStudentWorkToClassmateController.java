@@ -40,7 +40,7 @@ public class SendStudentWorkToClassmateController {
     if (isInSameRun(auth, workgroupId)) {
       JSONObject message = new JSONObject();
       message.put("type", "classmateStudentWork");
-      message.put("topic", String.format("/topic/workgroup/%s", workgroupId));
+      message.put("topic", "/topic/workgroup/%s".formatted(workgroupId));
       message.put("studentWork", new JSONObject(studentWork));
       redisPublisher.publish(message.toString());
     }

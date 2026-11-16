@@ -1,8 +1,8 @@
 package org.wise.vle.web;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.easymock.EasyMockExtension;
 import org.easymock.TestSubject;

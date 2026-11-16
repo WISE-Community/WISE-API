@@ -2,7 +2,7 @@ package org.wise.vle.web.wise5;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;

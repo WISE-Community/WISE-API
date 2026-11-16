@@ -52,12 +52,14 @@ public class EventTest extends DomainTest {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new EventJsonModule());
     String json = mapper.writeValueAsString(event);
-    String expectedJson = "{\"id\":100000,\"category\":\"Navigation\","
-        + "\"clientSaveTime\":1000000000000,\"componentId\":\"4t890paw3t\","
-        + "\"componentType\":\"MultipleChoice\",\"context\":\"VLE\","
-        + "\"data\":{\"selectedChoice\":\"dbf9824t1m\"},\"event\":\"choiceSelected\","
-        + "\"nodeId\":\"node1\",\"periodId\":100,\"projectId\":10,\"runId\":1,"
-        + "\"serverSaveTime\":2000000000000,\"workgroupId\":64,\"userId\":10000}";
+    String expectedJson = """
+        {"id":100000,"category":"Navigation",\
+        "clientSaveTime":1000000000000,"componentId":"4t890paw3t",\
+        "componentType":"MultipleChoice","context":"VLE",\
+        "data":{"selectedChoice":"dbf9824t1m"},"event":"choiceSelected",\
+        "nodeId":"node1","periodId":100,"projectId":10,"runId":1,\
+        "serverSaveTime":2000000000000,"workgroupId":64,"userId":10000}\
+        """;
     assertEquals(expectedJson, json);
   }
 
@@ -74,10 +76,12 @@ public class EventTest extends DomainTest {
     event.setProject(null);
     event.setUser(null);
     String json = mapper.writeValueAsString(event);
-    String expectedJson = "{\"id\":100000,\"category\":\"Navigation\","
-        + "\"clientSaveTime\":1000000000000,\"componentId\":null,\"componentType\":null,"
-        + "\"context\":\"VLE\",\"data\":{\"selectedChoice\":\"dbf9824t1m\"},"
-        + "\"event\":\"choiceSelected\",\"nodeId\":null,\"serverSaveTime\":2000000000000}";
+    String expectedJson = """
+        {"id":100000,"category":"Navigation",\
+        "clientSaveTime":1000000000000,"componentId":null,"componentType":null,\
+        "context":"VLE","data":{"selectedChoice":"dbf9824t1m"},\
+        "event":"choiceSelected","nodeId":null,"serverSaveTime":2000000000000}\
+        """;
     assertEquals(expectedJson, json);
   }
 }

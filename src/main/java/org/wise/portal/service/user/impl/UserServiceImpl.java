@@ -87,6 +87,11 @@ public class UserServiceImpl implements UserService {
     return userDao.retrieveByGoogleUserId(googleUserId);
   }
 
+  @Transactional(readOnly = true)
+  public User retrieveUserByMicrosoftUserId(String microsoftUserId) {
+    return userDao.retrieveByMicrosoftUserId(microsoftUserId);
+  }
+
   @Override
   @Transactional(rollbackFor = { DuplicateUsernameException.class })
   public User createUser(final MutableUserDetails userDetails) {

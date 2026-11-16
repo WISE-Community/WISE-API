@@ -13,6 +13,7 @@ dump.rdb
 .sts4-cache/*
 node_modules
 target
+target-docker/
 src/main/resources/wise.properties
 src/main/resources/application.properties
 src/main/resources/application-dockerdev.properties
@@ -30,3 +31,5 @@ src/main/webapp/curriculum/*
 !src/main/webapp/curriculum/e2e-test1/
 .classpath
 tokens/
+.agents/
+skills-lock.json

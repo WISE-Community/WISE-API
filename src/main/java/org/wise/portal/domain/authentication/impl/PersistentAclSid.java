@@ -20,15 +20,16 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-import javax.persistence.Version;
+import java.io.Serial;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.Version;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -45,11 +46,12 @@ import org.wise.portal.domain.authentication.MutableAclSid;
  * @see org.springframework.security.acls.model.Sid
  */
 @Entity
-@Table(name = PersistentAclSid.DATA_STORE_NAME, uniqueConstraints = { @UniqueConstraint(columnNames = {
-  PersistentAclSid.COLUMN_NAME_SID,
-  PersistentAclSid.COLUMN_NAME_IS_PRINCIPAL }) })
+@Table(name = PersistentAclSid.DATA_STORE_NAME, uniqueConstraints = {
+    @UniqueConstraint(columnNames = { PersistentAclSid.COLUMN_NAME_SID,
+        PersistentAclSid.COLUMN_NAME_IS_PRINCIPAL }) })
 public class PersistentAclSid implements MutableAclSid {
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 
@@ -63,7 +65,7 @@ public class PersistentAclSid implements MutableAclSid {
   public static final String COLUMN_NAME_SID = "sid";
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   @Setter
   private Long id;
@@ -104,15 +106,13 @@ public class PersistentAclSid implements MutableAclSid {
     if (this.getIsPrincipal()) {
       return this.getSidName();
     }
-    throw new UnsupportedOperationException(
-      "Unsupported method for this instance of Sid");
+    throw new UnsupportedOperationException("Unsupported method for this instance of Sid");
   }
 
   public void setPrincipal(Authentication authentication) {
     this.setIsPrincipal(Boolean.TRUE);
     if (authentication.getPrincipal() instanceof UserDetails) {
-      this.setSidName(((UserDetails) authentication.getPrincipal())
-        .getUsername());
+      this.setSidName(((UserDetails) authentication.getPrincipal()).getUsername());
     } else {
       this.setSidName(authentication.getPrincipal().toString());
     }
@@ -128,8 +128,7 @@ public class PersistentAclSid implements MutableAclSid {
       throw new IllegalStateException();
     }
     if (this.getIsPrincipal()) {
-      throw new UnsupportedOperationException(
-        "Unsupported method for this instance of Sid");
+      throw new UnsupportedOperationException("Unsupported method for this instance of Sid");
     } else {
       return this.getSidName();
     }
@@ -139,8 +138,7 @@ public class PersistentAclSid implements MutableAclSid {
   public int hashCode() {
     final int PRIME = 31;
     int result = 1;
-    result = PRIME * result
-      + ((isPrincipal == null) ? 0 : isPrincipal.hashCode());
+    result = PRIME * result + ((isPrincipal == null) ? 0 : isPrincipal.hashCode());
     result = PRIME * result + ((sidName == null) ? 0 : sidName.hashCode());
     return result;
   }

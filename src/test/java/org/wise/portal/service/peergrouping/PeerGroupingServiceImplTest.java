@@ -24,7 +24,7 @@
 package org.wise.portal.service.peergrouping;
 
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 
@@ -84,10 +84,26 @@ public class PeerGroupingServiceImplTest {
 
   PeerGrouping peerGrouping = new PeerGroupingImpl();
 
-  private String projectJSONString = "{" + "\"peerGroupings\":[{\"tag\": \"" + tagInDB + "\"}],"
-      + "\"nodes\":[{\"id\":\"" + nodeId + "\"," + "\"components\":[" + "{\"id\":\""
-      + componentIdWithPeerGrouping + "\"," + "\"peerGroupingTag\":\"" + tagInDB + "\""
-      + "}, {\"id\":\"" + componentIdWithoutPeerGrouping + "\"}]}]}";
+  private String projectJSONString = """
+      {
+        "peerGroupings": [
+          {"tag": "%s"}
+        ],
+        "nodes": [
+          {
+            "id": "%s",
+            "components": [
+              {
+                "id": "%s",
+                "peerGroupingTag": "%s"
+              },
+              {
+                "id": "%s"
+              }
+            ]
+          }
+        ]
+      }""".formatted(tagInDB, nodeId, componentIdWithPeerGrouping, tagInDB, componentIdWithoutPeerGrouping);
 
   @BeforeEach
   public void setUp() {

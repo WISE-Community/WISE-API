@@ -147,7 +147,7 @@ public class WorkgroupTagAPIController {
   private void broadcastTags(Workgroup workgroup) throws JSONException, JsonProcessingException {
     JSONObject message = new JSONObject();
     message.put("type", "tagsToWorkgroup");
-    message.put("topic", String.format("/topic/workgroup/%s", workgroup.getId()));
+    message.put("topic", "/topic/workgroup/%s".formatted(workgroup.getId()));
     ObjectMapper mapper = new ObjectMapper();
     message.put("tags", mapper.writeValueAsString(workgroup.getTags()));
     redisPublisher.publish(message.toString());

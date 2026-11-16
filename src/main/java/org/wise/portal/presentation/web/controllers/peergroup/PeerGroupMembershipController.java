@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.wise.portal.domain.peergroup.PeerGroup;
 import org.wise.portal.domain.peergroup.impl.PeerGroupImpl;
 import org.wise.portal.domain.run.Run;
+import org.wise.portal.domain.workgroup.Workgroup;
 import org.wise.portal.domain.workgroup.impl.WorkgroupImpl;
 import org.wise.portal.service.peergroup.PeerGroupMembershipService;
 import org.wise.portal.service.run.RunService;
@@ -28,24 +29,24 @@ public class PeerGroupMembershipController {
   private RunService runService;
 
   @PostMapping("/add/{peerGroupId}/{workgroupId}")
-  PeerGroup addMember(@PathVariable("peerGroupId") PeerGroupImpl peerGroup,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup, Authentication auth) {
-    if (canChangeMembership(peerGroup, workgroup, auth)) {
+  PeerGroup addMember(@PathVariable("peerGroupId") PeerGroup peerGroup,
+      @PathVariable("workgroupId") Workgroup workgroup, Authentication auth) {
+    if (canChangeMembership((PeerGroupImpl) peerGroup, (WorkgroupImpl) workgroup, auth)) {
       return peerGroupMembershipService.addMember(peerGroup, workgroup);
     }
     throw new AccessDeniedException("Not permitted");
   }
 
   @DeleteMapping("/{peerGroupId}/{workgroupId}")
-  PeerGroup removeMember(@PathVariable("peerGroupId") PeerGroupImpl peerGroup,
-      @PathVariable("workgroupId") WorkgroupImpl workgroup, Authentication auth) {
-    if (canChangeMembership(peerGroup, workgroup, auth)) {
+  PeerGroup removeMember(@PathVariable("peerGroupId") PeerGroup peerGroup,
+      @PathVariable("workgroupId") Workgroup workgroup, Authentication auth) {
+    if (canChangeMembership((PeerGroupImpl) peerGroup, (WorkgroupImpl) workgroup, auth)) {
       return peerGroupMembershipService.removeMember(peerGroup, workgroup);
     }
     throw new AccessDeniedException("Not permitted");
   }
 
-  private boolean canChangeMembership(PeerGroupImpl peerGroup, WorkgroupImpl workgroup,
+  private boolean canChangeMembership(PeerGroup peerGroup, Workgroup workgroup,
       Authentication auth) {
     Run run = peerGroup.getPeerGrouping().getRun();
     return runService.hasWritePermission(auth, run) && run.equals(workgroup.getRun());

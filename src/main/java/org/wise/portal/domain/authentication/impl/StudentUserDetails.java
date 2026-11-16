@@ -23,14 +23,15 @@
  */
 package org.wise.portal.domain.authentication.impl;
 
+import java.io.Serial;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -79,6 +80,7 @@ public class StudentUserDetails extends PersistentUserDetails implements Mutable
   @Transient
   public static final String COLUMN_NAME_ACCOUNTANSWER = "accountanswer";
 
+  @Serial
   @Transient
   private static final long serialVersionUID = 1L;
 

@@ -23,7 +23,7 @@
 
 package org.wise.portal.mail;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

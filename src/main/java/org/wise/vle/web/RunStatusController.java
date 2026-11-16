@@ -27,14 +27,15 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.wise.portal.domain.user.User;
@@ -49,14 +50,14 @@ public class RunStatusController {
   @Autowired
   private VLEService vleService;
 
-  @RequestMapping(method = RequestMethod.GET)
+  @GetMapping
   public ModelAndView doGet(@RequestParam(value = "runId") String runIdString,
       HttpServletResponse response) throws IOException {
     User signedInUser = ControllerUtil.getSignedInUser();
     Long runId = null;
     String statusString = null;
     try {
-      runId = new Long(runIdString);
+      runId = Long.valueOf(runIdString);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
@@ -114,14 +115,14 @@ public class RunStatusController {
     return null;
   }
 
-  @RequestMapping(method = RequestMethod.POST)
+  @PostMapping
   public ModelAndView doPost(@RequestParam(value = "runId") String runIdString,
-      @RequestParam(value = "status") String status, HttpServletResponse response)
+      @RequestParam String status, HttpServletResponse response)
       throws IOException {
     User signedInUser = ControllerUtil.getSignedInUser();
     Long runId = null;
     try {
-      runId = new Long(runIdString);
+      runId = Long.valueOf(runIdString);
     } catch (NumberFormatException e) {
       e.printStackTrace();
     }
