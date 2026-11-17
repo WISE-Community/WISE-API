@@ -122,8 +122,7 @@ public class RegisterTeacherControllerTest extends AbstractModelAndViewTests {
 		assertEquals(SUCCESS, view);
 		verify(mockUserService);
 
-		// test submission of form with same firstname, lastname and birthday info which
-		// would result in a duplicate username
+		// test submission of form with the same name info which would result in a duplicate username
 		reset(mockUserService);
 		expect(mockUserService.createUser(teacherUserDetails)).andThrow(
 				new DuplicateUsernameException(teacherUserDetails.getUsername()));

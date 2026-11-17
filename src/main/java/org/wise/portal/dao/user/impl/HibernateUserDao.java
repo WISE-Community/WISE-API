@@ -298,8 +298,7 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
   }
 
   @SuppressWarnings("unchecked")
-  public List<User> retrieveStudentsByNameAndBirthday(String firstName, String lastName,
-      Integer birthMonth, Integer birthDay) {
+  public List<User> retrieveStudentsByName(String firstName, String lastName) {
     CriteriaBuilder cb = getCriteriaBuilder();
     CriteriaQuery<UserImpl> cq = cb.createQuery(UserImpl.class);
     Root<UserImpl> userRoot = cq.from(UserImpl.class);
@@ -309,10 +308,6 @@ public class HibernateUserDao extends AbstractHibernateDao<User> implements User
         .add(cb.equal(userRoot.get("userDetails").get("id"), studentUserDetailsRoot.get("id")));
     predicates.add(cb.equal(studentUserDetailsRoot.get("firstname"), firstName));
     predicates.add(cb.equal(studentUserDetailsRoot.get("lastname"), lastName));
-    predicates.add(cb.equal(
-        cb.function("MONTH", Integer.class, studentUserDetailsRoot.get("birthday")), birthMonth));
-    predicates.add(cb.equal(
-        cb.function("DAY", Integer.class, studentUserDetailsRoot.get("birthday")), birthDay));
     cq.select(userRoot).where(predicates.toArray(new Predicate[predicates.size()]));
     TypedQuery<UserImpl> query = entityManager.createQuery(cq);
     return (List<User>) (Object) query.getResultList();

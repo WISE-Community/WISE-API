@@ -52,12 +52,6 @@
 								value="${userInfoMap['Gender']}" /></span></td>
 				</tr>
 				<tr>
-					<th><spring:message code="student.studentinfo.birthday" /></th>
-					<td><fmt:formatDate value="${userInfoMap['Birthday']}"
-							pattern="MMM dd" /> (<fmt:formatDate
-							value="${userInfoMap['Birthday']}" pattern="MM/dd" />)</td>
-				</tr>
-				<tr>
 					<th><spring:message code="teacher.registerteacher.language" /></th>
 					<td><span style="text-transform: lowercase;">
 						<c:out value="${userInfoMap['Language']}" /></td>

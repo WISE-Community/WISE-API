@@ -34,6 +34,12 @@
 	<div id="pageContent">
 		<h5 style="color:#0000CC;"><a href="${contextPath}/admin"><spring:message code="returnToMainAdminPage" /></a></h5>
 		<br/>
+		<c:if test="${error != null}">
+			<div style="width:500px;font-size:1.2em;font-weight:bold;border:2px dotted black;color:#b00020">
+				<c:out value="${error}" />
+			</div>
+			<br/>
+		</c:if>
 		<c:if test="${msg != null}">
 			<div style="width:500px;font-size:1.2em;font-weight:bold;border:2px dotted black">
 					${msg}<br/><br/>

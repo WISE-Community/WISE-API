@@ -306,7 +306,6 @@ public class StudentAPIController extends UserAPIController {
     sud.setGender(getGender(studentFields.get("gender")));
     sud.setAccountQuestion(studentFields.get("securityQuestion"));
     sud.setAccountAnswer(studentFields.get("securityQuestionAnswer"));
-    sud.setBirthday(getBirthDate(studentFields.get("birthMonth"), studentFields.get("birthDay")));
     sud.setSignupdate(Calendar.getInstance().getTime());
     if (studentFields.containsKey("googleUserId")) {
       sud.setGoogleUserId(studentFields.get("googleUserId"));
@@ -337,15 +336,6 @@ public class StudentAPIController extends UserAPIController {
     } else {
       return Gender.UNSPECIFIED;
     }
-  }
-
-  private Date getBirthDate(String birthMonthStr, String birthDayStr) {
-    Integer birthMonth = Integer.parseInt(birthMonthStr);
-    Integer birthDay = Integer.parseInt(birthDayStr);
-    Calendar birthday = Calendar.getInstance();
-    birthday.set(Calendar.MONTH, birthMonth - 1); // month is 0 indexed
-    birthday.set(Calendar.DATE, birthDay);
-    return birthday.getTime();
   }
 
   @GetMapping("/register/questions")

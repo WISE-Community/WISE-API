@@ -42,10 +42,8 @@ public class StudentForgotAccountAPIController {
 
   @GetMapping("/username/search")
   protected String getStudentUsernames(@RequestParam String firstName,
-      @RequestParam String lastName, @RequestParam Integer birthMonth,
-      @RequestParam Integer birthDay) {
-    List<User> accountsThatMatch = userService.retrieveStudentsByNameAndBirthday(firstName,
-        lastName, birthMonth, birthDay);
+      @RequestParam String lastName) {
+    List<User> accountsThatMatch = userService.retrieveStudentsByName(firstName, lastName);
     return getUsernamesJSON(accountsThatMatch).toString();
   }
 

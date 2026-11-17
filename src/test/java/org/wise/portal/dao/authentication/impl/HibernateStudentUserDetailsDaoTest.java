@@ -73,8 +73,6 @@ public class HibernateStudentUserDetailsDaoTest extends AbstractTransactionalDbT
 
   private static final Gender DEFAULT_GENDER = Gender.MALE;
 
-  private static final Date DEFAULT_BIRTHDAY = new Date(123456);
-
   private static final String DEFAULT_ACCOUNT_QUESTION = "what is your middle name";
 
   private static final String DEFAULT_ACCOUNT_ANSWER = "john";
@@ -159,7 +157,6 @@ public class HibernateStudentUserDetailsDaoTest extends AbstractTransactionalDbT
     this.defaultUserDetails.setLastname(DEFAULT_LASTNAME);
     this.defaultUserDetails.setSignupdate(DEFAULT_SIGNUPDATE);
     this.defaultUserDetails.setGender(DEFAULT_GENDER);
-    this.defaultUserDetails.setBirthday(DEFAULT_BIRTHDAY);
     this.defaultUserDetails.setNumberOfLogins(DEFAULT_NUMBEROFLOGINS);
     this.defaultUserDetails.setAccountQuestion(DEFAULT_ACCOUNT_QUESTION);
     this.defaultUserDetails.setAccountAnswer(DEFAULT_ACCOUNT_ANSWER);
@@ -228,9 +225,6 @@ public class HibernateStudentUserDetailsDaoTest extends AbstractTransactionalDbT
       actualValue = String
           .valueOf(actualUserDetailsMap.get(StudentUserDetails.COLUMN_NAME_GENDER.toUpperCase()));
       assertEquals(String.valueOf(DEFAULT_GENDER.ordinal()), actualValue);
-      long actualTime = ((java.sql.Timestamp) actualUserDetailsMap
-          .get(StudentUserDetails.COLUMN_NAME_BIRTHDAY)).getTime();
-      assertEquals(DEFAULT_BIRTHDAY.getTime(), actualTime);
       actualValue = (String) actualUserDetailsMap
           .get(PersistentGrantedAuthority.COLUMN_NAME_ROLE.toUpperCase());
       assertTrue(defaultRolesList.contains(actualValue));

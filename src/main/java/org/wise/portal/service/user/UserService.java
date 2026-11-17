@@ -149,8 +149,7 @@ public interface UserService {
    */
   boolean isPasswordCorrect(User user, String password);
 
-  List<User> retrieveStudentsByNameAndBirthday(String firstName, String lastName,
-      Integer birthMonth, Integer birthDay);
+  List<User> retrieveStudentsByName(String firstName, String lastName);
 
   List<User> retrieveTeachersByName(String firstName, String lastName);
 

@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.wise.portal.domain.authentication.Gender;
 import org.wise.portal.domain.authentication.Schoollevel;
+import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.user.User;
 import org.wise.portal.junit.AbstractTransactionalDbTests;
 
@@ -52,9 +53,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     teacher2 = createTeacherUser("Mr", "Krabs", "MrKrabs", "Mr. Krabs", "restaurant",
         "Bikini Bottom", "Water State", "Pacific Ocean", "mrkrabs@bikinibottom.com", "Krusty Krab",
         Schoollevel.HIGH_SCHOOL, "abcdefghij");
-    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS0101", "burger", 1, 1,
-        Gender.MALE);
-    student2 = createStudentUser("Patrick", "Star", "PatrickS0101", "rock", 1, 1, Gender.MALE);
+    student1 = createStudentUser("Spongebob", "Squarepants", "SpongebobS", "burger", Gender.MALE);
+    student2 = createStudentUser("Patrick", "Star", "PatrickS", "rock", Gender.MALE);
   }
 
   @Test
@@ -72,8 +72,8 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
     assertTrue(usernames.contains("preview"));
     assertTrue(usernames.contains("MrsPuff"));
     assertTrue(usernames.contains("MrKrabs"));
-    assertTrue(usernames.contains("SpongebobS0101"));
-    assertTrue(usernames.contains("PatrickS0101"));
+    assertTrue(usernames.contains("SpongebobS"));
+    assertTrue(usernames.contains("PatrickS"));
   }
 
   @Test
@@ -85,9 +85,9 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveByUsername_WithExistingStudentUsername_ShouldReturnStudent() {
-    User user = userDao.retrieveByUsername("SpongebobS0101");
+    User user = userDao.retrieveByUsername("SpongebobS");
     UserDetails userDetails = user.getUserDetails();
-    assertEquals("SpongebobS0101", userDetails.getUsername());
+    assertEquals("SpongebobS", userDetails.getUsername());
   }
 
   @Test
@@ -299,13 +299,13 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
 
   @Test
   public void retrieveStudentByUsername_WithNonExistingUsername_ShouldNotReturnAnyUser() {
-    User user = userDao.retrieveStudentByUsername("BillD0101");
+    User user = userDao.retrieveStudentByUsername("BillD");
     assertNull(user);
   }
 
   @Test
   public void retrieveStudentsByUsername_WithExistingUsername_ShouldReturnUser() {
-    User user = userDao.retrieveStudentByUsername("SpongebobS0101");
+    User user = userDao.retrieveStudentByUsername("SpongebobS");
     assertEquals(student1.getId(), user.getId());
   }
 
@@ -322,15 +322,30 @@ public class HibernateUserDaoTest extends AbstractTransactionalDbTests {
   }
 
   @Test
-  public void retrieveStudentsByNameAndBirthday_WithNonExistingBirthday_ShouldNotReturnAnyUser() {
-    List<User> users = userDao.retrieveStudentsByNameAndBirthday("Spongebob", "Squarepants", 1, 2);
+  public void retrieveStudentsByName_WithNonExistingName_ShouldNotReturnAnyUser() {
+    List<User> users = userDao.retrieveStudentsByName("No", "Match");
     assertEquals(0, users.size());
   }
 
   @Test
-  public void retrieveStudentsByNameAndBirthday_WithExistingBirthday_ShouldReturnUser() {
-    List<User> users = userDao.retrieveStudentsByNameAndBirthday("Spongebob", "Squarepants", 1, 1);
+  public void retrieveStudentsByName_WithExistingName_ShouldReturnUser() {
+    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
     assertEquals(1, users.size());
+    assertEquals("SpongebobS", users.get(0).getUserDetails().getUsername());
+  }
+
+  @Test
+  public void retrieveStudentsByName_WithSeveralMatchingStudents_ShouldReturnAllUsernames()
+      throws Exception {
+    createStudentUser("Spongebob", "Squarepants", "SpongebobS2", "burger", Gender.MALE);
+
+    List<User> users = userDao.retrieveStudentsByName("Spongebob", "Squarepants");
+
+    assertEquals(2, users.size());
+    assertTrue(users.stream().anyMatch(user ->
+        "SpongebobS".equals(user.getUserDetails().getUsername())));
+    assertTrue(users.stream().anyMatch(user ->
+        "SpongebobS2".equals(user.getUserDetails().getUsername())));
   }
 
   @Test

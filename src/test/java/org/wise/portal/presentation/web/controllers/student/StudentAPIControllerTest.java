@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.easymock.Capture;
 import org.easymock.EasyMockExtension;
 import org.easymock.Mock;
 import org.easymock.TestSubject;
@@ -225,19 +226,56 @@ public class StudentAPIControllerTest extends APIControllerTest {
   }
 
   @Test
+  public void createStudentAccount_WithValidPassword_CreateUser()
+      throws DuplicateUsernameException, InvalidNameException {
+    HashMap<String, String> studentFields = createDefaultStudentFields();
+    studentFields.put("password", PasswordServiceImpl.VALID_PASSWORD);
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals(PasswordServiceImpl.VALID_PASSWORD, createdDetails.getPassword());
+  }
+
+  @Test
   public void createStudentAccount_WithGoogleUserId_CreateUser()
       throws DuplicateUsernameException, InvalidNameException {
     HashMap<String, String> studentFields = createDefaultStudentFields();
     studentFields.put("googleUserId", "123456789");
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals("123456789", createdDetails.getGoogleUserId());
+  }
+
+  @Test
+  public void createStudentAccount_WithMicrosoftUserId_CreateUser()
+      throws DuplicateUsernameException, InvalidNameException {
+    HashMap<String, String> studentFields = createDefaultStudentFields();
+    studentFields.put("microsoftUserId", "microsoft-123456789");
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals("microsoft-123456789", createdDetails.getMicrosoftUserId());
+  }
+
+  @Test
+  public void createStudentAccount_WithLegacyBirthdayValues_CreatesStudent()
+      throws DuplicateUsernameException, InvalidNameException {
+    HashMap<String, String> studentFields = createDefaultStudentFields();
+    studentFields.put("birthMonth", "not-a-month");
+    studentFields.put("birthDay", "not-a-day");
+    studentFields.put("password", PasswordServiceImpl.VALID_PASSWORD);
+    StudentUserDetails createdDetails = registerStudentAccount(studentFields);
+    assertEquals(PasswordServiceImpl.VALID_PASSWORD, createdDetails.getPassword());
+  }
+
+  private StudentUserDetails registerStudentAccount(Map<String, String> studentFields)
+      throws DuplicateUsernameException, InvalidNameException {
     expect(request.getLocale()).andReturn(Locale.US);
     replay(request);
-    expect(userService.createUser(isA(StudentUserDetails.class))).andReturn(student1);
+    Capture<StudentUserDetails> createdDetails = newCapture();
+    expect(userService.createUser(capture(createdDetails))).andReturn(student1);
     replay(userService);
     ResponseEntity<Map<String, Object>> response = studentAPIController
         .createStudentAccount(studentFields, request);
     assertEquals(STUDENT_USERNAME, response.getBody().get("username"));
     verify(request);
     verify(userService);
+    return createdDetails.getValue();
   }
 
   @Test
@@ -255,8 +293,6 @@ public class StudentAPIControllerTest extends APIControllerTest {
     HashMap<String, String> studentFields = new HashMap<String, String>();
     studentFields.put("firstName", STUDENT_FIRSTNAME);
     studentFields.put("lastName", STUDENT_LASTNAME);
-    studentFields.put("birthMonth", "1");
-    studentFields.put("birthDay", "1");
     studentFields.put("gender", "MALE");
     return studentFields;
   }

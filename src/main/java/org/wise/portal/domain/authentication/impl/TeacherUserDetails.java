@@ -170,11 +170,6 @@ public class TeacherUserDetails extends PersistentUserDetails implements Mutable
     return (firstname + lastname).replaceAll("[\\s-]+", "");
   }
 
-  public String[] getUsernameSuffixes() {
-    return new String[] { "", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13",
-        "14", "15", "16" };
-  }
-
   /**
    * Get the next username suffix. For teachers the suffix is just an integer that we will increment
    * 

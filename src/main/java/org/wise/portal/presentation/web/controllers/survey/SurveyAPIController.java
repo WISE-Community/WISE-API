@@ -134,7 +134,6 @@ public class SurveyAPIController {
     StudentUserDetails sud = new StudentUserDetails();
     sud.setFirstname("survey_student_" + RandomStringUtils.randomAlphanumeric(10));
     sud.setLastname(RandomStringUtils.randomAlphanumeric(10));
-    sud.setBirthday(new Date());
     sud.setPassword(password);
     sud.setGender(Gender.UNSPECIFIED);
     sud.setEmailAddress("null@null.com");

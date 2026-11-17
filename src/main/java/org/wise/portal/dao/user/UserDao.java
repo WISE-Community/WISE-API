@@ -39,8 +39,7 @@ public interface UserDao<T extends User> extends SimpleDao<T> {
   T retrieveByMicrosoftUserId(String microsoftUserId);
   List<String> retrieveAllUsernames();
   T retrieveByResetPasswordKey(String resetPasswordKey);
-  List<User> retrieveStudentsByNameAndBirthday(String firstName, String lastName,
-      Integer birthMonth, Integer birthDay);
+  List<User> retrieveStudentsByName(String firstName, String lastName);
   List<User> retrieveTeachersByName(String firstName, String lastName);
   List<User> retrieveAllTeachers();
   User retrieveTeacherById(Long id);
