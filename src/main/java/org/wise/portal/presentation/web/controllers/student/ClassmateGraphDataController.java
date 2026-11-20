@@ -72,8 +72,9 @@ public class ClassmateGraphDataController extends ClassmateDataController {
       String showWorkNodeId, String showWorkComponentId, String showClassmateWorkSource)
       throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return isGraphComponent(projectComponent) && hasMatchingConnectedComponent(projectComponent,
-        showWorkNodeId, showWorkComponentId, showClassmateWorkSource);
+    return projectComponent != null && isGraphComponent(projectComponent)
+        && hasMatchingConnectedComponent(projectComponent, showWorkNodeId, showWorkComponentId,
+            showClassmateWorkSource);
   }
 
   private boolean isGraphComponent(ProjectComponent projectComponent) throws JSONException {

@@ -46,7 +46,8 @@ public class PeerGroupWorkController extends AbstractPeerGroupWorkController {
       String showWorkNodeId, String showWorkComponentId)
       throws JSONException, IOException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
-    return projectComponent.getString("type").equals(SHOW_PEER_GROUP_WORK_TYPE)
+    return projectComponent != null
+        && projectComponent.getString("type").equals(SHOW_PEER_GROUP_WORK_TYPE)
         && projectComponent.getString("showWorkNodeId").equals(showWorkNodeId)
         && projectComponent.getString("showWorkComponentId").equals(showWorkComponentId);
   }

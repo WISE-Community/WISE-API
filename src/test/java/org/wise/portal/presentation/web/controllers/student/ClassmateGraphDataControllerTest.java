@@ -61,6 +61,18 @@ public class ClassmateGraphDataControllerTest extends AbstractClassmateDataContr
   }
 
   @Test
+  public void getClassmateGraphWorkInPeriod_ComponentNotInProject_ThrowException()
+      throws IOException, NoSuchMethodException, ObjectNotFoundException {
+    setupStudent1InRunAndInPeriod();
+    expectComponentType(controller.GRAPH_TYPE);
+    replayAll();
+    assertThrows(AccessDeniedException.class,
+        () -> controller.getClassmateGraphWorkInPeriod(studentAuth, run1, NODE_ID1,
+            OTHER_COMPONENT_ID, SHOW_WORK_NODE_ID, SHOW_WORK_COMPONENT_ID, run1Period1Id));
+    verifyAll();
+  }
+
+  @Test
   public void getClassmateGraphWorkInPeriod_InvalidNodeId_ThrowException()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
     getClassmateGraphWorkInPeriod_InvalidField_ThrowException(SHOW_WORK_NODE_ID,
