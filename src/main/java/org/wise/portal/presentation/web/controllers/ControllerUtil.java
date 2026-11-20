@@ -43,11 +43,13 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.switchuser.SwitchUserFilter;
+import org.springframework.security.web.authentication.switchuser.SwitchUserGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -57,6 +59,7 @@ import org.wise.portal.domain.group.Group;
 import org.wise.portal.domain.project.Project;
 import org.wise.portal.domain.run.Run;
 import org.wise.portal.domain.user.User;
+import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.portal.PortalService;
 import org.wise.portal.service.project.ProjectService;
 import org.wise.portal.service.run.RunService;
@@ -158,6 +161,29 @@ public class ControllerUtil {
     for (GrantedAuthority grantedAuthority : authorities) {
       if (SwitchUserFilter.ROLE_PREVIOUS_ADMINISTRATOR.equals(grantedAuthority.getAuthority())) {
         return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @return true iff the signed-in user is being impersonated by an administrator. Researchers can
+   * impersonate too and also get ROLE_PREVIOUS_ADMINISTRATOR, so the role is read from the
+   * original authentication.
+   */
+  public static boolean isImpersonatingAdministrator() {
+    Authentication current = SecurityContextHolder.getContext().getAuthentication();
+    if (current == null) {
+      return false;
+    }
+    for (GrantedAuthority authority : current.getAuthorities()) {
+      if (authority instanceof SwitchUserGrantedAuthority) {
+        for (GrantedAuthority original : ((SwitchUserGrantedAuthority) authority).getSource()
+            .getAuthorities()) {
+          if (UserDetailsService.ADMIN_ROLE.equals(original.getAuthority())) {
+            return true;
+          }
+        }
       }
     }
     return false;

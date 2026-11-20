@@ -61,7 +61,8 @@ public class LoginController {
     if (loggedInUser != null) {
       try {
         Portal portal = portalService.getById(Integer.valueOf(1));
-        if (!portal.isLoginAllowed()) {
+        if (!portal.isLoginAllowed() && !loggedInUser.isAdmin()
+            && !ControllerUtil.isImpersonatingAdministrator()) {
           response.getWriter().print("requestLogout");
         } else {
           response.getWriter().print("true");
