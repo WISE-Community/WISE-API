@@ -60,6 +60,54 @@ public class PeerGroupStudentWorkAnnotationControllerTest
     verifyAll();
   }
 
+  @Test
+  public void getStudentDataForDynamicPrompt_ComponentNotInProject_ReturnEmptyList()
+      throws Exception {
+    expectUserInPeerGroup();
+    expectInvalidDynamicPromptContent();
+    replayAll();
+    List<StudentWorkAnnotation> studentWorkAnnotation = controller
+        .getStudentDataForDynamicPrompt(peerGroup1, run1Node2Id, run1Component1Id, studentAuth);
+    assertTrue(studentWorkAnnotation.isEmpty());
+    verifyAll();
+  }
+
+  @Test
+  public void getStudentDataForQuestionBank_ReferenceComponentNotInProject_ReturnEmptyList()
+      throws Exception {
+    expectUserInPeerGroup();
+    String project_with_missing_reference_component = """
+        {
+          "nodes": [
+            {
+              "id": "%s",
+              "type": "node",
+              "components": [
+                {
+                  "id": "%s",
+                  "type": "OpenResponse",
+                  "questionBank": {
+                    "peerGroupingTag": "%s",
+                    "referenceComponent": {
+                      "nodeId": "%s",
+                      "componentId": "%s"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }""".formatted(run1Node2Id, run1Component2Id, peerGrouping1Tag, run1Node1Id,
+        run1Component1Id);
+    expect(projectService.getProjectContent(project1))
+        .andReturn(project_with_missing_reference_component).times(2);
+    replayAll();
+    List<StudentWorkAnnotation> studentWorkAnnotation = controller
+        .getStudentDataForQuestionBank(peerGroup1, run1Node2Id, run1Component2Id, studentAuth);
+    assertTrue(studentWorkAnnotation.isEmpty());
+    verifyAll();
+  }
+
   private void expectInvalidDynamicPromptContent() throws IOException {
     String project_sans_reference_component = """
         {

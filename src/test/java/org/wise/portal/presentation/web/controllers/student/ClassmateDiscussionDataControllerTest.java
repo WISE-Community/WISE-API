@@ -53,6 +53,29 @@ public class ClassmateDiscussionDataControllerTest extends AbstractClassmateData
   }
 
   @Test
+  public void getClassmateDiscussionWork_ComponentNotInProject_ThrowException()
+      throws IOException, NoSuchMethodException, ObjectNotFoundException {
+    setupStudent1InRunAndInPeriod();
+    expectComponentType(controller.DISCUSSION_TYPE);
+    replayAll();
+    assertThrows(AccessDeniedException.class, () -> controller
+        .getClassmateDiscussionWork(studentAuth, run1, run1Period1Id, NODE_ID1, "null"));
+    verifyAll();
+  }
+
+  @Test
+  public void getClassmateDiscussionAnnotations_NodeNotInProject_ThrowException()
+      throws IOException, NoSuchMethodException, ObjectNotFoundException {
+    setupStudent1InRunAndInPeriod();
+    expectComponentType(controller.DISCUSSION_TYPE);
+    replayAll();
+    assertThrows(AccessDeniedException.class, () -> controller
+        .getClassmateDiscussionAnnotations(studentAuth, run1, run1Period1Id, OTHER_NODE_ID,
+            COMPONENT_ID1));
+    verifyAll();
+  }
+
+  @Test
   public void getClassmateDiscussionWork_InRunDiscussionComponent_ReturnWork()
       throws IOException, NoSuchMethodException, ObjectNotFoundException {
     setupStudent1InRunAndInPeriod();

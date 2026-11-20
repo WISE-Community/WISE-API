@@ -62,8 +62,12 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
       String nodeId, String componentId, String fieldName) throws Exception {
     Run run = peerGroup.getPeerGrouping().getRun();
     ReferenceComponent component = getReferenceComponent(run, nodeId, componentId, fieldName);
-    String referenceComponentType = getProjectComponent(run, component.nodeId,
-        component.componentId).getType();
+    ProjectComponent referenceProjectComponent = component == null ? null
+        : getProjectComponent(run, component.nodeId, component.componentId);
+    if (referenceProjectComponent == null) {
+      return new ArrayList<StudentWorkAnnotation>();
+    }
+    String referenceComponentType = referenceProjectComponent.getType();
     if (referenceComponentType.equals("MultipleChoice")) {
       return getStudentDataForMultipleChoice(peerGroup, component);
     } else if (referenceComponentType.equals("OpenResponse")) {
@@ -92,6 +96,9 @@ public class PeerGroupStudentWorkAnnotationController extends AbstractPeerGroupW
   private ReferenceComponent getReferenceComponent(Run run, String nodeId, String componentId,
       String fieldName) throws IOException, JSONException, ObjectNotFoundException {
     ProjectComponent projectComponent = getProjectComponent(run, nodeId, componentId);
+    if (projectComponent == null) {
+      return null;
+    }
     JSONObject referenceComponentJSON = projectComponent.getJSONObject(fieldName);
     return new ReferenceComponent(referenceComponentJSON);
   }
