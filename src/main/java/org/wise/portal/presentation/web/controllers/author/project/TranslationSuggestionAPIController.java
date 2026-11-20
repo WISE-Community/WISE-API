@@ -1,7 +1,11 @@
 package org.wise.portal.presentation.web.controllers.author.project;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -50,7 +54,8 @@ public class TranslationSuggestionAPIController {
       TranslateClient translateClient = buildTranslateClient();
       if (translatableText.getContentType().equals("html")) {
         TranslateDocumentRequest request = buildTranslateDocumentRequest(translatableText);
-        return this.translateDocument(translateClient, request);
+        String translatedHtml = this.translateDocument(translateClient, request);
+        return this.translateLinkTextAttributes(translateClient, translatableText, translatedHtml);
       } else {
         TranslateTextRequest request = buildTranslateTextRequest(translatableText);
         return this.translateText(translateClient, request);
@@ -82,11 +87,15 @@ public class TranslationSuggestionAPIController {
   }
 
   private TranslateTextRequest buildTranslateTextRequest(TranslatableText translatableText) {
+    return buildTranslateTextRequest(translatableText.getSrcText(), translatableText);
+  }
+
+  private TranslateTextRequest buildTranslateTextRequest(String text, TranslatableText translatableText) {
     return TranslateTextRequest.builder()
-                .text(translatableText.getSrcText())
-                .sourceLanguageCode(translatableText.getSrcLangCode())
-                .targetLanguageCode(translatableText.getTargetLangCode())
-                .build();
+        .text(text)
+        .sourceLanguageCode(translatableText.getSrcLangCode())
+        .targetLanguageCode(translatableText.getTargetLangCode())
+        .build();
   }
 
   private TranslateDocumentRequest buildTranslateDocumentRequest(TranslatableText translatableText) {
@@ -125,5 +134,68 @@ public class TranslationSuggestionAPIController {
           "Translation failed");
     }
     return documentResponse.translatedDocument().content().asUtf8String();
+  }
+
+  private String translateLinkTextAttributes(TranslateClient client, TranslatableText translatableText,
+      String translatedHtml) {
+    List<String> sourceValues = getLinkTextValues(translatableText.getSrcText());
+    if (sourceValues.isEmpty()) {
+      return translatedHtml;
+    }
+    Element translatedDocument = parseHtmlFragment(translatedHtml);
+    List<Element> translatedLinks = getLinksWithText(translatedDocument);
+    if (translatedLinks.size() != sourceValues.size()) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+          "Translation failed to preserve link-text attributes");
+    }
+    List<String> translatedValues = translateLinkTextValues(client, translatableText, sourceValues);
+    replaceLinkTextValues(translatedLinks, translatedValues);
+    return translatedDocument.html();
+  }
+
+  private List<String> getLinkTextValues(String html) {
+    return getLinksWithText(parseHtmlFragment(html)).stream()
+        .map(link -> link.attr("link-text"))
+        .toList();
+  }
+
+  private List<Element> getLinksWithText(Element html) {
+    return html.getElementsByTag("wiselink").stream()
+        .filter(link -> link.hasAttr("link-text"))
+        .toList();
+  }
+
+  private Element parseHtmlFragment(String html) {
+    Element root = new Element("wise-root");
+    for (Node node : Parser.parseFragment(html, root, "")) {
+      root.appendChild(node);
+    }
+    return root;
+  }
+
+  private List<String> translateLinkTextValues(TranslateClient client, TranslatableText translatableText,
+      List<String> sourceValues) {
+    List<String> translatedValues = translateValues(client, translatableText, sourceValues);
+    if (translatedValues.size() == sourceValues.size()) {
+      return translatedValues;
+    } else {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+          "Translation failed to preserve link-text lines");
+    }
+  }
+
+  private List<String> translateValues(TranslateClient client,
+      TranslatableText translatableText, List<String> sourceValues) {
+    String joinedSourceValues = String.join("\n", sourceValues);
+    String joinedTranslatedValues =
+        translateText(client, buildTranslateTextRequest(joinedSourceValues, translatableText));
+    List<String> translatedValues = List.of(joinedTranslatedValues.split("\\R", -1));
+    return translatedValues;
+  }
+
+  private void replaceLinkTextValues(List<Element> translatedLinks, List<String> translatedValues) {
+    for (int i = 0; i < translatedValues.size(); i++) {
+      translatedLinks.get(i).attr("link-text", translatedValues.get(i));
+    }
   }
 }

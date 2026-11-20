@@ -11,6 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.easymock.Capture;
 import org.easymock.EasyMockExtension;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -53,12 +56,13 @@ public class TranslationSuggestionAPIControllerTest extends APIControllerTest {
   }
 
   @Test
-  public void getSuggestedTranslation_UsesHtmlDocumentTranslation() throws Exception {
+  public void getSuggestedTranslation_UsesDocumentTranslationWhenHtmlHasNoLinkText() throws Exception {
     assertHtmlTranslation(
-        "{\"srcLang\":\"English\",\"targetLang\":\"Spanish\",\"srcText\":\"<p>Hello</p>\","
+        "{\"srcLang\":\"English\",\"targetLang\":\"Spanish\",\"srcText\":\"<p "
+            + "title=\\\"note link-text='course overview'\\\">Hello</p>\","
             + "\"contentType\":\"html\"}",
-        "<p>Hello</p>",
-        "<p class=\"greeting\">Hola</p>",
+        "<p title=\"note link-text='course overview'\">Hello</p>",
+        "<p title=\"note link-text='course overview'\">Hola</p>",
         "en",
         "es-MX");
   }
@@ -72,6 +76,50 @@ public class TranslationSuggestionAPIControllerTest extends APIControllerTest {
         "<p>Hello</p>",
         "it",
         "en");
+  }
+
+  @Test
+  public void getSuggestedTranslation_TranslatesLinkTextAttributesAndPreservesHtml() throws Exception {
+    String sourceHtml =
+        "<p>Visit <wiselink id='keep-me' link-text='course &amp; overview'></wiselink> then "
+            + "<wiselink id='keep-me-too' link-text=\"next step\"></wiselink>.</p>";
+    String translatedDocumentHtml =
+        "<p>Visita <wiselink id='keep-me' link-text='course &amp; overview'></wiselink> luego "
+            + "<wiselink id='keep-me-too' link-text=\"next step\"></wiselink>.</p>";
+    TranslateClient translateClient = createMock(TranslateClient.class);
+    Capture<TranslateDocumentRequest> documentRequestCapture = newCapture();
+    Capture<TranslateTextRequest> textRequestCapture = newCapture();
+    expect(translateClient.translateDocument(capture(documentRequestCapture)))
+        .andReturn(TranslateDocumentResponse.builder()
+            .translatedDocument(TranslatedDocument.builder()
+                .content(SdkBytes.fromUtf8String(translatedDocumentHtml))
+                .build())
+            .build());
+    expect(translateClient.translateText(capture(textRequestCapture)))
+        .andReturn(TranslateTextResponse.builder()
+            .translatedText("descripción del curso\nsiguiente paso")
+            .build());
+    replay(translateClient);
+
+    TranslationSuggestionAPIController controller = createController(translateClient);
+    TranslatableText request = new TranslatableText("English", "Spanish", sourceHtml, "html");
+
+    String translatedHtml = controller.getSuggestedTranslation(teacherAuth, request);
+    org.jsoup.nodes.Document translatedDocument = Jsoup.parseBodyFragment(translatedHtml);
+
+    assertEquals(1, translatedDocument.select("p").size());
+    assertEquals("Visita luego .", translatedDocument.selectFirst("p").text());
+
+    Elements translatedLinks = translatedDocument.select("wiselink[link-text]");
+    Element courseOverviewLink = translatedLinks.get(0);
+    Element nextStepLink = translatedLinks.get(1);
+    assertEquals(2, translatedLinks.size());
+    assertEquals("keep-me", courseOverviewLink.attr("id"));
+    assertEquals("descripción del curso", courseOverviewLink.attr("link-text"));
+    assertEquals("keep-me-too", nextStepLink.attr("id"));
+    assertEquals("siguiente paso", nextStepLink.attr("link-text"));
+    assertEquals("course & overview\nnext step", textRequestCapture.getValue().text());
+    verify(translateClient);
   }
 
   @Test
