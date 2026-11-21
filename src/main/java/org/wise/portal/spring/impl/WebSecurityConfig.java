@@ -165,6 +165,7 @@ public class WebSecurityConfig {
                     "/api/news/**",
                     "/api/announcement",
                     "/api/project/info/*",
+                    "/api/session/renew",
                     "/api/google-user/check-user-exists",
                     "/api/google-user/check-user-matches",
                     "/previewproject.html",

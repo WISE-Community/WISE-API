@@ -23,6 +23,7 @@
  */
 package org.wise.portal.spring.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
@@ -177,6 +178,12 @@ public class WebSecurityConfigAuthorizationTest {
     assertAuthorized(get("/api/news"));
     assertAuthorized(get("/api/news/1"));
     assertAuthorized(get("/api/announcement"));
+  }
+
+  @Test
+  public void unauthenticated_sessionRenew_shouldAnswerFalse() throws Exception {
+    MvcResult result = mockMvc.perform(get("/api/session/renew")).andReturn();
+    assertEquals("false", result.getResponse().getContentAsString());
   }
 
   @Test

@@ -50,10 +50,10 @@ echo "Making tomcat the owner of the tomcat directory"
 chown tomcat:tomcat $CATALINA_HOME
 
 echo "Downloading Tomcat 10"
-wget -P /tmp https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.60/bin/apache-tomcat-10.1.60.tar.gz
+wget -P /tmp https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.62/bin/apache-tomcat-10.1.62.tar.gz
 
 echo "Unpackaging Tomcat 10 to $CATALINA_HOME"
-tar xzvf /tmp/apache-tomcat-10.1.60.tar.gz -C $CATALINA_HOME --strip-components=1
+tar xzvf /tmp/apache-tomcat-10.1.62.tar.gz -C $CATALINA_HOME --strip-components=1
 
 echo "Giving tomcat user ownership of tomcat directory contents"
 chown -R tomcat:tomcat $CATALINA_HOME
@@ -89,8 +89,8 @@ curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor | tee /usr/share/k
 echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/ubuntu `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
 apt update
 
-echo "Installing Nginx 1.26.2"
-apt-get install nginx=1.26.2-1~$(lsb_release -sc) -y
+echo "Installing latest stable Nginx"
+apt-get install nginx -y
 
 echo "Adding Nginx nginx user to tomcat group"
 usermod -a -G tomcat nginx
