@@ -23,6 +23,8 @@
  */
 package org.wise.portal.presentation.web.filters;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
@@ -36,6 +38,7 @@ import org.wise.portal.domain.authentication.MutableUserDetails;
 import org.wise.portal.domain.authentication.impl.StudentUserDetails;
 import org.wise.portal.domain.authentication.impl.TeacherUserDetails;
 import org.wise.portal.domain.portal.Portal;
+import org.wise.portal.presentation.web.controllers.ControllerUtil;
 import org.wise.portal.service.authentication.AuthorityNotFoundException;
 import org.wise.portal.service.authentication.UserDetailsService;
 import org.wise.portal.service.portal.PortalService;
@@ -100,7 +103,7 @@ public class WISEAuthenticationSuccessHandler
       }
     }
 
-    // if user is not admin and login is disallowed, log out user and redirect them to the "we are undergoing maintenance" page
+    // if user is not admin and login is disallowed, log out user and tell the sign-in page
     try {
       Portal portal = portalService.getById(Integer.valueOf(1));
       if (!userIsAdmin && !portal.isLoginAllowed()) {
@@ -109,14 +112,15 @@ public class WISEAuthenticationSuccessHandler
           new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         SecurityContextHolder.getContext().setAuthentication(null);
-        String contextPath = request.getContextPath();
-        response.sendRedirect(
-            contextPath + WISEAuthenticationProcessingFilter.LOGIN_DISABLED_MESSGE_PAGE);
+        JSONObject responseJSON = ControllerUtil.createErrorResponse();
+        responseJSON.put("isLoginDisabled", true);
+        response.setContentType("application/json");
+        response.getWriter().write(responseJSON.toString());
         return;
       }
     } catch (ObjectNotFoundException e) {
       // do nothing
-    } catch (IOException ioe) {
+    } catch (IOException | JSONException e) {
       // do nothing
     }
 

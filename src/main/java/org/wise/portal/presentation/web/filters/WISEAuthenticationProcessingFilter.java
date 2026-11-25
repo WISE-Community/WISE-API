@@ -63,7 +63,6 @@ public class WISEAuthenticationProcessingFilter extends UsernamePasswordAuthenti
   public static final String TEACHER_DEFAULT_TARGET_PATH = "/teacher";
   public static final String ADMIN_DEFAULT_TARGET_PATH = "/admin";
   public static final String RESEARCHER_DEFAULT_TARGET_PATH = "/teacher";
-  public static final String LOGIN_DISABLED_MESSGE_PAGE = "/pages/maintenance.html";
 
   private static final Log LOGGER = LogFactory.getLog(WISEAuthenticationProcessingFilter.class);
 
